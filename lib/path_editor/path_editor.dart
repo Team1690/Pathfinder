@@ -13,9 +13,14 @@ class _PathEditorState extends State<PathEditor> {
   List<Offset> points = [];
   Offset mousePosition = Offset(0, 0);
 
-  // List<List<Offset>> getBezierPoints(final List<Offset> points) {
-  //   return points.fold([], (previousValue, element) => null);
-  // }
+  List<List<Offset>> getBezierPoints(final List<Offset> points) {
+    final List<List<Offset>> bezierPoints = [];
+
+    for (int i = 0; i <= points.length && i + 4 <= points.length; i += 3)
+      bezierPoints.add(points.sublist(i, i + 4));
+
+    return bezierPoints;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +55,9 @@ class _PathEditorState extends State<PathEditor> {
                   },
                 ),
               ),
-            if (points.length == 4)
+            for (final sectionPoints in getBezierPoints(this.points))
               CustomPaint(
-                painter: CurvePainter(points: points),
+                painter: CurvePainter(points: sectionPoints),
               ),
           ],
         ),
