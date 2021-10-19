@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pathfinder/curve_painter.dart';
+import 'package:pathfinder/path_editor/path_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
 
 class PathEditor extends StatefulWidget {
@@ -32,19 +32,33 @@ class _PathEditorState extends State<PathEditor> {
         child: Stack(
           children: [
             GestureDetector(
-              child: Image(
-                image: AssetImage('assets/images/frc_2020_field.png'),
+              child: const Image(
+                image: const AssetImage('assets/images/frc_2020_field.png'),
                 width: 1100,
                 height: 1100 / 15.98 * 8.21,
               ),
-              onTapDown: (final TapDownDetails detailes) =>
-                  setState(() => points.add(detailes.localPosition)),
+              onTapDown: (final TapDownDetails detailes) {
+                final Offset tapPos = detailes.localPosition;
+
+                setState(() {
+                  if (points.isEmpty) {
+                    points.add(tapPos);
+                  } else {
+                    points.addAll([
+                      (points.last * 2 + tapPos) / 3, // start control point
+                      (points.last + tapPos * 2) / 3, // end control point
+                      tapPos // end position
+                    ]);
+                  }
+                });
+              },
               onPanUpdate: (final DragUpdateDetails details) =>
                   setState(() => mousePosition = details.localPosition),
             ),
             for (final Offset point in points)
               PathPoint(
                 point: point,
+                controlPoint: points.indexOf(point) % 3 != 0,
                 onDrag: (final DragUpdateDetails details) => setState(
                   () {
                     mousePosition = Offset(mousePosition.dx + details.delta.dx,
@@ -57,7 +71,7 @@ class _PathEditorState extends State<PathEditor> {
               ),
             for (final sectionPoints in getBezierPoints(this.points))
               CustomPaint(
-                painter: CurvePainter(points: sectionPoints),
+                painter: PathPainter(points: sectionPoints),
               ),
           ],
         ),
