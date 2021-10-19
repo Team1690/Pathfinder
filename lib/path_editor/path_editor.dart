@@ -16,7 +16,7 @@ class _PathEditorState extends State<PathEditor> {
   List<List<Offset>> getBezierPoints(final List<Offset> points) {
     final List<List<Offset>> bezierPoints = [];
 
-    for (int i = 0; i <= points.length && i + 4 <= points.length; i += 3)
+    for (int i = 0; i + 4 <= points.length; i += 3)
       bezierPoints.add(points.sublist(i, i + 4));
 
     return bezierPoints;
