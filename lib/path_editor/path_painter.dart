@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PathPainter extends CustomPainter {
   final List<Offset> points;
-  const PathPainter({required this.points}) : super();
+  const PathPainter({required this.points});
 
   @override
   void paint(final Canvas canvas, final Size size) {
