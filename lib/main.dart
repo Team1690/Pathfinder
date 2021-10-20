@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(App());
 
 final Map<int, Color> orbitColors = {
   50: Color.fromRGBO(0, 0, 200, .1),
@@ -16,11 +16,11 @@ final Map<int, Color> orbitColors = {
   900: Color.fromRGBO(0, 0, 200, 1),
 };
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Orbit Pathfinder',
         theme: ThemeData(
           primarySwatch: MaterialColor(0xFF0000C8, orbitColors),
         ),
