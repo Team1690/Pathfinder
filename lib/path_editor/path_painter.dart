@@ -32,5 +32,5 @@ class PathPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter old) => true;
+  bool shouldRepaint(final PathPainter old) => old.points != this.points;
 }
