@@ -4,13 +4,14 @@ class PathPainter extends CustomPainter {
   final List<Offset> points;
   const PathPainter({required this.points});
 
+  static final paintColor = Paint()
+    ..style = PaintingStyle.stroke
+    ..color = Color(0xff333333)
+    ..strokeWidth = 10;
+
   @override
   void paint(final Canvas canvas, final Size size) {
     final paintPath = Path();
-    final paintColor = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Color(0xff333333)
-      ..strokeWidth = 10;
 
     paintPath.moveTo(this.points.first.dx, this.points.first.dy);
 
