@@ -6,7 +6,7 @@ class PathPainter extends CustomPainter {
 
   static final paintColor = Paint()
     ..style = PaintingStyle.stroke
-    ..color = const Color(0xff333333)
+    ..color = Colors.white
     ..strokeWidth = 10;
 
   @override
