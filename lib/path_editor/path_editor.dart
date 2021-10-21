@@ -92,7 +92,7 @@ class _PathEditorState extends State<PathEditor> {
                   },
                 ),
               ),
-            for (final cubicBezier in getBezierSections(this.points))
+            for (final cubicBezier in bezierSections)
               CustomPaint(
                 painter: CubicBezierPainter(cubicBezier: cubicBezier),
               ),
