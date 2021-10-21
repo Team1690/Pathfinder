@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pathfinder/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/path_editor/path_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
+import 'package:pathfinder/path_editor/cubic_bezier.dart';
 
 class PathEditor extends StatefulWidget {
   PathEditor({Key? key}) : super(key: key);
@@ -11,19 +13,28 @@ class PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<PathEditor> {
   List<Offset> points = [];
-  Offset mousePosition = Offset(0, 0);
+  Offset mousePosition = Offset.zero;
 
-  List<List<Offset>> getBezierPoints(final List<Offset> points) {
-    final List<List<Offset>> bezierPoints = [];
+  List<CubicBezier> getBezierSections(final List<Offset> points) {
+    final List<CubicBezier> sections = [];
 
     for (int i = 0; i + 4 <= points.length; i += 3)
-      bezierPoints.add(points.sublist(i, i + 4));
+      sections.add(
+        new CubicBezier(
+          start: points[i],
+          startControl: points[i + 1],
+          endControl: points[i + 2],
+          end: points[i + 3],
+        ),
+      );
 
-    return bezierPoints;
+    return sections;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
+    final List<CubicBezier> bezierSections = getBezierSections(this.points);
+
     return Center(
       child: MouseRegion(
         onHover: (event) {
@@ -55,23 +66,35 @@ class _PathEditorState extends State<PathEditor> {
               onPanUpdate: (final DragUpdateDetails details) =>
                   setState(() => mousePosition = details.localPosition),
             ),
+            for (final CubicBezier bezierSection in bezierSections) ...[
+              CustomPaint(
+                painter: DashedLinePainter(
+                    start: bezierSection.start,
+                    end: bezierSection.startControl),
+              ),
+              CustomPaint(
+                painter: DashedLinePainter(
+                  start: bezierSection.endControl,
+                  end: bezierSection.end,
+                ),
+              )
+            ],
             for (final Offset point in points)
               PathPoint(
                 point: point,
                 controlPoint: points.indexOf(point) % 3 != 0,
                 onDrag: (final DragUpdateDetails details) => setState(
                   () {
-                    mousePosition = Offset(mousePosition.dx + details.delta.dx,
-                        mousePosition.dy + details.delta.dy);
+                    mousePosition += details.delta;
 
                     final int pointIndex = points.indexOf(point);
                     if (pointIndex > -1) points[pointIndex] = mousePosition;
                   },
                 ),
               ),
-            for (final sectionPoints in getBezierPoints(this.points))
+            for (final cubicBezier in getBezierSections(this.points))
               CustomPaint(
-                painter: PathPainter(points: sectionPoints),
+                painter: CubicBezierPainter(cubicBezier: cubicBezier),
               ),
           ],
         ),
