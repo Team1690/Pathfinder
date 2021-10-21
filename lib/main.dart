@@ -20,6 +20,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Orbit Pathfinder',
         theme: ThemeData(
           primarySwatch: MaterialColor(0xFF0000C8, orbitColors),
