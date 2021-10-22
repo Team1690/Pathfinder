@@ -7,10 +7,13 @@ class CubicBezier {
   final Offset endControl;
   final Offset end;
 
-  late final List<Offset>? _pointsList;
+  List<Offset>? _pointsList;
 
-  List<Offset> get pointsList =>
-      _pointsList ??= [start, startControl, endControl, end];
+  List<Offset> get pointsList {
+    _pointsList ??= [start, startControl, endControl, end];
+
+    return _pointsList as List<Offset>;
+  }
 
   CubicBezier({
     required this.start,
@@ -29,7 +32,7 @@ class CubicBezier {
     double oneMinusTFactor = pow(1 - t, 3).toDouble();
     double tFactor = 1;
 
-    var result = Offset(0, 0);
+    var result = Offset.zero;
 
     for (int i = 0; i < 4; i++) {
       result += pointsList[i] *
