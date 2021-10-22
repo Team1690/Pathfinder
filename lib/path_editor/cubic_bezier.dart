@@ -7,14 +7,21 @@ class CubicBezier {
   final Offset endControl;
   final Offset end;
 
-  final List<Offset> pointsList;
+  late final List<Offset>? _pointsList;
+
+  List<Offset> get pointsList =>
+      _pointsList ??= [start, startControl, endControl, end];
 
   CubicBezier({
     required this.start,
     required this.startControl,
     required this.endControl,
     required this.end,
-  }) : pointsList = [start, startControl, endControl, end];
+  });
+
+  CubicBezier.line({required final this.start, required final this.end})
+      : startControl = (start * 2 + end) / 3,
+        endControl = (start + end * 2) / 3;
 
   Offset evaluate(final double t) {
     final double oneMinusT = 1 - t;
