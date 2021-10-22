@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/path_editor/dashed_line_painter.dart';
-import 'package:pathfinder/path_editor/path_painter.dart';
+import 'package:pathfinder/path_editor/cubic_bezier_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
 import 'package:pathfinder/path_editor/cubic_bezier.dart';
 
