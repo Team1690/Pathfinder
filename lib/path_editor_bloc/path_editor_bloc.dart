@@ -27,16 +27,18 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     final PointDrag event,
     final Emitter<PathEditorState> emit,
   ) {
+    if (event.pointIndex < 0) return; // error safety
+
     final currentState = this.state;
 
     if (currentState is InitialState) return;
 
     if (currentState is OnePointDefined)
-      emit(OnePointDefined(currentState.point + event.delta));
+      emit(OnePointDefined(event.newPosition));
 
     if (currentState is PathDefined) {
       final nextStatePoints = [...currentState.points];
-      nextStatePoints[event.pointIndex] += event.delta;
+      nextStatePoints[event.pointIndex] = event.newPosition;
 
       emit(PathDefined(nextStatePoints));
     }
@@ -56,6 +58,7 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
       emit(
         PathDefined(
           [
+            ...currentState.points.take(currentState.points.length - 1),
             ...CubicBezier.line(
                     start: currentState.points.last, end: event.newPoint)
                 .pointsList

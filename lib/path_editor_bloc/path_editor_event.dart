@@ -12,10 +12,7 @@ class PointDragStart extends PathEditorEvent {}
 
 class PointDrag extends PathEditorEvent {
   final int pointIndex;
-  final Offset delta;
+  final Offset newPosition;
 
-  PointDrag({
-    required final this.pointIndex,
-    required final this.delta,
-  });
+  PointDrag({required final this.pointIndex, required final this.newPosition});
 }
