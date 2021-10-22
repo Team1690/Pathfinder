@@ -18,7 +18,7 @@ class PathEditor extends StatefulWidget {
 class _PathEditorState extends State<PathEditor> {
   Offset mousePosition = Offset.zero;
 
-  PathEditorBloc _bloc = PathEditorBloc();
+  final PathEditorBloc _bloc = PathEditorBloc();
 
   @override
   Widget build(final BuildContext context) {
