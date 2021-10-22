@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/path_editor/dashed_line_painter.dart';
-import 'package:pathfinder/path_editor/path_painter.dart';
+import 'package:pathfinder/path_editor/cubic_bezier_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
 import 'package:pathfinder/path_editor/cubic_bezier.dart';
+import 'package:pathfinder/path_editor_bloc/path_editor_bloc.dart';
+import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
+import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
 
 class PathEditor extends StatefulWidget {
   PathEditor({Key? key}) : super(key: key);
@@ -12,91 +17,95 @@ class PathEditor extends StatefulWidget {
 }
 
 class _PathEditorState extends State<PathEditor> {
-  List<Offset> points = [];
   Offset mousePosition = Offset.zero;
+  Set<LogicalKeyboardKey> pressedKeys = {};
 
-  List<CubicBezier> getBezierSections(final List<Offset> points) {
-    final List<CubicBezier> sections = [];
-
-    for (int i = 0; i + 4 <= points.length; i += 3)
-      sections.add(
-        new CubicBezier(
-          start: points[i],
-          startControl: points[i + 1],
-          endControl: points[i + 2],
-          end: points[i + 3],
-        ),
-      );
-
-    return sections;
-  }
+  final PathEditorBloc _bloc = PathEditorBloc();
 
   @override
   Widget build(final BuildContext context) {
-    final List<CubicBezier> bezierSections = getBezierSections(this.points);
+    return RawKeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKey: (final RawKeyEvent event) {
+        setState(() {
+          if (event is RawKeyDownEvent)
+            pressedKeys.add(event.logicalKey);
+          else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+        });
 
-    return Center(
-      child: MouseRegion(
-        onHover: (event) {
-          setState(() => mousePosition = event.localPosition);
-        },
-        child: Stack(
-          children: [
-            GestureDetector(
-              child: const Image(
-                image: const AssetImage('assets/images/frc_2020_field.png'),
-                width: 1100,
-                height: 1100 / 15.98 * 8.21,
-              ),
-              onTapDown: (final TapDownDetails detailes) {
-                final Offset tapPos = detailes.localPosition;
+        if (pressedKeys.contains(LogicalKeyboardKey.metaLeft)) {
+          if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
+            _bloc.add(Undo());
+          else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
+            _bloc.add(Redo());
+        }
+      },
+      child: BlocBuilder(
+        bloc: _bloc,
+        builder:
+            (final BuildContext buildContext, final PathEditorState state) =>
+                Center(
+          child: MouseRegion(
+            onHover: (event) {
+              setState(() => mousePosition = event.localPosition);
+            },
+            child: Stack(
+              children: [
+                GestureDetector(
+                  child: const Image(
+                    image: const AssetImage('assets/images/frc_2020_field.png'),
+                    width: 1100,
+                    height: 1100 / 15.98 * 8.21,
+                  ),
+                  onTapDown: (final TapDownDetails detailes) {
+                    final Offset tapPos = detailes.localPosition;
 
-                setState(() {
-                  if (points.isEmpty) {
-                    points.add(tapPos);
-                  } else {
-                    points.addAll([
-                      (points.last * 2 + tapPos) / 3, // start control point
-                      (points.last + tapPos * 2) / 3, // end control point
-                      tapPos // end position
-                    ]);
-                  }
-                });
-              },
-              onPanUpdate: (final DragUpdateDetails details) =>
-                  setState(() => mousePosition = details.localPosition),
-            ),
-            for (final CubicBezier bezierSection in bezierSections) ...[
-              CustomPaint(
-                painter: DashedLinePainter(
-                    start: bezierSection.start,
-                    end: bezierSection.startControl),
-              ),
-              CustomPaint(
-                painter: DashedLinePainter(
-                  start: bezierSection.endControl,
-                  end: bezierSection.end,
-                ),
-              )
-            ],
-            for (final Offset point in points)
-              PathPoint(
-                point: point,
-                controlPoint: points.indexOf(point) % 3 != 0,
-                onDrag: (final DragUpdateDetails details) => setState(
-                  () {
-                    mousePosition += details.delta;
-
-                    final int pointIndex = points.indexOf(point);
-                    if (pointIndex > -1) points[pointIndex] = mousePosition;
+                    _bloc.add(AddPointEvent(tapPos));
                   },
+                  onPanUpdate: (final DragUpdateDetails details) =>
+                      setState(() => mousePosition = details.localPosition),
                 ),
-              ),
-            for (final cubicBezier in bezierSections)
-              CustomPaint(
-                painter: CubicBezierPainter(cubicBezier: cubicBezier),
-              ),
-          ],
+                if (state is PathDefined)
+                  for (final CubicBezier bezierSection
+                      in state.bezierSections) ...[
+                    CustomPaint(
+                      painter: DashedLinePainter(
+                          start: bezierSection.start,
+                          end: bezierSection.startControl),
+                    ),
+                    CustomPaint(
+                      painter: DashedLinePainter(
+                        start: bezierSection.endControl,
+                        end: bezierSection.end,
+                      ),
+                    )
+                  ],
+                if (state is PathDefined || state is OnePointDefined)
+                  for (final Offset point in state.points)
+                    PathPoint(
+                      point: point,
+                      controlPoint: state.points.indexOf(point) % 3 != 0,
+                      onDragEnd: (_) => _bloc.add(PointDragEnd()),
+                      onDrag: (final DragUpdateDetails details) {
+                        setState(() {
+                          mousePosition += details.delta;
+                        });
+
+                        _bloc.add(PointDrag(
+                          pointIndex: state.points.indexOf(point),
+                          newPosition: mousePosition,
+                        ));
+                      },
+                    ),
+                if (state is PathDefined)
+                  for (final cubicBezier in state.bezierSections)
+                    CustomPaint(
+                      painter: CubicBezierPainter(cubicBezier: cubicBezier),
+                    ),
+              ],
+            ),
+          ),
         ),
       ),
     );

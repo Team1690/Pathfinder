@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class PathPoint extends StatefulWidget {
   final Offset point;
   final void Function(DragUpdateDetails) onDrag;
+  final void Function(DragEndDetails) onDragEnd;
   final Color color;
   final bool controlPoint;
 
@@ -13,6 +14,7 @@ class PathPoint extends StatefulWidget {
     Key? key,
     required this.point,
     required this.onDrag,
+    required this.onDragEnd,
     required this.controlPoint,
   })  : color =
             controlPoint ? const Color(0xff111111) : const Color(0xbbdddddd),
@@ -50,6 +52,7 @@ class _PathPointState extends State<PathPoint> {
         }),
         child: GestureDetector(
           onPanUpdate: widget.onDrag,
+          onPanEnd: widget.onDragEnd,
           child: Container(
             width: 2 * radius,
             height: 2 * radius,
