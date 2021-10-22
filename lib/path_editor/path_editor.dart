@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/path_editor/cubic_bezier_painter.dart';
@@ -17,85 +18,93 @@ class PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<PathEditor> {
   Offset mousePosition = Offset.zero;
+  Set<LogicalKeyboardKey> pressedKeys = {};
 
   final PathEditorBloc _bloc = PathEditorBloc();
 
   @override
   Widget build(final BuildContext context) {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (final BuildContext buildContext, final PathEditorState state) =>
-          Center(
-        child: MouseRegion(
-          onHover: (event) {
-            setState(() => mousePosition = event.localPosition);
-          },
-          child: Stack(
-            children: [
-              GestureDetector(
-                child: const Image(
-                  image: const AssetImage('assets/images/frc_2020_field.png'),
-                  width: 1100,
-                  height: 1100 / 15.98 * 8.21,
+    return RawKeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKey: (final RawKeyEvent event) {
+        setState(() {
+          if (event is RawKeyDownEvent)
+            pressedKeys.add(event.logicalKey);
+          else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+        });
+
+        if (pressedKeys.contains(LogicalKeyboardKey.metaLeft)) {
+          if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
+            _bloc.add(Undo());
+          else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
+            _bloc.add(Redo());
+        }
+      },
+      child: BlocBuilder(
+        bloc: _bloc,
+        builder:
+            (final BuildContext buildContext, final PathEditorState state) =>
+                Center(
+          child: MouseRegion(
+            onHover: (event) {
+              setState(() => mousePosition = event.localPosition);
+            },
+            child: Stack(
+              children: [
+                GestureDetector(
+                  child: const Image(
+                    image: const AssetImage('assets/images/frc_2020_field.png'),
+                    width: 1100,
+                    height: 1100 / 15.98 * 8.21,
+                  ),
+                  onTapDown: (final TapDownDetails detailes) {
+                    final Offset tapPos = detailes.localPosition;
+
+                    _bloc.add(AddPointEvent(tapPos));
+                  },
+                  onPanUpdate: (final DragUpdateDetails details) =>
+                      setState(() => mousePosition = details.localPosition),
                 ),
-                onTapDown: (final TapDownDetails detailes) {
-                  final Offset tapPos = detailes.localPosition;
-
-                  _bloc.add(AddPointEvent(tapPos));
-                },
-                onPanUpdate: (final DragUpdateDetails details) =>
-                    setState(() => mousePosition = details.localPosition),
-              ),
-              if (state is PathDefined)
-                for (final CubicBezier bezierSection
-                    in state.bezierSections) ...[
-                  CustomPaint(
-                    painter: DashedLinePainter(
-                        start: bezierSection.start,
-                        end: bezierSection.startControl),
-                  ),
-                  CustomPaint(
-                    painter: DashedLinePainter(
-                      start: bezierSection.endControl,
-                      end: bezierSection.end,
+                if (state is PathDefined)
+                  for (final CubicBezier bezierSection
+                      in state.bezierSections) ...[
+                    CustomPaint(
+                      painter: DashedLinePainter(
+                          start: bezierSection.start,
+                          end: bezierSection.startControl),
                     ),
-                  )
-                ],
-              if (state is PathDefined || state is OnePointDefined)
-                for (final Offset point in state.points)
-                  PathPoint(
-                    point: point,
-                    controlPoint: state.points.indexOf(point) % 3 != 0,
-                    onDragEnd: (_) => _bloc.add(PointDragEnd()),
-                    onDrag: (final DragUpdateDetails details) {
-                      setState(() {
-                        mousePosition += details.delta;
-                      });
+                    CustomPaint(
+                      painter: DashedLinePainter(
+                        start: bezierSection.endControl,
+                        end: bezierSection.end,
+                      ),
+                    )
+                  ],
+                if (state is PathDefined || state is OnePointDefined)
+                  for (final Offset point in state.points)
+                    PathPoint(
+                      point: point,
+                      controlPoint: state.points.indexOf(point) % 3 != 0,
+                      onDragEnd: (_) => _bloc.add(PointDragEnd()),
+                      onDrag: (final DragUpdateDetails details) {
+                        setState(() {
+                          mousePosition += details.delta;
+                        });
 
-                      _bloc.add(PointDrag(
-                        pointIndex: state.points.indexOf(point),
-                        newPosition: mousePosition,
-                      ));
-                    },
-                  ),
-              if (state is PathDefined)
-                for (final cubicBezier in state.bezierSections)
-                  CustomPaint(
-                    painter: CubicBezierPainter(cubicBezier: cubicBezier),
-                  ),
-              Row(
-                children: [
-                  FloatingActionButton(
-                    onPressed: () => _bloc.add(Undo()),
-                    child: Text("Undo"),
-                  ),
-                  FloatingActionButton(
-                    onPressed: () => _bloc.add(Redo()),
-                    child: Text("Redo"),
-                  ),
-                ],
-              ),
-            ],
+                        _bloc.add(PointDrag(
+                          pointIndex: state.points.indexOf(point),
+                          newPosition: mousePosition,
+                        ));
+                      },
+                    ),
+                if (state is PathDefined)
+                  for (final cubicBezier in state.bezierSections)
+                    CustomPaint(
+                      painter: CubicBezierPainter(cubicBezier: cubicBezier),
+                    ),
+              ],
+            ),
           ),
         ),
       ),
