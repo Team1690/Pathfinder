@@ -66,7 +66,7 @@ class _PathEditorState extends State<PathEditor> {
                   PathPoint(
                     point: point,
                     controlPoint: state.points.indexOf(point) % 3 != 0,
-                    onDragStart: (_) => _bloc.add(PointDragStart()),
+                    onDragEnd: (_) => _bloc.add(PointDragEnd()),
                     onDrag: (final DragUpdateDetails details) {
                       setState(() {
                         mousePosition += details.delta;
@@ -83,6 +83,18 @@ class _PathEditorState extends State<PathEditor> {
                   CustomPaint(
                     painter: CubicBezierPainter(cubicBezier: cubicBezier),
                   ),
+              Row(
+                children: [
+                  FloatingActionButton(
+                    onPressed: () => _bloc.add(Undo()),
+                    child: Text("Undo"),
+                  ),
+                  FloatingActionButton(
+                    onPressed: () => _bloc.add(Redo()),
+                    child: Text("Redo"),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

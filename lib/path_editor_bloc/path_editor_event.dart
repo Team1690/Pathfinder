@@ -8,11 +8,15 @@ class AddPointEvent extends PathEditorEvent {
   AddPointEvent(final this.newPoint);
 }
 
-class PointDragStart extends PathEditorEvent {}
-
 class PointDrag extends PathEditorEvent {
   final int pointIndex;
   final Offset newPosition;
 
   PointDrag({required final this.pointIndex, required final this.newPosition});
 }
+
+class PointDragEnd extends PathEditorEvent {}
+
+class Undo extends PathEditorEvent {}
+
+class Redo extends PathEditorEvent {}

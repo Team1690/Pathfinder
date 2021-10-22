@@ -7,20 +7,50 @@ import 'package:stack/stack.dart';
 class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
   static PathEditorState get initialState => InitialState();
 
-  final stateStack = Stack<PathEditorState>();
+  final stateStack = Stack<PathEditorState>(); // states for undo
+  var revertedStatesStack = Stack<PathEditorState>(); // states for redo
 
   PathEditorBloc() : super(initialState) {
     on<AddPointEvent>(_onAddPoint);
-    on<PointDragStart>(_onPointDragStart);
+    on<PointDragEnd>(_addStateToStack);
     on<PointDrag>(_onPointDrag);
+    on<Undo>(_onUndo);
+    on<Redo>(_onRedo);
+
+    _addStateToStack();
   }
 
-  void _onPointDragStart(
-    final PointDragStart event,
+  // Arguments are for event, and emit
+  void _addStateToStack([_, __]) => stateStack.push(this.state);
+
+  void _onUndo(
+    final Undo event,
     final Emitter<PathEditorState> emit,
   ) {
-    final currentState = this.state;
-    stateStack.push(currentState);
+    if (this.state is! InitialState) {
+      final poppedState = stateStack.pop();
+      emit(stateStack.top());
+      revertedStatesStack.push(poppedState);
+    }
+  }
+
+  void _onRedo(
+    final Redo event,
+    final Emitter<PathEditorState> emit,
+  ) {
+    if (revertedStatesStack.isNotEmpty) emit(revertedStatesStack.pop());
+  }
+
+  @override
+  void onTransition(
+      final Transition<PathEditorEvent, PathEditorState> transition) {
+    super.onTransition(transition);
+
+    if (transition.event is! Undo && transition.event is! PointDrag)
+      stateStack.push(transition.nextState);
+
+    if (transition.event is! Undo && transition.event is! Redo)
+      revertedStatesStack = new Stack<PathEditorState>();
   }
 
   void _onPointDrag(
@@ -49,8 +79,6 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     final Emitter<PathEditorState> emit,
   ) {
     final currentState = this.state;
-
-    stateStack.push(currentState);
 
     if (currentState is InitialState) {
       emit(OnePointDefined(event.newPoint));
