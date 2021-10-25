@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pathfinder/path_editor/cubic_bezier.dart';
+import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
 import 'package:stack/stack.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pathfinder/path_editor/cubic_bezier.dart';
+import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
 
 abstract class PathEditorState {
   final List<Offset> points;
