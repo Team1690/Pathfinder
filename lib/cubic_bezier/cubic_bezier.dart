@@ -47,6 +47,25 @@ class CubicBezier {
     return result;
   }
 
+  double get length {
+    const double dt = 0.001;
+
+    double t = 0;
+    double result = 0;
+    Offset prevPosition = start;
+
+    while (t <= 1) {
+      final Offset currentPosition = evaluate(t);
+
+      result += (currentPosition - prevPosition).distance;
+
+      prevPosition = currentPosition;
+      t += dt;
+    }
+
+    return result;
+  }
+
   bool operator ==(final Object other) =>
       other is CubicBezier &&
       this.start == other.start &&
