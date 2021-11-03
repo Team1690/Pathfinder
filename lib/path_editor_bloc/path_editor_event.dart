@@ -10,9 +10,9 @@ class AddPointEvent extends PathEditorEvent {
 
 class PointDrag extends PathEditorEvent {
   final int pointIndex;
-  final Offset newPosition;
+  final Offset mouseDelta;
 
-  PointDrag({required final this.pointIndex, required final this.newPosition});
+  PointDrag({required final this.pointIndex, required final this.mouseDelta});
 }
 
 class ControlPointTangentialDrag extends PathEditorEvent {

@@ -109,7 +109,7 @@ class _PathEditorState extends State<PathEditor> {
                           _bloc.add(
                             PointDrag(
                               pointIndex: state.points.indexOf(point),
-                              newPosition: mousePosition,
+                              mouseDelta: details.delta,
                             ),
                           );
                       },

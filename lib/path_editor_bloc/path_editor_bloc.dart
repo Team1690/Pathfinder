@@ -67,12 +67,24 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
 
     if (currentState is InitialState) return;
 
+    final Offset pointsPosition = currentState.points[event.pointIndex];
+
     if (currentState is OnePointDefined)
-      emit(OnePointDefined(event.newPosition));
+      emit(OnePointDefined(pointsPosition + event.mouseDelta));
 
     if (currentState is PathDefined) {
       final nextStatePoints = [...currentState.points];
-      nextStatePoints[event.pointIndex] = event.newPosition;
+      nextStatePoints[event.pointIndex] = pointsPosition + event.mouseDelta;
+
+      final bool isPathPoint = event.pointIndex % 3 == 0;
+
+      if (isPathPoint) {
+        if (event.pointIndex != 0)
+          nextStatePoints[event.pointIndex - 1] += event.mouseDelta;
+
+        if (event.pointIndex != nextStatePoints.length - 1)
+          nextStatePoints[event.pointIndex + 1] += event.mouseDelta;
+      }
 
       emit(PathDefined(nextStatePoints));
     }
