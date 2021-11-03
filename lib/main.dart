@@ -1,34 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:pathfinder/card.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
+import 'package:pathfinder/constants.dart';
 
 void main() => runApp(App());
 
-final Map<int, Color> orbitColors = {
-  50: Color.fromRGBO(0, 0, 200, .1),
-  100: Color.fromRGBO(0, 0, 200, .2),
-  200: Color.fromRGBO(0, 0, 200, .3),
-  300: Color.fromRGBO(0, 0, 200, .4),
-  400: Color.fromRGBO(0, 0, 200, .5),
-  500: Color.fromRGBO(0, 0, 200, .6),
-  600: Color.fromRGBO(0, 0, 200, .7),
-  700: Color.fromRGBO(0, 0, 200, .8),
-  800: Color.fromRGBO(0, 0, 200, .9),
-  900: Color.fromRGBO(0, 0, 200, 1),
-};
-
 class App extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Orbit Pathfinder',
-        theme: ThemeData(
-          primarySwatch: MaterialColor(0xFF0000C8, orbitColors),
-        ),
-        // home: MyHomePage(title: 'Orbit Pathfinder'),
-        home: Scaffold(
-          appBar: AppBar(title: Text("Orbit Pathfinder")),
-          body: PathEditor(),
+        home: Column(
+          children: [
+            PathEditor(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(defaultPadding),
+                child: Row(
+                  children: [
+                    optimizeAndGenerateCard(),
+                    const SizedBox(width: defaultPadding),
+                    pointPropertiesCard(),
+                    const SizedBox(width: defaultPadding),
+                    Expanded(
+                      flex: 2,
+                      child: PropertiesCard(
+                        body: Container(),
+                      ),
+                    ),
+                    const SizedBox(width: defaultPadding),
+                    fileManagementCard(),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ));
+  }
+
+  Widget pointPropertiesCard() {
+    return Expanded(
+      flex: 2,
+      child: PropertiesCard(
+        body: Padding(
+          padding: const EdgeInsets.all(defaultPadding),
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    // Text("Position: "),
+                    // TextField(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget optimizeAndGenerateCard() {
+    return Expanded(
+      flex: 2,
+      child: PropertiesCard(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: defaultPadding, vertical: 2 * defaultPadding),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Center(child: Text("Generate")),
+                ),
+              ),
+              const SizedBox(width: defaultPadding),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Center(child: Text("Optimize")),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget fileManagementCard() {
+    return Expanded(
+      flex: 2,
+      child: PropertiesCard(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: defaultPadding, vertical: 2 * defaultPadding),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Center(child: Text("Import")),
+                ),
+              ),
+              const SizedBox(width: defaultPadding),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Center(child: Text("Export")),
+                ),
+              ),
+              const SizedBox(width: defaultPadding),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Center(child: Text("Upload")),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
