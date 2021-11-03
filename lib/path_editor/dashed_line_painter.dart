@@ -20,7 +20,7 @@ class DashedLinePainter extends CustomPainter {
   static final paintColor = Paint()
     ..style = PaintingStyle.stroke
     ..color = const Color(0xff111111)
-    ..strokeWidth = 5;
+    ..strokeWidth = 3;
 
   @override
   void paint(final Canvas canvas, final Size size) {
