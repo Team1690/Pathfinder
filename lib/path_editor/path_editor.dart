@@ -25,6 +25,7 @@ class _PathEditorState extends State<PathEditor> {
 
   @override
   Widget build(final BuildContext context) {
+    // TODO maintain focus when pressing on points
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
@@ -56,8 +57,6 @@ class _PathEditorState extends State<PathEditor> {
                 GestureDetector(
                   child: const Image(
                     image: const AssetImage('assets/images/frc_2020_field.png'),
-                    width: 1100,
-                    height: 1100 / 15.98 * 8.21,
                   ),
                   onTapDown: (final TapDownDetails detailes) {
                     final Offset tapPos = detailes.localPosition;
@@ -93,10 +92,26 @@ class _PathEditorState extends State<PathEditor> {
                           mousePosition += details.delta;
                         });
 
-                        _bloc.add(PointDrag(
-                          pointIndex: state.points.indexOf(point),
-                          newPosition: mousePosition,
-                        ));
+                        final int pointIndex = state.points.indexOf(point);
+                        final bool pointIsNotfirstOrLastControl =
+                            pointIndex != 1 &&
+                                pointIndex != state.points.length - 2;
+
+                        if (pressedKeys
+                                .contains(LogicalKeyboardKey.shiftLeft) &&
+                            pointIndex % 3 != 0 &&
+                            pointIsNotfirstOrLastControl)
+                          _bloc.add(ControlPointTangentialDrag(
+                            pointIndex: pointIndex,
+                            mouseDelta: details.delta,
+                          ));
+                        else
+                          _bloc.add(
+                            PointDrag(
+                              pointIndex: state.points.indexOf(point),
+                              newPosition: mousePosition,
+                            ),
+                          );
                       },
                     ),
                 if (state is PathDefined)

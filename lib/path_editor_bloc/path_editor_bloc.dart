@@ -1,19 +1,21 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
-import 'package:stack/stack.dart';
+import 'package:stack/stack.dart' as stack;
 
 class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
   static PathEditorState get initialState => InitialState();
 
-  final stateStack = Stack<PathEditorState>(); // states for undo
-  var revertedStatesStack = Stack<PathEditorState>(); // states for redo
+  final stateStack = stack.Stack<PathEditorState>(); // states for undo
+  var revertedStatesStack = stack.Stack<PathEditorState>(); // states for redo
 
   PathEditorBloc() : super(initialState) {
     on<AddPointEvent>(_onAddPoint);
     on<PointDragEnd>(_addStateToStack);
     on<PointDrag>(_onPointDrag);
+    on<ControlPointTangentialDrag>(_onControlPointTangentialDrag);
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
 
@@ -46,11 +48,13 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
       final Transition<PathEditorEvent, PathEditorState> transition) {
     super.onTransition(transition);
 
-    if (transition.event is! Undo && transition.event is! PointDrag)
+    if (transition.event is! Undo &&
+        transition.event is! PointDrag &&
+        transition.event is! ControlPointTangentialDrag)
       stateStack.push(transition.nextState);
 
     if (transition.event is! Undo && transition.event is! Redo)
-      revertedStatesStack = new Stack<PathEditorState>();
+      revertedStatesStack = new stack.Stack<PathEditorState>();
   }
 
   void _onPointDrag(
@@ -72,6 +76,32 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
 
       emit(PathDefined(nextStatePoints));
     }
+  }
+
+  void _onControlPointTangentialDrag(final ControlPointTangentialDrag event,
+      final Emitter<PathEditorState> emit) {
+    final currentState = state;
+    if (currentState is! PathDefined)
+      return; // TODO check for removal when adding more states
+
+    final bool controlPointIsAfterPathPoint = event.pointIndex % 3 == 1;
+
+    final int indexOfPathPoint = controlPointIsAfterPathPoint
+        ? event.pointIndex - 1
+        : event.pointIndex + 1;
+
+    final int indexOfOtherControlPoint = controlPointIsAfterPathPoint
+        ? event.pointIndex - 2
+        : event.pointIndex + 2;
+
+    final nextStatePoints = [...currentState.points];
+    nextStatePoints[event.pointIndex] += event.mouseDelta;
+    final Offset pathPointToDraggedControlPoint =
+        nextStatePoints[event.pointIndex] - nextStatePoints[indexOfPathPoint];
+    nextStatePoints[indexOfOtherControlPoint] =
+        nextStatePoints[indexOfPathPoint] - pathPointToDraggedControlPoint;
+
+    emit(PathDefined(nextStatePoints));
   }
 
   void _onAddPoint(

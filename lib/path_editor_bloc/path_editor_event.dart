@@ -15,6 +15,16 @@ class PointDrag extends PathEditorEvent {
   PointDrag({required final this.pointIndex, required final this.newPosition});
 }
 
+class ControlPointTangentialDrag extends PathEditorEvent {
+  final int pointIndex;
+  final Offset mouseDelta;
+
+  ControlPointTangentialDrag({
+    required final this.pointIndex,
+    required final this.mouseDelta,
+  });
+}
+
 class PointDragEnd extends PathEditorEvent {}
 
 class Undo extends PathEditorEvent {}
