@@ -30,3 +30,5 @@ class PointDragEnd extends PathEditorEvent {}
 class Undo extends PathEditorEvent {}
 
 class Redo extends PathEditorEvent {}
+
+class ClearAllPoints extends PathEditorEvent {}

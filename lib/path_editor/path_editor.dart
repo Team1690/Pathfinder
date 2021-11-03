@@ -41,6 +41,10 @@ class _PathEditorState extends State<PathEditor> {
             _bloc.add(Undo());
           else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
             _bloc.add(Redo());
+
+          if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
+            _bloc.add(ClearAllPoints());
+          }
         }
       },
       child: BlocBuilder(

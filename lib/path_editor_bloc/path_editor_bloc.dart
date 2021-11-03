@@ -18,6 +18,7 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     on<ControlPointTangentialDrag>(_onControlPointTangentialDrag);
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
+    on<ClearAllPoints>(_onClearAllPoints);
 
     _addStateToStack();
   }
@@ -25,11 +26,16 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
   // Arguments are for event, and emit
   void _addStateToStack([_, __]) => stateStack.push(this.state);
 
+  void _onClearAllPoints(
+      final ClearAllPoints event, final Emitter<PathEditorState> emit) {
+    emit(InitialState());
+  }
+
   void _onUndo(
     final Undo event,
     final Emitter<PathEditorState> emit,
   ) {
-    if (this.state is! InitialState) {
+    if (this.stateStack.length > 1) {
       final poppedState = stateStack.pop();
       emit(stateStack.top());
       revertedStatesStack.push(poppedState);
