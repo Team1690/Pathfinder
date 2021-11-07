@@ -36,7 +36,7 @@ class _PathEditorState extends State<PathEditor> {
           else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
         });
 
-        if (pressedKeys.contains(LogicalKeyboardKey.metaLeft)) {
+        if (pressedKeys.contains(LogicalKeyboardKey.metaLeft) || pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
           if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
             _bloc.add(Undo());
           else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
