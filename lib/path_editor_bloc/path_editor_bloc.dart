@@ -130,6 +130,10 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
 
     if (currentState is InitialState) {
       emit(OnePointDefined(event.newPoint));
+    } else if (currentState is OnePointDefined) {
+      final bezierSection =
+          CubicBezier.line(start: currentState.point, end: event.newPoint);
+      emit(PathDefined([]));
     } else if (currentState is OnePointDefined || currentState is PathDefined) {
       emit(
         PathDefined(

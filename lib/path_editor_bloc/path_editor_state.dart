@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
+import 'package:pathfinder/path_editor/waypoint.dart';
 
-abstract class PathEditorState {
-  final List<Offset> points;
+abstract class PathEditorState {}
 
-  PathEditorState(this.points);
-}
-
-class InitialState extends PathEditorState {
-  InitialState() : super([]);
-}
+class InitialState extends PathEditorState {}
 
 class OnePointDefined extends PathEditorState {
-  OnePointDefined(final Offset point) : super([point]);
-
-  Offset get point => points.first;
+  final Offset point;
+  OnePointDefined(final this.point);
 }
 
 class PathDefined extends PathEditorState {
-  PathDefined(final List<Offset> points) : super(points);
+  /* 
+  ? should there be start and end points
+  ? (which are not waypoints because they don't have all the parameters)
+  */
+  final List<Waypoint> waypoints;
+  PathDefined(final this.waypoints);
 
   List<CubicBezier> get bezierSections {
     final List<CubicBezier> sections = [];
 
-    for (int i = 0; i + 4 <= points.length; i += 3)
-      sections.add(
-        new CubicBezier(
-          start: points[i],
-          startControl: points[i + 1],
-          endControl: points[i + 2],
-          end: points[i + 3],
-        ),
+    for (int i = 0; i < waypoints.length - 1; i++) {
+      final bezierSection = CubicBezier(
+        start: waypoints[i].position,
+        startControl: waypoints[i].outControlPoint,
+        endControl: waypoints[i + 1].inControlPoint,
+        end: waypoints[i + 1].position,
       );
+      sections.add(bezierSection);
+    }
 
     return sections;
   }
