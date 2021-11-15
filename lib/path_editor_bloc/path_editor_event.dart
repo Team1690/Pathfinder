@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pathfinder/path_editor/waypoint.dart';
 
 abstract class PathEditorEvent {}
 
@@ -8,19 +9,36 @@ class AddPointEvent extends PathEditorEvent {
   AddPointEvent(final this.newPoint);
 }
 
-class PointDrag extends PathEditorEvent {
+class WaypointDrag extends PathEditorEvent {
   final int pointIndex;
   final Offset mouseDelta;
 
-  PointDrag({required final this.pointIndex, required final this.mouseDelta});
+  WaypointDrag({
+    required final this.pointIndex,
+    required final this.mouseDelta,
+  });
+}
+
+class ControlPointDrag extends PathEditorEvent {
+  final int waypointIndex;
+  final ControlPointType pointType;
+  final Offset mouseDelta;
+
+  ControlPointDrag({
+    required final this.waypointIndex,
+    required final this.pointType,
+    required final this.mouseDelta,
+  });
 }
 
 class ControlPointTangentialDrag extends PathEditorEvent {
-  final int pointIndex;
+  final int waypointIndex;
+  final ControlPointType pointType;
   final Offset mouseDelta;
 
   ControlPointTangentialDrag({
-    required final this.pointIndex,
+    required final this.waypointIndex,
+    required final this.pointType,
     required final this.mouseDelta,
   });
 }

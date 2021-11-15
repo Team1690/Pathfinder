@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
+import 'package:pathfinder/path_editor/waypoint.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_bloc.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
@@ -22,6 +23,77 @@ class _PathEditorState extends State<PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
 
   final PathEditorBloc _bloc = PathEditorBloc();
+
+  // renders waypoint and its corresponding control points
+  List<Widget> points({
+    required final Waypoint waypoint,
+    required final int index,
+    required final int numberOfWaypoints,
+    required final bool isShiftPressed,
+  }) =>
+      [
+        PathPoint(
+          point: waypoint.position,
+          onDrag: (final DragUpdateDetails details) {
+            setState(() {
+              mousePosition += details.delta;
+            });
+
+            _bloc.add(
+                WaypointDrag(pointIndex: index, mouseDelta: details.delta));
+          },
+          onDragEnd: (_) => _bloc.add(PointDragEnd()),
+          controlPoint: false,
+        ),
+        if (index > 0)
+          PathPoint(
+            point: waypoint.inControlPoint,
+            onDrag: (final DragUpdateDetails details) {
+              setState(() {
+                mousePosition += details.delta;
+              });
+
+              if (isShiftPressed) {
+                _bloc.add(ControlPointTangentialDrag(
+                  waypointIndex: index,
+                  pointType: ControlPointType.In,
+                  mouseDelta: details.delta,
+                ));
+              } else {
+                _bloc.add(ControlPointDrag(
+                  waypointIndex: index,
+                  pointType: ControlPointType.In,
+                  mouseDelta: details.delta,
+                ));
+              }
+            },
+            onDragEnd: (_) => _bloc.add(PointDragEnd()),
+            controlPoint: true,
+          ),
+        if (index < numberOfWaypoints - 1)
+          PathPoint(
+            point: waypoint.outControlPoint,
+            onDrag: (final DragUpdateDetails details) {
+              setState(() {
+                mousePosition += details.delta;
+              });
+              if (isShiftPressed) {
+                _bloc.add(ControlPointTangentialDrag(
+                    waypointIndex: index,
+                    pointType: ControlPointType.Out,
+                    mouseDelta: details.delta));
+              } else {
+                _bloc.add(ControlPointDrag(
+                  waypointIndex: index,
+                  pointType: ControlPointType.Out,
+                  mouseDelta: details.delta,
+                ));
+              }
+            },
+            onDragEnd: (_) => _bloc.add(PointDragEnd()),
+            controlPoint: true,
+          ),
+      ];
 
   @override
   Widget build(final BuildContext context) {
@@ -86,38 +158,28 @@ class _PathEditorState extends State<PathEditor> {
                       ),
                     )
                   ],
-                if (state is PathDefined || state is OnePointDefined)
-                  for (final Offset point in state.points)
-                    PathPoint(
-                      point: point,
-                      controlPoint: state.points.indexOf(point) % 3 != 0,
-                      onDragEnd: (_) => _bloc.add(PointDragEnd()),
-                      onDrag: (final DragUpdateDetails details) {
-                        setState(() {
-                          mousePosition += details.delta;
-                        });
+                if (state is OnePointDefined)
+                  PathPoint(
+                    point: state.point,
+                    onDrag: (final DragUpdateDetails details) {
+                      setState(() {
+                        mousePosition += details.delta;
+                      });
 
-                        final int pointIndex = state.points.indexOf(point);
-                        final bool pointIsNotfirstOrLastControl =
-                            pointIndex != 1 &&
-                                pointIndex != state.points.length - 2;
-
-                        if (pressedKeys
-                                .contains(LogicalKeyboardKey.shiftLeft) &&
-                            pointIndex % 3 != 0 &&
-                            pointIsNotfirstOrLastControl)
-                          _bloc.add(ControlPointTangentialDrag(
-                            pointIndex: pointIndex,
-                            mouseDelta: details.delta,
-                          ));
-                        else
-                          _bloc.add(
-                            PointDrag(
-                              pointIndex: state.points.indexOf(point),
-                              mouseDelta: details.delta,
-                            ),
-                          );
-                      },
+                      _bloc.add(WaypointDrag(
+                          pointIndex: 0, mouseDelta: details.delta));
+                    },
+                    onDragEnd: (_) => _bloc.add(PointDragEnd()),
+                    controlPoint: false,
+                  ),
+                if (state is PathDefined)
+                  for (int i = 0; i < state.waypoints.length; i++)
+                    ...points(
+                      waypoint: state.waypoints[i],
+                      index: i,
+                      numberOfWaypoints: state.waypoints.length,
+                      isShiftPressed:
+                          pressedKeys.contains(LogicalKeyboardKey.shiftLeft),
                     ),
                 if (state is PathDefined)
                   for (final cubicBezier in state.bezierSections)

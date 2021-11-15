@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
 
 class Waypoint {
   final Offset position;
   final double magIn, magOut;
   final double dirIn, dirOut;
   final double heading;
-  final double omega;
 
   Waypoint({
     required this.position,
@@ -14,20 +14,28 @@ class Waypoint {
     required this.dirIn,
     required this.dirOut,
     required this.heading,
-    required this.omega,
   });
 
-  Offset get outControlPoint => Offset.fromDirection(dirOut, magOut);
-  Offset get inControlPoint => Offset.fromDirection(dirIn, magIn);
+  Offset get inControlPoint => position - Offset.fromDirection(dirIn, magIn);
+  Offset get outControlPoint => position + Offset.fromDirection(dirOut, magOut);
 
   Waypoint.fromControlPoints({
     required final this.position,
-    required final inControlPoint,
-    required final outControlPoint,
+    required final Offset inControlPoint,
+    required final Offset outControlPoint,
     required final this.heading,
-    required final this.omega,
   })  : magIn = (position - inControlPoint).distance,
         dirIn = (position - inControlPoint).direction,
         magOut = (outControlPoint - position).distance,
         dirOut = (outControlPoint - position).direction;
+
+  static CubicBezier bezierSection(final Waypoint start, final Waypoint end) =>
+      CubicBezier(
+        start: start.position,
+        startControl: start.outControlPoint,
+        endControl: end.inControlPoint,
+        end: end.position,
+      );
 }
+
+enum ControlPointType { In, Out }

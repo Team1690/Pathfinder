@@ -22,15 +22,8 @@ class PathDefined extends PathEditorState {
   List<CubicBezier> get bezierSections {
     final List<CubicBezier> sections = [];
 
-    for (int i = 0; i < waypoints.length - 1; i++) {
-      final bezierSection = CubicBezier(
-        start: waypoints[i].position,
-        startControl: waypoints[i].outControlPoint,
-        endControl: waypoints[i + 1].inControlPoint,
-        end: waypoints[i + 1].position,
-      );
-      sections.add(bezierSection);
-    }
+    for (int i = 0; i < waypoints.length - 1; i++)
+      sections.add(Waypoint.bezierSection(waypoints[i], waypoints[i + 1]));
 
     return sections;
   }

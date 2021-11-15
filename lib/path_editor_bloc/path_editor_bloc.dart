@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
+import 'package:pathfinder/path_editor/waypoint.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
 import 'package:stack/stack.dart' as stack;
@@ -14,7 +15,8 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
   PathEditorBloc() : super(initialState) {
     on<AddPointEvent>(_onAddPoint);
     on<PointDragEnd>(_addStateToStack);
-    on<PointDrag>(_onPointDrag);
+    on<WaypointDrag>(_onWaypointDrag);
+    on<ControlPointDrag>(_onControlPointDrag);
     on<ControlPointTangentialDrag>(_onControlPointTangentialDrag);
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
@@ -55,7 +57,8 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     super.onTransition(transition);
 
     if (transition.event is! Undo &&
-        transition.event is! PointDrag &&
+        !(transition.event is WaypointDrag ||
+            transition.event is ControlPointDrag) &&
         transition.event is! ControlPointTangentialDrag)
       stateStack.push(transition.nextState);
 
@@ -63,36 +66,68 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
       revertedStatesStack = new stack.Stack<PathEditorState>();
   }
 
-  void _onPointDrag(
-    final PointDrag event,
+  void _onWaypointDrag(
+    final WaypointDrag event,
     final Emitter<PathEditorState> emit,
   ) {
-    if (event.pointIndex < 0) return; // error safety
+    final currentState = state;
 
-    final currentState = this.state;
+    if (event.pointIndex < 0 || currentState is InitialState)
+      return; // error safety
 
-    if (currentState is InitialState) return;
+    if (currentState is OnePointDefined) {
+      emit(OnePointDefined(currentState.point + event.mouseDelta));
+    } else if (currentState is PathDefined) {
+      final List<Waypoint> newWaypoints = [...currentState.waypoints];
+      newWaypoints[event.pointIndex] = Waypoint(
+        position: newWaypoints[event.pointIndex].position + event.mouseDelta,
+        magIn: newWaypoints[event.pointIndex].magIn,
+        magOut: newWaypoints[event.pointIndex].magOut,
+        dirIn: newWaypoints[event.pointIndex].dirIn,
+        dirOut: newWaypoints[event.pointIndex].dirOut,
+        heading: newWaypoints[event.pointIndex].heading,
+      );
+      emit(PathDefined(newWaypoints));
+    }
+  }
 
-    final Offset pointsPosition = currentState.points[event.pointIndex];
+  void _onControlPointDrag(
+    final ControlPointDrag event,
+    final Emitter<PathEditorState> emit,
+  ) {
+    final currentState = state;
 
-    if (currentState is OnePointDefined)
-      emit(OnePointDefined(pointsPosition + event.mouseDelta));
+    if (event.waypointIndex < 0 ||
+        currentState is InitialState ||
+        currentState is OnePointDefined) return; // error safety
 
     if (currentState is PathDefined) {
-      final nextStatePoints = [...currentState.points];
-      nextStatePoints[event.pointIndex] = pointsPosition + event.mouseDelta;
+      final newWaypoints = [...currentState.waypoints];
+      var modifiedWaypoint = newWaypoints[event.waypointIndex];
 
-      final bool isPathPoint = event.pointIndex % 3 == 0;
-
-      if (isPathPoint) {
-        if (event.pointIndex != 0)
-          nextStatePoints[event.pointIndex - 1] += event.mouseDelta;
-
-        if (event.pointIndex != nextStatePoints.length - 1)
-          nextStatePoints[event.pointIndex + 1] += event.mouseDelta;
+      switch (event.pointType) {
+        case ControlPointType.In:
+          modifiedWaypoint = Waypoint.fromControlPoints(
+            position: modifiedWaypoint.position,
+            inControlPoint: modifiedWaypoint.inControlPoint + event.mouseDelta,
+            outControlPoint: modifiedWaypoint.outControlPoint,
+            heading: modifiedWaypoint.heading,
+          );
+          break;
+        case ControlPointType.Out:
+          modifiedWaypoint = Waypoint.fromControlPoints(
+            position: modifiedWaypoint.position,
+            inControlPoint: modifiedWaypoint.inControlPoint,
+            outControlPoint:
+                modifiedWaypoint.outControlPoint + event.mouseDelta,
+            heading: modifiedWaypoint.heading,
+          );
+          break;
       }
 
-      emit(PathDefined(nextStatePoints));
+      newWaypoints[event.waypointIndex] = modifiedWaypoint;
+
+      emit(PathDefined(newWaypoints));
     }
   }
 
@@ -102,24 +137,31 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     if (currentState is! PathDefined)
       return; // TODO check for removal when adding more states
 
-    final bool controlPointIsAfterPathPoint = event.pointIndex % 3 == 1;
+    final newWaypoints = [...currentState.waypoints];
+    var modifiedWaypoint = newWaypoints[event.waypointIndex];
 
-    final int indexOfPathPoint = controlPointIsAfterPathPoint
-        ? event.pointIndex - 1
-        : event.pointIndex + 1;
+    final draggedControlPoint = (event.pointType == ControlPointType.In
+            ? modifiedWaypoint.inControlPoint
+            : modifiedWaypoint.outControlPoint) +
+        event.mouseDelta;
 
-    final int indexOfOtherControlPoint = controlPointIsAfterPathPoint
-        ? event.pointIndex - 2
-        : event.pointIndex + 2;
+    final notDraggedControlPoint =
+        (modifiedWaypoint.position * 2) - draggedControlPoint;
 
-    final nextStatePoints = [...currentState.points];
-    nextStatePoints[event.pointIndex] += event.mouseDelta;
-    final Offset pathPointToDraggedControlPoint =
-        nextStatePoints[event.pointIndex] - nextStatePoints[indexOfPathPoint];
-    nextStatePoints[indexOfOtherControlPoint] =
-        nextStatePoints[indexOfPathPoint] - pathPointToDraggedControlPoint;
+    modifiedWaypoint = Waypoint.fromControlPoints(
+      position: modifiedWaypoint.position,
+      inControlPoint: event.pointType == ControlPointType.In
+          ? draggedControlPoint
+          : notDraggedControlPoint,
+      outControlPoint: event.pointType == ControlPointType.Out
+          ? draggedControlPoint
+          : notDraggedControlPoint,
+      heading: modifiedWaypoint.heading,
+    );
 
-    emit(PathDefined(nextStatePoints));
+    newWaypoints[event.waypointIndex] = modifiedWaypoint;
+
+    emit(PathDefined(newWaypoints));
   }
 
   void _onAddPoint(
@@ -128,20 +170,47 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
   ) {
     final currentState = this.state;
 
+    // TODO refactor code
+
     if (currentState is InitialState) {
       emit(OnePointDefined(event.newPoint));
     } else if (currentState is OnePointDefined) {
       final bezierSection =
           CubicBezier.line(start: currentState.point, end: event.newPoint);
-      emit(PathDefined([]));
-    } else if (currentState is OnePointDefined || currentState is PathDefined) {
+      emit(PathDefined([
+        Waypoint.fromControlPoints(
+          position: bezierSection.start,
+          inControlPoint: Offset.zero, // first point has no in control point
+          outControlPoint: bezierSection.startControl,
+          heading: 0,
+        ),
+        Waypoint.fromControlPoints(
+          position: bezierSection.end,
+          inControlPoint: bezierSection.endControl,
+          outControlPoint: Offset.zero, // last point has no out control point
+          heading: 0,
+        ),
+      ]));
+    } else if (currentState is PathDefined) {
+      final newBezierSection = CubicBezier.line(
+          start: currentState.waypoints.last.position, end: event.newPoint);
       emit(
         PathDefined(
           [
-            ...currentState.points.take(currentState.points.length - 1),
-            ...CubicBezier.line(
-                    start: currentState.points.last, end: event.newPoint)
-                .pointsList
+            ...currentState.waypoints.take(currentState.waypoints.length - 1),
+            Waypoint.fromControlPoints(
+              position: currentState.waypoints.last.position,
+              inControlPoint: currentState.waypoints.last.inControlPoint,
+              outControlPoint: newBezierSection.startControl,
+              heading: currentState.waypoints.last.heading,
+            ),
+            Waypoint.fromControlPoints(
+              position: newBezierSection.end,
+              inControlPoint: newBezierSection.endControl,
+              outControlPoint:
+                  Offset.zero, // last point has no out control point
+              heading: 0,
+            ),
           ],
         ),
       );
