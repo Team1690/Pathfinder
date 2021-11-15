@@ -19,7 +19,6 @@ class PathEditor extends StatefulWidget {
 }
 
 class _PathEditorState extends State<PathEditor> {
-  Offset mousePosition = Offset.zero;
   Set<LogicalKeyboardKey> pressedKeys = {};
 
   final PathEditorBloc _bloc = PathEditorBloc();
@@ -35,10 +34,6 @@ class _PathEditorState extends State<PathEditor> {
         PathPoint(
           point: waypoint.position,
           onDrag: (final DragUpdateDetails details) {
-            setState(() {
-              mousePosition += details.delta;
-            });
-
             _bloc.add(
                 WaypointDrag(pointIndex: index, mouseDelta: details.delta));
           },
@@ -49,10 +44,6 @@ class _PathEditorState extends State<PathEditor> {
           PathPoint(
             point: waypoint.inControlPoint,
             onDrag: (final DragUpdateDetails details) {
-              setState(() {
-                mousePosition += details.delta;
-              });
-
               if (isShiftPressed) {
                 _bloc.add(ControlPointTangentialDrag(
                   waypointIndex: index,
@@ -74,9 +65,6 @@ class _PathEditorState extends State<PathEditor> {
           PathPoint(
             point: waypoint.outControlPoint,
             onDrag: (final DragUpdateDetails details) {
-              setState(() {
-                mousePosition += details.delta;
-              });
               if (isShiftPressed) {
                 _bloc.add(ControlPointTangentialDrag(
                     waypointIndex: index,
@@ -125,69 +113,59 @@ class _PathEditorState extends State<PathEditor> {
         builder:
             (final BuildContext buildContext, final PathEditorState state) =>
                 Center(
-          child: MouseRegion(
-            onHover: (event) {
-              setState(() => mousePosition = event.localPosition);
-            },
-            child: Stack(
-              children: [
-                GestureDetector(
-                  child: const Image(
-                    image: const AssetImage('assets/images/frc_2020_field.png'),
-                  ),
-                  onTapDown: (final TapDownDetails detailes) {
-                    final Offset tapPos = detailes.localPosition;
-
-                    _bloc.add(AddPointEvent(tapPos));
-                  },
-                  onPanUpdate: (final DragUpdateDetails details) =>
-                      setState(() => mousePosition = details.localPosition),
+          child: Stack(
+            children: [
+              GestureDetector(
+                child: const Image(
+                  image: const AssetImage('assets/images/frc_2020_field.png'),
                 ),
-                if (state is PathDefined)
-                  for (final CubicBezier bezierSection
-                      in state.bezierSections) ...[
-                    CustomPaint(
-                      painter: DashedLinePainter(
-                          start: bezierSection.start,
-                          end: bezierSection.startControl),
-                    ),
-                    CustomPaint(
-                      painter: DashedLinePainter(
-                        start: bezierSection.endControl,
-                        end: bezierSection.end,
-                      ),
-                    )
-                  ],
-                if (state is OnePointDefined)
-                  PathPoint(
-                    point: state.point,
-                    onDrag: (final DragUpdateDetails details) {
-                      setState(() {
-                        mousePosition += details.delta;
-                      });
+                onTapDown: (final TapDownDetails detailes) {
+                  final Offset tapPos = detailes.localPosition;
 
-                      _bloc.add(WaypointDrag(
-                          pointIndex: 0, mouseDelta: details.delta));
-                    },
-                    onDragEnd: (_) => _bloc.add(PointDragEnd()),
-                    controlPoint: false,
+                  _bloc.add(AddPointEvent(tapPos));
+                },
+                onPanStart: (_) {},
+              ),
+              if (state is PathDefined)
+                for (final CubicBezier bezierSection
+                    in state.bezierSections) ...[
+                  CustomPaint(
+                    painter: DashedLinePainter(
+                        start: bezierSection.start,
+                        end: bezierSection.startControl),
                   ),
-                if (state is PathDefined)
-                  for (int i = 0; i < state.waypoints.length; i++)
-                    ...points(
-                      waypoint: state.waypoints[i],
-                      index: i,
-                      numberOfWaypoints: state.waypoints.length,
-                      isShiftPressed:
-                          pressedKeys.contains(LogicalKeyboardKey.shiftLeft),
+                  CustomPaint(
+                    painter: DashedLinePainter(
+                      start: bezierSection.endControl,
+                      end: bezierSection.end,
                     ),
-                if (state is PathDefined)
-                  for (final cubicBezier in state.bezierSections)
-                    CustomPaint(
-                      painter: CubicBezierPainter(cubicBezier: cubicBezier),
-                    ),
-              ],
-            ),
+                  )
+                ],
+              if (state is OnePointDefined)
+                PathPoint(
+                  point: state.point,
+                  onDrag: (final DragUpdateDetails details) {
+                    _bloc.add(
+                        WaypointDrag(pointIndex: 0, mouseDelta: details.delta));
+                  },
+                  onDragEnd: (_) => _bloc.add(PointDragEnd()),
+                  controlPoint: false,
+                ),
+              if (state is PathDefined)
+                for (int i = 0; i < state.waypoints.length; i++)
+                  ...points(
+                    waypoint: state.waypoints[i],
+                    index: i,
+                    numberOfWaypoints: state.waypoints.length,
+                    isShiftPressed:
+                        pressedKeys.contains(LogicalKeyboardKey.shiftLeft),
+                  ),
+              if (state is PathDefined)
+                for (final cubicBezier in state.bezierSections)
+                  CustomPaint(
+                    painter: CubicBezierPainter(cubicBezier: cubicBezier),
+                  ),
+            ],
           ),
         ),
       ),
