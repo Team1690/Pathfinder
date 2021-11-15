@@ -20,6 +20,7 @@ class PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
+  int? selectedPointIndex;
 
   final PathEditorBloc _bloc = PathEditorBloc();
 
@@ -38,49 +39,68 @@ class _PathEditorState extends State<PathEditor> {
                 WaypointDrag(pointIndex: index, mouseDelta: details.delta));
           },
           onDragEnd: (_) => _bloc.add(PointDragEnd()),
+          onTap: () => setState(() => selectedPointIndex = index),
           controlPoint: false,
         ),
-        if (index > 0)
-          PathPoint(
-            point: waypoint.inControlPoint,
-            onDrag: (final DragUpdateDetails details) {
-              if (isShiftPressed) {
-                _bloc.add(ControlPointTangentialDrag(
-                  waypointIndex: index,
-                  pointType: ControlPointType.In,
-                  mouseDelta: details.delta,
-                ));
-              } else {
-                _bloc.add(ControlPointDrag(
-                  waypointIndex: index,
-                  pointType: ControlPointType.In,
-                  mouseDelta: details.delta,
-                ));
-              }
-            },
-            onDragEnd: (_) => _bloc.add(PointDragEnd()),
-            controlPoint: true,
-          ),
-        if (index < numberOfWaypoints - 1)
-          PathPoint(
-            point: waypoint.outControlPoint,
-            onDrag: (final DragUpdateDetails details) {
-              if (isShiftPressed) {
-                _bloc.add(ControlPointTangentialDrag(
+        if (selectedPointIndex == index) ...[
+          if (index > 0) ...[
+            PathPoint(
+              point: waypoint.inControlPoint,
+              onDrag: (final DragUpdateDetails details) {
+                if (isShiftPressed) {
+                  _bloc.add(ControlPointTangentialDrag(
+                    waypointIndex: index,
+                    pointType: ControlPointType.In,
+                    mouseDelta: details.delta,
+                  ));
+                } else {
+                  _bloc.add(ControlPointDrag(
+                    waypointIndex: index,
+                    pointType: ControlPointType.In,
+                    mouseDelta: details.delta,
+                  ));
+                }
+              },
+              onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              controlPoint: true,
+              onTap: () {},
+            ),
+            CustomPaint(
+              painter: DashedLinePainter(
+                start: waypoint.position,
+                end: waypoint.inControlPoint,
+              ),
+            ),
+          ],
+          if (index < numberOfWaypoints - 1) ...[
+            PathPoint(
+              point: waypoint.outControlPoint,
+              onDrag: (final DragUpdateDetails details) {
+                if (isShiftPressed) {
+                  _bloc.add(ControlPointTangentialDrag(
+                      waypointIndex: index,
+                      pointType: ControlPointType.Out,
+                      mouseDelta: details.delta));
+                } else {
+                  _bloc.add(ControlPointDrag(
                     waypointIndex: index,
                     pointType: ControlPointType.Out,
-                    mouseDelta: details.delta));
-              } else {
-                _bloc.add(ControlPointDrag(
-                  waypointIndex: index,
-                  pointType: ControlPointType.Out,
-                  mouseDelta: details.delta,
-                ));
-              }
-            },
-            onDragEnd: (_) => _bloc.add(PointDragEnd()),
-            controlPoint: true,
-          ),
+                    mouseDelta: details.delta,
+                  ));
+                }
+              },
+              onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              controlPoint: true,
+              onTap: () {},
+            ),
+            CustomPaint(
+              painter: DashedLinePainter(
+                start: waypoint.position,
+                end: waypoint.outControlPoint,
+              ),
+            ),
+          ],
+        ],
       ];
 
   @override
@@ -126,21 +146,6 @@ class _PathEditorState extends State<PathEditor> {
                 },
                 onPanStart: (_) {},
               ),
-              if (state is PathDefined)
-                for (final CubicBezier bezierSection
-                    in state.bezierSections) ...[
-                  CustomPaint(
-                    painter: DashedLinePainter(
-                        start: bezierSection.start,
-                        end: bezierSection.startControl),
-                  ),
-                  CustomPaint(
-                    painter: DashedLinePainter(
-                      start: bezierSection.endControl,
-                      end: bezierSection.end,
-                    ),
-                  )
-                ],
               if (state is OnePointDefined)
                 PathPoint(
                   point: state.point,
@@ -150,6 +155,7 @@ class _PathEditorState extends State<PathEditor> {
                   },
                   onDragEnd: (_) => _bloc.add(PointDragEnd()),
                   controlPoint: false,
+                  onTap: () {},
                 ),
               if (state is PathDefined)
                 for (int i = 0; i < state.waypoints.length; i++)
