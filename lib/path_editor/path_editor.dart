@@ -40,10 +40,13 @@ class _PathEditorState extends State<PathEditor> {
           },
           onDragEnd: (_) => _bloc.add(PointDragEnd()),
           onTap: () {
-            if (ctrlPressed)
+            if (ctrlPressed && index >= 1)
               _bloc.add(LineSectionEvent(waypointIndex: index));
             else
-              setState(() => selectedPointIndex = index);
+              setState(
+                () => selectedPointIndex =
+                    selectedPointIndex != index ? index : null,
+              );
           },
           controlPoint: false,
         ),
