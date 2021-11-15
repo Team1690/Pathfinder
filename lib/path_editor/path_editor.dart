@@ -8,7 +8,6 @@ import 'package:pathfinder/path_editor_bloc/path_editor_bloc.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_event.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_state.dart';
 
-import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
 import 'package:pathfinder/cubic_bezier/cubic_bezier_painter.dart';
 
 class PathEditor extends StatefulWidget {
