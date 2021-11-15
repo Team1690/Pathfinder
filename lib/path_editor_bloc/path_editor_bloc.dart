@@ -18,6 +18,7 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     on<WaypointDrag>(_onWaypointDrag);
     on<ControlPointDrag>(_onControlPointDrag);
     on<ControlPointTangentialDrag>(_onControlPointTangentialDrag);
+    on<LineSectionEvent>(_onLineSection);
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
     on<ClearAllPoints>(_onClearAllPoints);
@@ -131,8 +132,45 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     }
   }
 
-  void _onControlPointTangentialDrag(final ControlPointTangentialDrag event,
-      final Emitter<PathEditorState> emit) {
+  void _onLineSection(
+    final LineSectionEvent event,
+    final Emitter<PathEditorState> emit,
+  ) {
+    final currentState = state;
+
+    if (currentState is! PathDefined) return;
+
+    final selectedWaypoint = currentState.waypoints[event.waypointIndex];
+    final previousWaypoint = currentState.waypoints[event.waypointIndex - 1];
+
+    final newWaypoints = [...currentState.waypoints];
+
+    final lineBezierSection = CubicBezier.line(
+      start: previousWaypoint.position,
+      end: selectedWaypoint.position,
+    );
+
+    newWaypoints[event.waypointIndex] = Waypoint.fromControlPoints(
+      position: selectedWaypoint.position,
+      inControlPoint: lineBezierSection.endControl,
+      outControlPoint: selectedWaypoint.outControlPoint,
+      heading: selectedWaypoint.heading,
+    );
+
+    newWaypoints[event.waypointIndex - 1] = Waypoint.fromControlPoints(
+      position: previousWaypoint.position,
+      inControlPoint: previousWaypoint.inControlPoint,
+      outControlPoint: lineBezierSection.startControl,
+      heading: previousWaypoint.heading,
+    );
+
+    emit(PathDefined(newWaypoints));
+  }
+
+  void _onControlPointTangentialDrag(
+    final ControlPointTangentialDrag event,
+    final Emitter<PathEditorState> emit,
+  ) {
     final currentState = state;
     if (currentState is! PathDefined)
       return; // TODO check for removal when adding more states

@@ -19,6 +19,8 @@ class PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
+  bool shiftPressed = false;
+  bool ctrlPressed = false;
   int? selectedPointIndex;
 
   final PathEditorBloc _bloc = PathEditorBloc();
@@ -28,7 +30,6 @@ class _PathEditorState extends State<PathEditor> {
     required final Waypoint waypoint,
     required final int index,
     required final int numberOfWaypoints,
-    required final bool isShiftPressed,
   }) =>
       [
         PathPoint(
@@ -38,7 +39,12 @@ class _PathEditorState extends State<PathEditor> {
                 WaypointDrag(pointIndex: index, mouseDelta: details.delta));
           },
           onDragEnd: (_) => _bloc.add(PointDragEnd()),
-          onTap: () => setState(() => selectedPointIndex = index),
+          onTap: () {
+            if (ctrlPressed)
+              _bloc.add(LineSectionEvent(waypointIndex: index));
+            else
+              setState(() => selectedPointIndex = index);
+          },
           controlPoint: false,
         ),
         if (selectedPointIndex == index) ...[
@@ -46,7 +52,7 @@ class _PathEditorState extends State<PathEditor> {
             PathPoint(
               point: waypoint.inControlPoint,
               onDrag: (final DragUpdateDetails details) {
-                if (isShiftPressed) {
+                if (shiftPressed) {
                   _bloc.add(ControlPointTangentialDrag(
                     waypointIndex: index,
                     pointType: ControlPointType.In,
@@ -75,7 +81,7 @@ class _PathEditorState extends State<PathEditor> {
             PathPoint(
               point: waypoint.outControlPoint,
               onDrag: (final DragUpdateDetails details) {
-                if (isShiftPressed) {
+                if (shiftPressed) {
                   _bloc.add(ControlPointTangentialDrag(
                       waypointIndex: index,
                       pointType: ControlPointType.Out,
@@ -113,10 +119,13 @@ class _PathEditorState extends State<PathEditor> {
           if (event is RawKeyDownEvent)
             pressedKeys.add(event.logicalKey);
           else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+
+          shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
+          ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+              pressedKeys.contains(LogicalKeyboardKey.metaLeft);
         });
 
-        if (pressedKeys.contains(LogicalKeyboardKey.metaLeft) ||
-            pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
+        if (ctrlPressed) {
           if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
             _bloc.add(Undo());
           else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
@@ -162,8 +171,6 @@ class _PathEditorState extends State<PathEditor> {
                     waypoint: state.waypoints[i],
                     index: i,
                     numberOfWaypoints: state.waypoints.length,
-                    isShiftPressed:
-                        pressedKeys.contains(LogicalKeyboardKey.shiftLeft),
                   ),
               if (state is PathDefined)
                 for (final cubicBezier in state.bezierSections)

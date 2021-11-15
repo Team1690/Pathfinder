@@ -43,6 +43,14 @@ class ControlPointTangentialDrag extends PathEditorEvent {
   });
 }
 
+class LineSectionEvent extends PathEditorEvent {
+  final int waypointIndex;
+
+  LineSectionEvent({
+    required final this.waypointIndex,
+  });
+}
+
 class PointDragEnd extends PathEditorEvent {}
 
 class Undo extends PathEditorEvent {}
