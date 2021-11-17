@@ -136,6 +136,7 @@ class _PathEditorState extends State<PathEditor> {
 
           if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
             _bloc.add(ClearAllPoints());
+            selectedPointIndex = null;
           }
         }
       },
