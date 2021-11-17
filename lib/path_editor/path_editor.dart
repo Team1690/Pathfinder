@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pathfinder/path_editor/dashed_line_painter.dart';
+import 'package:pathfinder/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/path_editor/path_point.dart';
 import 'package:pathfinder/path_editor/waypoint.dart';
 import 'package:pathfinder/path_editor_bloc/path_editor_bloc.dart';
@@ -169,18 +170,25 @@ class _PathEditorState extends State<PathEditor> {
                   controlPoint: false,
                   onTap: () {},
                 ),
-              if (state is PathDefined)
+              if (state is PathDefined) ...[
                 for (int i = 0; i < state.waypoints.length; i++)
                   ...points(
                     waypoint: state.waypoints[i],
                     index: i,
                     numberOfWaypoints: state.waypoints.length,
                   ),
-              if (state is PathDefined)
                 for (final cubicBezier in state.bezierSections)
                   CustomPaint(
                     painter: CubicBezierPainter(cubicBezier: cubicBezier),
                   ),
+                for (final waypoint in state.waypoints)
+                  CustomPaint(
+                    painter: HeadingLinePainter(
+                      heading: waypoint.heading,
+                      position: waypoint.position,
+                    ),
+                  ),
+              ],
             ],
           ),
         ),
