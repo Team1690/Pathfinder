@@ -30,5 +30,6 @@ class HeadingLinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(final HeadingLinePainter old) => true;
+  bool shouldRepaint(final HeadingLinePainter old) =>
+      old.position == this.position || old.heading == this.heading;
 }
