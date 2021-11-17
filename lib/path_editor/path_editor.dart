@@ -140,6 +140,12 @@ class _PathEditorState extends State<PathEditor> {
             selectedPointIndex = null;
           }
         }
+
+        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
+            selectedPointIndex != null) {
+          _bloc.add(DeletePoint(selectedPointIndex!));
+          selectedPointIndex = null;
+        }
       },
       child: BlocBuilder(
         bloc: _bloc,

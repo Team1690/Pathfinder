@@ -22,12 +22,26 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
     on<ClearAllPoints>(_onClearAllPoints);
+    on<DeletePoint>(_onDeletePoint);
 
     _addStateToStack();
   }
 
   // Arguments are for event, and emit
   void _addStateToStack([_, __]) => stateStack.push(this.state);
+
+  void _onDeletePoint(
+    final DeletePoint event,
+    final Emitter<PathEditorState> emit,
+  ) {
+    final currentState = state;
+
+    if (currentState is! PathDefined) return;
+
+    final newWaypoints = currentState.waypoints..removeAt(event.pointIndex);
+
+    emit(PathDefined(newWaypoints));
+  }
 
   void _onClearAllPoints(
       final ClearAllPoints event, final Emitter<PathEditorState> emit) {

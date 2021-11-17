@@ -57,4 +57,9 @@ class Undo extends PathEditorEvent {}
 
 class Redo extends PathEditorEvent {}
 
+class DeletePoint extends PathEditorEvent {
+  final int pointIndex;
+  DeletePoint(final this.pointIndex);
+}
+
 class ClearAllPoints extends PathEditorEvent {}
