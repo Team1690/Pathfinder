@@ -10,13 +10,14 @@ class CubicBezierPainter extends CustomPainter {
     ..color = Colors.white
     ..strokeWidth = 10;
 
+  static final double circleRadius =
+      1 / (paintColor.strokeWidth * paintColor.strokeWidth);
+
   @override
   void paint(final Canvas canvas, final Size size) {
     final paintPath = Path();
 
     paintPath.moveTo(this.cubicBezier.start.dx, this.cubicBezier.start.dy);
-
-    final double circleRadius = 1 / paintColor.strokeWidth;
 
     canvas.drawCircle(cubicBezier.start, circleRadius, paintColor);
     canvas.drawCircle(cubicBezier.end, circleRadius, paintColor);
