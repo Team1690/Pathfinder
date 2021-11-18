@@ -18,7 +18,8 @@ class HeadingLinePainter extends CustomPainter {
     ..color = const Color(0xffc80000)
     ..strokeWidth = 5;
 
-  static final double circleRadius = 1 / paintColor.strokeWidth;
+  static final double circleRadius =
+      1 / (paintColor.strokeWidth * paintColor.strokeWidth);
 
   @override
   void paint(final Canvas canvas, final Size size) {
