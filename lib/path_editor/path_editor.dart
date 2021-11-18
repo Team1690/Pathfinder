@@ -36,8 +36,17 @@ class _PathEditorState extends State<PathEditor> {
         PathPoint(
           point: waypoint.position,
           onDrag: (final DragUpdateDetails details) {
-            _bloc.add(
-                WaypointDrag(pointIndex: index, mouseDelta: details.delta));
+            if (shiftPressed)
+              _bloc.add(
+                WaypointHeadingDrag(
+                  pointIndex: index,
+                  mousePositionRelativeToPoint: details.localPosition,
+                ),
+              );
+            else
+              _bloc.add(
+                WaypointDrag(pointIndex: index, mouseDelta: details.delta),
+              );
           },
           onDragEnd: (_) => _bloc.add(PointDragEnd()),
           onTap: () {

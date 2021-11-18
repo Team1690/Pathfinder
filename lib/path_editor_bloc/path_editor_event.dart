@@ -53,6 +53,16 @@ class LineSectionEvent extends PathEditorEvent {
 
 class PointDragEnd extends PathEditorEvent {}
 
+class WaypointHeadingDrag extends PathEditorEvent {
+  final int pointIndex;
+  final Offset mousePositionRelativeToPoint;
+
+  WaypointHeadingDrag({
+    required final this.pointIndex,
+    required final this.mousePositionRelativeToPoint,
+  });
+}
+
 class Undo extends PathEditorEvent {}
 
 class Redo extends PathEditorEvent {}

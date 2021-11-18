@@ -18,6 +18,7 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     on<WaypointDrag>(_onWaypointDrag);
     on<ControlPointDrag>(_onControlPointDrag);
     on<ControlPointTangentialDrag>(_onControlPointTangentialDrag);
+    on<WaypointHeadingDrag>(_onWaypointHeadingDrag);
     on<LineSectionEvent>(_onLineSection);
     on<Undo>(_onUndo);
     on<Redo>(_onRedo);
@@ -74,7 +75,8 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     if (transition.event is! Undo &&
         !(transition.event is WaypointDrag ||
             transition.event is ControlPointDrag) &&
-        transition.event is! ControlPointTangentialDrag)
+        transition.event is! ControlPointTangentialDrag &&
+        transition.event is! WaypointHeadingDrag)
       stateStack.push(transition.nextState);
 
     if (transition.event is! Undo && transition.event is! Redo)
@@ -212,6 +214,32 @@ class PathEditorBloc extends Bloc<PathEditorEvent, PathEditorState> {
     );
 
     newWaypoints[event.waypointIndex] = modifiedWaypoint;
+
+    emit(PathDefined(newWaypoints));
+  }
+
+  void _onWaypointHeadingDrag(
+    final WaypointHeadingDrag event,
+    final Emitter<PathEditorState> emit,
+  ) {
+    final currentState = state;
+
+    if (currentState is! PathDefined) return;
+
+    final modifiedWaypoint = currentState.waypoints[event.pointIndex];
+
+    final double newHeading = event.mousePositionRelativeToPoint.direction;
+
+    final newWaypoints = [...currentState.waypoints];
+
+    newWaypoints[event.pointIndex] = Waypoint(
+      position: modifiedWaypoint.position,
+      magIn: modifiedWaypoint.magIn,
+      magOut: modifiedWaypoint.magOut,
+      dirIn: modifiedWaypoint.dirIn,
+      dirOut: modifiedWaypoint.dirOut,
+      heading: newHeading,
+    );
 
     emit(PathDefined(newWaypoints));
   }
