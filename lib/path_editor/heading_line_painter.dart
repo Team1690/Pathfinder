@@ -9,7 +9,7 @@ class HeadingLinePainter extends CustomPainter {
     required final this.heading,
   }) : lineEnd = position + Offset.fromDirection(heading, magnitude);
 
-  static const double magnitude = 25;
+  static const double magnitude = 20;
 
   final Offset lineEnd;
 
@@ -18,8 +18,7 @@ class HeadingLinePainter extends CustomPainter {
     ..color = const Color(0xffc80000)
     ..strokeWidth = 5;
 
-  static final double circleRadius =
-      1 / (paintColor.strokeWidth * paintColor.strokeWidth);
+  static final double circleRadius = 1 / paintColor.strokeWidth;
 
   @override
   void paint(final Canvas canvas, final Size size) {
