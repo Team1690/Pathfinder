@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+
+option go_package = "../algorithm/rpc";
+
+service PathFinder {
+	rpc Greet(Person) returns (GreetResponse) {}
+}
+
+message GreetResponse {
+	string message = 1;
+}
+
+message Person {
+	string name = 1;
+}
