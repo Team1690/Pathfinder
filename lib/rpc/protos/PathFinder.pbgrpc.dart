@@ -14,19 +14,22 @@ import 'PathFinder.pb.dart' as $0;
 export 'PathFinder.pb.dart';
 
 class PathFinderClient extends $grpc.Client {
-  static final _$greet = $grpc.ClientMethod<$0.Person, $0.GreetResponse>(
-      '/PathFinder/Greet',
-      ($0.Person value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.GreetResponse.fromBuffer(value));
+  static final _$calculateTrajectory =
+      $grpc.ClientMethod<$0.TrajectoryRequest, $0.TrajectoryResponse>(
+          '/PathFinder/CalculateTrajectory',
+          ($0.TrajectoryRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.TrajectoryResponse.fromBuffer(value));
 
   PathFinderClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
 
-  $grpc.ResponseFuture<$0.GreetResponse> greet($0.Person request,
+  $grpc.ResponseFuture<$0.TrajectoryResponse> calculateTrajectory(
+      $0.TrajectoryRequest request,
       {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$greet, request, options: options);
+    return $createUnaryCall(_$calculateTrajectory, request, options: options);
   }
 }
 
@@ -34,20 +37,21 @@ abstract class PathFinderServiceBase extends $grpc.Service {
   $core.String get $name => 'PathFinder';
 
   PathFinderServiceBase() {
-    $addMethod($grpc.ServiceMethod<$0.Person, $0.GreetResponse>(
-        'Greet',
-        greet_Pre,
+    $addMethod($grpc.ServiceMethod<$0.TrajectoryRequest, $0.TrajectoryResponse>(
+        'CalculateTrajectory',
+        calculateTrajectory_Pre,
         false,
         false,
-        ($core.List<$core.int> value) => $0.Person.fromBuffer(value),
-        ($0.GreetResponse value) => value.writeToBuffer()));
+        ($core.List<$core.int> value) => $0.TrajectoryRequest.fromBuffer(value),
+        ($0.TrajectoryResponse value) => value.writeToBuffer()));
   }
 
-  $async.Future<$0.GreetResponse> greet_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.Person> request) async {
-    return greet(call, await request);
+  $async.Future<$0.TrajectoryResponse> calculateTrajectory_Pre(
+      $grpc.ServiceCall call,
+      $async.Future<$0.TrajectoryRequest> request) async {
+    return calculateTrajectory(call, await request);
   }
 
-  $async.Future<$0.GreetResponse> greet(
-      $grpc.ServiceCall call, $0.Person request);
+  $async.Future<$0.TrajectoryResponse> calculateTrajectory(
+      $grpc.ServiceCall call, $0.TrajectoryRequest request);
 }

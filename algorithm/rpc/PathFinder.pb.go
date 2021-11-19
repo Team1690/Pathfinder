@@ -20,16 +20,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GreetResponse struct {
+type Vector struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	X float32 `protobuf:"fixed32,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y float32 `protobuf:"fixed32,2,opt,name=y,proto3" json:"y,omitempty"`
 }
 
-func (x *GreetResponse) Reset() {
-	*x = GreetResponse{}
+func (x *Vector) Reset() {
+	*x = Vector{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_PathFinder_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +38,13 @@ func (x *GreetResponse) Reset() {
 	}
 }
 
-func (x *GreetResponse) String() string {
+func (x *Vector) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GreetResponse) ProtoMessage() {}
+func (*Vector) ProtoMessage() {}
 
-func (x *GreetResponse) ProtoReflect() protoreflect.Message {
+func (x *Vector) ProtoReflect() protoreflect.Message {
 	mi := &file_PathFinder_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,28 +56,35 @@ func (x *GreetResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GreetResponse.ProtoReflect.Descriptor instead.
-func (*GreetResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use Vector.ProtoReflect.Descriptor instead.
+func (*Vector) Descriptor() ([]byte, []int) {
 	return file_PathFinder_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GreetResponse) GetMessage() string {
+func (x *Vector) GetX() float32 {
 	if x != nil {
-		return x.Message
+		return x.X
 	}
-	return ""
+	return 0
 }
 
-type Person struct {
+func (x *Vector) GetY() float32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+type TrajectoryRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Segments []*TrajectoryRequest_Segment `protobuf:"bytes,1,rep,name=segments,proto3" json:"segments,omitempty"`
 }
 
-func (x *Person) Reset() {
-	*x = Person{}
+func (x *TrajectoryRequest) Reset() {
+	*x = TrajectoryRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_PathFinder_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -84,13 +92,13 @@ func (x *Person) Reset() {
 	}
 }
 
-func (x *Person) String() string {
+func (x *TrajectoryRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Person) ProtoMessage() {}
+func (*TrajectoryRequest) ProtoMessage() {}
 
-func (x *Person) ProtoReflect() protoreflect.Message {
+func (x *TrajectoryRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_PathFinder_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -102,32 +110,217 @@ func (x *Person) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Person.ProtoReflect.Descriptor instead.
-func (*Person) Descriptor() ([]byte, []int) {
+// Deprecated: Use TrajectoryRequest.ProtoReflect.Descriptor instead.
+func (*TrajectoryRequest) Descriptor() ([]byte, []int) {
 	return file_PathFinder_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Person) GetName() string {
+func (x *TrajectoryRequest) GetSegments() []*TrajectoryRequest_Segment {
 	if x != nil {
-		return x.Name
+		return x.Segments
 	}
-	return ""
+	return nil
+}
+
+type TrajectoryResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TrajectoryResponse) Reset() {
+	*x = TrajectoryResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryResponse) ProtoMessage() {}
+
+func (x *TrajectoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryResponse.ProtoReflect.Descriptor instead.
+func (*TrajectoryResponse) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{2}
+}
+
+type TrajectoryRequest_Point struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Position   *Vector `protobuf:"bytes,1,opt,name=position,proto3" json:"position,omitempty"`
+	ControlIn  *Vector `protobuf:"bytes,2,opt,name=controlIn,proto3" json:"controlIn,omitempty"`
+	ControlOut *Vector `protobuf:"bytes,3,opt,name=controlOut,proto3" json:"controlOut,omitempty"`
+	UseHeading bool    `protobuf:"varint,4,opt,name=useHeading,proto3" json:"useHeading,omitempty"`
+	Heading    float32 `protobuf:"fixed32,5,opt,name=heading,proto3" json:"heading,omitempty"`
+}
+
+func (x *TrajectoryRequest_Point) Reset() {
+	*x = TrajectoryRequest_Point{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryRequest_Point) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryRequest_Point) ProtoMessage() {}
+
+func (x *TrajectoryRequest_Point) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryRequest_Point.ProtoReflect.Descriptor instead.
+func (*TrajectoryRequest_Point) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *TrajectoryRequest_Point) GetPosition() *Vector {
+	if x != nil {
+		return x.Position
+	}
+	return nil
+}
+
+func (x *TrajectoryRequest_Point) GetControlIn() *Vector {
+	if x != nil {
+		return x.ControlIn
+	}
+	return nil
+}
+
+func (x *TrajectoryRequest_Point) GetControlOut() *Vector {
+	if x != nil {
+		return x.ControlOut
+	}
+	return nil
+}
+
+func (x *TrajectoryRequest_Point) GetUseHeading() bool {
+	if x != nil {
+		return x.UseHeading
+	}
+	return false
+}
+
+func (x *TrajectoryRequest_Point) GetHeading() float32 {
+	if x != nil {
+		return x.Heading
+	}
+	return 0
+}
+
+type TrajectoryRequest_Segment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Points []*TrajectoryRequest_Point `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+}
+
+func (x *TrajectoryRequest_Segment) Reset() {
+	*x = TrajectoryRequest_Segment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryRequest_Segment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryRequest_Segment) ProtoMessage() {}
+
+func (x *TrajectoryRequest_Segment) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryRequest_Segment.ProtoReflect.Descriptor instead.
+func (*TrajectoryRequest_Segment) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *TrajectoryRequest_Segment) GetPoints() []*TrajectoryRequest_Point {
+	if x != nil {
+		return x.Points
+	}
+	return nil
 }
 
 var File_PathFinder_proto protoreflect.FileDescriptor
 
 var file_PathFinder_proto_rawDesc = []byte{
 	0x0a, 0x10, 0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0x29, 0x0a, 0x0d, 0x47, 0x72, 0x65, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x1c, 0x0a,
-	0x06, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0x30, 0x0a, 0x0a, 0x50,
-	0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x05, 0x47, 0x72, 0x65,
-	0x65, 0x74, 0x12, 0x07, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x1a, 0x0e, 0x2e, 0x47, 0x72,
-	0x65, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x12, 0x5a,
-	0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x2f, 0x72, 0x70,
-	0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x22, 0x24, 0x0a, 0x06, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x0c, 0x0a, 0x01,
+	0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x22, 0xc1, 0x02, 0x0a, 0x11, 0x54, 0x72, 0x61,
+	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x36,
+	0x0a, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x1a, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x2e, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x08, 0x73, 0x65,
+	0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x1a, 0xb6, 0x01, 0x0a, 0x05, 0x50, 0x6f, 0x69, 0x6e, 0x74,
+	0x12, 0x23, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x08, 0x70, 0x6f, 0x73,
+	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x25, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
+	0x49, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f,
+	0x72, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x49, 0x6e, 0x12, 0x27, 0x0a, 0x0a,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x0a, 0x63, 0x6f, 0x6e, 0x74, 0x72,
+	0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x75, 0x73, 0x65, 0x48, 0x65, 0x61, 0x64,
+	0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x75, 0x73, 0x65, 0x48, 0x65,
+	0x61, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x1a,
+	0x3b, 0x0a, 0x07, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x30, 0x0a, 0x06, 0x70, 0x6f,
+	0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x54, 0x72, 0x61,
+	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x22, 0x14, 0x0a, 0x12,
+	0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x32, 0x4e, 0x0a, 0x0a, 0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72,
+	0x12, 0x40, 0x0a, 0x13, 0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x54, 0x72, 0x61,
+	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x12, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63,
+	0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54, 0x72,
+	0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74,
+	0x68, 0x6d, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -142,19 +335,27 @@ func file_PathFinder_proto_rawDescGZIP() []byte {
 	return file_PathFinder_proto_rawDescData
 }
 
-var file_PathFinder_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_PathFinder_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_PathFinder_proto_goTypes = []interface{}{
-	(*GreetResponse)(nil), // 0: GreetResponse
-	(*Person)(nil),        // 1: Person
+	(*Vector)(nil),                    // 0: Vector
+	(*TrajectoryRequest)(nil),         // 1: TrajectoryRequest
+	(*TrajectoryResponse)(nil),        // 2: TrajectoryResponse
+	(*TrajectoryRequest_Point)(nil),   // 3: TrajectoryRequest.Point
+	(*TrajectoryRequest_Segment)(nil), // 4: TrajectoryRequest.Segment
 }
 var file_PathFinder_proto_depIdxs = []int32{
-	1, // 0: PathFinder.Greet:input_type -> Person
-	0, // 1: PathFinder.Greet:output_type -> GreetResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	4, // 0: TrajectoryRequest.segments:type_name -> TrajectoryRequest.Segment
+	0, // 1: TrajectoryRequest.Point.position:type_name -> Vector
+	0, // 2: TrajectoryRequest.Point.controlIn:type_name -> Vector
+	0, // 3: TrajectoryRequest.Point.controlOut:type_name -> Vector
+	3, // 4: TrajectoryRequest.Segment.points:type_name -> TrajectoryRequest.Point
+	1, // 5: PathFinder.CalculateTrajectory:input_type -> TrajectoryRequest
+	2, // 6: PathFinder.CalculateTrajectory:output_type -> TrajectoryResponse
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_PathFinder_proto_init() }
@@ -164,7 +365,7 @@ func file_PathFinder_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_PathFinder_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GreetResponse); i {
+			switch v := v.(*Vector); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -176,7 +377,43 @@ func file_PathFinder_proto_init() {
 			}
 		}
 		file_PathFinder_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Person); i {
+			switch v := v.(*TrajectoryRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryRequest_Point); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryRequest_Segment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -194,7 +431,7 @@ func file_PathFinder_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_PathFinder_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

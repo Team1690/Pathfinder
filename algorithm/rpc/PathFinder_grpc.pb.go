@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PathFinderClient interface {
-	Greet(ctx context.Context, in *Person, opts ...grpc.CallOption) (*GreetResponse, error)
+	CalculateTrajectory(ctx context.Context, in *TrajectoryRequest, opts ...grpc.CallOption) (*TrajectoryResponse, error)
 }
 
 type pathFinderClient struct {
@@ -29,9 +29,9 @@ func NewPathFinderClient(cc grpc.ClientConnInterface) PathFinderClient {
 	return &pathFinderClient{cc}
 }
 
-func (c *pathFinderClient) Greet(ctx context.Context, in *Person, opts ...grpc.CallOption) (*GreetResponse, error) {
-	out := new(GreetResponse)
-	err := c.cc.Invoke(ctx, "/PathFinder/Greet", in, out, opts...)
+func (c *pathFinderClient) CalculateTrajectory(ctx context.Context, in *TrajectoryRequest, opts ...grpc.CallOption) (*TrajectoryResponse, error) {
+	out := new(TrajectoryResponse)
+	err := c.cc.Invoke(ctx, "/PathFinder/CalculateTrajectory", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *pathFinderClient) Greet(ctx context.Context, in *Person, opts ...grpc.C
 // All implementations must embed UnimplementedPathFinderServer
 // for forward compatibility
 type PathFinderServer interface {
-	Greet(context.Context, *Person) (*GreetResponse, error)
+	CalculateTrajectory(context.Context, *TrajectoryRequest) (*TrajectoryResponse, error)
 	mustEmbedUnimplementedPathFinderServer()
 }
 
@@ -50,8 +50,8 @@ type PathFinderServer interface {
 type UnimplementedPathFinderServer struct {
 }
 
-func (UnimplementedPathFinderServer) Greet(context.Context, *Person) (*GreetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Greet not implemented")
+func (UnimplementedPathFinderServer) CalculateTrajectory(context.Context, *TrajectoryRequest) (*TrajectoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CalculateTrajectory not implemented")
 }
 func (UnimplementedPathFinderServer) mustEmbedUnimplementedPathFinderServer() {}
 
@@ -66,20 +66,20 @@ func RegisterPathFinderServer(s grpc.ServiceRegistrar, srv PathFinderServer) {
 	s.RegisterService(&PathFinder_ServiceDesc, srv)
 }
 
-func _PathFinder_Greet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Person)
+func _PathFinder_CalculateTrajectory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TrajectoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PathFinderServer).Greet(ctx, in)
+		return srv.(PathFinderServer).CalculateTrajectory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PathFinder/Greet",
+		FullMethod: "/PathFinder/CalculateTrajectory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PathFinderServer).Greet(ctx, req.(*Person))
+		return srv.(PathFinderServer).CalculateTrajectory(ctx, req.(*TrajectoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +92,8 @@ var PathFinder_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PathFinderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Greet",
-			Handler:    _PathFinder_Greet_Handler,
+			MethodName: "CalculateTrajectory",
+			Handler:    _PathFinder_CalculateTrajectory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
