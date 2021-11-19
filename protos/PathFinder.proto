@@ -1,0 +1,35 @@
+
+syntax = "proto3";
+
+option go_package = "../algorithm/rpc";
+
+service PathFinder {
+	rpc CalculateTrajectory(TrajectoryRequest) returns (TrajectoryResponse) {}
+}
+
+message Vector {
+	float x = 1;
+	float y = 2;
+}
+
+message TrajectoryRequest {
+	message Point {
+		Vector position = 1;
+
+		Vector controlIn = 2;
+		Vector controlOut = 3;
+
+		bool useHeading = 4;
+		float heading = 5;
+	}
+
+	message Segment {
+		repeated Point points = 1;
+	}
+
+	repeated Segment segments = 1;
+}
+
+message TrajectoryResponse {
+
+}
