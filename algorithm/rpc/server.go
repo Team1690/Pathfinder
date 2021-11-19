@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 )
 
 type pathFinderServerImpl struct {
@@ -15,10 +14,6 @@ func NewServer() *pathFinderServerImpl {
 	return &pathFinderServerImpl{}
 }
 
-func (s *pathFinderServerImpl) Greet(ctx context.Context, p *Person) (*GreetResponse, error) {
-	name := p.Name
-
-	return &GreetResponse{
-		Message: fmt.Sprintf("Hello %s", name),
-	}, nil
+func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *TrajectoryRequest) (*TrajectoryResponse, error) {
+	return &TrajectoryResponse{}, nil
 }
