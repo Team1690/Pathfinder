@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// Init the gRPC server on the net listener
-	grpcServer := grpc.NewServer(nil)
+	grpcServer := grpc.NewServer()
 	rpc.RegisterPathFinderServer(grpcServer, rpc.NewServer())
 	grpcServer.Serve(lis)
 }
