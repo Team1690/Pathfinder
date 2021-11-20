@@ -31,5 +31,13 @@ message TrajectoryRequest {
 }
 
 message TrajectoryResponse {
+	message Point {
+		float time = 1;
+		Vector position = 2;
+		Vector velocity = 3;
+		float heading = 4;
+		float omega = 5;
+	}
 
+	repeated Point points = 1;
 }
