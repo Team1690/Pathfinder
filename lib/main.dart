@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/card.dart';
+import 'package:pathfinder/editor_screen.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/tab.dart';
@@ -14,46 +15,49 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Orbit Pathfinder',
         home: Scaffold(
-          body: Column(
-            children: [
-              Container(
-                color: secondary,
-                child: Row(
-                  children: [
-                    BroswerTab(
-                      name: 'TEST',
-                      activated: false,
-                    ),
-                    BroswerTab(
-                      name: 'TEST',
-                      activated: true,
-                    ),
-                  ],
+          body: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  color: secondary,
+                  child: Row(
+                    children: [
+                      BroswerTab(
+                        name: 'TEST',
+                        activated: false,
+                      ),
+                      BroswerTab(
+                        name: 'TEST',
+                        activated: true,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // PathEditor(),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(defaultPadding),
-              //     child: Row(
-              //       children: [
-              //         optimizeAndGenerateCard(),
-              //         const SizedBox(width: defaultPadding),
-              //         pointPropertiesCard(),
-              //         const SizedBox(width: defaultPadding),
-              //         Expanded(
-              //           flex: 2,
-              //           child: PropertiesCard(
-              //             body: Container(),
-              //           ),
-              //         ),
-              //         const SizedBox(width: defaultPadding),
-              //         fileManagementCard(),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-            ],
+                Expanded(child: EditorScreen()),
+                // PathEditor(),
+                // Expanded(
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(defaultPadding),
+                //     child: Row(
+                //       children: [
+                //         optimizeAndGenerateCard(),
+                //         const SizedBox(width: defaultPadding),
+                //         pointPropertiesCard(),
+                //         const SizedBox(width: defaultPadding),
+                //         Expanded(
+                //           flex: 2,
+                //           child: PropertiesCard(
+                //             body: Container(),
+                //           ),
+                //         ),
+                //         const SizedBox(width: defaultPadding),
+                //         fileManagementCard(),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ));
   }
