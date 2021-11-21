@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pathfinder/card.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/tab.dart';
 
 void main() => runApp(App());
 
@@ -9,33 +10,51 @@ class App extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
+        theme: ThemeData.light(),
         debugShowCheckedModeBanner: false,
         title: 'Orbit Pathfinder',
-        home: Column(
-          children: [
-            PathEditor(),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(defaultPadding),
+        home: Scaffold(
+          body: Column(
+            children: [
+              Container(
+                color: secondary,
                 child: Row(
                   children: [
-                    optimizeAndGenerateCard(),
-                    const SizedBox(width: defaultPadding),
-                    pointPropertiesCard(),
-                    const SizedBox(width: defaultPadding),
-                    Expanded(
-                      flex: 2,
-                      child: PropertiesCard(
-                        body: Container(),
-                      ),
+                    BroswerTab(
+                      name: 'TEST',
+                      activated: false,
                     ),
-                    const SizedBox(width: defaultPadding),
-                    fileManagementCard(),
+                    BroswerTab(
+                      name: 'TEST',
+                      activated: true,
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+              // PathEditor(),
+              // Expanded(
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(defaultPadding),
+              //     child: Row(
+              //       children: [
+              //         optimizeAndGenerateCard(),
+              //         const SizedBox(width: defaultPadding),
+              //         pointPropertiesCard(),
+              //         const SizedBox(width: defaultPadding),
+              //         Expanded(
+              //           flex: 2,
+              //           child: PropertiesCard(
+              //             body: Container(),
+              //           ),
+              //         ),
+              //         const SizedBox(width: defaultPadding),
+              //         fileManagementCard(),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
         ));
   }
 

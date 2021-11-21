@@ -6,6 +6,10 @@ const secondaryColor = const Color(0xFF2A2D3E);
 
 const double defaultPadding = 20;
 
+const Color primary = Color(0xff393939);
+const Color secondary = Color(0xff0078D7);
+const Color white = Color(0xffffffff);
+
 const Map<int, Color> orbitColors = {
   50: Color.fromRGBO(0, 0, 200, .1),
   100: Color.fromRGBO(0, 0, 200, .2),
