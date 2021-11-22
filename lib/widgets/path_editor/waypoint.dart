@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
+import 'package:pathfinder/utils/cubic_bezier/cubic_bezier.dart';
 
 class Waypoint {
   final Offset position;

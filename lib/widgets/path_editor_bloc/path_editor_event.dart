@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pathfinder/path_editor/waypoint.dart';
+import 'package:pathfinder/widgets/path_editor/waypoint.dart';
 
 abstract class PathEditorEvent {}
 

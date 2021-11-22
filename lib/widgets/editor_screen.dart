@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/path_editor/path_editor.dart';
+import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key}) : super(key: key);
