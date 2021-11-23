@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
+import 'package:pathfinder/timeline.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key}) : super(key: key);
@@ -31,6 +32,25 @@ class _EditorScreenState extends State<EditorScreen> {
                   ),
                 ]),
               ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(defaultPadding),
+                    child: PathTimeline(
+                      points: List.generate(
+                          8,
+                          (index) => TimelinePoint(
+                              onTap: () {}, color: Color(0xffE1E1E1CC))),
+                    ),
+                  ),
+                ),
+                Expanded(flex: 1, child: Container())
+              ],
             ),
           ),
         ],
