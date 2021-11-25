@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/path_editor/path_editor.dart';
@@ -45,6 +47,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       segments: List.generate(
                           3,
                           (index) => TimeLineSegment(
+                              color: Random().nextBool() ? blue : red,
                               points: List.generate(
                                   4,
                                   (index) => TimelinePoint(

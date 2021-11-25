@@ -1,9 +1,12 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 
 class TimelinePoint extends StatelessWidget {
   final void Function() onTap;
   final Color color;
+  static double pointRadius = 10;
 
   TimelinePoint({required this.onTap, required this.color});
 
@@ -17,14 +20,16 @@ class TimelinePoint extends StatelessWidget {
 }
 
 class TimeLineSegment extends StatelessWidget {
-  const TimeLineSegment({Key? key, required this.points}) : super(key: key);
+  const TimeLineSegment({Key? key, required this.points, required this.color})
+      : super(key: key);
 
   final List<TimelinePoint> points;
+  final Color color;
+  static double segmentWidth = 300;
+  static double segmentHeight = 50;
 
   @override
   Widget build(BuildContext context) {
-    double segmentWidth = 300;
-
     return Container(
       height: 50,
       width: segmentWidth,
@@ -37,8 +42,8 @@ class TimeLineSegment extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Container(
-              height: 50,
-              width: segmentWidth - 20,
+              height: TimeLineSegment.segmentHeight,
+              width: segmentWidth - TimelinePoint.pointRadius * 2,
               decoration: BoxDecoration(
                 color: gray,
                 border: Border.all(color: primary, width: 2),
@@ -67,12 +72,56 @@ class PathTimeline extends StatelessWidget {
 
   const PathTimeline({Key? key, required this.segments}) : super(key: key);
 
+  int sumPoints({required List<TimeLineSegment> segments}) =>
+      segments.fold(0,
+          (int acc, TimeLineSegment segment) => acc + segment.points.length) -
+      (segments.length - 1);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
-        children: [segments.first]..addAll(segments.map((e) => Positioned(
-              child: e,
-              left: 300 - 20,
-            ))));
+      alignment: Alignment.centerLeft,
+      children: [
+        Row(
+            children: segments
+                .map(
+                  (segment) => Expanded(
+                    //TODO: flex between 1-6
+                    // flex: segment.points.length / sumPoints(segments: segments),
+                    child: Stack(alignment: Alignment.center, children: [
+                      Container(
+                          height: TimeLineSegment.segmentHeight,
+                          decoration: BoxDecoration(
+                            color: gray,
+                            border: Border.all(color: primary, width: 4),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(defaultRadius)),
+                          )),
+                      Container(
+                        height: 2,
+                        color: segment.color,
+                      ),
+                    ]),
+                  ),
+                )
+                .toList()),
+        Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // children: segments.map((segment) => segment.points).
+            )
+      ],
+    );
+    // return Stack(
+    //   children: [segments.removeAt(0)]..addAll(segments
+    //       .asMap()
+    //       .entries
+    //       .map((entry) => Positioned(
+    //             child: entry.value,
+    //             left: (entry.key + 1) *
+    //                 (TimeLineSegment.segmentWidth -
+    //                     TimelinePoint.pointRadius * 2),
+    //           ))
+    //       .toList()),
+    // );
   }
 }
