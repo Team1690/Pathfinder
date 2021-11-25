@@ -11,6 +11,11 @@ const Color primary = Color(0xff393939);
 const Color secondary = Color(0xff0078D7);
 const Color white = Color(0xffffffff);
 const Color gray = Color(0xff545454);
+const Color blue = Color(0xff7D8AFF);
+const Color red = Color(0xffE58585);
+const Color green = Color(0xff7CE27A);
+
+const double pointRadius = 10;
 
 const Map<int, Color> orbitColors = {
   50: Color.fromRGBO(0, 0, 200, .1),

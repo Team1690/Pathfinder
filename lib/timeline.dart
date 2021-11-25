@@ -9,33 +9,70 @@ class TimelinePoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double radius = 10;
     return Container(
-        width: 2 * radius,
-        height: 2 * radius,
+        width: 2 * pointRadius,
+        height: 2 * pointRadius,
         decoration: BoxDecoration(shape: BoxShape.circle, color: color));
   }
 }
 
-class PathTimeline extends StatelessWidget {
-  final List<TimelinePoint> points;
+class TimeLineSegment extends StatelessWidget {
+  const TimeLineSegment({Key? key, required this.points}) : super(key: key);
 
-  const PathTimeline({Key? key, required this.points}) : super(key: key);
+  final List<TimelinePoint> points;
 
   @override
   Widget build(BuildContext context) {
+    double segmentWidth = 300;
+
     return Container(
-      height: 60,
+      height: 50,
+      width: segmentWidth,
       decoration: BoxDecoration(
-          color: gray,
-          borderRadius: BorderRadius.all(Radius.circular(defaultRaduis))),
-      child: Row(
-          children: points
-              .map((TimelinePoint point) => GestureDetector(
-                    child: point,
-                    onTap: () => {print(point.color)},
-                  ))
-              .toList()),
+
+          // color: gray,
+          // borderRadius: BorderRadius.all(Radius.circular(defaultRaduis)),
+          ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+              height: 50,
+              width: segmentWidth - 20,
+              decoration: BoxDecoration(
+                color: gray,
+                border: Border.all(color: primary, width: 2),
+                // borderRadius: BorderRadius.all(Radius.circular(defaultRaduis)),
+              )),
+          Container(
+            height: 2,
+            color: blue,
+          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: points
+                  .map((TimelinePoint point) => GestureDetector(
+                        child: point,
+                        onTap: () => {print(point.color)},
+                      ))
+                  .toList()),
+        ],
+      ),
     );
+  }
+}
+
+class PathTimeline extends StatelessWidget {
+  final List<TimeLineSegment> segments;
+
+  const PathTimeline({Key? key, required this.segments}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+        children: [segments.first]..addAll(segments.map((e) => Positioned(
+              child: e,
+              left: 300 - 20,
+            ))));
   }
 }

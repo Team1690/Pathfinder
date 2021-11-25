@@ -42,10 +42,14 @@ class _EditorScreenState extends State<EditorScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
                     child: PathTimeline(
-                      points: List.generate(
-                          8,
-                          (index) => TimelinePoint(
-                              onTap: () {}, color: Color(0xffE1E1E1CC))),
+                      segments: List.generate(
+                          3,
+                          (index) => TimeLineSegment(
+                              points: List.generate(
+                                  4,
+                                  (index) => TimelinePoint(
+                                      onTap: () {},
+                                      color: Color(0xffE1E1E1CC))))),
                     ),
                   ),
                 ),
