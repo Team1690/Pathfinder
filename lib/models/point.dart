@@ -13,6 +13,7 @@ class Point {
     this.inControlPoint,
     this.outControlPoint,
     this.heading,
+    this.useHeading,
     this.actions,
   );
 }
