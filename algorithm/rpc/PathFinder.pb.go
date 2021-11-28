@@ -20,6 +20,104 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type SplineTypes int32
+
+const (
+	SplineTypes_None       SplineTypes = 0
+	SplineTypes_Hermite    SplineTypes = 1
+	SplineTypes_Bezier     SplineTypes = 2
+	SplineTypes_Polynomial SplineTypes = 3
+)
+
+// Enum value maps for SplineTypes.
+var (
+	SplineTypes_name = map[int32]string{
+		0: "None",
+		1: "Hermite",
+		2: "Bezier",
+		3: "Polynomial",
+	}
+	SplineTypes_value = map[string]int32{
+		"None":       0,
+		"Hermite":    1,
+		"Bezier":     2,
+		"Polynomial": 3,
+	}
+)
+
+func (x SplineTypes) Enum() *SplineTypes {
+	p := new(SplineTypes)
+	*p = x
+	return p
+}
+
+func (x SplineTypes) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SplineTypes) Descriptor() protoreflect.EnumDescriptor {
+	return file_PathFinder_proto_enumTypes[0].Descriptor()
+}
+
+func (SplineTypes) Type() protoreflect.EnumType {
+	return &file_PathFinder_proto_enumTypes[0]
+}
+
+func (x SplineTypes) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SplineTypes.Descriptor instead.
+func (SplineTypes) EnumDescriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{0}
+}
+
+type TrajectoryRequest_DriveTrain int32
+
+const (
+	TrajectoryRequest_Swerve TrajectoryRequest_DriveTrain = 0
+	TrajectoryRequest_Tank   TrajectoryRequest_DriveTrain = 1
+)
+
+// Enum value maps for TrajectoryRequest_DriveTrain.
+var (
+	TrajectoryRequest_DriveTrain_name = map[int32]string{
+		0: "Swerve",
+		1: "Tank",
+	}
+	TrajectoryRequest_DriveTrain_value = map[string]int32{
+		"Swerve": 0,
+		"Tank":   1,
+	}
+)
+
+func (x TrajectoryRequest_DriveTrain) Enum() *TrajectoryRequest_DriveTrain {
+	p := new(TrajectoryRequest_DriveTrain)
+	*p = x
+	return p
+}
+
+func (x TrajectoryRequest_DriveTrain) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TrajectoryRequest_DriveTrain) Descriptor() protoreflect.EnumDescriptor {
+	return file_PathFinder_proto_enumTypes[1].Descriptor()
+}
+
+func (TrajectoryRequest_DriveTrain) Type() protoreflect.EnumType {
+	return &file_PathFinder_proto_enumTypes[1]
+}
+
+func (x TrajectoryRequest_DriveTrain) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TrajectoryRequest_DriveTrain.Descriptor instead.
+func (TrajectoryRequest_DriveTrain) EnumDescriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{7, 0}
+}
+
 type Vector struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -75,18 +173,391 @@ func (x *Vector) GetY() float32 {
 	return 0
 }
 
+type Point struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Position   *Vector `protobuf:"bytes,1,opt,name=position,proto3" json:"position,omitempty"`
+	ControlIn  *Vector `protobuf:"bytes,2,opt,name=controlIn,proto3" json:"controlIn,omitempty"`
+	ControlOut *Vector `protobuf:"bytes,3,opt,name=controlOut,proto3" json:"controlOut,omitempty"`
+	UseHeading bool    `protobuf:"varint,4,opt,name=useHeading,proto3" json:"useHeading,omitempty"`
+	Heading    float32 `protobuf:"fixed32,5,opt,name=heading,proto3" json:"heading,omitempty"`
+}
+
+func (x *Point) Reset() {
+	*x = Point{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Point) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Point) ProtoMessage() {}
+
+func (x *Point) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Point.ProtoReflect.Descriptor instead.
+func (*Point) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Point) GetPosition() *Vector {
+	if x != nil {
+		return x.Position
+	}
+	return nil
+}
+
+func (x *Point) GetControlIn() *Vector {
+	if x != nil {
+		return x.ControlIn
+	}
+	return nil
+}
+
+func (x *Point) GetControlOut() *Vector {
+	if x != nil {
+		return x.ControlOut
+	}
+	return nil
+}
+
+func (x *Point) GetUseHeading() bool {
+	if x != nil {
+		return x.UseHeading
+	}
+	return false
+}
+
+func (x *Point) GetHeading() float32 {
+	if x != nil {
+		return x.Heading
+	}
+	return 0
+}
+
+type Segment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Points           []*Point          `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	MaxVeolcity      float32           `protobuf:"fixed32,2,opt,name=maxVeolcity,proto3" json:"maxVeolcity,omitempty"`
+	SplineType       SplineTypes       `protobuf:"varint,3,opt,name=splineType,proto3,enum=SplineTypes" json:"splineType,omitempty"`
+	SplineParameters *SplineParameters `protobuf:"bytes,4,opt,name=splineParameters,proto3" json:"splineParameters,omitempty"`
+}
+
+func (x *Segment) Reset() {
+	*x = Segment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Segment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Segment) ProtoMessage() {}
+
+func (x *Segment) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Segment.ProtoReflect.Descriptor instead.
+func (*Segment) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Segment) GetPoints() []*Point {
+	if x != nil {
+		return x.Points
+	}
+	return nil
+}
+
+func (x *Segment) GetMaxVeolcity() float32 {
+	if x != nil {
+		return x.MaxVeolcity
+	}
+	return 0
+}
+
+func (x *Segment) GetSplineType() SplineTypes {
+	if x != nil {
+		return x.SplineType
+	}
+	return SplineTypes_None
+}
+
+func (x *Segment) GetSplineParameters() *SplineParameters {
+	if x != nil {
+		return x.SplineParameters
+	}
+	return nil
+}
+
+type Section struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Segments []*Segment `protobuf:"bytes,1,rep,name=segments,proto3" json:"segments,omitempty"`
+}
+
+func (x *Section) Reset() {
+	*x = Section{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Section) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Section) ProtoMessage() {}
+
+func (x *Section) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Section.ProtoReflect.Descriptor instead.
+func (*Section) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Section) GetSegments() []*Segment {
+	if x != nil {
+		return x.Segments
+	}
+	return nil
+}
+
+type SplineParameters struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Params []float32 `protobuf:"fixed32,1,rep,packed,name=params,proto3" json:"params,omitempty"`
+}
+
+func (x *SplineParameters) Reset() {
+	*x = SplineParameters{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineParameters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineParameters) ProtoMessage() {}
+
+func (x *SplineParameters) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineParameters.ProtoReflect.Descriptor instead.
+func (*SplineParameters) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SplineParameters) GetParams() []float32 {
+	if x != nil {
+		return x.Params
+	}
+	return nil
+}
+
+type SplineRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Points                  []*Point                          `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	OptimizationParams      *SplineRequest_OptimizationParams `protobuf:"bytes,2,opt,name=optimizationParams,proto3" json:"optimizationParams,omitempty"`
+	EvaluatedPointsInterval float32                           `protobuf:"fixed32,3,opt,name=evaluatedPointsInterval,proto3" json:"evaluatedPointsInterval,omitempty"` // meters
+}
+
+func (x *SplineRequest) Reset() {
+	*x = SplineRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineRequest) ProtoMessage() {}
+
+func (x *SplineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineRequest.ProtoReflect.Descriptor instead.
+func (*SplineRequest) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SplineRequest) GetPoints() []*Point {
+	if x != nil {
+		return x.Points
+	}
+	return nil
+}
+
+func (x *SplineRequest) GetOptimizationParams() *SplineRequest_OptimizationParams {
+	if x != nil {
+		return x.OptimizationParams
+	}
+	return nil
+}
+
+func (x *SplineRequest) GetEvaluatedPointsInterval() float32 {
+	if x != nil {
+		return x.EvaluatedPointsInterval
+	}
+	return 0
+}
+
+type SplineResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	SplineParameters *SplineParameters       `protobuf:"bytes,1,opt,name=splineParameters,proto3" json:"splineParameters,omitempty"`
+	SplineType       SplineTypes             `protobuf:"varint,2,opt,name=splineType,proto3,enum=SplineTypes" json:"splineType,omitempty"`
+	EvaluatedPoints  []*SplineResponse_Point `protobuf:"bytes,3,rep,name=evaluatedPoints,proto3" json:"evaluatedPoints,omitempty"`
+}
+
+func (x *SplineResponse) Reset() {
+	*x = SplineResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineResponse) ProtoMessage() {}
+
+func (x *SplineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineResponse.ProtoReflect.Descriptor instead.
+func (*SplineResponse) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SplineResponse) GetSplineParameters() *SplineParameters {
+	if x != nil {
+		return x.SplineParameters
+	}
+	return nil
+}
+
+func (x *SplineResponse) GetSplineType() SplineTypes {
+	if x != nil {
+		return x.SplineType
+	}
+	return SplineTypes_None
+}
+
+func (x *SplineResponse) GetEvaluatedPoints() []*SplineResponse_Point {
+	if x != nil {
+		return x.EvaluatedPoints
+	}
+	return nil
+}
+
 type TrajectoryRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Segments []*TrajectoryRequest_Segment `protobuf:"bytes,1,rep,name=segments,proto3" json:"segments,omitempty"`
+	Sections          []*Section                           `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
+	DriveTrain        TrajectoryRequest_DriveTrain         `protobuf:"varint,4,opt,name=driveTrain,proto3,enum=TrajectoryRequest_DriveTrain" json:"driveTrain,omitempty"`
+	SwerveRobotParams *TrajectoryRequest_SwerveRobotParams `protobuf:"bytes,5,opt,name=swerveRobotParams,proto3" json:"swerveRobotParams,omitempty"`
+	TankRobotParams   *TrajectoryRequest_TankRobotParams   `protobuf:"bytes,6,opt,name=tankRobotParams,proto3" json:"tankRobotParams,omitempty"`
 }
 
 func (x *TrajectoryRequest) Reset() {
 	*x = TrajectoryRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_PathFinder_proto_msgTypes[1]
+		mi := &file_PathFinder_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -99,7 +570,7 @@ func (x *TrajectoryRequest) String() string {
 func (*TrajectoryRequest) ProtoMessage() {}
 
 func (x *TrajectoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_PathFinder_proto_msgTypes[1]
+	mi := &file_PathFinder_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,12 +583,33 @@ func (x *TrajectoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrajectoryRequest.ProtoReflect.Descriptor instead.
 func (*TrajectoryRequest) Descriptor() ([]byte, []int) {
-	return file_PathFinder_proto_rawDescGZIP(), []int{1}
+	return file_PathFinder_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *TrajectoryRequest) GetSegments() []*TrajectoryRequest_Segment {
+func (x *TrajectoryRequest) GetSections() []*Section {
 	if x != nil {
-		return x.Segments
+		return x.Sections
+	}
+	return nil
+}
+
+func (x *TrajectoryRequest) GetDriveTrain() TrajectoryRequest_DriveTrain {
+	if x != nil {
+		return x.DriveTrain
+	}
+	return TrajectoryRequest_Swerve
+}
+
+func (x *TrajectoryRequest) GetSwerveRobotParams() *TrajectoryRequest_SwerveRobotParams {
+	if x != nil {
+		return x.SwerveRobotParams
+	}
+	return nil
+}
+
+func (x *TrajectoryRequest) GetTankRobotParams() *TrajectoryRequest_TankRobotParams {
+	if x != nil {
+		return x.TankRobotParams
 	}
 	return nil
 }
@@ -126,12 +618,15 @@ type TrajectoryResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	SwervePoints []*TrajectoryResponse_SwervePoint `protobuf:"bytes,1,rep,name=swervePoints,proto3" json:"swervePoints,omitempty"`
+	TankPoints   []*TrajectoryResponse_TankPoint   `protobuf:"bytes,2,rep,name=tankPoints,proto3" json:"tankPoints,omitempty"`
 }
 
 func (x *TrajectoryResponse) Reset() {
 	*x = TrajectoryResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_PathFinder_proto_msgTypes[2]
+		mi := &file_PathFinder_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -144,7 +639,7 @@ func (x *TrajectoryResponse) String() string {
 func (*TrajectoryResponse) ProtoMessage() {}
 
 func (x *TrajectoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_PathFinder_proto_msgTypes[2]
+	mi := &file_PathFinder_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -157,38 +652,51 @@ func (x *TrajectoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrajectoryResponse.ProtoReflect.Descriptor instead.
 func (*TrajectoryResponse) Descriptor() ([]byte, []int) {
-	return file_PathFinder_proto_rawDescGZIP(), []int{2}
+	return file_PathFinder_proto_rawDescGZIP(), []int{8}
 }
 
-type TrajectoryRequest_Point struct {
+func (x *TrajectoryResponse) GetSwervePoints() []*TrajectoryResponse_SwervePoint {
+	if x != nil {
+		return x.SwervePoints
+	}
+	return nil
+}
+
+func (x *TrajectoryResponse) GetTankPoints() []*TrajectoryResponse_TankPoint {
+	if x != nil {
+		return x.TankPoints
+	}
+	return nil
+}
+
+type SplineRequest_OptimizationParams struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Position   *Vector `protobuf:"bytes,1,opt,name=position,proto3" json:"position,omitempty"`
-	ControlIn  *Vector `protobuf:"bytes,2,opt,name=controlIn,proto3" json:"controlIn,omitempty"`
-	ControlOut *Vector `protobuf:"bytes,3,opt,name=controlOut,proto3" json:"controlOut,omitempty"`
-	UseHeading bool    `protobuf:"varint,4,opt,name=useHeading,proto3" json:"useHeading,omitempty"`
-	Heading    float32 `protobuf:"fixed32,5,opt,name=heading,proto3" json:"heading,omitempty"`
+	SplineType SplineTypes                                  `protobuf:"varint,1,opt,name=splineType,proto3,enum=SplineTypes" json:"splineType,omitempty"`
+	Hermite    *SplineRequest_OptimizationParams_Hermite    `protobuf:"bytes,5,opt,name=hermite,proto3" json:"hermite,omitempty"`
+	Bezier     *SplineRequest_OptimizationParams_Bezier     `protobuf:"bytes,6,opt,name=bezier,proto3" json:"bezier,omitempty"`
+	Polynomial *SplineRequest_OptimizationParams_Polynomial `protobuf:"bytes,7,opt,name=polynomial,proto3" json:"polynomial,omitempty"`
 }
 
-func (x *TrajectoryRequest_Point) Reset() {
-	*x = TrajectoryRequest_Point{}
+func (x *SplineRequest_OptimizationParams) Reset() {
+	*x = SplineRequest_OptimizationParams{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_PathFinder_proto_msgTypes[3]
+		mi := &file_PathFinder_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *TrajectoryRequest_Point) String() string {
+func (x *SplineRequest_OptimizationParams) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TrajectoryRequest_Point) ProtoMessage() {}
+func (*SplineRequest_OptimizationParams) ProtoMessage() {}
 
-func (x *TrajectoryRequest_Point) ProtoReflect() protoreflect.Message {
-	mi := &file_PathFinder_proto_msgTypes[3]
+func (x *SplineRequest_OptimizationParams) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -199,71 +707,482 @@ func (x *TrajectoryRequest_Point) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TrajectoryRequest_Point.ProtoReflect.Descriptor instead.
-func (*TrajectoryRequest_Point) Descriptor() ([]byte, []int) {
-	return file_PathFinder_proto_rawDescGZIP(), []int{1, 0}
+// Deprecated: Use SplineRequest_OptimizationParams.ProtoReflect.Descriptor instead.
+func (*SplineRequest_OptimizationParams) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{5, 0}
 }
 
-func (x *TrajectoryRequest_Point) GetPosition() *Vector {
+func (x *SplineRequest_OptimizationParams) GetSplineType() SplineTypes {
+	if x != nil {
+		return x.SplineType
+	}
+	return SplineTypes_None
+}
+
+func (x *SplineRequest_OptimizationParams) GetHermite() *SplineRequest_OptimizationParams_Hermite {
+	if x != nil {
+		return x.Hermite
+	}
+	return nil
+}
+
+func (x *SplineRequest_OptimizationParams) GetBezier() *SplineRequest_OptimizationParams_Bezier {
+	if x != nil {
+		return x.Bezier
+	}
+	return nil
+}
+
+func (x *SplineRequest_OptimizationParams) GetPolynomial() *SplineRequest_OptimizationParams_Polynomial {
+	if x != nil {
+		return x.Polynomial
+	}
+	return nil
+}
+
+type SplineRequest_OptimizationParams_Hermite struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SplineRequest_OptimizationParams_Hermite) Reset() {
+	*x = SplineRequest_OptimizationParams_Hermite{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineRequest_OptimizationParams_Hermite) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineRequest_OptimizationParams_Hermite) ProtoMessage() {}
+
+func (x *SplineRequest_OptimizationParams_Hermite) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineRequest_OptimizationParams_Hermite.ProtoReflect.Descriptor instead.
+func (*SplineRequest_OptimizationParams_Hermite) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{5, 0, 0}
+}
+
+type SplineRequest_OptimizationParams_Bezier struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SplineRequest_OptimizationParams_Bezier) Reset() {
+	*x = SplineRequest_OptimizationParams_Bezier{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineRequest_OptimizationParams_Bezier) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineRequest_OptimizationParams_Bezier) ProtoMessage() {}
+
+func (x *SplineRequest_OptimizationParams_Bezier) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineRequest_OptimizationParams_Bezier.ProtoReflect.Descriptor instead.
+func (*SplineRequest_OptimizationParams_Bezier) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{5, 0, 1}
+}
+
+type SplineRequest_OptimizationParams_Polynomial struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SplineRequest_OptimizationParams_Polynomial) Reset() {
+	*x = SplineRequest_OptimizationParams_Polynomial{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineRequest_OptimizationParams_Polynomial) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineRequest_OptimizationParams_Polynomial) ProtoMessage() {}
+
+func (x *SplineRequest_OptimizationParams_Polynomial) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineRequest_OptimizationParams_Polynomial.ProtoReflect.Descriptor instead.
+func (*SplineRequest_OptimizationParams_Polynomial) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{5, 0, 2}
+}
+
+type SplineResponse_Point struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Point *Vector `protobuf:"bytes,1,opt,name=point,proto3" json:"point,omitempty"`
+}
+
+func (x *SplineResponse_Point) Reset() {
+	*x = SplineResponse_Point{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SplineResponse_Point) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplineResponse_Point) ProtoMessage() {}
+
+func (x *SplineResponse_Point) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SplineResponse_Point.ProtoReflect.Descriptor instead.
+func (*SplineResponse_Point) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *SplineResponse_Point) GetPoint() *Vector {
+	if x != nil {
+		return x.Point
+	}
+	return nil
+}
+
+type TrajectoryRequest_SwerveRobotParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Width                  float32 `protobuf:"fixed32,1,opt,name=width,proto3" json:"width,omitempty"`
+	Height                 float32 `protobuf:"fixed32,2,opt,name=height,proto3" json:"height,omitempty"`
+	MaxVelocity            float32 `protobuf:"fixed32,3,opt,name=maxVelocity,proto3" json:"maxVelocity,omitempty"`
+	MaxAcceleration        float32 `protobuf:"fixed32,4,opt,name=maxAcceleration,proto3" json:"maxAcceleration,omitempty"`
+	MaxJerk                float32 `protobuf:"fixed32,5,opt,name=maxJerk,proto3" json:"maxJerk,omitempty"`
+	MaxAngularVelocity     float32 `protobuf:"fixed32,6,opt,name=maxAngularVelocity,proto3" json:"maxAngularVelocity,omitempty"`
+	MaxAngularAcceleration float32 `protobuf:"fixed32,7,opt,name=maxAngularAcceleration,proto3" json:"maxAngularAcceleration,omitempty"`
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) Reset() {
+	*x = TrajectoryRequest_SwerveRobotParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryRequest_SwerveRobotParams) ProtoMessage() {}
+
+func (x *TrajectoryRequest_SwerveRobotParams) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryRequest_SwerveRobotParams.ProtoReflect.Descriptor instead.
+func (*TrajectoryRequest_SwerveRobotParams) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{7, 0}
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetWidth() float32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetHeight() float32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetMaxVelocity() float32 {
+	if x != nil {
+		return x.MaxVelocity
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetMaxAcceleration() float32 {
+	if x != nil {
+		return x.MaxAcceleration
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetMaxJerk() float32 {
+	if x != nil {
+		return x.MaxJerk
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetMaxAngularVelocity() float32 {
+	if x != nil {
+		return x.MaxAngularVelocity
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_SwerveRobotParams) GetMaxAngularAcceleration() float32 {
+	if x != nil {
+		return x.MaxAngularAcceleration
+	}
+	return 0
+}
+
+type TrajectoryRequest_TankRobotParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Width           float32 `protobuf:"fixed32,1,opt,name=width,proto3" json:"width,omitempty"`
+	Height          float32 `protobuf:"fixed32,2,opt,name=height,proto3" json:"height,omitempty"`
+	MaxVelocity     float32 `protobuf:"fixed32,3,opt,name=maxVelocity,proto3" json:"maxVelocity,omitempty"`
+	MaxAcceleration float32 `protobuf:"fixed32,4,opt,name=maxAcceleration,proto3" json:"maxAcceleration,omitempty"`
+	MaxJerk         float32 `protobuf:"fixed32,5,opt,name=maxJerk,proto3" json:"maxJerk,omitempty"`
+}
+
+func (x *TrajectoryRequest_TankRobotParams) Reset() {
+	*x = TrajectoryRequest_TankRobotParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryRequest_TankRobotParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryRequest_TankRobotParams) ProtoMessage() {}
+
+func (x *TrajectoryRequest_TankRobotParams) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryRequest_TankRobotParams.ProtoReflect.Descriptor instead.
+func (*TrajectoryRequest_TankRobotParams) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{7, 1}
+}
+
+func (x *TrajectoryRequest_TankRobotParams) GetWidth() float32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_TankRobotParams) GetHeight() float32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_TankRobotParams) GetMaxVelocity() float32 {
+	if x != nil {
+		return x.MaxVelocity
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_TankRobotParams) GetMaxAcceleration() float32 {
+	if x != nil {
+		return x.MaxAcceleration
+	}
+	return 0
+}
+
+func (x *TrajectoryRequest_TankRobotParams) GetMaxJerk() float32 {
+	if x != nil {
+		return x.MaxJerk
+	}
+	return 0
+}
+
+type TrajectoryResponse_SwervePoint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Time            float32 `protobuf:"fixed32,1,opt,name=time,proto3" json:"time,omitempty"`
+	Position        *Vector `protobuf:"bytes,2,opt,name=position,proto3" json:"position,omitempty"`
+	Velocity        *Vector `protobuf:"bytes,3,opt,name=velocity,proto3" json:"velocity,omitempty"`
+	Heading         float32 `protobuf:"fixed32,4,opt,name=heading,proto3" json:"heading,omitempty"`
+	AngularVelocity float32 `protobuf:"fixed32,5,opt,name=angularVelocity,proto3" json:"angularVelocity,omitempty"`
+}
+
+func (x *TrajectoryResponse_SwervePoint) Reset() {
+	*x = TrajectoryResponse_SwervePoint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_PathFinder_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TrajectoryResponse_SwervePoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrajectoryResponse_SwervePoint) ProtoMessage() {}
+
+func (x *TrajectoryResponse_SwervePoint) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrajectoryResponse_SwervePoint.ProtoReflect.Descriptor instead.
+func (*TrajectoryResponse_SwervePoint) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *TrajectoryResponse_SwervePoint) GetTime() float32 {
+	if x != nil {
+		return x.Time
+	}
+	return 0
+}
+
+func (x *TrajectoryResponse_SwervePoint) GetPosition() *Vector {
 	if x != nil {
 		return x.Position
 	}
 	return nil
 }
 
-func (x *TrajectoryRequest_Point) GetControlIn() *Vector {
+func (x *TrajectoryResponse_SwervePoint) GetVelocity() *Vector {
 	if x != nil {
-		return x.ControlIn
+		return x.Velocity
 	}
 	return nil
 }
 
-func (x *TrajectoryRequest_Point) GetControlOut() *Vector {
-	if x != nil {
-		return x.ControlOut
-	}
-	return nil
-}
-
-func (x *TrajectoryRequest_Point) GetUseHeading() bool {
-	if x != nil {
-		return x.UseHeading
-	}
-	return false
-}
-
-func (x *TrajectoryRequest_Point) GetHeading() float32 {
+func (x *TrajectoryResponse_SwervePoint) GetHeading() float32 {
 	if x != nil {
 		return x.Heading
 	}
 	return 0
 }
 
-type TrajectoryRequest_Segment struct {
+func (x *TrajectoryResponse_SwervePoint) GetAngularVelocity() float32 {
+	if x != nil {
+		return x.AngularVelocity
+	}
+	return 0
+}
+
+type TrajectoryResponse_TankPoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Points []*TrajectoryRequest_Point `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	Time          float32 `protobuf:"fixed32,1,opt,name=time,proto3" json:"time,omitempty"`
+	Position      *Vector `protobuf:"bytes,2,opt,name=position,proto3" json:"position,omitempty"`
+	RightVelocity float32 `protobuf:"fixed32,3,opt,name=rightVelocity,proto3" json:"rightVelocity,omitempty"`
+	LeftVelocity  float32 `protobuf:"fixed32,4,opt,name=leftVelocity,proto3" json:"leftVelocity,omitempty"`
+	Heading       float32 `protobuf:"fixed32,5,opt,name=heading,proto3" json:"heading,omitempty"`
 }
 
-func (x *TrajectoryRequest_Segment) Reset() {
-	*x = TrajectoryRequest_Segment{}
+func (x *TrajectoryResponse_TankPoint) Reset() {
+	*x = TrajectoryResponse_TankPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_PathFinder_proto_msgTypes[4]
+		mi := &file_PathFinder_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *TrajectoryRequest_Segment) String() string {
+func (x *TrajectoryResponse_TankPoint) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TrajectoryRequest_Segment) ProtoMessage() {}
+func (*TrajectoryResponse_TankPoint) ProtoMessage() {}
 
-func (x *TrajectoryRequest_Segment) ProtoReflect() protoreflect.Message {
-	mi := &file_PathFinder_proto_msgTypes[4]
+func (x *TrajectoryResponse_TankPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_PathFinder_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -274,16 +1193,44 @@ func (x *TrajectoryRequest_Segment) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TrajectoryRequest_Segment.ProtoReflect.Descriptor instead.
-func (*TrajectoryRequest_Segment) Descriptor() ([]byte, []int) {
-	return file_PathFinder_proto_rawDescGZIP(), []int{1, 1}
+// Deprecated: Use TrajectoryResponse_TankPoint.ProtoReflect.Descriptor instead.
+func (*TrajectoryResponse_TankPoint) Descriptor() ([]byte, []int) {
+	return file_PathFinder_proto_rawDescGZIP(), []int{8, 1}
 }
 
-func (x *TrajectoryRequest_Segment) GetPoints() []*TrajectoryRequest_Point {
+func (x *TrajectoryResponse_TankPoint) GetTime() float32 {
 	if x != nil {
-		return x.Points
+		return x.Time
+	}
+	return 0
+}
+
+func (x *TrajectoryResponse_TankPoint) GetPosition() *Vector {
+	if x != nil {
+		return x.Position
 	}
 	return nil
+}
+
+func (x *TrajectoryResponse_TankPoint) GetRightVelocity() float32 {
+	if x != nil {
+		return x.RightVelocity
+	}
+	return 0
+}
+
+func (x *TrajectoryResponse_TankPoint) GetLeftVelocity() float32 {
+	if x != nil {
+		return x.LeftVelocity
+	}
+	return 0
+}
+
+func (x *TrajectoryResponse_TankPoint) GetHeading() float32 {
+	if x != nil {
+		return x.Heading
+	}
+	return 0
 }
 
 var File_PathFinder_proto protoreflect.FileDescriptor
@@ -292,35 +1239,172 @@ var file_PathFinder_proto_rawDesc = []byte{
 	0x0a, 0x10, 0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x22, 0x24, 0x0a, 0x06, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x0c, 0x0a, 0x01,
 	0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x22, 0xc1, 0x02, 0x0a, 0x11, 0x54, 0x72, 0x61,
-	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x36,
-	0x0a, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x2e, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x08, 0x73, 0x65,
-	0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x1a, 0xb6, 0x01, 0x0a, 0x05, 0x50, 0x6f, 0x69, 0x6e, 0x74,
-	0x12, 0x23, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x08, 0x70, 0x6f, 0x73,
-	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x25, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
-	0x49, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f,
-	0x72, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x49, 0x6e, 0x12, 0x27, 0x0a, 0x0a,
-	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x0a, 0x63, 0x6f, 0x6e, 0x74, 0x72,
-	0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x75, 0x73, 0x65, 0x48, 0x65, 0x61, 0x64,
-	0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x75, 0x73, 0x65, 0x48, 0x65,
-	0x61, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x1a,
-	0x3b, 0x0a, 0x07, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x30, 0x0a, 0x06, 0x70, 0x6f,
-	0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x54, 0x72, 0x61,
-	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x50,
-	0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x22, 0x14, 0x0a, 0x12,
-	0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x32, 0x4e, 0x0a, 0x0a, 0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72,
-	0x12, 0x40, 0x0a, 0x13, 0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x54, 0x72, 0x61,
-	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x12, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63,
-	0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54, 0x72,
+	0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x22, 0xb6, 0x01, 0x0a, 0x05, 0x50, 0x6f, 0x69,
+	0x6e, 0x74, 0x12, 0x23, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x08, 0x70,
+	0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x25, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72,
+	0x6f, 0x6c, 0x49, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63,
+	0x74, 0x6f, 0x72, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x49, 0x6e, 0x12, 0x27,
+	0x0a, 0x0a, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x0a, 0x63, 0x6f, 0x6e,
+	0x74, 0x72, 0x6f, 0x6c, 0x4f, 0x75, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x75, 0x73, 0x65, 0x48, 0x65,
+	0x61, 0x64, 0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x75, 0x73, 0x65,
+	0x48, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69,
+	0x6e, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e,
+	0x67, 0x22, 0xb8, 0x01, 0x0a, 0x07, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1e, 0x0a,
+	0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x06, 0x2e,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x20, 0x0a,
+	0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6f, 0x6c, 0x63, 0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x02, 0x52, 0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6f, 0x6c, 0x63, 0x69, 0x74, 0x79, 0x12,
+	0x2c, 0x0a, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x0c, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65,
+	0x73, 0x52, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3d, 0x0a,
+	0x10, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72,
+	0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x52, 0x10, 0x73, 0x70, 0x6c, 0x69,
+	0x6e, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x22, 0x2f, 0x0a, 0x07,
+	0x53, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x24, 0x0a, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65,
+	0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x53, 0x65, 0x67, 0x6d,
+	0x65, 0x6e, 0x74, 0x52, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x22, 0x2a, 0x0a,
+	0x10, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72,
+	0x73, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x02, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0xf9, 0x03, 0x0a, 0x0d, 0x53, 0x70,
+	0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a, 0x06, 0x70,
+	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x06, 0x2e, 0x50, 0x6f,
+	0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x51, 0x0a, 0x12, 0x6f,
+	0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4f, 0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x12, 0x6f, 0x70, 0x74, 0x69,
+	0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x38,
+	0x0a, 0x17, 0x65, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x64, 0x50, 0x6f, 0x69, 0x6e, 0x74,
+	0x73, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x02, 0x52,
+	0x17, 0x65, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x64, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73,
+	0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x1a, 0xba, 0x02, 0x0a, 0x12, 0x4f, 0x70, 0x74,
+	0x69, 0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12,
+	0x2c, 0x0a, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x0c, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65,
+	0x73, 0x52, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x43, 0x0a,
+	0x07, 0x68, 0x65, 0x72, 0x6d, 0x69, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x29,
+	0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4f,
+	0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x2e, 0x48, 0x65, 0x72, 0x6d, 0x69, 0x74, 0x65, 0x52, 0x07, 0x68, 0x65, 0x72, 0x6d, 0x69,
+	0x74, 0x65, 0x12, 0x40, 0x0a, 0x06, 0x62, 0x65, 0x7a, 0x69, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x28, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x2e, 0x4f, 0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50,
+	0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x42, 0x65, 0x7a, 0x69, 0x65, 0x72, 0x52, 0x06, 0x62, 0x65,
+	0x7a, 0x69, 0x65, 0x72, 0x12, 0x4c, 0x0a, 0x0a, 0x70, 0x6f, 0x6c, 0x79, 0x6e, 0x6f, 0x6d, 0x69,
+	0x61, 0x6c, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4f, 0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x50, 0x6f, 0x6c, 0x79,
+	0x6e, 0x6f, 0x6d, 0x69, 0x61, 0x6c, 0x52, 0x0a, 0x70, 0x6f, 0x6c, 0x79, 0x6e, 0x6f, 0x6d, 0x69,
+	0x61, 0x6c, 0x1a, 0x09, 0x0a, 0x07, 0x48, 0x65, 0x72, 0x6d, 0x69, 0x74, 0x65, 0x1a, 0x08, 0x0a,
+	0x06, 0x42, 0x65, 0x7a, 0x69, 0x65, 0x72, 0x1a, 0x0c, 0x0a, 0x0a, 0x50, 0x6f, 0x6c, 0x79, 0x6e,
+	0x6f, 0x6d, 0x69, 0x61, 0x6c, 0x22, 0xe6, 0x01, 0x0a, 0x0e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x10, 0x73, 0x70, 0x6c, 0x69,
+	0x6e, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x65, 0x74, 0x65, 0x72, 0x73, 0x52, 0x10, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x12, 0x2c, 0x0a, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e,
+	0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0c, 0x2e, 0x53, 0x70,
+	0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x6c, 0x69, 0x6e,
+	0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3f, 0x0a, 0x0f, 0x65, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74,
+	0x65, 0x64, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15,
+	0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x0f, 0x65, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x64,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x1a, 0x26, 0x0a, 0x05, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12,
+	0x1d, 0x0a, 0x05, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07,
+	0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x05, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0xf8,
+	0x05, 0x0a, 0x11, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x08, 0x73, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x53, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x08, 0x73, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x3d, 0x0a, 0x0a, 0x64, 0x72,
+	0x69, 0x76, 0x65, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1d,
+	0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x76, 0x65, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x52, 0x0a, 0x64,
+	0x72, 0x69, 0x76, 0x65, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x12, 0x52, 0x0a, 0x11, 0x73, 0x77, 0x65,
+	0x72, 0x76, 0x65, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72,
+	0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x53, 0x77, 0x65, 0x72, 0x76, 0x65, 0x52,
+	0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x11, 0x73, 0x77, 0x65, 0x72,
+	0x76, 0x65, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4c, 0x0a,
+	0x0f, 0x74, 0x61, 0x6e, 0x6b, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74,
+	0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x52,
+	0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x0f, 0x74, 0x61, 0x6e, 0x6b,
+	0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x8f, 0x02, 0x0a, 0x11,
+	0x53, 0x77, 0x65, 0x72, 0x76, 0x65, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02,
+	0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
+	0x20, 0x0a, 0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x02, 0x52, 0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74,
+	0x79, 0x12, 0x28, 0x0a, 0x0f, 0x6d, 0x61, 0x78, 0x41, 0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0f, 0x6d, 0x61, 0x78, 0x41,
+	0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6d,
+	0x61, 0x78, 0x4a, 0x65, 0x72, 0x6b, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x6d, 0x61,
+	0x78, 0x4a, 0x65, 0x72, 0x6b, 0x12, 0x2e, 0x0a, 0x12, 0x6d, 0x61, 0x78, 0x41, 0x6e, 0x67, 0x75,
+	0x6c, 0x61, 0x72, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x02, 0x52, 0x12, 0x6d, 0x61, 0x78, 0x41, 0x6e, 0x67, 0x75, 0x6c, 0x61, 0x72, 0x56, 0x65, 0x6c,
+	0x6f, 0x63, 0x69, 0x74, 0x79, 0x12, 0x36, 0x0a, 0x16, 0x6d, 0x61, 0x78, 0x41, 0x6e, 0x67, 0x75,
+	0x6c, 0x61, 0x72, 0x41, 0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x02, 0x52, 0x16, 0x6d, 0x61, 0x78, 0x41, 0x6e, 0x67, 0x75, 0x6c, 0x61,
+	0x72, 0x41, 0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0xa5, 0x01,
+	0x0a, 0x0f, 0x54, 0x61, 0x6e, 0x6b, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02,
+	0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
+	0x20, 0x0a, 0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x02, 0x52, 0x0b, 0x6d, 0x61, 0x78, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74,
+	0x79, 0x12, 0x28, 0x0a, 0x0f, 0x6d, 0x61, 0x78, 0x41, 0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0f, 0x6d, 0x61, 0x78, 0x41,
+	0x63, 0x63, 0x65, 0x6c, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6d,
+	0x61, 0x78, 0x4a, 0x65, 0x72, 0x6b, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x6d, 0x61,
+	0x78, 0x4a, 0x65, 0x72, 0x6b, 0x22, 0x22, 0x0a, 0x0a, 0x44, 0x72, 0x69, 0x76, 0x65, 0x54, 0x72,
+	0x61, 0x69, 0x6e, 0x12, 0x0a, 0x0a, 0x06, 0x53, 0x77, 0x65, 0x72, 0x76, 0x65, 0x10, 0x00, 0x12,
+	0x08, 0x0a, 0x04, 0x54, 0x61, 0x6e, 0x6b, 0x10, 0x01, 0x22, 0xf5, 0x03, 0x0a, 0x12, 0x54, 0x72,
 	0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74,
-	0x68, 0x6d, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x43, 0x0a, 0x0c, 0x73, 0x77, 0x65, 0x72, 0x76, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74,
+	0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x53, 0x77, 0x65, 0x72,
+	0x76, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x0c, 0x73, 0x77, 0x65, 0x72, 0x76, 0x65, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x3d, 0x0a, 0x0a, 0x74, 0x61, 0x6e, 0x6b, 0x50, 0x6f, 0x69,
+	0x6e, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x54, 0x72, 0x61, 0x6a,
+	0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x54,
+	0x61, 0x6e, 0x6b, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x0a, 0x74, 0x61, 0x6e, 0x6b, 0x50, 0x6f,
+	0x69, 0x6e, 0x74, 0x73, 0x1a, 0xaf, 0x01, 0x0a, 0x0b, 0x53, 0x77, 0x65, 0x72, 0x76, 0x65, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x02, 0x52, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x12, 0x23, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63,
+	0x74, 0x6f, 0x72, 0x52, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x23, 0x0a,
+	0x08, 0x76, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x07, 0x2e, 0x56, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x08, 0x76, 0x65, 0x6c, 0x6f, 0x63, 0x69,
+	0x74, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x02, 0x52, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0f,
+	0x61, 0x6e, 0x67, 0x75, 0x6c, 0x61, 0x72, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0f, 0x61, 0x6e, 0x67, 0x75, 0x6c, 0x61, 0x72, 0x56, 0x65,
+	0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x1a, 0xa8, 0x01, 0x0a, 0x09, 0x54, 0x61, 0x6e, 0x6b, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x02, 0x52, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x12, 0x23, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x56, 0x65, 0x63,
+	0x74, 0x6f, 0x72, 0x52, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x24, 0x0a,
+	0x0d, 0x72, 0x69, 0x67, 0x68, 0x74, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x02, 0x52, 0x0d, 0x72, 0x69, 0x67, 0x68, 0x74, 0x56, 0x65, 0x6c, 0x6f, 0x63,
+	0x69, 0x74, 0x79, 0x12, 0x22, 0x0a, 0x0c, 0x6c, 0x65, 0x66, 0x74, 0x56, 0x65, 0x6c, 0x6f, 0x63,
+	0x69, 0x74, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0c, 0x6c, 0x65, 0x66, 0x74, 0x56,
+	0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69,
+	0x6e, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x68, 0x65, 0x61, 0x64, 0x69, 0x6e,
+	0x67, 0x2a, 0x40, 0x0a, 0x0b, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73,
+	0x12, 0x08, 0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x48, 0x65,
+	0x72, 0x6d, 0x69, 0x74, 0x65, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x42, 0x65, 0x7a, 0x69, 0x65,
+	0x72, 0x10, 0x02, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x6f, 0x6c, 0x79, 0x6e, 0x6f, 0x6d, 0x69, 0x61,
+	0x6c, 0x10, 0x03, 0x32, 0x4e, 0x0a, 0x0a, 0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65,
+	0x72, 0x12, 0x40, 0x0a, 0x13, 0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x54, 0x72,
+	0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x12, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65,
+	0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54,
+	0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69,
+	0x74, 0x68, 0x6d, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -335,27 +1419,64 @@ func file_PathFinder_proto_rawDescGZIP() []byte {
 	return file_PathFinder_proto_rawDescData
 }
 
-var file_PathFinder_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_PathFinder_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_PathFinder_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_PathFinder_proto_goTypes = []interface{}{
-	(*Vector)(nil),                    // 0: Vector
-	(*TrajectoryRequest)(nil),         // 1: TrajectoryRequest
-	(*TrajectoryResponse)(nil),        // 2: TrajectoryResponse
-	(*TrajectoryRequest_Point)(nil),   // 3: TrajectoryRequest.Point
-	(*TrajectoryRequest_Segment)(nil), // 4: TrajectoryRequest.Segment
+	(SplineTypes)(0),                                    // 0: SplineTypes
+	(TrajectoryRequest_DriveTrain)(0),                   // 1: TrajectoryRequest.DriveTrain
+	(*Vector)(nil),                                      // 2: Vector
+	(*Point)(nil),                                       // 3: Point
+	(*Segment)(nil),                                     // 4: Segment
+	(*Section)(nil),                                     // 5: Section
+	(*SplineParameters)(nil),                            // 6: SplineParameters
+	(*SplineRequest)(nil),                               // 7: SplineRequest
+	(*SplineResponse)(nil),                              // 8: SplineResponse
+	(*TrajectoryRequest)(nil),                           // 9: TrajectoryRequest
+	(*TrajectoryResponse)(nil),                          // 10: TrajectoryResponse
+	(*SplineRequest_OptimizationParams)(nil),            // 11: SplineRequest.OptimizationParams
+	(*SplineRequest_OptimizationParams_Hermite)(nil),    // 12: SplineRequest.OptimizationParams.Hermite
+	(*SplineRequest_OptimizationParams_Bezier)(nil),     // 13: SplineRequest.OptimizationParams.Bezier
+	(*SplineRequest_OptimizationParams_Polynomial)(nil), // 14: SplineRequest.OptimizationParams.Polynomial
+	(*SplineResponse_Point)(nil),                        // 15: SplineResponse.Point
+	(*TrajectoryRequest_SwerveRobotParams)(nil),         // 16: TrajectoryRequest.SwerveRobotParams
+	(*TrajectoryRequest_TankRobotParams)(nil),           // 17: TrajectoryRequest.TankRobotParams
+	(*TrajectoryResponse_SwervePoint)(nil),              // 18: TrajectoryResponse.SwervePoint
+	(*TrajectoryResponse_TankPoint)(nil),                // 19: TrajectoryResponse.TankPoint
 }
 var file_PathFinder_proto_depIdxs = []int32{
-	4, // 0: TrajectoryRequest.segments:type_name -> TrajectoryRequest.Segment
-	0, // 1: TrajectoryRequest.Point.position:type_name -> Vector
-	0, // 2: TrajectoryRequest.Point.controlIn:type_name -> Vector
-	0, // 3: TrajectoryRequest.Point.controlOut:type_name -> Vector
-	3, // 4: TrajectoryRequest.Segment.points:type_name -> TrajectoryRequest.Point
-	1, // 5: PathFinder.CalculateTrajectory:input_type -> TrajectoryRequest
-	2, // 6: PathFinder.CalculateTrajectory:output_type -> TrajectoryResponse
-	6, // [6:7] is the sub-list for method output_type
-	5, // [5:6] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2,  // 0: Point.position:type_name -> Vector
+	2,  // 1: Point.controlIn:type_name -> Vector
+	2,  // 2: Point.controlOut:type_name -> Vector
+	3,  // 3: Segment.points:type_name -> Point
+	0,  // 4: Segment.splineType:type_name -> SplineTypes
+	6,  // 5: Segment.splineParameters:type_name -> SplineParameters
+	4,  // 6: Section.segments:type_name -> Segment
+	3,  // 7: SplineRequest.points:type_name -> Point
+	11, // 8: SplineRequest.optimizationParams:type_name -> SplineRequest.OptimizationParams
+	6,  // 9: SplineResponse.splineParameters:type_name -> SplineParameters
+	0,  // 10: SplineResponse.splineType:type_name -> SplineTypes
+	15, // 11: SplineResponse.evaluatedPoints:type_name -> SplineResponse.Point
+	5,  // 12: TrajectoryRequest.sections:type_name -> Section
+	1,  // 13: TrajectoryRequest.driveTrain:type_name -> TrajectoryRequest.DriveTrain
+	16, // 14: TrajectoryRequest.swerveRobotParams:type_name -> TrajectoryRequest.SwerveRobotParams
+	17, // 15: TrajectoryRequest.tankRobotParams:type_name -> TrajectoryRequest.TankRobotParams
+	18, // 16: TrajectoryResponse.swervePoints:type_name -> TrajectoryResponse.SwervePoint
+	19, // 17: TrajectoryResponse.tankPoints:type_name -> TrajectoryResponse.TankPoint
+	0,  // 18: SplineRequest.OptimizationParams.splineType:type_name -> SplineTypes
+	12, // 19: SplineRequest.OptimizationParams.hermite:type_name -> SplineRequest.OptimizationParams.Hermite
+	13, // 20: SplineRequest.OptimizationParams.bezier:type_name -> SplineRequest.OptimizationParams.Bezier
+	14, // 21: SplineRequest.OptimizationParams.polynomial:type_name -> SplineRequest.OptimizationParams.Polynomial
+	2,  // 22: SplineResponse.Point.point:type_name -> Vector
+	2,  // 23: TrajectoryResponse.SwervePoint.position:type_name -> Vector
+	2,  // 24: TrajectoryResponse.SwervePoint.velocity:type_name -> Vector
+	2,  // 25: TrajectoryResponse.TankPoint.position:type_name -> Vector
+	9,  // 26: PathFinder.CalculateTrajectory:input_type -> TrajectoryRequest
+	10, // 27: PathFinder.CalculateTrajectory:output_type -> TrajectoryResponse
+	27, // [27:28] is the sub-list for method output_type
+	26, // [26:27] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_PathFinder_proto_init() }
@@ -377,7 +1498,7 @@ func file_PathFinder_proto_init() {
 			}
 		}
 		file_PathFinder_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TrajectoryRequest); i {
+			switch v := v.(*Point); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -389,7 +1510,7 @@ func file_PathFinder_proto_init() {
 			}
 		}
 		file_PathFinder_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TrajectoryResponse); i {
+			switch v := v.(*Segment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -401,7 +1522,7 @@ func file_PathFinder_proto_init() {
 			}
 		}
 		file_PathFinder_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TrajectoryRequest_Point); i {
+			switch v := v.(*Section); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -413,7 +1534,163 @@ func file_PathFinder_proto_init() {
 			}
 		}
 		file_PathFinder_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TrajectoryRequest_Segment); i {
+			switch v := v.(*SplineParameters); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineRequest_OptimizationParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineRequest_OptimizationParams_Hermite); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineRequest_OptimizationParams_Bezier); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineRequest_OptimizationParams_Polynomial); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SplineResponse_Point); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryRequest_SwerveRobotParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryRequest_TankRobotParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryResponse_SwervePoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_PathFinder_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrajectoryResponse_TankPoint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -430,13 +1707,14 @@ func file_PathFinder_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_PathFinder_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   5,
+			NumEnums:      2,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_PathFinder_proto_goTypes,
 		DependencyIndexes: file_PathFinder_proto_depIdxs,
+		EnumInfos:         file_PathFinder_proto_enumTypes,
 		MessageInfos:      file_PathFinder_proto_msgTypes,
 	}.Build()
 	File_PathFinder_proto = out.File

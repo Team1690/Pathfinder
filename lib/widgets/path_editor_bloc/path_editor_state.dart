@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pathfinder/cubic_bezier/cubic_bezier.dart';
-import 'package:pathfinder/path_editor/waypoint.dart';
+import 'package:pathfinder/utils/cubic_bezier/cubic_bezier.dart';
+import 'package:pathfinder/widgets/path_editor/waypoint.dart';
 
 abstract class PathEditorState {}
 
@@ -12,7 +12,7 @@ class OnePointDefined extends PathEditorState {
 }
 
 class PathDefined extends PathEditorState {
-  /* 
+  /*
   ? should there be start and end points
   ? (which are not waypoints because they don't have all the parameters)
   */

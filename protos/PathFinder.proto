@@ -12,32 +12,120 @@ message Vector {
 	float y = 2;
 }
 
-message TrajectoryRequest {
-	message Point {
-		Vector position = 1;
+message Point {
+	Vector position = 1;
 
-		Vector controlIn = 2;
-		Vector controlOut = 3;
+	Vector controlIn = 2;
+	Vector controlOut = 3;
 
-		bool useHeading = 4;
-		float heading = 5;
-	}
+	bool useHeading = 4;
+	float heading = 5;
+}
 
-	message Segment {
-		repeated Point points = 1;
-	}
+message Segment {
+	repeated Point points = 1;
+	float maxVeolcity = 2;
 
+	SplineTypes splineType = 3;
+	SplineParameters splineParameters = 4;
+}
+
+message Section {
 	repeated Segment segments = 1;
 }
 
-message TrajectoryResponse {
+message SplineParameters {
+	repeated float params = 1;
+}
+
+enum SplineTypes {
+	None = 0;
+	Hermite = 1;
+	Bezier = 2;
+	Polynomial = 3;
+}
+
+message SplineRequest {
+	message OptimizationParams {
+		message Hermite { }
+
+		message Bezier { }
+
+		message Polynomial { }
+
+		SplineTypes splineType = 1;
+
+		Hermite hermite = 5;
+		Bezier bezier = 6;
+		Polynomial polynomial = 7;
+	}
+
+	repeated Point points = 1;
+
+	OptimizationParams optimizationParams = 2;
+
+	float evaluatedPointsInterval = 3; // meters
+}
+
+message SplineResponse {
+	SplineParameters splineParameters = 1;
+	SplineTypes splineType = 2;
+
 	message Point {
+		Vector point = 1;
+	}
+
+	repeated Point evaluatedPoints = 3;
+}
+
+message TrajectoryRequest {
+	enum DriveTrain {
+		Swerve = 0;
+		Tank = 1;
+	}
+
+	message SwerveRobotParams {
+		float width = 1;
+		float height = 2;
+		float maxVelocity = 3;
+		float maxAcceleration = 4;
+		float maxJerk = 5;
+		float maxAngularVelocity = 6;
+		float maxAngularAcceleration = 7;
+	}
+
+	message TankRobotParams {
+		float width = 1;
+		float height = 2;
+		float maxVelocity = 3;
+		float maxAcceleration = 4;
+		float maxJerk = 5;
+	}
+
+	repeated Section sections = 1;
+
+	DriveTrain driveTrain = 4;
+	SwerveRobotParams swerveRobotParams = 5;
+	TankRobotParams tankRobotParams = 6;
+}
+
+message TrajectoryResponse {
+	message SwervePoint {
 		float time = 1;
 		Vector position = 2;
 		Vector velocity = 3;
 		float heading = 4;
-		float omega = 5;
+		float angularVelocity = 5;
 	}
 
-	repeated Point points = 1;
+	message TankPoint {
+		float time = 1;
+		Vector position = 2;
+		float rightVelocity = 3;
+		float leftVelocity = 4;
+		float heading = 5;
+	}
+
+	repeated SwervePoint swervePoints = 1;
+	repeated TankPoint tankPoints = 2;
 }
