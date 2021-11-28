@@ -13,10 +13,6 @@ import (
 )
 
 func Test(_ *testing.T) {
-	main()
-}
-
-func main() {
 	var (
 		chester = pathfinder.RobotParameters{
 			Radius:           0.3,
