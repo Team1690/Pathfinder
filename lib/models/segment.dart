@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart';
 
 class Segment {
