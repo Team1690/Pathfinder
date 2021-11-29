@@ -39,7 +39,13 @@ class TimeLineSegment extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('$velocity m/s'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('$velocity m/s'),
+            SizedBox(width: 5),
+          ],
+        ),
         SizedBox(height: 5),
         Stack(alignment: Alignment.center, children: [
           Container(
@@ -63,11 +69,6 @@ class PathTimeline extends StatelessWidget {
   final List<TimeLineSegment> segments;
 
   const PathTimeline({Key? key, required this.segments}) : super(key: key);
-
-  // int sumPoints({required List<TimeLineSegment> segments}) =>
-  //     segments.fold(0,
-  //         (int acc, TimeLineSegment segment) => acc + segment.points.length) -
-  //     (segments.length - 1);
 
   @override
   Widget build(BuildContext context) {

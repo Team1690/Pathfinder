@@ -59,7 +59,28 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ),
                 ),
-                Expanded(flex: 2, child: Container())
+                Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.travel_explore),
+                          label: Text('Path'),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.trending_flat_rounded),
+                          label: Text('Trajectory'),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.trending_up_rounded),
+                          label: Text('Graph'),
+                        )
+                      ],
+                    ))
               ],
             ),
           ),
