@@ -40,7 +40,7 @@ class _EditorScreenState extends State<EditorScreen> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
                     child: PathTimeline(
@@ -48,15 +48,18 @@ class _EditorScreenState extends State<EditorScreen> {
                           3,
                           (index) => TimeLineSegment(
                               color: Random().nextBool() ? blue : red,
+                              velocity: Random().nextInt(5).roundToDouble(),
                               points: List.generate(
-                                  4,
+                                  Random().nextBool() ? 3 : 5,
+
+                                  // 5,
                                   (index) => TimelinePoint(
                                       onTap: () {},
                                       color: Color(0xffE1E1E1CC))))),
                     ),
                   ),
                 ),
-                Expanded(flex: 1, child: Container())
+                Expanded(flex: 2, child: Container())
               ],
             ),
           ),

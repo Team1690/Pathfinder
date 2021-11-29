@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
@@ -20,49 +21,39 @@ class TimelinePoint extends StatelessWidget {
 }
 
 class TimeLineSegment extends StatelessWidget {
-  const TimeLineSegment({Key? key, required this.points, required this.color})
+  const TimeLineSegment(
+      {Key? key,
+      required this.points,
+      required this.color,
+      required this.velocity})
       : super(key: key);
 
   final List<TimelinePoint> points;
   final Color color;
+  final double velocity;
   static double segmentWidth = 300;
   static double segmentHeight = 50;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: segmentWidth,
-      decoration: BoxDecoration(
-
-          // color: gray,
-          // borderRadius: BorderRadius.all(Radius.circular(defaultRaduis)),
-          ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('$velocity m/s'),
+        Stack(alignment: Alignment.center, children: [
           Container(
               height: TimeLineSegment.segmentHeight,
-              width: segmentWidth - TimelinePoint.pointRadius * 2,
               decoration: BoxDecoration(
                 color: gray,
-                border: Border.all(color: primary, width: 2),
-                // borderRadius: BorderRadius.all(Radius.circular(defaultRaduis)),
+                border: Border.all(color: primary, width: 4),
+                borderRadius: BorderRadius.all(Radius.circular(defaultRadius)),
               )),
           Container(
             height: 2,
-            color: blue,
+            color: color,
           ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: points
-                  .map((TimelinePoint point) => GestureDetector(
-                        child: point,
-                        onTap: () => {print(point.color)},
-                      ))
-                  .toList()),
-        ],
-      ),
+        ]),
+      ],
     );
   }
 }
@@ -72,43 +63,47 @@ class PathTimeline extends StatelessWidget {
 
   const PathTimeline({Key? key, required this.segments}) : super(key: key);
 
-  int sumPoints({required List<TimeLineSegment> segments}) =>
-      segments.fold(0,
-          (int acc, TimeLineSegment segment) => acc + segment.points.length) -
-      (segments.length - 1);
+  // int sumPoints({required List<TimeLineSegment> segments}) =>
+  //     segments.fold(0,
+  //         (int acc, TimeLineSegment segment) => acc + segment.points.length) -
+  //     (segments.length - 1);
 
   @override
   Widget build(BuildContext context) {
+    inspect(segments);
+
     return Stack(
       alignment: Alignment.centerLeft,
       children: [
         Row(
-            children: segments
-                .map(
-                  (segment) => Expanded(
-                    //TODO: flex between 1-6
-                    // flex: segment.points.length / sumPoints(segments: segments),
-                    child: Stack(alignment: Alignment.center, children: [
-                      Container(
-                          height: TimeLineSegment.segmentHeight,
-                          decoration: BoxDecoration(
-                            color: gray,
-                            border: Border.all(color: primary, width: 4),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(defaultRadius)),
-                          )),
-                      Container(
-                        height: 2,
-                        color: segment.color,
-                      ),
-                    ]),
+          children: segments
+              .map(
+                (segment) => Expanded(
+                  //TODO: flex between 1-6
+                  flex: segment.points.length - 1,
+
+                  child: TimeLineSegment(
+                    points: segment.points,
+                    color: segment.color,
+                    velocity: segment.velocity,
                   ),
-                )
-                .toList()),
+                ),
+              )
+              .toList(),
+        ),
         Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // children: segments.map((segment) => segment.points).
-            )
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: segments
+              .map((segment) {
+                List<TimelinePoint> redeucedList =
+                    List.castFrom(segment.points);
+                redeucedList.removeLast();
+                return redeucedList;
+              })
+              .expand((points) => points)
+              .toList()
+            ..add(segments.last.points.last),
+        ),
       ],
     );
     // return Stack(
