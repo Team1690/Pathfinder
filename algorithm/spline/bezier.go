@@ -43,3 +43,11 @@ func (b Bezier) Length() float64 {
 
 	return length
 }
+
+func (b Bezier) Derivative() Bezier {
+	derivativePoints := []vector.Vector{}
+	for _, point := range b.Points {
+		derivativePoints = append(derivativePoints, point.Scale(float64(b.degree)))
+	}
+	return NewBezier(derivativePoints)
+}
