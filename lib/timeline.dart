@@ -40,6 +40,7 @@ class TimeLineSegment extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('$velocity m/s'),
+        SizedBox(height: 5),
         Stack(alignment: Alignment.center, children: [
           Container(
               height: TimeLineSegment.segmentHeight,
@@ -91,18 +92,25 @@ class PathTimeline extends StatelessWidget {
               )
               .toList(),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: segments
-              .map((segment) {
-                List<TimelinePoint> redeucedList =
-                    List.castFrom(segment.points);
-                redeucedList.removeLast();
-                return redeucedList;
-              })
-              .expand((points) => points)
-              .toList()
-            ..add(segments.last.points.last),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(''),
+            SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: segments
+                  .map((segment) {
+                    List<TimelinePoint> redeucedList =
+                        List.castFrom(segment.points);
+                    redeucedList.removeLast();
+                    return redeucedList;
+                  })
+                  .expand((points) => points)
+                  .toList()
+                ..add(segments.last.points.last),
+            ),
+          ],
         ),
       ],
     );
