@@ -23,10 +23,10 @@ func Test(_ *testing.T) {
 			CycleTime:        0.02,
 		}
 
-		firstBezier  = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0.42, Y: 0}, {X: 0.58, Y: 1}, {X: 1, Y: 1}})
-		secondBezier = spline.NewBezier([]vector.Vector{{X: 1, Y: 1}, {X: 1.42, Y: 1}, {X: 1.58, Y: 0}, {X: 2, Y: 0}})
+		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 1}, {X: 2, Y: 2}, {X: 1, Y: 1}})
+		// secondBezier = spline.NewBezier([]vector.Vector{{X: 1, Y: 1}, {X: 1.7, Y: 1}, {X: 1.3, Y: 2}, {X: 2, Y: 2}})
 
-		path = path.NewPath(firstBezier, secondBezier)
+		path = path.NewPath(firstBezier)
 	)
 	plot.PlotSpline(path, "Path")
 
@@ -34,16 +34,25 @@ func Test(_ *testing.T) {
 
 	trajectory := pathfinder.CreateTrajectoryPointArray(path, chester)
 	pathfinder.LimitVelocityWithCentrifugalForce(&trajectory, segmentMaxVel, chester)
-	pathfinder.SetHeading(&trajectory, 0, math.Pi)
+	pathfinder.SetHeading(&trajectory, 0, math.Pi/2)
 	pathfinder.CalculateKinematics(&trajectory, chester)
 	pathfinder.CalculateKinematicsReverse(&trajectory, chester)
+	pathfinder.CalculateDtAndOmegaAfterReverse(&trajectory)
 
-	scatterData := []vector.Vector{}
+	// quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, chester.CycleTime)
+
+	velTimeData := []vector.Vector{}
+	headingTimeData := []vector.Vector{}
+	headingDistanceData := []vector.Vector{}
 
 	for _, trajectoryPoint := range trajectory {
-		scatterData = append(scatterData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Velocity})
+		velTimeData = append(velTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Velocity})
+		headingTimeData = append(headingTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Heading})
+		headingDistanceData = append(headingDistanceData, vector.Vector{X: trajectoryPoint.Distance, Y: trajectoryPoint.Heading})
 	}
-	plot.PlotScatter(scatterData, "Velocity-Time")
+	plot.PlotScatter(velTimeData, "Velocity-Time")
+	plot.PlotScatter(headingTimeData, "Heading-Time")
+	plot.PlotScatter(headingDistanceData, "Heading-Distance")
 
 	http.ListenAndServe(":8081", nil)
 }

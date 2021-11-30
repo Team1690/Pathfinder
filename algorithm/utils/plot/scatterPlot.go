@@ -21,7 +21,7 @@ func addSplineDataPoints(b spline.Spline, chart *charts.Scatter) {
 }
 
 func PlotSpline(s spline.Spline, title string) {
-	http.HandleFunc("/spline", func(w http.ResponseWriter, _ *http.Request) {
+	http.HandleFunc("/"+title, func(w http.ResponseWriter, _ *http.Request) {
 		scatter := charts.NewScatter()
 
 		scatter.SetGlobalOptions(
@@ -36,7 +36,7 @@ func PlotSpline(s spline.Spline, title string) {
 }
 
 func PlotScatter(data []vector.Vector, title string) {
-	http.HandleFunc("/scatter", func(w http.ResponseWriter, _ *http.Request) {
+	http.HandleFunc("/"+title, func(w http.ResponseWriter, _ *http.Request) {
 		scatter := charts.NewScatter()
 
 		scatter.SetGlobalOptions(
