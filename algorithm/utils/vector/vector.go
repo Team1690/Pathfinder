@@ -1,6 +1,10 @@
 package vector
 
-import "math"
+import (
+	"math"
+
+	"github.com/Team1690/Pathfinder/utils"
+)
 
 type Vector struct {
 	X, Y float64
@@ -32,4 +36,8 @@ func (v Vector) Norm() float64 {
 
 func (v Vector) Angle() float64 {
 	return math.Atan2(v.Y, v.X)
+}
+
+func Lerp(a Vector, b Vector, t float64) Vector {
+	return Vector{X: utils.Lerp(a.X, b.X, t), Y: utils.Lerp(a.Y, b.Y, t)}
 }
