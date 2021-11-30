@@ -52,3 +52,13 @@ func GetBernstein(n int, k int) func(s float64) float64 {
 		return binomialCoefficient * math.Pow(s, float64(k)) * math.Pow((1-s), float64((n-k)))
 	}
 }
+
+// The value of the function ranges from x to y as t ranges from 0 to 1
+func Lerp(x float64, y float64, t float64) float64 {
+	return (1-t)*x + t*y
+}
+
+// Returns the ratio of the lerp of x and y that results in lerpValue
+func ReverseLerp(x float64, y float64, lerpValue float64) float64 {
+	return (lerpValue - x) / (y - x)
+}
