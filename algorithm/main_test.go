@@ -23,7 +23,7 @@ func Test(_ *testing.T) {
 			CycleTime:        0.02,
 		}
 
-		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 1}, {X: 2, Y: 2}, {X: 1, Y: 1}})
+		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 0}, {X: 0, Y: 0}, {X: 1 / math.Sqrt2, Y: 1 / math.Sqrt2}})
 		// secondBezier = spline.NewBezier([]vector.Vector{{X: 1, Y: 1}, {X: 1.7, Y: 1}, {X: 1.3, Y: 2}, {X: 2, Y: 2}})
 
 		path = path.NewPath(firstBezier)
@@ -42,15 +42,18 @@ func Test(_ *testing.T) {
 	// quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, chester.CycleTime)
 
 	velTimeData := []vector.Vector{}
+	accTimeData := []vector.Vector{}
 	headingTimeData := []vector.Vector{}
 	headingDistanceData := []vector.Vector{}
 
 	for _, trajectoryPoint := range trajectory {
 		velTimeData = append(velTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Velocity})
+		accTimeData = append(accTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Acceleration})
 		headingTimeData = append(headingTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Heading})
 		headingDistanceData = append(headingDistanceData, vector.Vector{X: trajectoryPoint.Distance, Y: trajectoryPoint.Heading})
 	}
 	plot.PlotScatter(velTimeData, "Velocity-Time")
+	plot.PlotScatter(accTimeData, "Acceleration-Time")
 	plot.PlotScatter(headingTimeData, "Heading-Time")
 	plot.PlotScatter(headingDistanceData, "Heading-Distance")
 

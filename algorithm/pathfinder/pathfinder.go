@@ -80,7 +80,7 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints *[]TrajectoryPoint, segm
 }
 
 func SetHeading(trajectoryPoints *[]TrajectoryPoint, headingStart float64, headingEnd float64) {
-	const distancePercentageForAngularAcceleration float64 = 0.25
+	const distancePercentageForAngularAcceleration float64 = 0.05
 	const oneMinusDistancePercentageForAcceleration float64 = 1 - distancePercentageForAngularAcceleration
 	const twiceAccelerationPercentageTimesOneMinus = 2 * distancePercentageForAngularAcceleration * oneMinusDistancePercentageForAcceleration
 
@@ -115,7 +115,7 @@ func SetHeading(trajectoryPoints *[]TrajectoryPoint, headingStart float64, headi
 }
 
 func GetFirstPoint(distance float64, robot RobotParameters) TrajectoryPoint {
-	const dt float64 = 0.0001
+	const dt float64 = 0.00001
 
 	currentPoint := TrajectoryPoint{Time: 0, Acceleration: 0, Velocity: 0, Distance: 0}
 	var prevPoint TrajectoryPoint
@@ -192,6 +192,7 @@ func CalculateKinematicsReverse(trajectoryPoints *[]TrajectoryPoint, robot Robot
 	}
 
 	(*trajectoryPoints)[len(*trajectoryPoints)-1] = actualLastPoint
+	(*trajectoryPoints)[len(*trajectoryPoints)-1].Acceleration = 0
 }
 
 func CalculateDtAndOmegaAfterReverse(trajectoryPoints *[]TrajectoryPoint) {
@@ -204,6 +205,7 @@ func CalculateDtAndOmegaAfterReverse(trajectoryPoints *[]TrajectoryPoint) {
 
 		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
 		currentPoint.Time = prevPoint.Time + dt
+		currentPoint.Acceleration = (currentPoint.Velocity - prevPoint.Velocity) / dt
 	}
 }
 
@@ -229,12 +231,15 @@ func QuantizeTrajectory(trajectoryPoints []TrajectoryPoint, cycleTime float64) [
 		prevPoint := trajectoryPoints[searchIndex-1]
 		nextToPreviousPointRatio := utils.ReverseLerp(prevPoint.Time, nextPoint.Time, t)
 
+		// TODO remove Distance and Acceleration calculation (not used)
 		quantizedPoint := TrajectoryPoint{
-			Time:     t,
-			Position: vector.Lerp(prevPoint.Position, nextPoint.Position, nextToPreviousPointRatio),
-			Velocity: utils.Lerp(prevPoint.Velocity, nextPoint.Velocity, nextToPreviousPointRatio),
-			Heading:  utils.Lerp(prevPoint.Heading, nextPoint.Heading, nextToPreviousPointRatio),
-			Omega:    utils.Lerp(prevPoint.Omega, nextPoint.Omega, nextToPreviousPointRatio),
+			Time:         t,
+			Distance:     utils.Lerp(prevPoint.Distance, nextPoint.Distance, nextToPreviousPointRatio),
+			Position:     vector.Lerp(prevPoint.Position, nextPoint.Position, nextToPreviousPointRatio),
+			Velocity:     utils.Lerp(prevPoint.Velocity, nextPoint.Velocity, nextToPreviousPointRatio),
+			Acceleration: utils.Lerp(prevPoint.Acceleration, nextPoint.Acceleration, nextToPreviousPointRatio),
+			Heading:      utils.Lerp(prevPoint.Heading, nextPoint.Heading, nextToPreviousPointRatio),
+			Omega:        utils.Lerp(prevPoint.Omega, nextPoint.Omega, nextToPreviousPointRatio),
 		}
 		quantizedTrajectory = append(quantizedTrajectory, quantizedPoint)
 	}
