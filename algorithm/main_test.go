@@ -23,7 +23,7 @@ func Test(_ *testing.T) {
 			CycleTime:        0.02,
 		}
 
-		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 0}, {X: 0, Y: 0}, {X: 1 / math.Sqrt2, Y: 1 / math.Sqrt2}})
+		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 0}, {X: 1, Y: 1}, {X: 1, Y: 1}})
 		// secondBezier = spline.NewBezier([]vector.Vector{{X: 1, Y: 1}, {X: 1.7, Y: 1}, {X: 1.3, Y: 2}, {X: 2, Y: 2}})
 
 		path = path.NewPath(firstBezier)
@@ -45,13 +45,22 @@ func Test(_ *testing.T) {
 	accTimeData := []vector.Vector{}
 	headingTimeData := []vector.Vector{}
 	headingDistanceData := []vector.Vector{}
+	positionXData := []vector.Vector{}
+	positionYData := []vector.Vector{}
+	positionData := []vector.Vector{}
 
 	for _, trajectoryPoint := range trajectory {
 		velTimeData = append(velTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Velocity})
 		accTimeData = append(accTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Acceleration})
 		headingTimeData = append(headingTimeData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Heading})
 		headingDistanceData = append(headingDistanceData, vector.Vector{X: trajectoryPoint.Distance, Y: trajectoryPoint.Heading})
+		positionXData = append(positionXData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Position.X})
+		positionYData = append(positionYData, vector.Vector{X: trajectoryPoint.Time, Y: trajectoryPoint.Position.Y})
+		positionData = append(positionData, trajectoryPoint.Position)
 	}
+	plot.PlotScatter(positionData, "Position")
+	plot.PlotScatter(positionXData, "PositionX-Time")
+	plot.PlotScatter(positionYData, "PositionY-Time")
 	plot.PlotScatter(velTimeData, "Velocity-Time")
 	plot.PlotScatter(accTimeData, "Acceleration-Time")
 	plot.PlotScatter(headingTimeData, "Heading-Time")
