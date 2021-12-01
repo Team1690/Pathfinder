@@ -20,6 +20,11 @@ class PathFinderClient extends $grpc.Client {
           ($0.TrajectoryRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $0.TrajectoryResponse.fromBuffer(value));
+  static final _$calculateSplinePoints =
+      $grpc.ClientMethod<$0.SplineRequest, $0.SplineResponse>(
+          '/PathFinder/CalculateSplinePoints',
+          ($0.SplineRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.SplineResponse.fromBuffer(value));
 
   PathFinderClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -30,6 +35,12 @@ class PathFinderClient extends $grpc.Client {
       $0.TrajectoryRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$calculateTrajectory, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.SplineResponse> calculateSplinePoints(
+      $0.SplineRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$calculateSplinePoints, request, options: options);
   }
 }
 
@@ -44,6 +55,13 @@ abstract class PathFinderServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.TrajectoryRequest.fromBuffer(value),
         ($0.TrajectoryResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.SplineRequest, $0.SplineResponse>(
+        'CalculateSplinePoints',
+        calculateSplinePoints_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.SplineRequest.fromBuffer(value),
+        ($0.SplineResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.TrajectoryResponse> calculateTrajectory_Pre(
@@ -52,6 +70,13 @@ abstract class PathFinderServiceBase extends $grpc.Service {
     return calculateTrajectory(call, await request);
   }
 
+  $async.Future<$0.SplineResponse> calculateSplinePoints_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.SplineRequest> request) async {
+    return calculateSplinePoints(call, await request);
+  }
+
   $async.Future<$0.TrajectoryResponse> calculateTrajectory(
       $grpc.ServiceCall call, $0.TrajectoryRequest request);
+  $async.Future<$0.SplineResponse> calculateSplinePoints(
+      $grpc.ServiceCall call, $0.SplineRequest request);
 }

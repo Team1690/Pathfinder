@@ -84,8 +84,9 @@ const SplineRequest$json = const {
   '1': 'SplineRequest',
   '2': const [
     const {'1': 'points', '3': 1, '4': 3, '5': 11, '6': '.Point', '10': 'points'},
-    const {'1': 'optimizationParams', '3': 2, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams', '10': 'optimizationParams'},
-    const {'1': 'evaluatedPointsInterval', '3': 3, '4': 1, '5': 2, '10': 'evaluatedPointsInterval'},
+    const {'1': 'evaluatedPointsInterval', '3': 2, '4': 1, '5': 2, '10': 'evaluatedPointsInterval'},
+    const {'1': 'splineParameters', '3': 3, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
+    const {'1': 'optimizationParams', '3': 4, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams', '10': 'optimizationParams'},
   ],
   '3': const [SplineRequest_OptimizationParams$json],
 };
@@ -118,7 +119,7 @@ const SplineRequest_OptimizationParams_Polynomial$json = const {
 };
 
 /// Descriptor for `SplineRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List splineRequestDescriptor = $convert.base64Decode('Cg1TcGxpbmVSZXF1ZXN0Eh4KBnBvaW50cxgBIAMoCzIGLlBvaW50UgZwb2ludHMSUQoSb3B0aW1pemF0aW9uUGFyYW1zGAIgASgLMiEuU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXNSEm9wdGltaXphdGlvblBhcmFtcxI4ChdldmFsdWF0ZWRQb2ludHNJbnRlcnZhbBgDIAEoAlIXZXZhbHVhdGVkUG9pbnRzSW50ZXJ2YWwaugIKEk9wdGltaXphdGlvblBhcmFtcxIsCgpzcGxpbmVUeXBlGAEgASgOMgwuU3BsaW5lVHlwZXNSCnNwbGluZVR5cGUSQwoHaGVybWl0ZRgFIAEoCzIpLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLkhlcm1pdGVSB2hlcm1pdGUSQAoGYmV6aWVyGAYgASgLMiguU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXMuQmV6aWVyUgZiZXppZXISTAoKcG9seW5vbWlhbBgHIAEoCzIsLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLlBvbHlub21pYWxSCnBvbHlub21pYWwaCQoHSGVybWl0ZRoICgZCZXppZXIaDAoKUG9seW5vbWlhbA==');
+final $typed_data.Uint8List splineRequestDescriptor = $convert.base64Decode('Cg1TcGxpbmVSZXF1ZXN0Eh4KBnBvaW50cxgBIAMoCzIGLlBvaW50UgZwb2ludHMSOAoXZXZhbHVhdGVkUG9pbnRzSW50ZXJ2YWwYAiABKAJSF2V2YWx1YXRlZFBvaW50c0ludGVydmFsEj0KEHNwbGluZVBhcmFtZXRlcnMYAyABKAsyES5TcGxpbmVQYXJhbWV0ZXJzUhBzcGxpbmVQYXJhbWV0ZXJzElEKEm9wdGltaXphdGlvblBhcmFtcxgEIAEoCzIhLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zUhJvcHRpbWl6YXRpb25QYXJhbXMaugIKEk9wdGltaXphdGlvblBhcmFtcxIsCgpzcGxpbmVUeXBlGAEgASgOMgwuU3BsaW5lVHlwZXNSCnNwbGluZVR5cGUSQwoHaGVybWl0ZRgFIAEoCzIpLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLkhlcm1pdGVSB2hlcm1pdGUSQAoGYmV6aWVyGAYgASgLMiguU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXMuQmV6aWVyUgZiZXppZXISTAoKcG9seW5vbWlhbBgHIAEoCzIsLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLlBvbHlub21pYWxSCnBvbHlub21pYWwaCQoHSGVybWl0ZRoICgZCZXppZXIaDAoKUG9seW5vbWlhbA==');
 @$core.Deprecated('Use splineResponseDescriptor instead')
 const SplineResponse$json = const {
   '1': 'SplineResponse',
