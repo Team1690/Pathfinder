@@ -61,6 +61,7 @@ func NewSegmentClassifier(path spline.Spline, segments []*rpc.Segment) *segmentC
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 		distance += distanceToPrevPoint
 
+		// TODO the path could intersect itself
 		if currentPoint.Sub(currentSegmentStartingPoint).Norm() < resolutionForSegmentDeclaration {
 			classifications = append(classifications, &segmentClassification{distance, segments[segmentIndex]})
 
@@ -86,7 +87,7 @@ func (s *segmentClassifier) getSegment(point *TrajectoryPoint) (*rpc.Segment, er
 }
 
 func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, segClass *segmentClassifier) ([]*TrajectoryPoint, error) {
-	const deltaDistanceForEvaluation float64 = 0.000001
+	const deltaDistanceForEvaluation float64 = 0.00001
 	// const deltaDistanceForOnePercent float64 = 0.01 * deltaDistanceForEvaluation
 	// const deltaDistanceForTenPercent float64 = 0.1 * deltaDistanceForEvaluation
 
@@ -230,27 +231,19 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headi
 }
 
 func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
-	const dt float64 = 0.00000001
+	firstPointTime := math.Pow(6*distance/robot.MaxJerk, float64(1)/float64(3))
 
-	currentPoint := TrajectoryPoint{Time: 0, Acceleration: 0, Velocity: 0, Distance: 0}
-	var prevPoint TrajectoryPoint
-
-	for time := 0.0; currentPoint.Distance < distance; time += dt {
-		prevPoint = currentPoint
-		currentPoint = TrajectoryPoint{
-			Time:         time,
-			Acceleration: prevPoint.Acceleration + robot.MaxJerk*dt,
-			Velocity:     prevPoint.Velocity + prevPoint.Acceleration*dt,
-			Distance:     prevPoint.Distance + prevPoint.Velocity*dt + 0.5*prevPoint.Acceleration*math.Pow(dt, 2),
-		}
+	return &TrajectoryPoint{
+		Time:         firstPointTime,
+		Velocity:     0.5 * robot.MaxJerk * firstPointTime * firstPointTime,
+		Acceleration: robot.MaxJerk * firstPointTime,
 	}
-
-	return &prevPoint
 }
 
 func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
 	actualFirstPoint := trajectoryPoints[0]
 	trajectoryPoints[0] = GetFirstPoint(trajectoryPoints[1].Distance, robot)
+
 	trajectoryPoints[0].Heading = actualFirstPoint.Heading
 
 	for i := 1; i < len(trajectoryPoints); i++ {
