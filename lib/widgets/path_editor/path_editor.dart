@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"math"
 
 	"github.com/Team1690/Pathfinder/export"
@@ -14,12 +15,15 @@ import (
 
 type pathFinderServerImpl struct {
 	rpc.UnimplementedPathFinderServer
+	logger *log.Logger
 }
 
 var _ rpc.PathFinderServer = (*pathFinderServerImpl)(nil)
 
-func NewServer() *pathFinderServerImpl {
-	return &pathFinderServerImpl{}
+func NewServer(logger *log.Logger) *pathFinderServerImpl {
+	return &pathFinderServerImpl{
+		logger: logger,
+	}
 }
 
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
@@ -76,6 +80,8 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 }
 
 func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
+	s.logger.Print("Request: CalculateSplinePoints")
+
 	path := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
 
 	evaluatedPoints := []*rpc.SplineResponse_Point{}
@@ -86,6 +92,8 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 	for s := 0.0; s <= 1; s += ds {
 		evaluatedPoints = append(evaluatedPoints, &rpc.SplineResponse_Point{Point: path.Evaluate(s).ToRpc()})
 	}
+
+	s.logger.Print("Response: CalculateSplinePoints")
 
 	return &rpc.SplineResponse{
 		SplineType:      rpc.SplineTypes_Bezier,

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 import 'package:pathfinder/widgets/timeline.dart';
 
@@ -13,6 +15,26 @@ class EditorScreen extends StatefulWidget {
 }
 
 class _EditorScreenState extends State<EditorScreen> {
+  onCalculateSpline() async {
+    final items = List<Point>.generate(
+        3,
+        (i) => Point(
+              Offset(i + 0, i + 0),
+              Offset(i - 1, i - 1),
+              Offset(i + 1, i + 1),
+              0.0,
+              false,
+              List<String>.empty(),
+            ));
+
+    try {
+      final res = await PathFinderService.calculateSpline(items);
+      print(res);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,7 +87,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            onCalculateSpline();
+                          },
                           icon: Icon(Icons.travel_explore),
                           label: Text('Path'),
                         ),
