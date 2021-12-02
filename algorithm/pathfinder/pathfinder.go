@@ -88,8 +88,6 @@ func (s *segmentClassifier) getSegment(point *TrajectoryPoint) (*rpc.Segment, er
 
 func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, segClass *segmentClassifier) ([]*TrajectoryPoint, error) {
 	const deltaDistanceForEvaluation float64 = 0.00001
-	// const deltaDistanceForOnePercent float64 = 0.01 * deltaDistanceForEvaluation
-	// const deltaDistanceForTenPercent float64 = 0.1 * deltaDistanceForEvaluation
 
 	splineLength := spline.Length()
 
@@ -129,40 +127,6 @@ func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, se
 	}
 
 	return trajectory, nil
-
-	// onePercentOfTrajectoryPointsCount := trajectoryPointsCount / 100
-	// tenPercentOfTrajectoryPointsCount := trajectoryPointsCount / 10
-	// ninetyPercentOfTrajectoryPointsCount := trajectoryPointsCount - tenPercentOfTrajectoryPointsCount
-	// ninetyNinePercentOfTrajectoryPointsCount := trajectoryPointsCount - onePercentOfTrajectoryPointsCount
-
-	// dsForOnePercent := deltaDistanceForOnePercent / splineLength
-	// for i := 1; i < onePercentOfTrajectoryPointsCount; i++ {
-	// 	s := dsForOnePercent * float64(i)
-	// 	addPoint(s, trajectory[i-1])
-	// }
-
-	// dsForTenPercent := deltaDistanceForTenPercent / splineLength
-	// for i := onePercentOfTrajectoryPointsCount; i < tenPercentOfTrajectoryPointsCount; i++ {
-	// 	s := dsForTenPercent * float64(i)
-	// 	addPoint(s, trajectory[i-1])
-	// }
-
-	// for i := tenPercentOfTrajectoryPointsCount; i < ninetyPercentOfTrajectoryPointsCount; i++ {
-	// 	s := ds * float64(i)
-	// 	addPoint(s, trajectory[i-1])
-	// }
-
-	// for i := ninetyPercentOfTrajectoryPointsCount; i < ninetyNinePercentOfTrajectoryPointsCount; i++ {
-	// 	s := dsForTenPercent * float64(i)
-	// 	addPoint(s, trajectory[i-1])
-	// }
-
-	// for i := ninetyNinePercentOfTrajectoryPointsCount; i < trajectoryPointsCount; i++ {
-	// 	s := dsForOnePercent * float64(i)
-	// 	addPoint(s, trajectory[i-1])
-	// }
-
-	// return trajectory, nil
 }
 
 func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, hasSegments bool) {
