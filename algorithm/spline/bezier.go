@@ -10,6 +10,8 @@ type Bezier struct {
 	degree int
 }
 
+var _ Spline = (*Bezier)(nil)
+
 func NewBezier(points []vector.Vector) Bezier {
 	return Bezier{
 		Points: points,
@@ -44,7 +46,7 @@ func (b Bezier) Length() float64 {
 	return length
 }
 
-func (b Bezier) Derivative() Bezier {
+func (b Bezier) Derivative() Spline {
 	derivativePoints := []vector.Vector{}
 	for _, point := range b.Points {
 		derivativePoints = append(derivativePoints, point.Scale(float64(b.degree)))

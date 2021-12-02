@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Team1690/Pathfinder/path"
 	"github.com/Team1690/Pathfinder/pathfinder"
 	"github.com/Team1690/Pathfinder/spline"
 	"github.com/Team1690/Pathfinder/utils/plot"
@@ -26,18 +25,16 @@ func Test(_ *testing.T) {
 		firstBezier = spline.NewBezier([]vector.Vector{{X: 0, Y: 0}, {X: 0, Y: 0}, {X: 1, Y: 1}, {X: 1, Y: 1}})
 		// secondBezier = spline.NewBezier([]vector.Vector{{X: 1, Y: 1}, {X: 1.7, Y: 1}, {X: 1.3, Y: 2}, {X: 2, Y: 2}})
 
-		path = path.NewPath(firstBezier)
+		path = spline.NewPath(firstBezier)
 	)
 	plot.PlotSpline(path, "Path")
 
-	const segmentMaxVel float64 = 3.8
-
-	trajectory := pathfinder.CreateTrajectoryPointArray(path, chester)
-	pathfinder.LimitVelocityWithCentrifugalForce(&trajectory, segmentMaxVel, chester)
-	pathfinder.SetHeading(&trajectory, 0, math.Pi/2)
-	pathfinder.CalculateKinematics(&trajectory, chester)
-	pathfinder.CalculateKinematicsReverse(&trajectory, chester)
-	pathfinder.CalculateDtAndOmegaAfterReverse(&trajectory)
+	trajectory, _ := pathfinder.CreateTrajectoryPointArray(path, &chester, nil)
+	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, &chester)
+	pathfinder.SetHeading(trajectory, 0, math.Pi/2)
+	pathfinder.CalculateKinematics(trajectory, &chester)
+	pathfinder.CalculateKinematicsReverse(trajectory, &chester)
+	pathfinder.CalculateDtAndOmegaAfterReverse(trajectory)
 
 	// quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, chester.CycleTime)
 

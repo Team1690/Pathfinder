@@ -1,11 +1,14 @@
 package pathfinder
 
 import (
+	"errors"
 	"math"
 
+	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/spline"
 	"github.com/Team1690/Pathfinder/utils"
 	"github.com/Team1690/Pathfinder/utils/vector"
+	"golang.org/x/xerrors"
 )
 
 type TrajectoryPoint struct {
@@ -28,40 +31,147 @@ type RobotParameters struct {
 	CycleTime        float64
 }
 
-func CreateTrajectoryPointArray(spline spline.Spline, robot RobotParameters) []TrajectoryPoint {
-	const deltaDistanceForEvaluation float64 = 0.0001
+type segmentClassification struct {
+	distance float64
+	segment  *rpc.Segment
+}
 
-	ds := deltaDistanceForEvaluation / spline.Length()
+type segmentClassifier struct {
+	classifications []*segmentClassification
+}
+
+func NewSegmentClassifier(path spline.Spline, segments []*rpc.Segment) *segmentClassifier {
+	const deltaDistanceForEvaluation = 0.0001
+	const resolutionForSegmentDeclaration = 10 * deltaDistanceForEvaluation
+
+	ds := deltaDistanceForEvaluation / path.Length()
+
+	prevPoint := path.Evaluate(0)
+
+	distance := 0.0
+	segmentIndex := 0
+	currentSegmentStartingPoint := vector.NewFromRpcVector(segments[segmentIndex].Points[0].Position)
+
+	var classifications []*segmentClassification
+
+	for s := ds; s <= 1; s += ds {
+		currentPoint := path.Evaluate(s)
+
+		prevPointToCurrent := currentPoint.Sub(prevPoint)
+		distanceToPrevPoint := prevPointToCurrent.Norm()
+		distance += distanceToPrevPoint
+
+		if currentPoint.Sub(currentSegmentStartingPoint).Norm() < resolutionForSegmentDeclaration {
+			classifications = append(classifications, &segmentClassification{distance, segments[segmentIndex]})
+
+			segmentIndex++
+			if segmentIndex >= len(segments) {
+				break
+			}
+			currentSegmentStartingPoint = vector.NewFromRpcVector(segments[segmentIndex].Points[0].Position)
+		}
+	}
+
+	return &segmentClassifier{classifications}
+}
+
+func (s *segmentClassifier) getSegment(point *TrajectoryPoint) (*rpc.Segment, error) {
+	for _, segmentClassification := range s.classifications {
+		if point.Distance >= segmentClassification.distance {
+			return segmentClassification.segment, nil
+		}
+	}
+
+	return nil, errors.New("no segment was found")
+}
+
+func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, segClass *segmentClassifier) ([]*TrajectoryPoint, error) {
+	const deltaDistanceForEvaluation float64 = 0.0001
+	const deltaDistanceForOnePercent float64 = 0.01 * deltaDistanceForEvaluation
+	const deltaDistanceForTenPercent float64 = 0.1 * deltaDistanceForEvaluation
+
+	splineLength := spline.Length()
+
+	ds := deltaDistanceForEvaluation / splineLength
 
 	trajectoryPointsCount := int(1 / ds)
 
-	trajectoryPoints := make([]TrajectoryPoint, trajectoryPointsCount)
+	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: spline.Evaluate(0), Velocity: 0}
 
-	trajectoryPoints[0] = TrajectoryPoint{Distance: 0, S: 0, Position: spline.Evaluate(0), Velocity: 0}
+	trajectory := []*TrajectoryPoint{&firstPoint}
+
+	addPoint := func(s float64, prevPoint *TrajectoryPoint) error {
+		point := TrajectoryPoint{S: s, Position: spline.Evaluate(s)}
+
+		prevPointToCurrent := point.Position.Sub(prevPoint.Position)
+		distanceToPrevPoint := prevPointToCurrent.Norm()
+		point.Distance = prevPoint.Distance + distanceToPrevPoint
+
+		if segClass != nil {
+			// * In test, there will be no segments from rpc
+			currentPointSegment, err := segClass.getSegment(&point)
+			if err != nil {
+				return xerrors.Errorf("error in getting segment for point: %w", err)
+			}
+
+			point.Velocity = float64(currentPointSegment.MaxVeolcity)
+		}
+
+		trajectory = append(trajectory, &point)
+
+		return nil
+	}
 
 	for i := 1; i < trajectoryPointsCount; i++ {
-		s := float64(i) * ds
+		s := ds * float64(i)
+		addPoint(s, trajectory[i-1])
+	}
 
-		trajectoryPoints[i].S = s
-		trajectoryPoints[i].Position = spline.Evaluate(s)
+	return trajectory, nil
+
+	// onePercentOfTrajectoryPointsCount := trajectoryPointsCount / 100
+	// tenPercentOfTrajectoryPointsCount := trajectoryPointsCount / 10
+	// ninetyPercentOfTrajectoryPointsCount := trajectoryPointsCount - tenPercentOfTrajectoryPointsCount
+	// ninetyNinePercentOfTrajectoryPointsCount := trajectoryPointsCount - onePercentOfTrajectoryPointsCount
+
+	// dsForOnePercent := deltaDistanceForOnePercent / splineLength
+	// for i := 1; i < onePercentOfTrajectoryPointsCount; i++ {
+	// 	s := dsForOnePercent * float64(i)
+	// 	addPoint(s, trajectory[i-1])
+	// }
+
+	// dsForTenPercent := deltaDistanceForTenPercent / splineLength
+	// for i := onePercentOfTrajectoryPointsCount; i < tenPercentOfTrajectoryPointsCount; i++ {
+	// 	s := dsForTenPercent * float64(i)
+	// 	addPoint(s, trajectory[i-1])
+	// }
+
+	// for i := tenPercentOfTrajectoryPointsCount; i < ninetyPercentOfTrajectoryPointsCount; i++ {
+	// 	s := ds * float64(i)
+	// 	addPoint(s, trajectory[i-1])
+	// }
+
+	// for i := ninetyPercentOfTrajectoryPointsCount; i < ninetyNinePercentOfTrajectoryPointsCount; i++ {
+	// 	s := dsForTenPercent * float64(i)
+	// 	addPoint(s, trajectory[i-1])
+	// }
+
+	// for i := ninetyNinePercentOfTrajectoryPointsCount; i < trajectoryPointsCount; i++ {
+	// 	s := dsForOnePercent * float64(i)
+	// 	addPoint(s, trajectory[i-1])
+	// }
+
+	// return trajectory, nil
+}
+
+func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+	trajectoryPointsCount := len(trajectoryPoints)
+	for i := 1; i < trajectoryPointsCount-1; i++ {
 		prevPointToCurrent := trajectoryPoints[i].Position.Sub(trajectoryPoints[i-1].Position)
 
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 
-		trajectoryPoints[i].Distance = trajectoryPoints[i-1].Distance + distanceToPrevPoint
-	}
-
-	return trajectoryPoints
-}
-
-func LimitVelocityWithCentrifugalForce(trajectoryPoints *[]TrajectoryPoint, segmentMaxVelocity float64, robot RobotParameters) {
-	trajectoryPointsCount := len(*trajectoryPoints)
-	for i := 1; i < trajectoryPointsCount-1; i++ {
-		prevPointToCurrent := (*trajectoryPoints)[i].Position.Sub((*trajectoryPoints)[i-1].Position)
-
-		distanceToPrevPoint := prevPointToCurrent.Norm()
-
-		currentPointToNextPoint := (*trajectoryPoints)[i+1].Position.Sub((*trajectoryPoints)[i].Position)
+		currentPointToNextPoint := trajectoryPoints[i+1].Position.Sub(trajectoryPoints[i].Position)
 		dAngle := math.Abs(utils.WrapAngle(currentPointToNextPoint.Angle() - prevPointToCurrent.Angle()))
 
 		driveRadius := 0.0
@@ -75,17 +185,17 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints *[]TrajectoryPoint, segm
 		maxVelAccordingToCentrifugalForce := math.Sqrt(driveRadius * robot.SkidAcceleration)
 
 		// This is the max velocity allowed at this point
-		(*trajectoryPoints)[i].Velocity = math.Min(segmentMaxVelocity, maxVelAccordingToCentrifugalForce)
+		trajectoryPoints[i].Velocity = math.Min(trajectoryPoints[i].Velocity, maxVelAccordingToCentrifugalForce)
 	}
 }
 
-func SetHeading(trajectoryPoints *[]TrajectoryPoint, headingStart float64, headingEnd float64) {
+func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headingEnd float64) {
 	const distancePercentageForAngularAcceleration float64 = 0.05
 	const oneMinusDistancePercentageForAcceleration float64 = 1 - distancePercentageForAngularAcceleration
 	const twiceAccelerationPercentageTimesOneMinus = 2 * distancePercentageForAngularAcceleration * oneMinusDistancePercentageForAcceleration
 
-	trajectoryPointsCount := len(*trajectoryPoints)
-	travelDistance := (*trajectoryPoints)[trajectoryPointsCount-1].Distance - (*trajectoryPoints)[0].Distance
+	trajectoryPointsCount := len(trajectoryPoints)
+	travelDistance := trajectoryPoints[trajectoryPointsCount-1].Distance - trajectoryPoints[0].Distance
 
 	distanceToAccelerate := distancePercentageForAngularAcceleration * travelDistance
 
@@ -99,23 +209,23 @@ func SetHeading(trajectoryPoints *[]TrajectoryPoint, headingStart float64, headi
 	headingAtEndOfAcceleration := angularAcceleration * math.Pow(distanceToAccelerate, 2)
 
 	for i := 0; i < trajectoryPointsCount; i++ {
-		if (*trajectoryPoints)[i].Distance < distanceToAccelerate {
+		if trajectoryPoints[i].Distance < distanceToAccelerate {
 			// Acceleration parabola
-			(*trajectoryPoints)[i].Heading = headingStart + angularAcceleration*math.Pow((*trajectoryPoints)[i].Distance, 2)
+			trajectoryPoints[i].Heading = headingStart + angularAcceleration*math.Pow(trajectoryPoints[i].Distance, 2)
 
-		} else if (*trajectoryPoints)[i].Distance < travelDistance-distanceToAccelerate {
+		} else if trajectoryPoints[i].Distance < travelDistance-distanceToAccelerate {
 			// Constant omega linear interpolation
-			(*trajectoryPoints)[i].Heading = headingStart + headingAtEndOfAcceleration + constantOmega*((*trajectoryPoints)[i].Distance-distanceToAccelerate)
+			trajectoryPoints[i].Heading = headingStart + headingAtEndOfAcceleration + constantOmega*(trajectoryPoints[i].Distance-distanceToAccelerate)
 
 		} else {
 			// Deceleration parabola
-			(*trajectoryPoints)[i].Heading = headingEnd - angularAcceleration*math.Pow(travelDistance-(*trajectoryPoints)[i].Distance, 2)
+			trajectoryPoints[i].Heading = headingEnd - angularAcceleration*math.Pow(travelDistance-trajectoryPoints[i].Distance, 2)
 		}
 	}
 }
 
-func GetFirstPoint(distance float64, robot RobotParameters) TrajectoryPoint {
-	const dt float64 = 0.00001
+func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
+	const dt float64 = 0.000001
 
 	currentPoint := TrajectoryPoint{Time: 0, Acceleration: 0, Velocity: 0, Distance: 0}
 	var prevPoint TrajectoryPoint
@@ -130,17 +240,17 @@ func GetFirstPoint(distance float64, robot RobotParameters) TrajectoryPoint {
 		}
 	}
 
-	return prevPoint
+	return &prevPoint
 }
 
-func CalculateKinematics(trajectoryPoints *[]TrajectoryPoint, robot RobotParameters) {
-	actualFirstPoint := (*trajectoryPoints)[0]
-	(*trajectoryPoints)[0] = GetFirstPoint((*trajectoryPoints)[1].Distance, robot)
-	(*trajectoryPoints)[0].Heading = actualFirstPoint.Heading
+func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+	actualFirstPoint := trajectoryPoints[0]
+	trajectoryPoints[0] = GetFirstPoint(trajectoryPoints[1].Distance, robot)
+	trajectoryPoints[0].Heading = actualFirstPoint.Heading
 
-	for i := 1; i < len(*trajectoryPoints); i++ {
-		currentPoint := &(*trajectoryPoints)[i]
-		prevPoint := (*trajectoryPoints)[i-1]
+	for i := 1; i < len(trajectoryPoints); i++ {
+		currentPoint := trajectoryPoints[i]
+		prevPoint := trajectoryPoints[i-1]
 		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
 		dt := distanceFromPrevPoint / prevPoint.Velocity
 
@@ -159,21 +269,21 @@ func CalculateKinematics(trajectoryPoints *[]TrajectoryPoint, robot RobotParamet
 
 	}
 
-	(*trajectoryPoints)[0] = actualFirstPoint
+	trajectoryPoints[0] = actualFirstPoint
 }
 
-func CalculateKinematicsReverse(trajectoryPoints *[]TrajectoryPoint, robot RobotParameters) {
-	actualLastPoint := (*trajectoryPoints)[len(*trajectoryPoints)-1]
-	(*trajectoryPoints)[len(*trajectoryPoints)-1] = GetFirstPoint(
-		actualLastPoint.Distance-(*trajectoryPoints)[len(*trajectoryPoints)-2].Distance,
+func CalculateKinematicsReverse(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+	actualLastPoint := trajectoryPoints[len(trajectoryPoints)-1]
+	trajectoryPoints[len(trajectoryPoints)-1] = GetFirstPoint(
+		actualLastPoint.Distance-trajectoryPoints[len(trajectoryPoints)-2].Distance,
 		robot,
 	)
-	(*trajectoryPoints)[len(*trajectoryPoints)-1].Distance = actualLastPoint.Distance - (*trajectoryPoints)[len(*trajectoryPoints)-1].Distance
-	(*trajectoryPoints)[len(*trajectoryPoints)-1].Heading = actualLastPoint.Heading
+	trajectoryPoints[len(trajectoryPoints)-1].Distance = actualLastPoint.Distance - trajectoryPoints[len(trajectoryPoints)-1].Distance
+	trajectoryPoints[len(trajectoryPoints)-1].Heading = actualLastPoint.Heading
 
-	for i := len(*trajectoryPoints) - 2; i >= 0; i-- {
-		currentPoint := &(*trajectoryPoints)[i]
-		prevPoint := (*trajectoryPoints)[i+1]
+	for i := len(trajectoryPoints) - 2; i >= 0; i-- {
+		currentPoint := trajectoryPoints[i]
+		prevPoint := trajectoryPoints[i+1]
 
 		distanceFromPrevPoint := prevPoint.Distance - currentPoint.Distance
 		dt := distanceFromPrevPoint / prevPoint.Velocity
@@ -191,20 +301,21 @@ func CalculateKinematicsReverse(trajectoryPoints *[]TrajectoryPoint, robot Robot
 		currentPoint.Velocity = utils.Min(currentPoint.Velocity, maxVelAccordingToOmega, prevPoint.Velocity+prevPoint.Acceleration*dt)
 	}
 
-	(*trajectoryPoints)[len(*trajectoryPoints)-1] = actualLastPoint
-	(*trajectoryPoints)[len(*trajectoryPoints)-1].Acceleration = 0
+	trajectoryPoints[len(trajectoryPoints)-1] = actualLastPoint
+	trajectoryPoints[len(trajectoryPoints)-1].Acceleration = 0
 }
 
-func CalculateDtAndOmegaAfterReverse(trajectoryPoints *[]TrajectoryPoint) {
-	(*trajectoryPoints)[0].Time = 0
-	for i := 2; i < len(*trajectoryPoints); i++ {
-		currentPoint := &(*trajectoryPoints)[i]
-		prevPoint := (*trajectoryPoints)[i-1]
+func CalculateDtAndOmegaAfterReverse(trajectoryPoints []*TrajectoryPoint) {
+	trajectoryPoints[0].Time = 0
+	for i := 2; i < len(trajectoryPoints); i++ {
+		currentPoint := trajectoryPoints[i]
+		prevPoint := trajectoryPoints[i-1]
 		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
 		dt := distanceFromPrevPoint / prevPoint.Velocity
 
 		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
 		currentPoint.Time = prevPoint.Time + dt
+		// TODO remove acc calculation (not used)
 		currentPoint.Acceleration = (currentPoint.Velocity - prevPoint.Velocity) / dt
 	}
 }
@@ -245,4 +356,40 @@ func QuantizeTrajectory(trajectoryPoints []TrajectoryPoint, cycleTime float64) [
 	}
 
 	return quantizedTrajectory
+}
+
+type SwerveTrajectoryPoint struct {
+	Time     float64
+	Position vector.Vector
+	Velocity vector.Vector
+	Heading  float64
+	Omega    float64
+}
+
+func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []SwerveTrajectoryPoint {
+	swerveTrajectory := []SwerveTrajectoryPoint{}
+
+	pathDerivative := path.Derivative()
+
+	for _, trajectoryPoint1D := range trajectory1D {
+		swerveTrajectory = append(swerveTrajectory, SwerveTrajectoryPoint{
+			Time:     trajectoryPoint1D.Time,
+			Position: trajectoryPoint1D.Position,
+			Velocity: vector.FromPolar(pathDerivative.Evaluate(trajectoryPoint1D.S).Angle(), trajectoryPoint1D.Velocity),
+			Heading:  trajectoryPoint1D.Heading,
+			Omega:    trajectoryPoint1D.Omega,
+		})
+	}
+
+	return swerveTrajectory
+}
+
+func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.TrajectoryResponse_SwervePoint {
+	return &rpc.TrajectoryResponse_SwervePoint{
+		Time:            float32(point.Time),
+		Position:        point.Position.ToRpc(),
+		Velocity:        point.Velocity.ToRpc(),
+		Heading:         float32(point.Heading),
+		AngularVelocity: float32(point.Omega),
+	}
 }
