@@ -25,8 +25,6 @@ class PathViewModel {
     return PathViewModel(
         points: store.state.tabState.path.points,
         segments: store.state.tabState.path.segments,
-      segments: store.state.tabState.path.segments, 
-        segments: store.state.tabState.path.segments,
         addPoint: (Offset position) {
           store.dispatch(AddPointToPath(position: position));
         });
