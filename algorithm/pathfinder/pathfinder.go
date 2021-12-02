@@ -86,9 +86,9 @@ func (s *segmentClassifier) getSegment(point *TrajectoryPoint) (*rpc.Segment, er
 }
 
 func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, segClass *segmentClassifier) ([]*TrajectoryPoint, error) {
-	const deltaDistanceForEvaluation float64 = 0.0001
-	const deltaDistanceForOnePercent float64 = 0.01 * deltaDistanceForEvaluation
-	const deltaDistanceForTenPercent float64 = 0.1 * deltaDistanceForEvaluation
+	const deltaDistanceForEvaluation float64 = 0.000001
+	// const deltaDistanceForOnePercent float64 = 0.01 * deltaDistanceForEvaluation
+	// const deltaDistanceForTenPercent float64 = 0.1 * deltaDistanceForEvaluation
 
 	splineLength := spline.Length()
 
@@ -164,7 +164,7 @@ func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, se
 	// return trajectory, nil
 }
 
-func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, hasSegments bool) {
 	trajectoryPointsCount := len(trajectoryPoints)
 	for i := 1; i < trajectoryPointsCount-1; i++ {
 		prevPointToCurrent := trajectoryPoints[i].Position.Sub(trajectoryPoints[i-1].Position)
@@ -184,8 +184,13 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 
 		maxVelAccordingToCentrifugalForce := math.Sqrt(driveRadius * robot.SkidAcceleration)
 
-		// This is the max velocity allowed at this point
-		trajectoryPoints[i].Velocity = math.Min(trajectoryPoints[i].Velocity, maxVelAccordingToCentrifugalForce)
+		// * In test, there will be no segments, so the velocity will be initialized to zero
+		if hasSegments {
+			// * This is the max velocity allowed at this point
+			trajectoryPoints[i].Velocity = math.Min(trajectoryPoints[i].Velocity, maxVelAccordingToCentrifugalForce)
+		} else {
+			trajectoryPoints[i].Velocity = maxVelAccordingToCentrifugalForce
+		}
 	}
 }
 
@@ -225,7 +230,7 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headi
 }
 
 func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
-	const dt float64 = 0.000001
+	const dt float64 = 0.00000001
 
 	currentPoint := TrajectoryPoint{Time: 0, Acceleration: 0, Velocity: 0, Distance: 0}
 	var prevPoint TrajectoryPoint
@@ -320,7 +325,7 @@ func CalculateDtAndOmegaAfterReverse(trajectoryPoints []*TrajectoryPoint) {
 	}
 }
 
-func SearchForTime(trajectoryPoints []TrajectoryPoint, time float64, lastSearchIndex int) int {
+func SearchForTime(trajectoryPoints []*TrajectoryPoint, time float64, lastSearchIndex int) int {
 	for index, point := range trajectoryPoints[lastSearchIndex:] {
 		if point.Time >= time {
 			return index + lastSearchIndex
@@ -329,8 +334,8 @@ func SearchForTime(trajectoryPoints []TrajectoryPoint, time float64, lastSearchI
 	return -1
 }
 
-func QuantizeTrajectory(trajectoryPoints []TrajectoryPoint, cycleTime float64) []TrajectoryPoint {
-	quantizedTrajectory := []TrajectoryPoint{trajectoryPoints[0]}
+func QuantizeTrajectory(trajectoryPoints []*TrajectoryPoint, cycleTime float64) []*TrajectoryPoint {
+	quantizedTrajectory := []*TrajectoryPoint{trajectoryPoints[0]}
 
 	lastPointTime := trajectoryPoints[len(trajectoryPoints)-1].Time
 
@@ -345,6 +350,7 @@ func QuantizeTrajectory(trajectoryPoints []TrajectoryPoint, cycleTime float64) [
 		// TODO remove Distance and Acceleration calculation (not used)
 		quantizedPoint := TrajectoryPoint{
 			Time:         t,
+			S:            utils.Lerp(prevPoint.S, nextPoint.S, nextToPreviousPointRatio),
 			Distance:     utils.Lerp(prevPoint.Distance, nextPoint.Distance, nextToPreviousPointRatio),
 			Position:     vector.Lerp(prevPoint.Position, nextPoint.Position, nextToPreviousPointRatio),
 			Velocity:     utils.Lerp(prevPoint.Velocity, nextPoint.Velocity, nextToPreviousPointRatio),
@@ -352,7 +358,7 @@ func QuantizeTrajectory(trajectoryPoints []TrajectoryPoint, cycleTime float64) [
 			Heading:      utils.Lerp(prevPoint.Heading, nextPoint.Heading, nextToPreviousPointRatio),
 			Omega:        utils.Lerp(prevPoint.Omega, nextPoint.Omega, nextToPreviousPointRatio),
 		}
-		quantizedTrajectory = append(quantizedTrajectory, quantizedPoint)
+		quantizedTrajectory = append(quantizedTrajectory, &quantizedPoint)
 	}
 
 	return quantizedTrajectory
