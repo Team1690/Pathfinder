@@ -53,3 +53,10 @@ func (p *Path) Derivative() Spline {
 
 	return NewPath(derivatives...)
 }
+
+func (p *Path) GetSplineIndex(s float64) int {
+	unscaledSForEvaluatedSpline := math.Mod(s, p.SForEachSpline)
+	evaluatedSplineIndex := int((s - unscaledSForEvaluatedSpline) / p.SForEachSpline)
+
+	return int(evaluatedSplineIndex)
+}
