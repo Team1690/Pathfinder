@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
+import 'package:pathfinder/rpc/protos/PathFinder.pb.dart';
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
 
@@ -14,3 +16,9 @@ class SetSideBarVisibility extends TabAction {
 }
 
 class CloseSideBar extends TabAction {}
+class AddPointToPath extends TabAction {
+  final Offset position;
+  AddPointToPath({
+    required this.position 
+  });
+}

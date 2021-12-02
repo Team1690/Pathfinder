@@ -21,4 +21,13 @@ class AppState {
       tabState: tabState ?? this.tabState,
     );
   }
+
+  @override
+  int get hashCode =>
+    tabState.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is AppState && tabState == other.tabState;
 }

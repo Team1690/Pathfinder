@@ -1,120 +1,170 @@
+import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:pathfinder/models/path.dart';
+import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/models/segment.dart';
+import 'package:pathfinder/store/app/app_state.dart';
+import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';
-import 'package:pathfinder/widgets/path_editor/waypoint.dart';
-import 'package:pathfinder/widgets/path_editor_bloc/path_editor_bloc.dart';
 import 'package:pathfinder/widgets/path_editor_bloc/path_editor_event.dart';
-import 'package:pathfinder/widgets/path_editor_bloc/path_editor_state.dart';
 
-import 'package:pathfinder/utils/cubic_bezier/cubic_bezier_painter.dart';
+class PathViewModel {
+  final List<Point> points;
+  final List<Segment> segments;
+  final Function(Offset) addPoint;
 
-class PathEditor extends StatefulWidget {
-  PathEditor({Key? key}) : super(key: key);
+  PathViewModel({
+    required this.points,
+    required this.segments,
+    required this.addPoint,
+  });
 
-  @override
-  _PathEditorState createState() => _PathEditorState();
+  static PathViewModel fromStore(Store<AppState> store) {
+    return PathViewModel(
+      points: store.state.tabState.path.points,
+      segments: store.state.tabState.path.segments, 
+      addPoint: (Offset position) {
+        store.dispatch(AddPointToPath(position: position));
+      }
+    );
+  }
 }
 
-class _PathEditorState extends State<PathEditor> {
+StoreConnector<AppState, PathViewModel> pathEditor() {
+  return new StoreConnector<AppState, PathViewModel>(
+    converter: (store) => PathViewModel.fromStore(store),
+    builder: (_, pathProps) => _PathEditor(pathProps: pathProps)
+    // onDidChange: () => null,
+    );
+}
+
+class _PathEditor extends StatefulWidget {
+  final PathViewModel pathProps;
+  // Key? key;
+
+  _PathEditor({
+    required this.pathProps,
+  });
+  //   key
+  // }) : super(key: key);
+
+  @override
+  _PathEditorState createState() => _PathEditorState(props: this.pathProps);
+}
+
+class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
   bool shiftPressed = false;
   bool ctrlPressed = false;
   int? selectedPointIndex;
+  final PathViewModel props;
 
-  final PathEditorBloc _bloc = PathEditorBloc();
+  _PathEditorState({
+    required this.props
+  });
+
+  // final PathEditorBloc _bloc = PathEditorBloc();
 
   // renders waypoint and its corresponding control points
   List<Widget> points({
-    required final Waypoint waypoint,
+    required final Point point,
     required final int index,
     required final int numberOfWaypoints,
   }) =>
       [
         PathPoint(
-          point: waypoint.position,
+          point: point.position,
           onDrag: (final DragUpdateDetails details) {
-            if (shiftPressed)
-              _bloc.add(
-                WaypointHeadingDrag(
-                  pointIndex: index,
-                  mousePositionRelativeToPoint: details.localPosition,
-                ),
-              );
-            else
-              _bloc.add(
-                WaypointDrag(pointIndex: index, mouseDelta: details.delta),
-              );
+            // Drag point on bored
+            // if (shiftPressed)
+              // _bloc.add(
+              //   WaypointHeadingDrag(
+              //     pointIndex: index,
+              //     mousePositionRelativeToPoint: details.localPosition,
+              //   ),
+              // );
+            // else
+              // _bloc.add(
+              //   WaypointDrag(pointIndex: index, mouseDelta: details.delta),
+              // );
           },
-          onDragEnd: (_) => _bloc.add(PointDragEnd()),
+          onDragEnd: (_) => {
+            // Finish to drag point on bored
+            // _bloc.add(PointDragEnd())
+          },
           onTap: () {
-            if (ctrlPressed && index >= 1)
-              _bloc.add(LineSectionEvent(waypointIndex: index));
-            else
-              setState(
-                () => selectedPointIndex =
-                    selectedPointIndex != index ? index : null,
-              );
+            // Edit point black lines
+            // if (ctrlPressed && index >= 1)
+            //   _bloc.add(LineSectionEvent(waypointIndex: index));
+            // else
+            //   setState(
+            //     () => selectedPointIndex =
+            //         selectedPointIndex != index ? index : null,
+            //   );
           },
           controlPoint: false,
         ),
         if (selectedPointIndex == index) ...[
           if (index > 0) ...[
             PathPoint(
-              point: waypoint.inControlPoint,
+              point: point.inControlPoint,
               onDrag: (final DragUpdateDetails details) {
                 if (shiftPressed) {
-                  _bloc.add(ControlPointTangentialDrag(
-                    waypointIndex: index,
-                    pointType: ControlPointType.In,
-                    mouseDelta: details.delta,
-                  ));
+                  // _bloc.add(ControlPointTangentialDrag(
+                  //   waypointIndex: index,
+                  //   pointType: ControlPointType.In,
+                  //   mouseDelta: details.delta,
+                  // ));
                 } else {
-                  _bloc.add(ControlPointDrag(
-                    waypointIndex: index,
-                    pointType: ControlPointType.In,
-                    mouseDelta: details.delta,
-                  ));
+                  // _bloc.add(ControlPointDrag(
+                  //   waypointIndex: index,
+                  //   pointType: ControlPointType.In,
+                  //   mouseDelta: details.delta,
+                  // ));
                 }
               },
-              onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              // onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              onDragEnd: (_) => Null,
               controlPoint: true,
               onTap: () {},
             ),
             CustomPaint(
               painter: DashedLinePainter(
-                start: waypoint.position,
-                end: waypoint.inControlPoint,
+                start: point.position,
+                end: point.inControlPoint,
               ),
             ),
           ],
           if (index < numberOfWaypoints - 1) ...[
             PathPoint(
-              point: waypoint.outControlPoint,
+              point: point.outControlPoint,
               onDrag: (final DragUpdateDetails details) {
                 if (shiftPressed) {
-                  _bloc.add(ControlPointTangentialDrag(
-                      waypointIndex: index,
-                      pointType: ControlPointType.Out,
-                      mouseDelta: details.delta));
+                  // _bloc.add(ControlPointTangentialDrag(
+                  //     waypointIndex: index,
+                  //     pointType: ControlPointType.Out,
+                  //     mouseDelta: details.delta));
                 } else {
-                  _bloc.add(ControlPointDrag(
-                    waypointIndex: index,
-                    pointType: ControlPointType.Out,
-                    mouseDelta: details.delta,
-                  ));
+                  // _bloc.add(ControlPointDrag(
+                  //   waypointIndex: index,
+                  //   pointType: ControlPointType.Out,
+                  //   mouseDelta: details.delta,
+                  // ));
                 }
               },
-              onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              // onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              onDragEnd: (_) => Null,
               controlPoint: true,
               onTap: () {},
             ),
             CustomPaint(
               painter: DashedLinePainter(
-                start: waypoint.position,
-                end: waypoint.outControlPoint,
+                start: point.position,
+                end: point.outControlPoint,
               ),
             ),
           ],
@@ -138,29 +188,25 @@ class _PathEditorState extends State<PathEditor> {
               pressedKeys.contains(LogicalKeyboardKey.metaLeft);
         });
 
-        if (ctrlPressed) {
-          if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
-            _bloc.add(Undo());
-          else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
-            _bloc.add(Redo());
+        // if (ctrlPressed) {
+        //   if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
+        //     _bloc.add(Undo());
+        //   else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
+        //     _bloc.add(Redo());
 
-          if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
-            _bloc.add(ClearAllPoints());
-            selectedPointIndex = null;
-          }
-        }
+        //   if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
+        //     _bloc.add(ClearAllPoints());
+        //     selectedPointIndex = null;
+        //   }
+        // }
 
-        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
-            selectedPointIndex != null) {
-          _bloc.add(DeletePoint(selectedPointIndex!));
-          selectedPointIndex = null;
-        }
+        // if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
+        //     selectedPointIndex != null) {
+        //   _bloc.add(DeletePoint(selectedPointIndex!));
+        //   selectedPointIndex = null;
+        // }
       },
-      child: BlocBuilder(
-        bloc: _bloc,
-        builder:
-            (final BuildContext buildContext, final PathEditorState state) =>
-                Center(
+      child: Center(
           child: Stack(
             children: [
               GestureDetector(
@@ -168,35 +214,37 @@ class _PathEditorState extends State<PathEditor> {
                   image: const AssetImage('assets/images/frc_2020_field.png'),
                 ),
                 onTapDown: (final TapDownDetails detailes) {
+                  // Add point to board
                   final Offset tapPos = detailes.localPosition;
-
-                  _bloc.add(AddPointEvent(tapPos));
+                  props.addPoint(tapPos);
+                  // _bloc.add(AddPointEvent(tapPos));
                 },
                 onPanStart: (_) {},
               ),
-              if (state is OnePointDefined)
-                PathPoint(
-                  point: state.point,
-                  onDrag: (final DragUpdateDetails details) {
-                    _bloc.add(
-                        WaypointDrag(pointIndex: 0, mouseDelta: details.delta));
-                  },
-                  onDragEnd: (_) => _bloc.add(PointDragEnd()),
-                  controlPoint: false,
-                  onTap: () {},
-                ),
-              if (state is PathDefined) ...[
-                for (int i = 0; i < state.waypoints.length; i++)
+              // if (state is OnePointDefined)
+              //   PathPoint(
+              //     point: state.point,
+              //     onDrag: (final DragUpdateDetails details) {
+              //       _bloc.add(
+              //           WaypointDrag(pointIndex: 0, mouseDelta: details.delta));
+              //     },
+              //     onDragEnd: (_) => _bloc.add(PointDragEnd()),
+              //     controlPoint: false,
+              //     onTap: () {},
+              //   ),
+              // if (state is PathDefined) ...[
+              ...[
+                for (int i = 0; i < props.points.length; i++)
                   ...points(
-                    waypoint: state.waypoints[i],
+                    point: props.points[i],
                     index: i,
-                    numberOfWaypoints: state.waypoints.length,
+                    numberOfWaypoints: props.points.length,
                   ),
-                for (final cubicBezier in state.bezierSections)
-                  CustomPaint(
-                    painter: CubicBezierPainter(cubicBezier: cubicBezier),
-                  ),
-                for (final waypoint in state.waypoints)
+                // for (final segment in path.segments)
+                //   CustomPaint(
+                //     painter: CubicBezierPainter(cubicBezier: cubicBezier),
+                //   ),
+                for (final waypoint in props.points)
                   CustomPaint(
                     painter: HeadingLinePainter(
                       heading: waypoint.heading,
@@ -206,7 +254,6 @@ class _PathEditorState extends State<PathEditor> {
               ],
             ],
           ),
-        ),
       ),
     );
   }

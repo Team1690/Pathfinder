@@ -24,7 +24,7 @@ class _EditorScreenState extends State<EditorScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(200, 30, 200, 30),
               child: Container(
-                child: PathEditor(),
+                child: pathEditor(),
                 decoration: BoxDecoration(boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.5),

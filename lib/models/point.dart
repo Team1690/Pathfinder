@@ -16,4 +16,15 @@ class Point {
     this.useHeading,
     this.actions,
   );
+
+  factory Point.initial(Offset position) {
+    return Point(
+      position,
+      Offset(position.dx - 1, position.dy -1 ),
+      Offset(position.dx - 1, position.dy -1),
+      0,
+      true,
+      []
+    );
+  }
 }

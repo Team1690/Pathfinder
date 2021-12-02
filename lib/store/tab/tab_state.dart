@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'package:pathfinder/models/Path.dart';
+import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/field.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
@@ -21,7 +21,7 @@ class TabState {
 
   factory TabState.initial() {
     return TabState(
-      path: Path(),
+      path: Path.initial(),
       robot: Robot(),
       field: Field(),
       ui: TabUI.initial(),
@@ -41,6 +41,8 @@ class TabState {
       ui: ui ?? this.ui,
     );
   }
+  
+  //TODD Implement operator == and hashCode
 }
 
 // Path, history, robot, ui, params (optimization, trajectory), field
