@@ -19,10 +19,6 @@ class HomePage extends StatelessWidget {
                     name: 'TEST',
                     activated: false,
                   ),
-                  BroswerTab(
-                    name: 'TEST',
-                    activated: true,
-                  ),
                 ],
               ),
             ),
