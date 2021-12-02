@@ -2,7 +2,6 @@ import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
@@ -10,7 +9,6 @@ import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';
-import 'package:pathfinder/widgets/path_editor_bloc/path_editor_event.dart';
 
 class PathViewModel {
   final List<Point> points;
@@ -25,21 +23,22 @@ class PathViewModel {
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-      points: store.state.tabState.path.points,
+        points: store.state.tabState.path.points,
+        segments: store.state.tabState.path.segments,
       segments: store.state.tabState.path.segments, 
-      addPoint: (Offset position) {
-        store.dispatch(AddPointToPath(position: position));
-      }
-    );
+        segments: store.state.tabState.path.segments,
+        addPoint: (Offset position) {
+          store.dispatch(AddPointToPath(position: position));
+        });
   }
 }
 
 StoreConnector<AppState, PathViewModel> pathEditor() {
   return new StoreConnector<AppState, PathViewModel>(
-    converter: (store) => PathViewModel.fromStore(store),
-    builder: (_, pathProps) => _PathEditor(pathProps: pathProps)
-    // onDidChange: () => null,
-    );
+      converter: (store) => PathViewModel.fromStore(store),
+      builder: (_, pathProps) => _PathEditor(pathProps: pathProps)
+      // onDidChange: () => null,
+      );
 }
 
 class _PathEditor extends StatefulWidget {
@@ -53,7 +52,7 @@ class _PathEditor extends StatefulWidget {
   // }) : super(key: key);
 
   @override
-  _PathEditorState createState() => _PathEditorState(props: this.pathProps);
+  _PathEditorState createState() => _PathEditorState();
 }
 
 class _PathEditorState extends State<_PathEditor> {
@@ -61,11 +60,9 @@ class _PathEditorState extends State<_PathEditor> {
   bool shiftPressed = false;
   bool ctrlPressed = false;
   int? selectedPointIndex;
-  final PathViewModel props;
+  // final PathViewModel props;
 
-  _PathEditorState({
-    required this.props
-  });
+  _PathEditorState();
 
   // final PathEditorBloc _bloc = PathEditorBloc();
 
@@ -81,16 +78,16 @@ class _PathEditorState extends State<_PathEditor> {
           onDrag: (final DragUpdateDetails details) {
             // Drag point on bored
             // if (shiftPressed)
-              // _bloc.add(
-              //   WaypointHeadingDrag(
-              //     pointIndex: index,
-              //     mousePositionRelativeToPoint: details.localPosition,
-              //   ),
-              // );
+            // _bloc.add(
+            //   WaypointHeadingDrag(
+            //     pointIndex: index,
+            //     mousePositionRelativeToPoint: details.localPosition,
+            //   ),
+            // );
             // else
-              // _bloc.add(
-              //   WaypointDrag(pointIndex: index, mouseDelta: details.delta),
-              // );
+            // _bloc.add(
+            //   WaypointDrag(pointIndex: index, mouseDelta: details.delta),
+            // );
           },
           onDragEnd: (_) => {
             // Finish to drag point on bored
@@ -207,53 +204,53 @@ class _PathEditorState extends State<_PathEditor> {
         // }
       },
       child: Center(
-          child: Stack(
-            children: [
-              GestureDetector(
-                child: const Image(
-                  image: const AssetImage('assets/images/frc_2020_field.png'),
-                ),
-                onTapDown: (final TapDownDetails detailes) {
-                  // Add point to board
-                  final Offset tapPos = detailes.localPosition;
-                  props.addPoint(tapPos);
-                  // _bloc.add(AddPointEvent(tapPos));
-                },
-                onPanStart: (_) {},
+        child: Stack(
+          children: [
+            GestureDetector(
+              child: const Image(
+                image: const AssetImage('assets/images/frc_2020_field.png'),
               ),
-              // if (state is OnePointDefined)
-              //   PathPoint(
-              //     point: state.point,
-              //     onDrag: (final DragUpdateDetails details) {
-              //       _bloc.add(
-              //           WaypointDrag(pointIndex: 0, mouseDelta: details.delta));
-              //     },
-              //     onDragEnd: (_) => _bloc.add(PointDragEnd()),
-              //     controlPoint: false,
-              //     onTap: () {},
+              onTapDown: (final TapDownDetails detailes) {
+                // Add point to board
+                final Offset tapPos = detailes.localPosition;
+                widget.pathProps.addPoint(tapPos);
+                // _bloc.add(AddPointEvent(tapPos));
+              },
+              onPanStart: (_) {},
+            ),
+            // if (state is OnePointDefined)
+            //   PathPoint(
+            //     point: state.point,
+            //     onDrag: (final DragUpdateDetails details) {
+            //       _bloc.add(
+            //           WaypointDrag(pointIndex: 0, mouseDelta: details.delta));
+            //     },
+            //     onDragEnd: (_) => _bloc.add(PointDragEnd()),
+            //     controlPoint: false,
+            //     onTap: () {},
+            //   ),
+            // if (state is PathDefined) ...[
+            ...[
+              for (int i = 0; i < widget.pathProps.points.length; i++)
+                ...points(
+                  point: widget.pathProps.points[i],
+                  index: i,
+                  numberOfWaypoints: widget.pathProps.points.length,
+                ),
+              // for (final segment in path.segments)
+              //   CustomPaint(
+              //     painter: CubicBezierPainter(cubicBezier: cubicBezier),
               //   ),
-              // if (state is PathDefined) ...[
-              ...[
-                for (int i = 0; i < props.points.length; i++)
-                  ...points(
-                    point: props.points[i],
-                    index: i,
-                    numberOfWaypoints: props.points.length,
+              for (final waypoint in widget.pathProps.points)
+                CustomPaint(
+                  painter: HeadingLinePainter(
+                    heading: waypoint.heading,
+                    position: waypoint.position,
                   ),
-                // for (final segment in path.segments)
-                //   CustomPaint(
-                //     painter: CubicBezierPainter(cubicBezier: cubicBezier),
-                //   ),
-                for (final waypoint in props.points)
-                  CustomPaint(
-                    painter: HeadingLinePainter(
-                      heading: waypoint.heading,
-                      position: waypoint.position,
-                    ),
-                  ),
-              ],
+                ),
             ],
-          ),
+          ],
+        ),
       ),
     );
   }
