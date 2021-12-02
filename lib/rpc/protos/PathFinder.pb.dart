@@ -535,26 +535,31 @@ class SplineRequest_OptimizationParams extends $pb.GeneratedMessage {
 class SplineRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest', createEmptyInstance: create)
     ..pc<Point>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'points', $pb.PbFieldType.PM, subBuilder: Point.create)
-    ..aOM<SplineRequest_OptimizationParams>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
-    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'evaluatedPointsInterval', $pb.PbFieldType.OF, protoName: 'evaluatedPointsInterval')
+    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'evaluatedPointsInterval', $pb.PbFieldType.OF, protoName: 'evaluatedPointsInterval')
+    ..aOM<SplineParameters>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
+    ..aOM<SplineRequest_OptimizationParams>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
     ..hasRequiredFields = false
   ;
 
   SplineRequest._() : super();
   factory SplineRequest({
     $core.Iterable<Point>? points,
-    SplineRequest_OptimizationParams? optimizationParams,
     $core.double? evaluatedPointsInterval,
+    SplineParameters? splineParameters,
+    SplineRequest_OptimizationParams? optimizationParams,
   }) {
     final _result = create();
     if (points != null) {
       _result.points.addAll(points);
     }
-    if (optimizationParams != null) {
-      _result.optimizationParams = optimizationParams;
-    }
     if (evaluatedPointsInterval != null) {
       _result.evaluatedPointsInterval = evaluatedPointsInterval;
+    }
+    if (splineParameters != null) {
+      _result.splineParameters = splineParameters;
+    }
+    if (optimizationParams != null) {
+      _result.optimizationParams = optimizationParams;
     }
     return _result;
   }
@@ -583,24 +588,35 @@ class SplineRequest extends $pb.GeneratedMessage {
   $core.List<Point> get points => $_getList(0);
 
   @$pb.TagNumber(2)
-  SplineRequest_OptimizationParams get optimizationParams => $_getN(1);
+  $core.double get evaluatedPointsInterval => $_getN(1);
   @$pb.TagNumber(2)
-  set optimizationParams(SplineRequest_OptimizationParams v) { setField(2, v); }
+  set evaluatedPointsInterval($core.double v) { $_setFloat(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasOptimizationParams() => $_has(1);
+  $core.bool hasEvaluatedPointsInterval() => $_has(1);
   @$pb.TagNumber(2)
-  void clearOptimizationParams() => clearField(2);
-  @$pb.TagNumber(2)
-  SplineRequest_OptimizationParams ensureOptimizationParams() => $_ensure(1);
+  void clearEvaluatedPointsInterval() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.double get evaluatedPointsInterval => $_getN(2);
+  SplineParameters get splineParameters => $_getN(2);
   @$pb.TagNumber(3)
-  set evaluatedPointsInterval($core.double v) { $_setFloat(2, v); }
+  set splineParameters(SplineParameters v) { setField(3, v); }
   @$pb.TagNumber(3)
-  $core.bool hasEvaluatedPointsInterval() => $_has(2);
+  $core.bool hasSplineParameters() => $_has(2);
   @$pb.TagNumber(3)
-  void clearEvaluatedPointsInterval() => clearField(3);
+  void clearSplineParameters() => clearField(3);
+  @$pb.TagNumber(3)
+  SplineParameters ensureSplineParameters() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  SplineRequest_OptimizationParams get optimizationParams => $_getN(3);
+  @$pb.TagNumber(4)
+  set optimizationParams(SplineRequest_OptimizationParams v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasOptimizationParams() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearOptimizationParams() => clearField(4);
+  @$pb.TagNumber(4)
+  SplineRequest_OptimizationParams ensureOptimizationParams() => $_ensure(3);
 }
 
 class SplineResponse_Point extends $pb.GeneratedMessage {

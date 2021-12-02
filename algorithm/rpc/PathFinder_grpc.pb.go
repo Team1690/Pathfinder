@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PathFinderClient interface {
 	CalculateTrajectory(ctx context.Context, in *TrajectoryRequest, opts ...grpc.CallOption) (*TrajectoryResponse, error)
+	CalculateSplinePoints(ctx context.Context, in *SplineRequest, opts ...grpc.CallOption) (*SplineResponse, error)
 }
 
 type pathFinderClient struct {
@@ -38,11 +39,21 @@ func (c *pathFinderClient) CalculateTrajectory(ctx context.Context, in *Trajecto
 	return out, nil
 }
 
+func (c *pathFinderClient) CalculateSplinePoints(ctx context.Context, in *SplineRequest, opts ...grpc.CallOption) (*SplineResponse, error) {
+	out := new(SplineResponse)
+	err := c.cc.Invoke(ctx, "/PathFinder/CalculateSplinePoints", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PathFinderServer is the server API for PathFinder service.
 // All implementations must embed UnimplementedPathFinderServer
 // for forward compatibility
 type PathFinderServer interface {
 	CalculateTrajectory(context.Context, *TrajectoryRequest) (*TrajectoryResponse, error)
+	CalculateSplinePoints(context.Context, *SplineRequest) (*SplineResponse, error)
 	mustEmbedUnimplementedPathFinderServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedPathFinderServer struct {
 
 func (UnimplementedPathFinderServer) CalculateTrajectory(context.Context, *TrajectoryRequest) (*TrajectoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateTrajectory not implemented")
+}
+func (UnimplementedPathFinderServer) CalculateSplinePoints(context.Context, *SplineRequest) (*SplineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CalculateSplinePoints not implemented")
 }
 func (UnimplementedPathFinderServer) mustEmbedUnimplementedPathFinderServer() {}
 
@@ -84,6 +98,24 @@ func _PathFinder_CalculateTrajectory_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PathFinder_CalculateSplinePoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SplineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PathFinderServer).CalculateSplinePoints(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PathFinder/CalculateSplinePoints",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PathFinderServer).CalculateSplinePoints(ctx, req.(*SplineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PathFinder_ServiceDesc is the grpc.ServiceDesc for PathFinder service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var PathFinder_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CalculateTrajectory",
 			Handler:    _PathFinder_CalculateTrajectory_Handler,
+		},
+		{
+			MethodName: "CalculateSplinePoints",
+			Handler:    _PathFinder_CalculateSplinePoints_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -5,6 +5,7 @@ option go_package = "../algorithm/rpc";
 
 service PathFinder {
 	rpc CalculateTrajectory(TrajectoryRequest) returns (TrajectoryResponse) {}
+	rpc CalculateSplinePoints(SplineRequest) returns (SplineResponse) {}
 }
 
 message Vector {
@@ -24,7 +25,7 @@ message Point {
 
 message Segment {
 	repeated Point points = 1;
-	float maxVeolcity = 2;
+	float maxVelocity = 2;
 
 	SplineTypes splineType = 3;
 	SplineParameters splineParameters = 4;
@@ -53,18 +54,18 @@ message SplineRequest {
 
 		message Polynomial { }
 
-		SplineTypes splineType = 1;
-
+		
 		Hermite hermite = 5;
 		Bezier bezier = 6;
 		Polynomial polynomial = 7;
 	}
-
+	
 	repeated Point points = 1;
-
-	OptimizationParams optimizationParams = 2;
-
+	SplineTypes splineType = 2;
 	float evaluatedPointsInterval = 3; // meters
+
+	SplineParameters splineParameters = 4;
+	OptimizationParams optimizationParams = 5;
 }
 
 message SplineResponse {

@@ -21,11 +21,16 @@ func main() {
 	// Start network listener on the relevant port
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
 	// Init the gRPC server on the net listener
 	grpcServer := grpc.NewServer()
-	rpc.RegisterPathFinderServer(grpcServer, rpc.NewServer())
-	grpcServer.Serve(lis)
+	rpc.RegisterPathFinderServer(grpcServer, NewServer())
+
+	log.Default().Printf("Starting server on port %d", port)
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }
