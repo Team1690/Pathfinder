@@ -114,7 +114,7 @@ func CreateTrajectoryPointArray(spline spline.Spline, robot *RobotParameters, se
 				return xerrors.Errorf("error in getting segment for point: %w", err)
 			}
 
-			point.Velocity = float64(currentPointSegment.MaxVeolcity)
+			point.Velocity = float64(currentPointSegment.MaxVelocity)
 		}
 
 		trajectory = append(trajectory, &point)
