@@ -8,6 +8,8 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, SetSideBarVisibility>(_setSideBarVisibility),
   TypedReducer<TabState, AddPointToPath>(_addPointToPath),
   TypedReducer<TabState, DeletePointFromPath>(_deletePointFromPath),
+  TypedReducer<TabState, SplineCalculated>(_splineCalculated),
+  TypedReducer<TabState, ServerError>(_setServerError),
 ]);
 
 TabState _setSideBarVisibility(TabState tabState, SetSideBarVisibility action) {
@@ -15,17 +17,31 @@ TabState _setSideBarVisibility(TabState tabState, SetSideBarVisibility action) {
       ui: tabState.ui.copyWith(isSidebarOpen: action.visibility));
 }
 
+TabState _setServerError(TabState tabState, ServerError action) {
+  return tabState.copyWith(ui: tabState.ui.copyWith(serverError: action.error));
+}
+
+TabState _splineCalculated(TabState tabState, SplineCalculated action) {
+  return tabState.copyWith(
+      ui: tabState.ui.copyWith(serverError: null),
+      path: tabState.path.copyWith(evaluatedPoints: action.points));
+}
+
 TabState _addPointToPath(TabState tabState, AddPointToPath action) {
   return tabState.copyWith(
-        path: tabState.path.copyWith(points: [...tabState.path.points, new Point.initial(action.position)])
-      );
+      path: tabState.path.copyWith(points: [
+    ...tabState.path.points,
+    new Point.initial(action.position)
+  ]));
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
-  List<Point> newlList = tabState.path.points;
-  newlList.removeAt(action.index);
+  List<Point> newPoints = tabState.path.points;
+  newPoints.removeAt(action.index);
 
   return tabState.copyWith(
-    path: tabState.path.copyWith(points: newlList)
-  );
+      path: tabState.path.copyWith(
+    points: newPoints,
+    evaluatedPoints: newPoints.length < 2 ? [] : null,
+  ));
 }

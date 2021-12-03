@@ -5,7 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Pathfinder",
+      "name": "Debug GO Backend",
+      "type": "go",
+      "request": "launch",
+      "args": [
+        "--port",
+        "3000"
+      ],
+      "mode": "auto",
+      "program": "${workspaceFolder}/algorithm"
+    },
+    {
+      "name": "Debug Flutter Frontend",
       "program": "${workspaceFolder}/lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -25,12 +36,5 @@
       "type": "dart",
       "flutterMode": "release"
     },
-    {
-      "name": "Pathfinder (golang)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/algorithm"
-    }
   ]
 }

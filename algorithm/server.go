@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"math"
 
 	"github.com/Team1690/Pathfinder/export"
@@ -14,12 +15,15 @@ import (
 
 type pathFinderServerImpl struct {
 	rpc.UnimplementedPathFinderServer
+	logger *log.Logger
 }
 
 var _ rpc.PathFinderServer = (*pathFinderServerImpl)(nil)
 
-func NewServer() *pathFinderServerImpl {
-	return &pathFinderServerImpl{}
+func NewServer(logger *log.Logger) *pathFinderServerImpl {
+	return &pathFinderServerImpl{
+		logger: logger,
+	}
 }
 
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
@@ -49,7 +53,10 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.New("requested a path of one point")
 	}
 
-	path := initPath(points, rpc.SplineTypes_Bezier, nil)
+	path, err := initPath(points, rpc.SplineTypes_Bezier, nil)
+	if err != nil {
+		return nil, xerrors.Errorf("error in init path: %w", err)
+	}
 
 	robot := toRobotParams(rpcRobot)
 
@@ -76,7 +83,12 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 }
 
 func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	path := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
+	s.logger.Print("Request: CalculateSplinePoints")
+
+	path, err := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
+	if err != nil {
+		return nil, xerrors.Errorf("error in init path: %w", err)
+	}
 
 	evaluatedPoints := []*rpc.SplineResponse_Point{}
 
@@ -87,13 +99,15 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 		evaluatedPoints = append(evaluatedPoints, &rpc.SplineResponse_Point{Point: path.Evaluate(s).ToRpc()})
 	}
 
+	s.logger.Print("Response: CalculateSplinePoints")
+
 	return &rpc.SplineResponse{
 		SplineType:      rpc.SplineTypes_Bezier,
 		EvaluatedPoints: evaluatedPoints,
 	}, nil
 }
 
-func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.SplineParameters) *spline.Path {
+func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.SplineParameters) (*spline.Path, error) {
 	// TODO handle more spline types
 	path := spline.NewPath()
 	for i := 0; i < len(points)-1; i++ {
@@ -105,7 +119,12 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 		})
 		path.AddSpline(bezier)
 	}
-	return path
+
+	if len(path.Splines) == 0 {
+		return nil, xerrors.New("not enough splines")
+	}
+
+	return path, nil
 }
 
 func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {

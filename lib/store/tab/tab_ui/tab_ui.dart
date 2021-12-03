@@ -10,6 +10,7 @@ class TabUI {
   final bool isGraphPageOpen;
   final double zoomLevel;
   final Offset pan;
+  final String? serverError;
 
   const TabUI({
     required this.selectIndex,
@@ -18,6 +19,7 @@ class TabUI {
     required this.isGraphPageOpen,
     required this.zoomLevel,
     required this.pan,
+    this.serverError,
   });
 
   factory TabUI.initial() {
@@ -38,6 +40,7 @@ class TabUI {
     bool? isGraphPageOpen,
     double? zoomLevel,
     Offset? pan,
+    String? serverError,
   }) {
     return TabUI(
       selectIndex: selectIndex ?? this.selectIndex,
@@ -46,6 +49,7 @@ class TabUI {
       isGraphPageOpen: isGraphPageOpen ?? this.isGraphPageOpen,
       zoomLevel: zoomLevel ?? this.zoomLevel,
       pan: pan ?? this.pan,
+      serverError: serverError ?? this.serverError,
     );
   }
 }

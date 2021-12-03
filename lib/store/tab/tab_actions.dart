@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart';
-import 'package:provider/provider.dart';
-import 'package:redux/redux.dart';
+import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 
 abstract class TabAction {
   @override
@@ -11,21 +8,29 @@ abstract class TabAction {
   }
 }
 
+// UI actions
 class SetSideBarVisibility extends TabAction {
   final bool visibility = false;
 }
 
-class CloseSideBar extends TabAction {}
+// Server actions
+class ServerError extends TabAction {
+  final String? error;
+  ServerError(this.error);
+}
+
+class SplineCalculated extends TabAction {
+  final List<rpc.SplineResponse_Point> points;
+  SplineCalculated(this.points);
+}
+
+// Point actions
 class AddPointToPath extends TabAction {
   final Offset position;
-  AddPointToPath({
-    required this.position 
-  });
+  AddPointToPath({required this.position});
 }
 
 class DeletePointFromPath extends TabAction {
   final int index;
-  DeletePointFromPath({
-    required this.index
-  });
+  DeletePointFromPath({required this.index});
 }

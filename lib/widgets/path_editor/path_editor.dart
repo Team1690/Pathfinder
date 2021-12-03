@@ -1,3 +1,6 @@
+import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import 'package:pathfinder/store/tab/tab_thunk.dart';
+import 'package:pathfinder/widgets/path_editor/temp_spline_point.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,7 +8,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';
@@ -15,33 +17,34 @@ class PathViewModel {
   final List<Segment> segments;
   final Function(Offset) addPoint;
   final Function(int) deletePoint;
+  final List<rpc.SplineResponse_Point>? evaulatedPoints;
 
   PathViewModel({
     required this.points,
     required this.segments,
     required this.addPoint,
     required this.deletePoint,
+    required this.evaulatedPoints,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-      points: store.state.tabState.path.points,
-      segments: store.state.tabState.path.segments,
-      addPoint: (Offset position) {
-        store.dispatch(AddPointToPath(position: position));
-      },
-      deletePoint: (int index) {
-        store.dispatch(DeletePointFromPath(index: index));
-      }
-    );
+        points: store.state.tabState.path.points,
+        segments: store.state.tabState.path.segments,
+        evaulatedPoints: store.state.tabState.path.evaluatedPoints,
+        addPoint: (Offset position) {
+          store.dispatch(addPointThunk(position));
+        },
+        deletePoint: (int index) {
+          store.dispatch(removePointThunk(index));
+        });
   }
 }
 
 StoreConnector<AppState, PathViewModel> pathEditor() {
   return new StoreConnector<AppState, PathViewModel>(
       converter: (store) => PathViewModel.fromStore(store),
-      builder: (_, pathProps) => _PathEditor(pathProps: pathProps)
-      );
+      builder: (_, pathProps) => _PathEditor(pathProps: pathProps));
 }
 
 class _PathEditor extends StatefulWidget {
@@ -62,7 +65,6 @@ class _PathEditorState extends State<_PathEditor> {
   int? selectedPointIndex;
 
   _PathEditorState();
-
 
   // renders waypoint and its corresponding control points
   List<Widget> points({
@@ -249,6 +251,8 @@ class _PathEditorState extends State<_PathEditor> {
                   ),
                 ),
             ],
+            for (final evaluatedPoint in widget.pathProps.evaulatedPoints ?? [])
+              SplinePoint(point: evaluatedPoint)
           ],
         ),
       ),

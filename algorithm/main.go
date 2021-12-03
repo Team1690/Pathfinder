@@ -15,6 +15,8 @@ var (
 )
 
 func main() {
+	logger := log.Default()
+
 	// Get variables from command line
 	flag.Parse()
 
@@ -26,9 +28,9 @@ func main() {
 
 	// Init the gRPC server on the net listener
 	grpcServer := grpc.NewServer()
-	rpc.RegisterPathFinderServer(grpcServer, NewServer())
+	rpc.RegisterPathFinderServer(grpcServer, NewServer(logger))
 
-	log.Default().Printf("Starting server on port %d", port)
+	logger.Printf("Starting server on port %d", *port)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
