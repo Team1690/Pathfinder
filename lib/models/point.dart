@@ -20,8 +20,8 @@ class Point {
   factory Point.initial(Offset position) {
     return Point(
       position,
-      Offset(position.dx - 1, position.dy -1 ),
-      Offset(position.dx - 1, position.dy -1),
+      Offset(position.dx + 10, position.dy + 10),
+      Offset(position.dx + 10, position.dy + 10),
       0,
       true,
       []

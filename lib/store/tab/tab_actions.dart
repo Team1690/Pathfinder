@@ -22,3 +22,10 @@ class AddPointToPath extends TabAction {
     required this.position 
   });
 }
+
+class DeletePointFromPath extends TabAction {
+  final int index;
+  DeletePointFromPath({
+    required this.index
+  });
+}

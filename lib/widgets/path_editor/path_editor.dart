@@ -14,20 +14,26 @@ class PathViewModel {
   final List<Point> points;
   final List<Segment> segments;
   final Function(Offset) addPoint;
+  final Function(int) deletePoint;
 
   PathViewModel({
     required this.points,
     required this.segments,
     required this.addPoint,
+    required this.deletePoint,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-        points: store.state.tabState.path.points,
-        segments: store.state.tabState.path.segments,
-        addPoint: (Offset position) {
-          store.dispatch(AddPointToPath(position: position));
-        });
+      points: store.state.tabState.path.points,
+      segments: store.state.tabState.path.segments,
+      addPoint: (Offset position) {
+        store.dispatch(AddPointToPath(position: position));
+      },
+      deletePoint: (int index) {
+        store.dispatch(DeletePointFromPath(index: index));
+      }
+    );
   }
 }
 
@@ -35,19 +41,15 @@ StoreConnector<AppState, PathViewModel> pathEditor() {
   return new StoreConnector<AppState, PathViewModel>(
       converter: (store) => PathViewModel.fromStore(store),
       builder: (_, pathProps) => _PathEditor(pathProps: pathProps)
-      // onDidChange: () => null,
       );
 }
 
 class _PathEditor extends StatefulWidget {
   final PathViewModel pathProps;
-  // Key? key;
 
   _PathEditor({
     required this.pathProps,
   });
-  //   key
-  // }) : super(key: key);
 
   @override
   _PathEditorState createState() => _PathEditorState();
@@ -58,11 +60,9 @@ class _PathEditorState extends State<_PathEditor> {
   bool shiftPressed = false;
   bool ctrlPressed = false;
   int? selectedPointIndex;
-  // final PathViewModel props;
 
   _PathEditorState();
 
-  // final PathEditorBloc _bloc = PathEditorBloc();
 
   // renders waypoint and its corresponding control points
   List<Widget> points({
@@ -93,13 +93,14 @@ class _PathEditorState extends State<_PathEditor> {
           },
           onTap: () {
             // Edit point black lines
-            // if (ctrlPressed && index >= 1)
-            //   _bloc.add(LineSectionEvent(waypointIndex: index));
-            // else
-            //   setState(
-            //     () => selectedPointIndex =
-            //         selectedPointIndex != index ? index : null,
-            //   );
+            if (ctrlPressed && index >= 1)
+              // _bloc.add(LineSectionEvent(waypointIndex: index));
+              print("TODO");
+            else
+              setState(
+                () => selectedPointIndex =
+                    selectedPointIndex != index ? index : null,
+              );
           },
           controlPoint: false,
         ),
@@ -195,11 +196,12 @@ class _PathEditorState extends State<_PathEditor> {
         //   }
         // }
 
-        // if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
-        //     selectedPointIndex != null) {
-        //   _bloc.add(DeletePoint(selectedPointIndex!));
-        //   selectedPointIndex = null;
-        // }
+        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
+            selectedPointIndex != null) {
+          //TODO fix little jump after deleting point - will be solved if we wont use index but Point
+          widget.pathProps.deletePoint(selectedPointIndex!);
+          selectedPointIndex = null;
+        }
       },
       child: Center(
         child: Stack(
