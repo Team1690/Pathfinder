@@ -53,19 +53,19 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 
 	robot := toRobotParams(rpcRobot)
 
-	segClass := pathfinder.NewSegmentClassifier(path, section.Segments)
-
-	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, segClass)
+	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, section.Segments)
 	if err != nil {
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot, true)
-	pathfinder.SetHeading(trajectory, 0, math.Pi/2)
+	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot)
 	pathfinder.CalculateKinematics(trajectory, robot)
 	pathfinder.CalculateKinematicsReverse(trajectory, robot)
 	pathfinder.CalculateDtAndOmegaAfterReverse(trajectory)
-	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
+
+	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
+
+	trajectory2D := pathfinder.Get2DTrajectory(quantizedTrajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
 	for _, point := range trajectory2D {
