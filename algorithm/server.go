@@ -4,7 +4,6 @@ import (
 	"context"
 	"math"
 
-	"github.com/Team1690/Pathfinder/export"
 	"github.com/Team1690/Pathfinder/pathfinder"
 	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/spline"
@@ -32,8 +31,6 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 
 		res.SwervePoints = append(res.SwervePoints, points...)
 	}
-
-	export.ExportTrajectory(res)
 
 	return res, nil
 }

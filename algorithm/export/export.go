@@ -29,6 +29,6 @@ func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 		})
 	}
 
-	const outputFilePath = "./output.csv"
+	const outputFilePath = "./out/output.csv"
 	utils.SaveCSV(outputFilePath, &out)
 }

@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
 	"testing"
 
+	"github.com/Team1690/Pathfinder/export"
 	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/utils/plot"
 	"github.com/Team1690/Pathfinder/utils/vector"
@@ -124,6 +126,10 @@ func Test(_ *testing.T) {
 
 	plot.PlotScatter(omegaTimeData, "Omega-Time")
 	plot.PlotScatter(omegaDistanceData, "Omega-Distance")
+
+	// * Write results to a csv file
+	export.ExportTrajectory(res)
+	fmt.Println("Written trajectory file")
 
 	http.ListenAndServe(":8081", nil)
 }
