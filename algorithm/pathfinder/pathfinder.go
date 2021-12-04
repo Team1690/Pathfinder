@@ -77,7 +77,9 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		heading float64
 	}
 
-	headingChanges := []indexedHeadingPoint{}
+	headingPoints := []indexedHeadingPoint{
+		{index: 0, heading: float64(segments[0].Points[0].Heading)}, // * Always using first point's heading
+	}
 
 	for i := 1; i < trajectoryPointsCount; i++ {
 		s := ds * float64(i)
@@ -100,7 +102,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		if splineIndex != prevSplineIndex {
 			waypoint := getWaypointByIndex(segments, splineIndex)
 			if waypoint.UseHeading {
-				headingChanges = append(headingChanges, indexedHeadingPoint{
+				headingPoints = append(headingPoints, indexedHeadingPoint{
 					index:   i,
 					heading: float64(waypoint.Heading),
 				})
@@ -112,9 +114,19 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		prevSplineIndex = splineIndex
 	}
 
-	for i := 0; i < len(headingChanges)-1; i++ {
-		currentHeadingChangePoint := headingChanges[i]
-		nextHeadingChangePoint := headingChanges[i+1]
+	// * Adding the final heading
+	lastSegment := segments[len(segments)-1]
+	lastPoint := lastSegment.Points[len(lastSegment.Points)-1]
+	if lastPoint.UseHeading {
+		headingPoints = append(headingPoints, indexedHeadingPoint{index: len(trajectory) - 1, heading: float64(lastPoint.Heading)})
+	} else {
+		// * If the last point doesn't use heading, the heading at the end is the previous heading
+		headingPoints = append(headingPoints, indexedHeadingPoint{index: len(trajectory) - 1, heading: float64(headingPoints[len(headingPoints)-1].heading)})
+	}
+
+	for i := 0; i < len(headingPoints)-1; i++ {
+		currentHeadingChangePoint := headingPoints[i]
+		nextHeadingChangePoint := headingPoints[i+1]
 		SetHeading(
 			trajectory,
 			currentHeadingChangePoint.heading,
@@ -168,7 +180,7 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headi
 	angularAcceleration := dHeading / (twiceAccelerationPercentageTimesOneMinus * travelDistanceSquared)
 	constantOmega := dHeading / (oneMinusDistancePercentageForAcceleration * travelDistance)
 
-	headingAtEndOfAcceleration := angularAcceleration * math.Pow(distanceToAccelerate, 2)
+	headingAtEndOfAcceleration := headingStart + angularAcceleration*math.Pow(distanceToAccelerate, 2)
 
 	for i := headingStartIndex; i <= headingEndIndex; i++ {
 		distanceFromStartOfRotation := trajectoryPoints[i].Distance - trajectoryPoints[headingStartIndex].Distance
@@ -179,7 +191,7 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headi
 
 		} else if distanceFromStartOfRotation < travelDistance-distanceToAccelerate {
 			// Constant omega linear interpolation
-			trajectoryPoints[i].Heading = headingStart + headingAtEndOfAcceleration + constantOmega*(distanceFromStartOfRotation-distanceToAccelerate)
+			trajectoryPoints[i].Heading = headingAtEndOfAcceleration + constantOmega*(distanceFromStartOfRotation-distanceToAccelerate)
 
 		} else {
 			// Deceleration parabola
