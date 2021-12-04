@@ -60,3 +60,15 @@ func (p *Path) GetSplineIndex(s float64) int {
 
 	return int(evaluatedSplineIndex)
 }
+
+// Get an array of points on the path, evaluated in an interval which is defined in units of length.
+func (p *Path) EvaluateAtInterval(interval float64) []vector.Vector {
+	var points []vector.Vector
+	for _, spline := range p.Splines {
+		ds := interval / spline.Length()
+		for s := 0.0; s <= 1; s += ds {
+			points = append(points, spline.Evaluate(s))
+		}
+	}
+	return points
+}

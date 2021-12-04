@@ -21,6 +21,23 @@ func NewServer() *pathFinderServerImpl {
 	return &pathFinderServerImpl{}
 }
 
+func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
+	path := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
+
+	evaluatedPoints := path.EvaluateAtInterval(float64(r.EvaluatedPointsInterval))
+
+	var responsePoints []*rpc.SplineResponse_Point
+
+	for _, point := range evaluatedPoints {
+		responsePoints = append(responsePoints, &rpc.SplineResponse_Point{Point: point.ToRpc()})
+	}
+
+	return &rpc.SplineResponse{
+		SplineType:      rpc.SplineTypes_Bezier,
+		EvaluatedPoints: responsePoints,
+	}, nil
+}
+
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
 	res := &rpc.TrajectoryResponse{}
 	for _, section := range r.Sections {
@@ -70,24 +87,6 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 	}
 
 	return swerveTrajectory, nil
-}
-
-func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	path := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
-
-	evaluatedPoints := []*rpc.SplineResponse_Point{}
-
-	// TODO s is not linear in splines and behaves differently in each spline
-	ds := float64(r.EvaluatedPointsInterval) / path.Length()
-
-	for s := 0.0; s <= 1; s += ds {
-		evaluatedPoints = append(evaluatedPoints, &rpc.SplineResponse_Point{Point: path.Evaluate(s).ToRpc()})
-	}
-
-	return &rpc.SplineResponse{
-		SplineType:      rpc.SplineTypes_Bezier,
-		EvaluatedPoints: evaluatedPoints,
-	}, nil
 }
 
 func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.SplineParameters) *spline.Path {
