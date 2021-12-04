@@ -15,11 +15,13 @@ import (
 func Test(_ *testing.T) {
 	var (
 		chester = &rpc.TrajectoryRequest_SwerveRobotParams{
-			Width:           float32(0.3),
-			Height:          float32(0.3),
-			MaxVelocity:     3.83,
-			MaxAcceleration: 9,
-			MaxJerk:         50,
+			Width:            float32(0.3),
+			Height:           float32(0.3),
+			MaxVelocity:      3.83,
+			MaxAcceleration:  9,
+			SkidAcceleration: 7.5,
+			MaxJerk:          50,
+			CycleTime:        0.02,
 		}
 		firstSegment = &rpc.Segment{
 			SplineType:  rpc.SplineTypes_Bezier,

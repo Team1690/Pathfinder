@@ -110,10 +110,10 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 
 func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {
 	return &pathfinder.RobotParameters{
-		CycleTime:        0.02, // TODO add cycle time to rpc
+		CycleTime:        float64(rpcRobot.CycleTime), // TODO add cycle time to rpc
 		MaxVelocity:      float64(rpcRobot.MaxVelocity),
 		MaxAcceleration:  float64(rpcRobot.MaxAcceleration),
-		SkidAcceleration: float64(rpcRobot.MaxAcceleration), // TODO add skid acceleration to rpc
+		SkidAcceleration: float64(rpcRobot.SkidAcceleration), // TODO add skid acceleration to rpc
 		MaxJerk:          float64(rpcRobot.MaxJerk),
 		Radius:           math.Hypot(float64(rpcRobot.Height), float64(rpcRobot.Width)), // TODO add radius to rpc
 	}
