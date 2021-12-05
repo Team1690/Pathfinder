@@ -1,4 +1,5 @@
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/path_editor/temp_spline_point.dart';
 import 'package:redux/redux.dart';
@@ -15,42 +16,52 @@ import 'package:pathfinder/widgets/path_editor/path_point.dart';
 class PathViewModel {
   final List<Point> points;
   final List<Segment> segments;
+  final int? selectedPointIndex;
   final Function(Offset) addPoint;
   final Function(int) deletePoint;
   final Function(int, Offset) finishDrag;
+  final Function(int) selectPoint;
   final List<rpc.SplineResponse_Point>? evaulatedPoints;
 
   PathViewModel({
     required this.points,
     required this.segments,
+    required this.selectedPointIndex,
     required this.addPoint,
     required this.deletePoint,
     required this.finishDrag,
+    required this.selectPoint,
     required this.evaulatedPoints,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-        points: store.state.tabState.path.points,
-        segments: store.state.tabState.path.segments,
-        evaulatedPoints: store.state.tabState.path.evaluatedPoints,
-        addPoint: (Offset position) {
-          store.dispatch(addPointThunk(position));
-        },
-        deletePoint: (int index) {
-          store.dispatch(removePointThunk(index));
-        },
-        finishDrag: (int index, Offset position) {
-          store.dispatch(editPointThunk(index, position));
-        }
-        );
+      points: store.state.tabState.path.points,
+      segments: store.state.tabState.path.segments,
+      evaulatedPoints: store.state.tabState.path.evaluatedPoints,
+      selectedPointIndex: (store.state.tabState.ui.selectedType == Point
+          ? store.state.tabState.ui.selectedIndex
+          : null),
+      addPoint: (Offset position) {
+        store.dispatch(addPointThunk(position));
+      },
+      deletePoint: (int index) {
+        store.dispatch(removePointThunk(index));
+      },
+      finishDrag: (int index, Offset position) {
+        store.dispatch(editPointThunk(index, position));
+      },
+      selectPoint: (int index) {
+        store.dispatch(ObjectSelected(index, Point));
+      },
+    );
   }
 }
 
 StoreConnector<AppState, PathViewModel> pathEditor() {
   return new StoreConnector<AppState, PathViewModel>(
       converter: (store) => PathViewModel.fromStore(store),
-      builder: (_, pathProps) => _PathEditor(pathProps: pathProps));
+      builder: (_, props) => _PathEditor(pathProps: props));
 }
 
 class _PathEditor extends StatefulWidget {
@@ -68,7 +79,6 @@ class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
   bool shiftPressed = false;
   bool ctrlPressed = false;
-  int? selectedPointIndex;
   Offset? dragPoint;
 
   _PathEditorState();
@@ -78,63 +88,58 @@ class _PathEditorState extends State<_PathEditor> {
     required final Point point,
     required final int index,
   }) {
-    return
-      PathPoint(
-        point: point.position,
-        onDrag: (final DragUpdateDetails details) {
-          // Drag point on bored
-          setState(() {
-            if (dragPoint == null) {
-              Offset basePoint = widget.pathProps.points[index].position;
-              dragPoint = Offset(basePoint.dx + details.delta.dx, basePoint.dy + details.delta.dy);
-            } else {
-              dragPoint = Offset(dragPoint!.dx + details.delta.dx, dragPoint!.dy + details.delta.dy);
-            }
-          });
-        },
-        onDragEnd: (_) {
-          // Finish to drag point on bored
-          widget.pathProps.finishDrag(index, dragPoint!);
-          setState(() {
-            dragPoint = null;
-          });
-        },
-        onTap: () {
-          // Edit point black lines
-          if (ctrlPressed)
-            // _bloc.add(LineSectionEvent(waypointIndex: index));
-            print("TODO");
-          else
-            setState(
-              () => selectedPointIndex =
-                  selectedPointIndex != index ? index : null,
-            );
-        },
-        controlPoint: false,
-      );
+    return PathPoint(
+      point: point.position,
+      onDrag: (final DragUpdateDetails details) {
+        // Drag point on bored
+        setState(() {
+          if (dragPoint == null) {
+            Offset basePoint = widget.pathProps.points[index].position;
+            dragPoint = Offset(basePoint.dx + details.delta.dx,
+                basePoint.dy + details.delta.dy);
+          } else {
+            dragPoint = Offset(dragPoint!.dx + details.delta.dx,
+                dragPoint!.dy + details.delta.dy);
+          }
+        });
+      },
+      onDragEnd: (_) {
+        // Finish to drag point on bored
+        widget.pathProps.finishDrag(index, dragPoint!);
+        setState(() {
+          dragPoint = null;
+        });
+      },
+      onTap: () {
+        // TODO: Edit point black lines
+        widget.pathProps.selectPoint(index);
+      },
+      controlPoint: false,
+    );
   }
 
   @override
   Widget build(final BuildContext context) {
     // TODO maintain focus when pressing on points
     Point? selectedPoint;
-    if (selectedPointIndex != null) {
-      selectedPoint = widget.pathProps.points[selectedPointIndex!];
+    if (widget.pathProps.selectedPointIndex != null) {
+      selectedPoint =
+          widget.pathProps.points[widget.pathProps.selectedPointIndex!];
     }
 
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: (final RawKeyEvent event) {
-        setState(() {
-          if (event is RawKeyDownEvent)
-            pressedKeys.add(event.logicalKey);
-          else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+        // setState(() {
+        //   if (event is RawKeyDownEvent)
+        //     pressedKeys.add(event.logicalKey);
+        //   else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
 
-          shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
-          ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-              pressedKeys.contains(LogicalKeyboardKey.metaLeft);
-        });
+        //   shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
+        //   ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+        //       pressedKeys.contains(LogicalKeyboardKey.metaLeft);
+        // });
 
         // if (ctrlPressed) {
         //   if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
@@ -148,9 +153,9 @@ class _PathEditorState extends State<_PathEditor> {
         //   }
         // }
 
-        if (pressedKeys.contains(LogicalKeyboardKey.backspace) && selectedPointIndex != null) {
-          widget.pathProps.deletePoint(selectedPointIndex!);
-          selectedPointIndex = null;
+        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
+            widget.pathProps.selectedPointIndex != null) {
+          widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
         }
       },
       child: Center(
@@ -169,7 +174,7 @@ class _PathEditorState extends State<_PathEditor> {
             ),
 
             // Draw dragging point
-            if (dragPoint != null) 
+            if (dragPoint != null)
               Positioned(
                 top: dragPoint!.dy - PathPoint.pathPointRadius,
                 left: dragPoint!.dx - PathPoint.pathPointRadius,
@@ -199,28 +204,30 @@ class _PathEditorState extends State<_PathEditor> {
                   ),
                 ),
 
-            // Draw inControlPoint black line for selected point
-            if (selectedPointIndex != null)
-              CustomPaint(
-                painter: DashedLinePainter(
-                  start: selectedPoint!.position,
-                  end: Offset(
-                    selectedPoint.position.dx + selectedPoint.inControlPoint.dx,
-                    selectedPoint.position.dy + selectedPoint.inControlPoint.dy
+              // Draw inControlPoint black line for selected point
+              if (widget.pathProps.selectedPointIndex != null)
+                CustomPaint(
+                  painter: DashedLinePainter(
+                    start: selectedPoint!.position,
+                    end: Offset(
+                        selectedPoint.position.dx +
+                            selectedPoint.inControlPoint.dx,
+                        selectedPoint.position.dy +
+                            selectedPoint.inControlPoint.dy),
                   ),
                 ),
-              ),
-            // Draw OutControlPoint black line for selected point
-            if (selectedPointIndex != null)
-              CustomPaint(
-                painter: DashedLinePainter(
-                  start: selectedPoint!.position,
-                  end: Offset(
-                    selectedPoint.position.dx + selectedPoint.outControlPoint.dx,
-                    selectedPoint.position.dy + selectedPoint.outControlPoint.dy
+              // Draw OutControlPoint black line for selected point
+              if (widget.pathProps.selectedPointIndex != null)
+                CustomPaint(
+                  painter: DashedLinePainter(
+                    start: selectedPoint!.position,
+                    end: Offset(
+                        selectedPoint.position.dx +
+                            selectedPoint.outControlPoint.dx,
+                        selectedPoint.position.dy +
+                            selectedPoint.outControlPoint.dy),
                   ),
                 ),
-              ),
             ],
 
             for (final evaluatedPoint in widget.pathProps.evaulatedPoints ?? [])

@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 @immutable
 class TabUI {
-  final int selectIndex;
+  final int selectedIndex;
   final Type selectedType;
   final bool isSidebarOpen;
   final bool isGraphPageOpen;
@@ -13,7 +13,7 @@ class TabUI {
   final String? serverError;
 
   const TabUI({
-    required this.selectIndex,
+    required this.selectedIndex,
     required this.selectedType,
     required this.isSidebarOpen,
     required this.isGraphPageOpen,
@@ -24,7 +24,7 @@ class TabUI {
 
   factory TabUI.initial() {
     return TabUI(
-      selectIndex: -1,
+      selectedIndex: -1,
       selectedType: Null,
       isSidebarOpen: false,
       isGraphPageOpen: false,
@@ -34,7 +34,7 @@ class TabUI {
   }
 
   TabUI copyWith({
-    int? selectIndex,
+    int? selectedIndex,
     Type? selectedType,
     bool? isSidebarOpen,
     bool? isGraphPageOpen,
@@ -43,7 +43,7 @@ class TabUI {
     String? serverError,
   }) {
     return TabUI(
-      selectIndex: selectIndex ?? this.selectIndex,
+      selectedIndex: selectedIndex ?? this.selectedIndex,
       selectedType: selectedType ?? this.selectedType,
       isSidebarOpen: isSidebarOpen ?? this.isSidebarOpen,
       isGraphPageOpen: isGraphPageOpen ?? this.isGraphPageOpen,

@@ -5,7 +5,8 @@ import 'tab_actions.dart';
 import 'tab_state.dart';
 
 Reducer<TabState> tabStateReducer = combineReducers<TabState>([
-  TypedReducer<TabState, SetSideBarVisibility>(_setSideBarVisibility),
+  TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),
+  TypedReducer<TabState, ObjectSelected>(_objectSelected),
   TypedReducer<TabState, AddPointToPath>(_addPointToPath),
   TypedReducer<TabState, DeletePointFromPath>(_deletePointFromPath),
   TypedReducer<TabState, SplineCalculated>(_splineCalculated),
@@ -13,9 +14,19 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, EditPoint>(_editPoint),
 ]);
 
-TabState _setSideBarVisibility(TabState tabState, SetSideBarVisibility action) {
+TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
+  return tabstate.copyWith(
+      ui: tabstate.ui.copyWith(isSidebarOpen: action.visibility));
+}
+
+TabState _objectSelected(TabState tabState, ObjectSelected action) {
   return tabState.copyWith(
-      ui: tabState.ui.copyWith(isSidebarOpen: action.visibility));
+    ui: tabState.ui.copyWith(
+      isSidebarOpen: true,
+      selectedIndex: action.index,
+      selectedType: action.type,
+    ),
+  );
 }
 
 TabState _setServerError(TabState tabState, ServerError action) {
@@ -39,24 +50,35 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
 TabState _editPoint(TabState tabState, EditPoint action) {
   return tabState.copyWith(
       path: tabState.path.copyWith(
-        points: 
-          tabState.path.points.asMap().entries.map((entery) {
-          if (entery.key == action.pointIndex) {
-            return tabState.path.points[entery.key].copyWith(position: action.position);
-          } else {
-            return tabState.path.points[entery.key];
-          }
-      }).toList()
-  ));
+          points: tabState.path.points.asMap().entries.map((entery) {
+    if (entery.key == action.pointIndex) {
+      return tabState.path.points[entery.key]
+          .copyWith(position: action.position);
+    } else {
+      return tabState.path.points[entery.key];
+    }
+  }).toList()));
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
   List<Point> newPoints = tabState.path.points;
   newPoints.removeAt(action.index);
 
-  return tabState.copyWith(
+  var newState = tabState.copyWith(
       path: tabState.path.copyWith(
     points: newPoints,
     evaluatedPoints: newPoints.length < 2 ? [] : null,
   ));
+
+  if (tabState.ui.selectedType == Point &&
+      tabState.ui.selectedIndex == action.index) {
+    return newState.copyWith(
+      ui: newState.ui.copyWith(
+        selectedIndex: -1,
+        selectedType: Null,
+        isSidebarOpen: false,
+      ),
+    );
+  }
+  return newState;
 }

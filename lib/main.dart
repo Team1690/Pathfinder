@@ -17,10 +17,10 @@ class App extends StatelessWidget {
     return StoreProvider(
         store: store,
         child: MaterialApp(
-          theme: ThemeData.light(),
+          theme: ThemeData.dark(),
           debugShowCheckedModeBanner: false,
           title: 'Orbit Pathfinder',
-          home: HomePage(),
+          home: homePage(),
         ));
   }
 }

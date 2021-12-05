@@ -11,7 +11,14 @@ abstract class TabAction {
 
 // UI actions
 class SetSideBarVisibility extends TabAction {
-  final bool visibility = false;
+  final bool visibility;
+  SetSideBarVisibility(this.visibility);
+}
+
+class ObjectSelected extends TabAction {
+  final int index;
+  final Type type;
+  ObjectSelected(this.index, this.type);
 }
 
 // Server actions
