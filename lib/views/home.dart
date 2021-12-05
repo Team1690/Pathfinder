@@ -167,7 +167,7 @@ class SettingsViewModel {
     return SettingsViewModel(
       tabState: store.state.tabState,
       setPointData: (int index, double x, double y) {
-        store.dispatch(editPointThunk(index, Offset(x, y)));
+        store.dispatch(editPointThunk(pointIndex: index, position: Offset(x, y)));
       },
     );
   }

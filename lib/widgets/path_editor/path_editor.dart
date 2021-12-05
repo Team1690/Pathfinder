@@ -49,7 +49,7 @@ class PathViewModel {
         store.dispatch(removePointThunk(index));
       },
       finishDrag: (int index, Offset position) {
-        store.dispatch(editPointThunk(index, position));
+        store.dispatch(endDragThunk(index, position));
       },
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));

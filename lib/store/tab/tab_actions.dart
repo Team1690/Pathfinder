@@ -38,10 +38,23 @@ class AddPointToPath extends TabAction {
   AddPointToPath({required this.position});
 }
 class EditPoint extends TabAction {
-  final Offset position;
   final int pointIndex;
+  final Offset? position;
+  final Offset? inControlPoint;
+  final Offset? outControlPoint;
+  final double? heading;
+  final bool? useHeading;
+  final List<String>? actions;
 
-  EditPoint(this.pointIndex, this.position);
+  EditPoint({
+    required this.pointIndex,
+    this.position,
+    this.inControlPoint,
+    this.outControlPoint,
+    this.heading,
+    this.useHeading,
+    this.actions
+  });
 }
 
 class DeletePointFromPath extends TabAction {
