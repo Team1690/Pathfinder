@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import 'package:pathfinder/widgets/path_editor_bloc/path_editor_event.dart';
 
 abstract class TabAction {
   @override
@@ -28,6 +29,12 @@ class SplineCalculated extends TabAction {
 class AddPointToPath extends TabAction {
   final Offset position;
   AddPointToPath({required this.position});
+}
+class EditPoint extends TabAction {
+  final Offset position;
+  final int pointIndex;
+
+  EditPoint(this.pointIndex, this.position);
 }
 
 class DeletePointFromPath extends TabAction {

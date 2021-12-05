@@ -18,6 +18,13 @@ ThunkAction removePointThunk(int index) {
   };
 }
 
+ThunkAction editPointThunk(int index, Offset newPosition) {
+  return (Store store) async {
+    store.dispatch(EditPoint(index, newPosition));
+    store.dispatch(updateSplineThunk());
+  };
+}
+
 ThunkAction updateSplineThunk() {
   return (Store store) async {
     try {

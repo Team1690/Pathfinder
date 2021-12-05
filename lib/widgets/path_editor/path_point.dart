@@ -10,6 +10,8 @@ class PathPoint extends StatefulWidget {
 
   static const double controlPointRadius = 7;
   static const double pathPointRadius = 10;
+  static const Color noneControlPointColor = Color(0xbbdddddd);
+  static const Color controlPointColor = Color(0xff111111);
 
   const PathPoint({
     Key? key,
@@ -19,7 +21,7 @@ class PathPoint extends StatefulWidget {
     required this.onTap,
     required this.controlPoint,
   })  : color =
-            controlPoint ? const Color(0xff111111) : const Color(0xbbdddddd),
+            controlPoint ? controlPointColor : noneControlPointColor,
         super(key: key);
 
   @override
@@ -28,29 +30,23 @@ class PathPoint extends StatefulWidget {
 
 class _PathPointState extends State<PathPoint> {
   bool hovered = false;
-  double radius = 0;
+  // Don't change the radius!! that make wierd stuff because of the way the hover is implemented
 
   @override
   Widget build(final BuildContext context) {
-    if (radius == 0)
-      setState(() {
-        radius = widget.controlPoint
-            ? PathPoint.controlPointRadius
-            : PathPoint.pathPointRadius;
-      });
+    double radius = widget.controlPoint
+              ? PathPoint.controlPointRadius
+              : PathPoint.pathPointRadius;
+
     return Positioned(
       top: widget.point.dy - radius,
       left: widget.point.dx - radius,
       child: MouseRegion(
         onEnter: (_) => setState(() {
           hovered = true;
-          radius *= 1.5;
         }),
         onExit: (_) => setState(() {
           hovered = false;
-          radius = widget.controlPoint
-              ? PathPoint.controlPointRadius
-              : PathPoint.pathPointRadius;
         }),
         child: GestureDetector(
           onPanUpdate: widget.onDrag,

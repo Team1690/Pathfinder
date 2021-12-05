@@ -10,6 +10,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, DeletePointFromPath>(_deletePointFromPath),
   TypedReducer<TabState, SplineCalculated>(_splineCalculated),
   TypedReducer<TabState, ServerError>(_setServerError),
+  TypedReducer<TabState, EditPoint>(_editPoint),
 ]);
 
 TabState _setSideBarVisibility(TabState tabState, SetSideBarVisibility action) {
@@ -33,6 +34,20 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
     ...tabState.path.points,
     new Point.initial(action.position)
   ]));
+}
+
+TabState _editPoint(TabState tabState, EditPoint action) {
+  return tabState.copyWith(
+      path: tabState.path.copyWith(
+        points: 
+          tabState.path.points.asMap().entries.map((entery) {
+          if (entery.key == action.pointIndex) {
+            return tabState.path.points[entery.key].copyWith(position: action.position);
+          } else {
+            return tabState.path.points[entery.key];
+          }
+      }).toList()
+  ));
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {

@@ -8,23 +8,41 @@ class Point {
   final bool useHeading;
   final List<String> actions;
 
-  Point(
-    this.position,
-    this.inControlPoint,
-    this.outControlPoint,
-    this.heading,
-    this.useHeading,
-    this.actions,
-  );
+  Point({
+    required this.position,
+    required this.inControlPoint,
+    required this.outControlPoint,
+    required this.heading,
+    required this.useHeading,
+    required this.actions,
+  });
 
   factory Point.initial(Offset position) {
     return Point(
-      position,
-      Offset(position.dx + 10, position.dy + 10),
-      Offset(position.dx + 10, position.dy + 10),
-      0,
-      true,
-      []
+      position: position,
+      inControlPoint: Offset(30, 30),
+      outControlPoint: Offset(-30, -30),
+      heading: 0,
+      useHeading: true,
+      actions: []
+    );
+  }
+
+  Point copyWith({
+    Offset? position,
+    Offset? inControlPoint,
+    Offset? outControlPoint,
+    double? heading,
+    bool? useHeading,
+    List<String>? actions,
+  }) {
+    return Point(
+      position: position ?? this.position,
+      inControlPoint: inControlPoint ?? this.inControlPoint,
+      outControlPoint: outControlPoint ?? this.outControlPoint,
+      heading: heading ?? this.heading,
+      useHeading: useHeading ?? this.useHeading,
+      actions: actions ?? this.actions
     );
   }
 }
