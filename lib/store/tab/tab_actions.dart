@@ -35,7 +35,7 @@ class SplineCalculated extends TabAction {
 // Point actions
 class AddPointToPath extends TabAction {
   final Offset position;
-  AddPointToPath({required this.position});
+  AddPointToPath(this.position);
 }
 class EditPoint extends TabAction {
   final int pointIndex;
@@ -59,5 +59,5 @@ class EditPoint extends TabAction {
 
 class DeletePointFromPath extends TabAction {
   final int index;
-  DeletePointFromPath({required this.index});
+  DeletePointFromPath(this.index);
 }

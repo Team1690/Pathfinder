@@ -6,14 +6,14 @@ import 'package:redux/redux.dart';
 
 ThunkAction addPointThunk(Offset position) {
   return (Store store) async {
-    store.dispatch(AddPointToPath(position: position));
+    store.dispatch(AddPointToPath(position));
     store.dispatch(updateSplineThunk());
   };
 }
 
 ThunkAction removePointThunk(int index) {
   return (Store store) async {
-    store.dispatch(DeletePointFromPath(index: index));
+    store.dispatch(DeletePointFromPath(index));
     store.dispatch(updateSplineThunk());
   };
 }
