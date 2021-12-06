@@ -119,7 +119,7 @@ class _HomePage extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           children: [
                             ListTile(
-                              textColor: theme.textTheme.headline1?.color,
+                              // textColor: theme.textTheme.headline1?.color,
                               title: Text("DATA"),
                             ),
                             Divider(
@@ -167,7 +167,8 @@ class SettingsViewModel {
     return SettingsViewModel(
       tabState: store.state.tabState,
       setPointData: (int index, double x, double y) {
-        store.dispatch(editPointThunk(pointIndex: index, position: Offset(x, y)));
+        store.dispatch(
+            editPointThunk(pointIndex: index, position: Offset(x, y)));
       },
     );
   }
@@ -220,11 +221,10 @@ class _SettingsDetails extends StatelessWidget {
                     validator: (value) {
                       if (value == null) return 'Position X is required.';
                     },
-                    onChanged: (xValue) {
+                    onFieldSubmitted: (xValue) {
                       props.setPointData(
                         index,
-                        // double.parse(xValue),
-                        xValue ?? 0,
+                        double.parse(xValue.replaceAll(',', '')),
                         pointData.position.dy,
                       );
                       f1.requestFocus();
@@ -241,7 +241,7 @@ class _SettingsDetails extends StatelessWidget {
                     props.setPointData(
                       index,
                       pointData.position.dx,
-                      double.parse(yValue),
+                      double.parse(yValue.replaceAll(',', '')),
                     );
                     f2.requestFocus();
                   },
