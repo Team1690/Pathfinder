@@ -30,22 +30,22 @@ func Test(_ *testing.T) {
 			MaxVelocity: 3.8,
 			Points: []*rpc.Point{
 				{
-					Position:   &rpc.Vector{X: 0, Y: 0},
-					ControlOut: &rpc.Vector{X: 0, Y: 1},
+					Position:   &rpc.Vector{X: 1, Y: 2},
+					ControlOut: &rpc.Vector{X: 3, Y: 2},
 					Heading:    0,
 					UseHeading: true,
 				},
 				{
-					Position:   &rpc.Vector{X: 1, Y: 1},
-					ControlIn:  &rpc.Vector{X: 2, Y: 2},
-					ControlOut: &rpc.Vector{X: 0, Y: 0},
+					Position:   &rpc.Vector{X: 2, Y: 0},
+					ControlIn:  &rpc.Vector{X: 0, Y: 1},
+					ControlOut: &rpc.Vector{X: 4, Y: -1},
+					Heading:    0,
+					UseHeading: true,
+				},
+				{
+					Position:   &rpc.Vector{X: 1, Y: 2},
+					ControlIn:  &rpc.Vector{X: 5, Y: 4},
 					Heading:    math.Pi / 2,
-					UseHeading: true,
-				},
-				{
-					Position:   &rpc.Vector{X: 1, Y: 0},
-					ControlIn:  &rpc.Vector{X: 2, Y: 0},
-					Heading:    0,
 					UseHeading: true,
 				},
 			},
@@ -68,6 +68,7 @@ func Test(_ *testing.T) {
 	}
 
 	velTimeData := []vector.Vector{}
+	velDirTimeData := []vector.Vector{}
 	velXTimeData := []vector.Vector{}
 	velYTimeData := []vector.Vector{}
 	velDistanceData := []vector.Vector{}
@@ -96,6 +97,8 @@ func Test(_ *testing.T) {
 		// * Velocity
 		currentVelocity := vector.NewFromRpcVector(point.Velocity)
 
+		velDirTimeData = append(velDirTimeData, vector.Vector{X: float64(point.Time), Y: currentVelocity.Angle()})
+
 		velNorm := currentVelocity.Norm()
 
 		velTimeData = append(velTimeData, vector.Vector{X: float64(point.Time), Y: velNorm})
@@ -118,6 +121,7 @@ func Test(_ *testing.T) {
 
 	plot.PlotScatter(velTimeData, "Velocity-Time")
 	plot.PlotScatter(velDistanceData, "Velocity-Distance")
+	plot.PlotScatter(velDirTimeData, "VelocityDirection-Time")
 	plot.PlotScatter(velXTimeData, "VelocityX-Time")
 	plot.PlotScatter(velYTimeData, "VelocityY-Time")
 
