@@ -1,8 +1,10 @@
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/store/app/app_state.dart';
 import 'package:pathfinder/store/tab/store.dart';
@@ -31,12 +33,28 @@ class HomeViewModel {
       },
     );
   }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is HomeViewModel) {
+      final equal = other.isSidebarOpen == isSidebarOpen;
+      return equal;
+    }
+
+    return false;
+  }
 }
 
 StoreConnector<AppState, HomeViewModel> homePage() {
   return new StoreConnector<AppState, HomeViewModel>(
-      converter: (store) => HomeViewModel.fromStore(store),
-      builder: (_, props) => _HomePage(props: props));
+    converter: (store) => HomeViewModel.fromStore(store),
+    builder: (_, props) => _HomePage(props: props),
+    distinct: true,
+  );
 }
 
 class _HomePage extends StatelessWidget {
@@ -128,7 +146,7 @@ class _HomePage extends StatelessWidget {
                               color: theme.textTheme.headline1?.color,
                               thickness: 0.5,
                             ),
-                            settingsDetails()
+                            _SettingsDetails(),
                           ],
                         ),
                         Positioned(
@@ -155,7 +173,7 @@ class _HomePage extends StatelessWidget {
 }
 
 class SettingsViewModel {
-  final TabState tabState;
+  TabState tabState;
   final Null Function(int, double, double) setPointData;
 
   SettingsViewModel({
@@ -171,88 +189,126 @@ class SettingsViewModel {
       },
     );
   }
+
+  @override
+  int get hashCode => 111;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is SettingsViewModel) {
+      final ui = tabState.ui;
+      final otherUi = other.tabState.ui;
+
+      if (ui.selectedIndex == otherUi.selectedIndex &&
+          ui.selectedType == otherUi.selectedType) {
+        final point = tabState.path.points[ui.selectedIndex];
+        final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
+
+        final equal = point == otherPoint;
+        return equal;
+      }
+    }
+
+    return false;
+  }
 }
 
-StoreConnector<AppState, SettingsViewModel> settingsDetails() {
-  return new StoreConnector<AppState, SettingsViewModel>(
-    converter: (store) => SettingsViewModel.fromStore(store),
-    builder: (_, props) => _SettingsDetails(props: props),
-  );
+// StoreConnector<AppState, SettingsViewModel> settingsDetails() {
+//   return new StoreConnector<AppState, SettingsViewModel>(
+//     converter: (store) => SettingsViewModel.fromStore(store),
+//     builder: (_, props) {
+//       return _SettingsDetails(props);
+//     },
+//     distinct: true,
+//   );
+// }
+
+class _SettingsDetails extends StatefulWidget {
+  // final SettingsViewModel props;
+
+  _SettingsDetails();
+
+  @override
+  _SettingsDetailsState createState() => _SettingsDetailsState();
 }
 
-class _SettingsDetails extends StatelessWidget {
-  final SettingsViewModel props;
+class _SettingsDetailsState extends State<_SettingsDetails> {
+  SettingsViewModel props = SettingsViewModel.fromStore(store);
 
-  _SettingsDetails({
-    required this.props,
-  });
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // _SettingsDetailsState(this.props);
 
   @override
   Widget build(BuildContext context) {
+    final newProps = SettingsViewModel.fromStore(store);
+    // if (props != newProps) {
+    setState(() {
+      this.props = newProps;
+    });
+    // }
+
     final index = props.tabState.ui.selectedIndex;
     final points = props.tabState.path.points;
 
-    var f1 = FocusNode();
-    var f2 = FocusNode();
-
     // On init the selected index may be negative
-    if (index < 0 || points.length == 0) {
-      return SizedBox.shrink();
-    }
+    if (index < 0) return SizedBox.shrink();
 
     if (props.tabState.ui.selectedType == Point) {
+      if (points.length == 0) return SizedBox.shrink();
+
+      setPoint(int index, double x, y) {
+        props.setPointData(index, x, y);
+      }
+
       final pointData = points[index];
 
       return Form(
-        key: _formKey,
+        // child: StoreConnector<AppState, SettingsViewModel>(
+        //   converter: (store) => SettingsViewModel.fromStore(store),
+        //   distinct: false,
+        //   onWillChange: (_, newViewModel) =>
+        //       setState(() => props = newViewModel),
+        //   builder: (_, newProps) {
         child: CardSettings(
+          // return CardSettings(
           cardless: true,
           children: <CardSettingsSection>[
             CardSettingsSection(
               children: <CardSettingsWidget>[
                 CardSettingsDouble(
                     label: 'Position X',
-                    autofocus: true,
-                    focusNode: f1,
                     initialValue: pointData.position.dx,
                     validator: (value) {
                       if (value == null) return 'Position X is required.';
                     },
                     onChanged: (xValue) {
-                      props.setPointData(
+                      setPoint(
                         index,
-                        // double.parse(xValue),
                         xValue ?? 0,
                         pointData.position.dy,
                       );
-                      f1.requestFocus();
                     }),
                 CardSettingsDouble(
                   label: 'Position Y',
-                  autofocus: true,
-                  focusNode: f2,
                   initialValue: pointData.position.dy,
                   validator: (value) {
                     if (value == null) return 'Position Y is required.';
                   },
-                  onFieldSubmitted: (yValue) {
-                    props.setPointData(
+                  onChanged: (yValue) {
+                    setPoint(
                       index,
                       pointData.position.dx,
-                      double.parse(yValue),
+                      yValue ?? 0,
                     );
-                    f2.requestFocus();
                   },
                 ),
               ],
             ),
           ],
+          // );
+          // },
         ),
       );
     }
-
     return SizedBox.shrink();
   }
 

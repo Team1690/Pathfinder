@@ -19,13 +19,12 @@ class Point {
 
   factory Point.initial(Offset position) {
     return Point(
-      position: position,
-      inControlPoint: Offset(30, 30),
-      outControlPoint: Offset(-30, -30),
-      heading: 0,
-      useHeading: true,
-      actions: []
-    );
+        position: position,
+        inControlPoint: Offset(30, 30),
+        outControlPoint: Offset(-30, -30),
+        heading: 0,
+        useHeading: true,
+        actions: []);
   }
 
   Point copyWith({
@@ -37,12 +36,27 @@ class Point {
     List<String>? actions,
   }) {
     return Point(
-      position: position ?? this.position,
-      inControlPoint: inControlPoint ?? this.inControlPoint,
-      outControlPoint: outControlPoint ?? this.outControlPoint,
-      heading: heading ?? this.heading,
-      useHeading: useHeading ?? this.useHeading,
-      actions: actions ?? this.actions
-    );
+        position: position ?? this.position,
+        inControlPoint: inControlPoint ?? this.inControlPoint,
+        outControlPoint: outControlPoint ?? this.outControlPoint,
+        heading: heading ?? this.heading,
+        useHeading: useHeading ?? this.useHeading,
+        actions: actions ?? this.actions);
+  }
+
+  @override // TODO: implement hashCode
+  int get hashCode => 111;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Point) {
+      return position == other.position &&
+          inControlPoint == other.inControlPoint &&
+          outControlPoint == other.outControlPoint &&
+          heading == other.heading &&
+          useHeading == other.useHeading;
+    }
+
+    return false;
   }
 }
