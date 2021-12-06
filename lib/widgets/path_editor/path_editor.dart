@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
+import 'package:pathfinder/widgets/path_editor/full_path_point.dart';
 import 'package:pathfinder/widgets/path_editor/temp_spline_point.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +25,8 @@ class PathViewModel {
   final Function(int) deletePoint;
   final Function(int, Offset) finishDrag;
   final Function(int) selectPoint;
+  final Function(int, Offset) finishInControlDrag;
+  final Function(int, Offset) finishOutControlDrag;
   final List<rpc.SplineResponse_Point>? evaulatedPoints;
 
   PathViewModel({
@@ -32,6 +38,8 @@ class PathViewModel {
     required this.finishDrag,
     required this.selectPoint,
     required this.evaulatedPoints,
+    required this.finishInControlDrag,
+    required this.finishOutControlDrag,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -54,6 +62,12 @@ class PathViewModel {
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
       },
+      finishInControlDrag: (int index, Offset position) {
+        store.dispatch(endInControlDragThunk(index, position));
+      },
+      finishOutControlDrag: (int index, Offset position) {
+        store.dispatch(endOutControlDragThunk(index, position));
+      }
     );
   }
 }
@@ -82,41 +96,6 @@ class _PathEditorState extends State<_PathEditor> {
   Offset? dragPoint;
 
   _PathEditorState();
-
-  // renders waypoint and its corresponding control points
-  Widget pointWidget({
-    required final Point point,
-    required final int index,
-  }) {
-    return PathPoint(
-      point: point.position,
-      onDrag: (final DragUpdateDetails details) {
-        // Drag point on bored
-        setState(() {
-          if (dragPoint == null) {
-            Offset basePoint = widget.pathProps.points[index].position;
-            dragPoint = Offset(basePoint.dx + details.delta.dx,
-                basePoint.dy + details.delta.dy);
-          } else {
-            dragPoint = Offset(dragPoint!.dx + details.delta.dx,
-                dragPoint!.dy + details.delta.dy);
-          }
-        });
-      },
-      onDragEnd: (_) {
-        // Finish to drag point on bored
-        widget.pathProps.finishDrag(index, dragPoint!);
-        setState(() {
-          dragPoint = null;
-        });
-      },
-      onTap: () {
-        // TODO: Edit point black lines
-        widget.pathProps.selectPoint(index);
-      },
-      controlPoint: false,
-    );
-  }
 
   @override
   Widget build(final BuildContext context) {
@@ -189,45 +168,42 @@ class _PathEditorState extends State<_PathEditor> {
               ),
 
             ...[
-              for (int i = 0; i < widget.pathProps.points.length; i++)
-                // Draw dot circle
-                pointWidget(
-                  point: widget.pathProps.points[i],
-                  index: i,
-                ),
-              for (final waypoint in widget.pathProps.points)
-                // Draw red line
-                CustomPaint(
-                  painter: HeadingLinePainter(
-                    heading: waypoint.heading,
-                    position: waypoint.position,
-                  ),
-                ),
-
-              // Draw inControlPoint black line for selected point
-              if (widget.pathProps.selectedPointIndex != null)
-                CustomPaint(
-                  painter: DashedLinePainter(
-                    start: selectedPoint!.position,
-                    end: Offset(
-                        selectedPoint.position.dx +
-                            selectedPoint.inControlPoint.dx,
-                        selectedPoint.position.dy +
-                            selectedPoint.inControlPoint.dy),
-                  ),
-                ),
-              // Draw OutControlPoint black line for selected point
-              if (widget.pathProps.selectedPointIndex != null)
-                CustomPaint(
-                  painter: DashedLinePainter(
-                    start: selectedPoint!.position,
-                    end: Offset(
-                        selectedPoint.position.dx +
-                            selectedPoint.outControlPoint.dx,
-                        selectedPoint.position.dy +
-                            selectedPoint.outControlPoint.dy),
-                  ),
-                ),
+              for (final entery in widget.pathProps.points.asMap().entries)
+                FullPathPoint(
+                  key: Key(entery.key.toString()),
+                  point: entery.value,
+                  onDrag: (final DragUpdateDetails details) {
+                    // Drag point on bored
+                    setState(() {
+                      if (dragPoint == null) {
+                        Offset basePoint = entery.value.position;
+                        dragPoint = Offset(basePoint.dx + details.delta.dx,
+                            basePoint.dy + details.delta.dy);
+                      } else {
+                        dragPoint = Offset(dragPoint!.dx + details.delta.dx,
+                            dragPoint!.dy + details.delta.dy);
+                      }
+                    });
+                  },
+                  onDragEnd: (_) {
+                    // Finish to drag point on bored
+                    widget.pathProps.finishDrag(entery.key, dragPoint!);
+                    setState(() {
+                      dragPoint = null;
+                    });
+                  },
+                  onTap: () {
+                    widget.pathProps.selectPoint(entery.key);
+                  },
+                  isSelected: entery.key == widget.pathProps.selectedPointIndex,
+                  onInControlDragEnd: (Offset position) {
+                    widget.pathProps.finishInControlDrag(entery.key, position);
+                  },
+                  onOutControlDragEnd: (Offset position) {
+                    print(position);
+                    widget.pathProps.finishOutControlDrag(entery.key, position);
+                  },
+                )
             ],
 
             for (final evaluatedPoint in widget.pathProps.evaulatedPoints ?? [])
