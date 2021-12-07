@@ -364,3 +364,9 @@ func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.TrajectoryResponse_Swer
 		AngularVelocity: float32(point.Omega),
 	}
 }
+
+func ReverseTime(trajectory []*TrajectoryPoint) {
+	for i, j := 0, len(trajectory)-1; i < j; i, j = i+1, j-1 {
+		trajectory[i].Time, trajectory[j].Time = trajectory[j].Time, trajectory[i].Time
+	}
+}
