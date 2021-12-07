@@ -5,20 +5,21 @@ import (
 	"github.com/Team1690/Pathfinder/utils"
 )
 
-type OutputTrajctoryPoint struct {
+type OutputTrajectoryPoint struct {
 	Time            float32 `csv:"time"`
 	PositionX       float32 `csv:"position_x"`
 	PositionY       float32 `csv:"position_y"`
 	VelocityX       float32 `csv:"velocity_x"`
 	VelocityY       float32 `csv:"velocity_y"`
 	Heading         float32 `csv:"heading"`
-	AngularVelocity float32 `csv:"angular_velocitiy"`
+	AngularVelocity float32 `csv:"angular_velocity"`
+	Vision          int     `csv:"vision"` // For old vision code in chester
 }
 
 func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
-	var out []*OutputTrajctoryPoint
+	var out []*OutputTrajectoryPoint
 	for _, point := range trajectory.SwervePoints {
-		out = append(out, &OutputTrajctoryPoint{
+		out = append(out, &OutputTrajectoryPoint{
 			Time:            point.Time,
 			PositionX:       point.Position.X,
 			PositionY:       point.Position.Y,
@@ -26,6 +27,7 @@ func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 			VelocityY:       point.Velocity.Y,
 			Heading:         point.Heading,
 			AngularVelocity: point.AngularVelocity,
+			Vision:          0,
 		})
 	}
 
