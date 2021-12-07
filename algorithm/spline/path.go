@@ -7,13 +7,14 @@ import (
 )
 
 type Path struct {
-	Splines        []Spline
-	SForEachSpline float64
-	length         *float64
+	Splines         []Spline
+	SForEachSpline  float64
+	length          *float64
+	NumberOfSplines int
 }
 
 func NewPath(splines ...Spline) *Path {
-	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines))}
+	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines)), NumberOfSplines: len(splines)}
 }
 
 func (p *Path) Length() float64 {
