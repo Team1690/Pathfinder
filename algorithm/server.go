@@ -79,6 +79,8 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 
 	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
 
+	pathfinder.ReverseTime(quantizedTrajectory)
+
 	trajectory2D := pathfinder.Get2DTrajectory(quantizedTrajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
