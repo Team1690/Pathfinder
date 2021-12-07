@@ -60,12 +60,6 @@ func getWaypointByIndex(segments []*rpc.Segment, pointIndex int) *rpc.Point {
 }
 
 func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segments []*rpc.Segment) ([]*TrajectoryPoint, error) {
-	splineLength := path.Length()
-
-	ds := deltaDistanceForEvaluation / splineLength
-
-	trajectoryPointsCount := int(1 / ds)
-
 	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Time: 0}
 
 	trajectory := []*TrajectoryPoint{&firstPoint}
@@ -81,14 +75,18 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		{index: 0, heading: float64(segments[0].Points[0].Heading)}, // * Always using first point's heading
 	}
 
-	for i := 1; i < trajectoryPointsCount; i++ {
-		s := ds * float64(i)
+	pathDerivative := path.Derivative()
+
+	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
+
+	for s := ds; s <= 1; s += ds {
+		ds = deltaDistanceForEvaluation / (pathDerivative.Evaluate(s).Norm() * float64(path.NumberOfSplines))
 
 		point := TrajectoryPoint{S: s, Position: path.Evaluate(s)}
 
-		prevPointToCurrent := point.Position.Sub(trajectory[i-1].Position)
+		prevPointToCurrent := point.Position.Sub(trajectory[len(trajectory)-1].Position)
 		distanceToPrevPoint := prevPointToCurrent.Norm()
-		point.Distance = trajectory[i-1].Distance + distanceToPrevPoint
+		point.Distance = trajectory[len(trajectory)-1].Distance + distanceToPrevPoint
 
 		splineIndex := path.GetSplineIndex(s)
 
@@ -103,7 +101,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 			waypoint := getWaypointByIndex(segments, splineIndex)
 			if waypoint.UseHeading {
 				headingPoints = append(headingPoints, indexedHeadingPoint{
-					index:   i,
+					index:   len(trajectory),
 					heading: float64(waypoint.Heading),
 				})
 			}
