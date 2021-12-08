@@ -163,7 +163,7 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 }
 
 func SetHeading(trajectoryPoints []*TrajectoryPoint, headingStart float64, headingEnd float64, headingStartIndex int, headingEndIndex int) {
-	const distancePercentageForAngularAcceleration float64 = 0.05
+	const distancePercentageForAngularAcceleration float64 = 0.1
 	const oneMinusDistancePercentageForAcceleration float64 = 1 - distancePercentageForAngularAcceleration
 	const twiceAccelerationPercentageTimesOneMinus = 2 * distancePercentageForAngularAcceleration * oneMinusDistancePercentageForAcceleration
 
