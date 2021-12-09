@@ -19,7 +19,7 @@ func Test(_ *testing.T) {
 		chester = &rpc.TrajectoryRequest_SwerveRobotParams{
 			Width:            float32(0.3),
 			Height:           float32(0.3),
-			MaxVelocity:      3.83,
+			MaxVelocity:      2,
 			MaxAcceleration:  9,
 			SkidAcceleration: 7.5,
 			MaxJerk:          50,
@@ -27,25 +27,25 @@ func Test(_ *testing.T) {
 		}
 		firstSegment = &rpc.Segment{
 			SplineType:  rpc.SplineTypes_Bezier,
-			MaxVelocity: 3.8,
+			MaxVelocity: 2,
 			Points: []*rpc.Point{
 				{
-					Position:   &rpc.Vector{X: 1, Y: 2},
-					ControlOut: &rpc.Vector{X: 3, Y: 2},
+					Position:   &rpc.Vector{X: 0, Y: 0},
+					ControlOut: &rpc.Vector{X: 4, Y: 0},
 					Heading:    0,
 					UseHeading: true,
 				},
 				{
-					Position:   &rpc.Vector{X: 2, Y: 0},
-					ControlIn:  &rpc.Vector{X: 0, Y: 1},
-					ControlOut: &rpc.Vector{X: 4, Y: -1},
-					Heading:    0,
+					Position:   &rpc.Vector{X: -1, Y: -1},
+					ControlIn:  &rpc.Vector{X: -1, Y: -6},
+					ControlOut: &rpc.Vector{X: -1, Y: 0},
+					Heading:    math.Pi,
 					UseHeading: true,
 				},
 				{
-					Position:   &rpc.Vector{X: 1, Y: 2},
-					ControlIn:  &rpc.Vector{X: 5, Y: 4},
-					Heading:    math.Pi / 2,
+					Position:   &rpc.Vector{X: 0, Y: 0},
+					ControlIn:  &rpc.Vector{X: -1, Y: 0},
+					Heading:    0,
 					UseHeading: true,
 				},
 			},
