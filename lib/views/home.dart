@@ -51,7 +51,7 @@ class HomeViewModel {
     final ui = tabState.ui;
     final otherUi = other.tabState.ui;
 
-    if (ui.selectedIndex == otherUi.selectedIndex) return false;
+    if (ui.selectedIndex != otherUi.selectedIndex) return false;
     if (ui.selectedType != otherUi.selectedType) return false;
 
     if (ui.selectedIndex != -1) {
