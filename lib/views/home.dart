@@ -16,7 +16,7 @@ class HomeViewModel {
   final bool isSidebarOpen;
   final Function(bool) setSidebarVisibility;
   TabState tabState;
-  final Function(int, double, double) setPointData;
+  final Function(int, Point) setPointData;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -32,8 +32,9 @@ class HomeViewModel {
       setSidebarVisibility: (visibility) {
         store.dispatch(SetSideBarVisibility(visibility));
       },
-      setPointData: (int index, double x, double y) {
-        store.dispatch(editPointThunk(index, Offset(x, y)));
+      setPointData: (int index, Point point) {
+        store.dispatch(
+            editPointThunk(pointIndex: index, position: point.position));
       },
     );
   }
@@ -78,10 +79,10 @@ class _HomePageState extends State<HomePage> {
   _HomePageState(this.props);
 
   onPointEdit(int index, Point point) {
-    props.tabState =
-        editPoint(props.tabState, EditPoint(index, point.position));
+    props.tabState = editPoint(
+        props.tabState, EditPoint(pointIndex: index, position: point.position));
 
-    props.setPointData(index, point.position.dx, point.position.dy);
+    props.setPointData(index, point);
   }
 
   @override
@@ -144,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                           padding: EdgeInsets.zero,
                           children: [
                             ListTile(
-                              textColor: theme.textTheme.headline1?.color,
+                              // textColor: theme.textTheme.headline1?.color,
                               title: Text("DATA"),
                             ),
                             Divider(

@@ -49,15 +49,24 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
 
 TabState editPoint(TabState tabState, EditPoint action) {
   return tabState.copyWith(
-      path: tabState.path.copyWith(
-          points: tabState.path.points.asMap().entries.map((entery) {
-    if (entery.key == action.pointIndex) {
-      return tabState.path.points[entery.key]
-          .copyWith(position: action.position);
-    } else {
-      return tabState.path.points[entery.key];
-    }
-  }).toList()));
+    path: tabState.path.copyWith(
+      points: tabState.path.points.asMap().entries.map((entery) {
+        if (entery.key == action.pointIndex) {
+          return tabState.path.points[entery.key]
+              .copyWith(
+                position: action.position,
+                inControlPoint: action.inControlPoint,
+                outControlPoint: action.outControlPoint,
+                heading: action.heading,
+                useHeading: action.useHeading,
+                actions: action.actions
+              );
+        } else {
+          return tabState.path.points[entery.key];
+        }
+      }).toList()
+    )
+  );
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {

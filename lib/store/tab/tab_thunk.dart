@@ -6,23 +6,51 @@ import 'package:redux/redux.dart';
 
 ThunkAction addPointThunk(Offset position) {
   return (Store store) async {
-    store.dispatch(AddPointToPath(position: position));
+    store.dispatch(AddPointToPath(position));
     store.dispatch(updateSplineThunk());
   };
 }
 
 ThunkAction removePointThunk(int index) {
   return (Store store) async {
-    store.dispatch(DeletePointFromPath(index: index));
+    store.dispatch(DeletePointFromPath(index));
     store.dispatch(updateSplineThunk());
   };
 }
 
-ThunkAction editPointThunk(int index, Offset newPosition) {
+ThunkAction editPointThunk({
+  required final int pointIndex,
+  final Offset? position,
+  final Offset? inControlPoint,
+  final Offset? outControlPoint,
+  final double? heading,
+  final bool? useHeading,
+  final List<String>? actions
+}) {
   return (Store store) async {
-    store.dispatch(EditPoint(index, newPosition));
+    store.dispatch(EditPoint(
+      pointIndex: pointIndex,
+      position: position,
+      inControlPoint: inControlPoint,
+      outControlPoint: outControlPoint,
+      heading: heading,
+      useHeading: useHeading,
+      actions: actions
+    ));
     store.dispatch(updateSplineThunk());
   };
+}
+
+ThunkAction endDragThunk(int index, Offset position) {
+  return editPointThunk(pointIndex:  index, position: position);
+}
+
+ThunkAction endInControlDragThunk(int index, Offset position) {
+  return editPointThunk(pointIndex:  index, inControlPoint: Offset(position.dx, position.dy));
+}
+
+ThunkAction endOutControlDragThunk(int index, Offset position) {
+  return editPointThunk(pointIndex:  index, outControlPoint: Offset(position.dx, position.dy));
 }
 
 ThunkAction updateSplineThunk() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DashedLinePainter extends CustomPainter {
+  // TODO Fix start position offset
   final Offset start, end;
   final double dashLength, spaceLength;
   final double direction;
@@ -26,7 +27,7 @@ class DashedLinePainter extends CustomPainter {
   void paint(final Canvas canvas, final Size size) {
     final paintPath = Path();
 
-    Offset dashStartPosition = start;
+    Offset dashStartPosition = Offset(start.dx, start.dy);
 
     while (true) {
       final Offset dashEndPosition = dashStartPosition + dashRelativeOffset;
