@@ -20,7 +20,7 @@ class App extends StatelessWidget {
           theme: ThemeData.dark(),
           debugShowCheckedModeBanner: false,
           title: 'Orbit Pathfinder',
-          home: homePage(),
+          home: HomePage(),
         ));
   }
 }

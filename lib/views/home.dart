@@ -1,15 +1,11 @@
-import 'dart:collection';
 import 'dart:ui';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/store/app/app_state.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
-import 'package:pathfinder/widgets/card.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/widgets/tab.dart';
@@ -19,29 +15,49 @@ import 'package:card_settings/card_settings.dart';
 class HomeViewModel {
   final bool isSidebarOpen;
   final Function(bool) setSidebarVisibility;
+  TabState tabState;
+  final Function(int, double, double) setPointData;
 
   HomeViewModel({
     required this.isSidebarOpen,
     required this.setSidebarVisibility,
+    required this.tabState,
+    required this.setPointData,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
     return HomeViewModel(
+      tabState: store.state.tabState,
       isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
       setSidebarVisibility: (visibility) {
         store.dispatch(SetSideBarVisibility(visibility));
+      },
+      setPointData: (int index, double x, double y) {
+        store.dispatch(editPointThunk(index, Offset(x, y)));
       },
     );
   }
 
   @override
-  // TODO: implement hashCode
   int get hashCode => super.hashCode;
 
   @override
   bool operator ==(Object other) {
     if (other is HomeViewModel) {
-      final equal = other.isSidebarOpen == isSidebarOpen;
+      var equal = other.isSidebarOpen == isSidebarOpen;
+      final ui = tabState.ui;
+      final otherUi = other.tabState.ui;
+
+      if (ui.selectedIndex == otherUi.selectedIndex &&
+          ui.selectedType == otherUi.selectedType) {
+        if (ui.selectedIndex != -1) {
+          final point = tabState.path.points[ui.selectedIndex];
+          final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
+
+          equal &= point == otherPoint;
+        }
+      }
+
       return equal;
     }
 
@@ -49,23 +65,38 @@ class HomeViewModel {
   }
 }
 
-StoreConnector<AppState, HomeViewModel> homePage() {
-  return new StoreConnector<AppState, HomeViewModel>(
-    converter: (store) => HomeViewModel.fromStore(store),
-    builder: (_, props) => _HomePage(props: props),
-    distinct: true,
-  );
+class HomePage extends StatefulWidget {
+  final HomeViewModel props = HomeViewModel.fromStore(store);
+
+  HomePage();
+
+  @override
+  _HomePageState createState() => _HomePageState(props);
 }
 
-class _HomePage extends StatelessWidget {
-  final HomeViewModel props;
+class _HomePageState extends State<HomePage> {
+  HomeViewModel props;
 
-  _HomePage({
-    required this.props,
-  });
+  _HomePageState(this.props);
+
+  onPointEdit(int index, Point point) {
+    props.tabState =
+        editPoint(props.tabState, EditPoint(index, point.position));
+
+    props.setPointData(index, point.position.dx, point.position.dy);
+  }
 
   @override
   Widget build(final BuildContext context) {
+    store.onChange.listen((event) {
+      final newProps = HomeViewModel.fromStore(store);
+      if (newProps != props) {
+        setState(() {
+          props = newProps;
+        });
+      }
+    });
+
     final theme = Theme.of(context);
     final _scaffoldKey = GlobalKey();
 
@@ -94,28 +125,6 @@ class _HomePage extends StatelessWidget {
                 ),
               ),
               Expanded(child: EditorScreen()),
-              // PathEditor(),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(defaultPadding),
-              //     child: Row(
-              //       children: [
-              //         optimizeAndGenerateCard(),
-              //         const SizedBox(width: defaultPadding),
-              //         pointPropertiesCard(),
-              //         const SizedBox(width: defaultPadding),
-              //         Expanded(
-              //           flex: 2,
-              //           child: PropertiesCard(
-              //             body: Container(),
-              //           ),
-              //         ),
-              //         const SizedBox(width: defaultPadding),
-              //         fileManagementCard(),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
           ),
           if (props.isSidebarOpen)
@@ -146,7 +155,10 @@ class _HomePage extends StatelessWidget {
                               color: theme.textTheme.headline1?.color,
                               thickness: 0.5,
                             ),
-                            _SettingsDetails(),
+                            SettingsDetails(
+                              tabState: props.tabState,
+                              onPointEdit: onPointEdit,
+                            ),
                           ],
                         ),
                         Positioned(
@@ -172,133 +184,76 @@ class _HomePage extends StatelessWidget {
   }
 }
 
-class SettingsViewModel {
-  TabState tabState;
-  final Null Function(int, double, double) setPointData;
+class SettingsDetails extends StatelessWidget {
+  final TabState tabState;
+  final Function(int index, Point point) onPointEdit;
 
-  SettingsViewModel({
+  SettingsDetails({
     required this.tabState,
-    required this.setPointData,
+    required this.onPointEdit,
   });
-
-  static SettingsViewModel fromStore(Store<AppState> store) {
-    return SettingsViewModel(
-      tabState: store.state.tabState,
-      setPointData: (int index, double x, double y) {
-        store.dispatch(editPointThunk(index, Offset(x, y)));
-      },
-    );
-  }
-
-  @override
-  int get hashCode => 111;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is SettingsViewModel) {
-      final ui = tabState.ui;
-      final otherUi = other.tabState.ui;
-
-      if (ui.selectedIndex == otherUi.selectedIndex &&
-          ui.selectedType == otherUi.selectedType) {
-        final point = tabState.path.points[ui.selectedIndex];
-        final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
-
-        final equal = point == otherPoint;
-        return equal;
-      }
-    }
-
-    return false;
-  }
-}
-
-// StoreConnector<AppState, SettingsViewModel> settingsDetails() {
-//   return new StoreConnector<AppState, SettingsViewModel>(
-//     converter: (store) => SettingsViewModel.fromStore(store),
-//     builder: (_, props) {
-//       return _SettingsDetails(props);
-//     },
-//     distinct: true,
-//   );
-// }
-
-class _SettingsDetails extends StatefulWidget {
-  // final SettingsViewModel props;
-
-  _SettingsDetails();
-
-  @override
-  _SettingsDetailsState createState() => _SettingsDetailsState();
-}
-
-class _SettingsDetailsState extends State<_SettingsDetails> {
-  SettingsViewModel props = SettingsViewModel.fromStore(store);
-
-  // _SettingsDetailsState(this.props);
 
   @override
   Widget build(BuildContext context) {
-    final newProps = SettingsViewModel.fromStore(store);
-    // if (props != newProps) {
-    setState(() {
-      this.props = newProps;
-    });
-    // }
+    final theme = Theme.of(context);
 
-    final index = props.tabState.ui.selectedIndex;
-    final points = props.tabState.path.points;
+    final index = tabState.ui.selectedIndex;
+    final points = tabState.path.points;
 
     // On init the selected index may be negative
     if (index < 0) return SizedBox.shrink();
 
-    if (props.tabState.ui.selectedType == Point) {
+    if (tabState.ui.selectedType == Point) {
       if (points.length == 0) return SizedBox.shrink();
-
-      setPoint(int index, double x, y) {
-        props.setPointData(index, x, y);
-      }
 
       final pointData = points[index];
 
       return Form(
-        // child: StoreConnector<AppState, SettingsViewModel>(
-        //   converter: (store) => SettingsViewModel.fromStore(store),
-        //   distinct: false,
-        //   onWillChange: (_, newViewModel) =>
-        //       setState(() => props = newViewModel),
-        //   builder: (_, newProps) {
         child: CardSettings(
           // return CardSettings(
           cardless: true,
+          contentAlign: TextAlign.right,
+          labelAlign: TextAlign.left,
+          shrinkWrap: true,
           children: <CardSettingsSection>[
             CardSettingsSection(
               children: <CardSettingsWidget>[
                 CardSettingsDouble(
-                    label: 'Position X',
-                    initialValue: pointData.position.dx,
-                    validator: (value) {
-                      if (value == null) return 'Position X is required.';
-                    },
-                    onChanged: (xValue) {
-                      setPoint(
+                  label: 'Position X',
+                  initialValue: pointData.position.dx,
+                  decimalDigits: 3,
+                  unitLabel: "m",
+                  validator: (value) {
+                    if (value == null) return 'Position X is required.';
+                  },
+                  onChanged: (xValue) {
+                    onPointEdit(
                         index,
-                        xValue ?? 0,
-                        pointData.position.dy,
-                      );
-                    }),
+                        pointData.copyWith(
+                          position: Offset(
+                            xValue ?? 0,
+                            pointData.position.dy,
+                          ),
+                        ));
+                  },
+                ),
                 CardSettingsDouble(
                   label: 'Position Y',
                   initialValue: pointData.position.dy,
+                  decimalDigits: 3,
+                  unitLabel: "m",
                   validator: (value) {
                     if (value == null) return 'Position Y is required.';
                   },
                   onChanged: (yValue) {
-                    setPoint(
-                      index,
-                      pointData.position.dx,
-                      yValue ?? 0,
-                    );
+                    onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          position: Offset(
+                            pointData.position.dx,
+                            yValue ?? 0,
+                          ),
+                        ));
                   },
                 ),
               ],
@@ -310,93 +265,5 @@ class _SettingsDetailsState extends State<_SettingsDetails> {
       );
     }
     return SizedBox.shrink();
-  }
-
-  Widget pointPropertiesCard() {
-    return Expanded(
-      flex: 2,
-      child: PropertiesCard(
-        body: Padding(
-          padding: const EdgeInsets.all(defaultPadding),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    // Text("Position: "),
-                    // TextField(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget optimizeAndGenerateCard() {
-    return Expanded(
-      flex: 2,
-      child: PropertiesCard(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: defaultPadding, vertical: 2 * defaultPadding),
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Center(child: Text("Generate")),
-                ),
-              ),
-              const SizedBox(width: defaultPadding),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Center(child: Text("Optimize")),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget fileManagementCard() {
-    return Expanded(
-      flex: 2,
-      child: PropertiesCard(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: defaultPadding, vertical: 2 * defaultPadding),
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Center(child: Text("Import")),
-                ),
-              ),
-              const SizedBox(width: defaultPadding),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Center(child: Text("Export")),
-                ),
-              ),
-              const SizedBox(width: defaultPadding),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Center(child: Text("Upload")),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
