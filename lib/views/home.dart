@@ -13,9 +13,9 @@ import 'package:redux/redux.dart';
 import 'package:card_settings/card_settings.dart';
 
 class HomeViewModel {
-  final bool isSidebarOpen;
-  final Function(bool) setSidebarVisibility;
   TabState tabState;
+  bool isSidebarOpen;
+  final Function(bool) setSidebarVisibility;
   final Function(int, Point) setPointData;
 
   HomeViewModel({
@@ -33,8 +33,13 @@ class HomeViewModel {
         store.dispatch(SetSideBarVisibility(visibility));
       },
       setPointData: (int index, Point point) {
-        store.dispatch(
-            editPointThunk(pointIndex: index, position: point.position));
+        store.dispatch(editPointThunk(
+          pointIndex: index,
+          position: point.position,
+          inControlPoint: point.inControlPoint,
+          outControlPoint: point.outControlPoint,
+          heading: point.heading,
+        ));
       },
     );
   }
@@ -80,7 +85,14 @@ class _HomePageState extends State<HomePage> {
 
   onPointEdit(int index, Point point) {
     props.tabState = editPoint(
-        props.tabState, EditPoint(pointIndex: index, position: point.position));
+        props.tabState,
+        EditPoint(
+          pointIndex: index,
+          position: point.position,
+          inControlPoint: point.inControlPoint,
+          outControlPoint: point.outControlPoint,
+          heading: point.heading,
+        ));
 
     props.setPointData(index, point);
   }
@@ -136,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                 child: BackdropFilter(
                   filter: new ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
-                    width: 300.0,
+                    width: 300,
                     height: MediaQuery.of(context).size.height,
                     color: theme.primaryColor.withOpacity(0.5),
                     child: Stack(
@@ -192,6 +204,19 @@ class SettingsDetails extends StatelessWidget {
     required this.onPointEdit,
   });
 
+  _cardSettingsDouble({label, initialValue, onChanged, unitLabel = 'cm'}) {
+    return CardSettingsDouble(
+      label: label,
+      initialValue: initialValue,
+      decimalDigits: 3,
+      unitLabel: unitLabel,
+      validator: (value) {
+        if (value == null) return '$label is required.';
+      },
+      onChanged: onChanged,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final index = tabState.ui.selectedIndex;
@@ -208,49 +233,89 @@ class SettingsDetails extends StatelessWidget {
       return Form(
         child: CardSettings(
           // return CardSettings(
-          cardless: true,
+          // cardless: true,
           contentAlign: TextAlign.right,
           labelAlign: TextAlign.left,
           shrinkWrap: true,
           children: <CardSettingsSection>[
             CardSettingsSection(
               children: <CardSettingsWidget>[
-                CardSettingsDouble(
+                _cardSettingsDouble(
                   label: 'Position X',
                   initialValue: pointData.position.dx,
-                  decimalDigits: 3,
-                  unitLabel: "m",
-                  validator: (value) {
-                    if (value == null) return 'Position X is required.';
-                  },
-                  onChanged: (xValue) {
+                  onChanged: (value) {
                     onPointEdit(
                         index,
                         pointData.copyWith(
-                          position: Offset(
-                            xValue ?? 0,
-                            pointData.position.dy,
-                          ),
+                          position: Offset(value ?? 0, pointData.position.dy),
                         ));
                   },
                 ),
-                CardSettingsDouble(
-                  label: 'Position Y',
+                _cardSettingsDouble(
+                  label: 'Position X',
                   initialValue: pointData.position.dy,
-                  decimalDigits: 3,
-                  unitLabel: "m",
-                  validator: (value) {
-                    if (value == null) return 'Position Y is required.';
-                  },
-                  onChanged: (yValue) {
+                  onChanged: (value) {
                     onPointEdit(
                         index,
                         pointData.copyWith(
-                          position: Offset(
-                            pointData.position.dx,
-                            yValue ?? 0,
-                          ),
+                          position: Offset(pointData.position.dx, value ?? 0),
                         ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Control In X',
+                  initialValue: pointData.inControlPoint.dx,
+                  onChanged: (value) {
+                    onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          inControlPoint:
+                              Offset(value ?? 0, pointData.inControlPoint.dy),
+                        ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Control In Y',
+                  initialValue: pointData.inControlPoint.dy,
+                  onChanged: (value) {
+                    onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          inControlPoint:
+                              Offset(pointData.inControlPoint.dx, value ?? 0),
+                        ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Control Out X',
+                  initialValue: pointData.outControlPoint.dx,
+                  onChanged: (value) {
+                    onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          inControlPoint:
+                              Offset(value ?? 0, pointData.outControlPoint.dy),
+                        ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Control Out Y',
+                  initialValue: pointData.outControlPoint.dy,
+                  onChanged: (value) {
+                    onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          inControlPoint:
+                              Offset(pointData.outControlPoint.dx, value ?? 0),
+                        ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Heading',
+                  initialValue: pointData.heading,
+                  unitLabel: '°',
+                  onChanged: (value) {
+                    onPointEdit(index, pointData.copyWith(heading: value ?? 0));
                   },
                 ),
               ],

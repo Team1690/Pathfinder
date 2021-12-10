@@ -45,7 +45,7 @@ class Point {
   }
 
   @override // TODO: implement hashCode
-  int get hashCode => 111;
+  int get hashCode => super.hashCode;
 
   @override
   bool operator ==(Object other) {
