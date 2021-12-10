@@ -43,33 +43,23 @@ class HomeViewModel {
 
   @override
   bool operator ==(Object other) {
-    if (other is HomeViewModel) {
-      if (other.isSidebarOpen != isSidebarOpen) {
-        return false;
-      }
+    if (!(other is HomeViewModel)) return false;
 
-      final ui = tabState.ui;
-      final otherUi = other.tabState.ui;
+    if (other.isSidebarOpen != isSidebarOpen) return false;
 
-      if (ui.selectedIndex == otherUi.selectedIndex) {
-        return false;
-      }
+    final ui = tabState.ui;
+    final otherUi = other.tabState.ui;
 
-      if (ui.selectedType != otherUi.selectedType) {
-        return false;
-      }
+    if (ui.selectedIndex == otherUi.selectedIndex) return false;
+    if (ui.selectedType != otherUi.selectedType) return false;
 
-      if (ui.selectedIndex != -1) {
-        final point = tabState.path.points[ui.selectedIndex];
-        final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
-
-        return point == otherPoint;
-      }
-
-      return true;
+    if (ui.selectedIndex != -1) {
+      if (ui.selectedType == Point &&
+          tabState.path.points[ui.selectedIndex] !=
+              other.tabState.path.points[otherUi.selectedIndex]) return false;
     }
 
-    return false;
+    return true;
   }
 }
 
