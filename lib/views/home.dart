@@ -44,21 +44,29 @@ class HomeViewModel {
   @override
   bool operator ==(Object other) {
     if (other is HomeViewModel) {
-      var equal = other.isSidebarOpen == isSidebarOpen;
+      if (other.isSidebarOpen != isSidebarOpen) {
+        return false;
+      }
+
       final ui = tabState.ui;
       final otherUi = other.tabState.ui;
 
-      if (ui.selectedIndex == otherUi.selectedIndex &&
-          ui.selectedType == otherUi.selectedType) {
-        if (ui.selectedIndex != -1) {
-          final point = tabState.path.points[ui.selectedIndex];
-          final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
-
-          equal &= point == otherPoint;
-        }
+      if (ui.selectedIndex == otherUi.selectedIndex) {
+        return false;
       }
 
-      return equal;
+      if (ui.selectedType != otherUi.selectedType) {
+        return false;
+      }
+
+      if (ui.selectedIndex != -1) {
+        final point = tabState.path.points[ui.selectedIndex];
+        final otherPoint = other.tabState.path.points[otherUi.selectedIndex];
+
+        return point == otherPoint;
+      }
+
+      return true;
     }
 
     return false;
@@ -195,8 +203,6 @@ class SettingsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     final index = tabState.ui.selectedIndex;
     final points = tabState.path.points;
 
