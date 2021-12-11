@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:pathfinder/utils/coordinates_convertion.dart';
+import 'package:redux/redux.dart';
 
 class Point {
   final Offset position;
@@ -58,5 +60,13 @@ class Point {
     }
 
     return false;
+  }
+
+  Point toUiCoord(Store store) {
+    return copyWith(
+      position: metersToUiCoord(store, position),
+      inControlPoint: metersToUiCoord(store, inControlPoint),
+      outControlPoint: metersToUiCoord(store, outControlPoint),
+    );
   }
 }

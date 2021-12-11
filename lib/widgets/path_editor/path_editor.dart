@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
+import 'package:pathfinder/utils/coordinates_convertion.dart';
 import 'package:pathfinder/widgets/path_editor/full_path_point.dart';
 import 'package:pathfinder/widgets/path_editor/temp_spline_point.dart';
 import 'package:redux/redux.dart';
@@ -13,8 +14,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
-import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';
 
 class PathViewModel {
@@ -44,31 +43,34 @@ class PathViewModel {
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-      points: store.state.tabState.path.points,
-      segments: store.state.tabState.path.segments,
-      evaulatedPoints: store.state.tabState.path.evaluatedPoints,
-      selectedPointIndex: (store.state.tabState.ui.selectedType == Point
-          ? store.state.tabState.ui.selectedIndex
-          : null),
-      addPoint: (Offset position) {
-        store.dispatch(addPointThunk(position));
-      },
-      deletePoint: (int index) {
-        store.dispatch(removePointThunk(index));
-      },
-      finishDrag: (int index, Offset position) {
-        store.dispatch(endDragThunk(index, position));
-      },
-      selectPoint: (int index) {
-        store.dispatch(ObjectSelected(index, Point));
-      },
-      finishInControlDrag: (int index, Offset position) {
-        store.dispatch(endInControlDragThunk(index, position));
-      },
-      finishOutControlDrag: (int index, Offset position) {
-        store.dispatch(endOutControlDragThunk(index, position));
-      }
-    );
+        points: store.state.tabState.path.points
+            .map((p) => p.toUiCoord(store))
+            .toList(),
+        segments: store.state.tabState.path.segments,
+        evaulatedPoints: store.state.tabState.path.evaluatedPoints,
+        selectedPointIndex: (store.state.tabState.ui.selectedType == Point
+            ? store.state.tabState.ui.selectedIndex
+            : null),
+        addPoint: (Offset position) {
+          store.dispatch(addPointThunk(uiToMetersCoord(store, position)));
+        },
+        deletePoint: (int index) {
+          store.dispatch(removePointThunk(index));
+        },
+        finishDrag: (int index, Offset position) {
+          store.dispatch(endDragThunk(index, uiToMetersCoord(store, position)));
+        },
+        selectPoint: (int index) {
+          store.dispatch(ObjectSelected(index, Point));
+        },
+        finishInControlDrag: (int index, Offset position) {
+          store.dispatch(
+              endInControlDragThunk(index, uiToMetersCoord(store, position)));
+        },
+        finishOutControlDrag: (int index, Offset position) {
+          store.dispatch(
+              endOutControlDragThunk(index, uiToMetersCoord(store, position)));
+        });
   }
 }
 
