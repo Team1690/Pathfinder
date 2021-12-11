@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -137,9 +136,10 @@ class FieldPainter extends CustomPainter {
       Point point = entery.value;
       drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
-    print("DragPoint: ${dragPoint}");
+    print("Inner dragPoint: ${dragPoint}");
 
     if (dragPoint != null) {
+      print("Drawing drag point");
       drawDragPoint(canvas, dragPoint!);
     }
   }

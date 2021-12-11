@@ -100,7 +100,6 @@ class _PathEditorState extends State<_PathEditor> {
   bool ctrlPressed = false;
   DraggingPoint? dragPoint;
   int? dragPointIndex;
-  Offset ImageSize = Offset(0,0);
 
   _PathEditorState();
 
@@ -117,23 +116,36 @@ class _PathEditorState extends State<_PathEditor> {
   }
 
   DraggingPoint? checkSelectedPointTap(Offset tapPosition, Point point) {
+    print("Chacking tapped point");
+
     Offset headingPointCenter = Offset.fromDirection(point.heading, headingLength);
-      if ((headingPointCenter - tapPosition).distance < pointSettings[PointType.heading]!.radius) {
-        return DraggingPoint(PointType.heading, headingPointCenter);
-      }
+    if ((headingPointCenter - tapPosition).distance < pointSettings[PointType.heading]!.radius) {
+      return DraggingPoint(PointType.heading, headingPointCenter);
+    }
 
-      if ((point.inControlPoint - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
-        return DraggingPoint(PointType.inControl, point.inControlPoint);
-      }
+    Offset inControlPosition = Offset(
+      point.position.dx + point.inControlPoint.dx,
+      point.position.dy + point.inControlPoint.dy
+    );
+    if ((inControlPosition - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
+      print("Dragging inControl");
+      return DraggingPoint(PointType.inControl, point.inControlPoint);
+    }
 
-      if ((point.outControlPoint - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
-        return DraggingPoint(PointType.outControl, point.outControlPoint);
-      }
+    Offset outControlPosition = Offset(
+      point.position.dx + point.outControlPoint.dx,
+      point.position.dy + point.outControlPoint.dy
+    );
+    if ((outControlPosition - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
+      print("Dragging outControl");
+      return DraggingPoint(PointType.outControl, point.outControlPoint);
+    }
   }
 
   @override
   Widget build(final BuildContext context) {
     final PointSettings pointSetting = pointSettings[PointType.path]!;
+    print("Outer dragging ${dragPoint}");
 
     return RawKeyboardListener(
       autofocus: true,
@@ -188,7 +200,9 @@ class _PathEditorState extends State<_PathEditor> {
                   if (draggingPoint != null) {
                     setState(() {
                       dragPoint = draggingPoint;
+                      dragPointIndex = currentSelecedPointIndex;
                     });
+                    return;
                   }
                 }
 
@@ -202,13 +216,16 @@ class _PathEditorState extends State<_PathEditor> {
               },
               onPanUpdate: (DragUpdateDetails details) {
                 if (dragPoint != null) {
+                  print("Update dragging ${dragPoint!.type} ${dragPointIndex}");
                   setState(() {
                     dragPoint = DraggingPoint(dragPoint!.type, Offset(dragPoint!.position.dx + details.delta.dx, dragPoint!.position.dy + details.delta.dy));
                   });
                 }
               },
               onPanEnd: (DragEndDetails details) {
-                if (dragPoint != null) {
+                print("Endind drag out ${dragPoint} ${dragPointIndex}");
+                if (dragPointIndex != null && dragPoint != null) {
+                  print("Endind drag ${dragPoint!.type}");
                   switch (dragPoint!.type) {
                     case PointType.path:
                       widget.pathProps.finishDrag(dragPointIndex!, dragPoint!.position);
