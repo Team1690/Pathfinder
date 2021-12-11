@@ -1,26 +1,40 @@
 import 'package:flutter/material.dart';
 
+enum PointType {
+  path,
+  control,
+  heading
+}
+
+class PointSettings {
+  final Color color;
+  final double radius;
+
+  PointSettings(
+    this.color,
+    this.radius
+  );
+}
+
+Map<PointType, PointSettings> pointSettings = {
+  PointType.path: PointSettings(Color(0xbbdddddd), 10),
+  PointType.control: PointSettings(Color(0xff111111), 7),
+  PointType.heading: PointSettings(Color(0xffc80000), 7)
+};
+
 class PathPoint extends StatefulWidget {
   final void Function(DragUpdateDetails) onDrag;
   final void Function(DragEndDetails) onDragEnd;
   final void Function() onTap;
-  final Color color;
-  final bool controlPoint;
-
-  static const double controlPointRadius = 7;
-  static const double pathPointRadius = 10;
-  static const Color noneControlPointColor = Color(0xbbdddddd);
-  static const Color controlPointColor = Color(0xff111111);
+  final PointType pointType;
 
   const PathPoint({
     Key? key,
     required this.onDrag,
     required this.onDragEnd,
     required this.onTap,
-    required this.controlPoint,
-  })  : color =
-            controlPoint ? controlPointColor : noneControlPointColor,
-        super(key: key);
+    this.pointType = PointType.path
+  }): super(key: key);
 
   @override
   _PathPointState createState() => _PathPointState();
@@ -32,9 +46,7 @@ class _PathPointState extends State<PathPoint> {
 
   @override
   Widget build(final BuildContext context) {
-    double radius = widget.controlPoint
-              ? PathPoint.controlPointRadius
-              : PathPoint.pathPointRadius;
+    PointSettings settings = pointSettings[widget.pointType]!;
 
     return MouseRegion(
       onEnter: (_) => setState(() {
@@ -48,11 +60,11 @@ class _PathPointState extends State<PathPoint> {
         onPanEnd: widget.onDragEnd,
         onTap: widget.onTap,
         child: Container(
-          width: 2 * radius,
-          height: 2 * radius,
+          width: 2 * settings.radius,
+          height: 2 * settings.radius,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: widget.color,
+            color: settings.color,
             boxShadow: hovered
                 ? [
                     BoxShadow(

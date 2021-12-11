@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:ui';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 import 'package:pathfinder/store/tab/tab_actions.dart';
@@ -13,8 +14,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
-import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/path_point.dart';
 
 class PathViewModel {
@@ -57,17 +56,17 @@ class PathViewModel {
         store.dispatch(removePointThunk(index));
       },
       finishDrag: (int index, Offset position) {
-        store.dispatch(endDragThunk(index, position));
+        store.dispatch(editPointPositionThunk(index, position));
       },
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
       },
       finishInControlDrag: (int index, Offset position) {
-        store.dispatch(endInControlDragThunk(index, position));
+        store.dispatch(editInControlThunk(index, position));
       },
       finishOutControlDrag: (int index, Offset position) {
-        store.dispatch(endOutControlDragThunk(index, position));
-      }
+        store.dispatch(editOutControlThunk(index, position));
+      },
     );
   }
 }
@@ -77,6 +76,73 @@ StoreConnector<AppState, PathViewModel> pathEditor() {
       converter: (store) => PathViewModel.fromStore(store),
       builder: (_, props) => _PathEditor(pathProps: props));
 }
+
+extension GlobalKeyExtension on GlobalKey {
+  Rect? get globalPaintBounds {
+    final renderObject = currentContext?.findRenderObject();
+    final translation = renderObject?.getTransformTo(null).getTranslation();
+    print("${renderObject} , ${translation}");
+    if (translation != null && renderObject?.paintBounds != null) {
+      final offset = Offset(translation.x, translation.y);
+      return renderObject!.paintBounds.shift(offset);
+    } else {
+      return null;
+    }
+  }
+}
+
+class SmartImage extends StatelessWidget {
+  GlobalKey _key = GlobalKey();
+
+  // final Function(Offset) setPosition;
+  final String imagePath;
+
+  SmartImage(this.imagePath);
+
+  // this function is trigger when the user presses the floating button
+  // void _getOffset(GlobalKey key) {
+  //   RenderObject? box = key.currentContext?.findRenderObject();
+  //   if (box != null) {
+  //     Offset position = box!.localToGlobal(Offset.zero);
+  //     setPosition(position);
+  //   }
+
+  @override
+  Widget build(BuildContext context) {
+      print('absolute coordinates on screen: ${_key.globalPaintBounds}');
+    return Container(
+      key: _key,
+      child: Image(
+        image: AssetImage(imagePath)
+      )
+    );
+  }
+}
+
+// class SmartImage extends StatelessWidget {
+//   final String imagePath;
+//   final Function(Offset) setSize;
+
+//   SmartImage(this.imagePath, this.setSize);
+
+//   @override
+//   Widget build(final BuildContext context) {
+
+//     final Image image = Image(
+//       image: AssetImage(imagePath)
+//     );
+
+//     image.image
+//       .resolve(ImageConfiguration())
+//       .addListener(ImageStreamListener(
+//         (ImageInfo info, bool _) {
+//           setSize(Offset(info.image.width.toDouble(), info.image.height.toDouble()));
+//         })
+//       );
+
+//     return image;
+//   }
+// }
 
 class _PathEditor extends StatefulWidget {
   final PathViewModel pathProps;
@@ -94,31 +160,33 @@ class _PathEditorState extends State<_PathEditor> {
   bool shiftPressed = false;
   bool ctrlPressed = false;
   Offset? dragPoint;
+  Offset ImageSize = Offset(0,0);
 
   _PathEditorState();
 
   @override
   Widget build(final BuildContext context) {
-    // TODO maintain focus when pressing on points
-    Point? selectedPoint;
-    if (widget.pathProps.selectedPointIndex != null) {
-      selectedPoint =
-          widget.pathProps.points[widget.pathProps.selectedPointIndex!];
-    }
+    final PointSettings pointSetting = pointSettings[PointType.path]!;
+    // final double imageHeight = 0.6 * MediaQuery.of(context).size.height;
+    // final double imageWidth = 2 * imageHeight;
+    // final SmartImage image = SmartImage('assets/images/frc_2020_field.png', (Offset size) {
+    //   setState(() {
+    //     ImageSize =  size;
+    //   });
+    // });
 
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: (final RawKeyEvent event) {
-        // setState(() {
-        //   if (event is RawKeyDownEvent)
-        //     pressedKeys.add(event.logicalKey);
-        //   else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
-
-        //   shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
-        //   ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-        //       pressedKeys.contains(LogicalKeyboardKey.metaLeft);
-        // });
+        setState(() {
+          if (event is RawKeyDownEvent)
+            pressedKeys.add(event.logicalKey);
+          else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+          shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
+          ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+              pressedKeys.contains(LogicalKeyboardKey.metaLeft);
+        });
 
         // if (ctrlPressed) {
         //   if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
@@ -141,9 +209,10 @@ class _PathEditorState extends State<_PathEditor> {
         child: Stack(
           children: [
             GestureDetector(
-              child: const Image(
-                image: const AssetImage('assets/images/frc_2020_field.png'),
-              ),
+              child: SmartImage('assets/images/frc_2020_field.png'),
+              // child: Image(
+              //   image: AssetImage('assets/images/frc_2020_field.png'),
+              // ),
               onTapDown: (final TapDownDetails detailes) {
                 // Add point to board
                 final Offset tapPos = detailes.localPosition;
@@ -155,14 +224,14 @@ class _PathEditorState extends State<_PathEditor> {
             // Draw dragging point
             if (dragPoint != null)
               Positioned(
-                top: dragPoint!.dy - PathPoint.pathPointRadius,
-                left: dragPoint!.dx - PathPoint.pathPointRadius,
+                top: dragPoint!.dy - pointSetting.radius,
+                left: dragPoint!.dx - pointSetting.radius,
                 child: Container(
-                  width: 2 * PathPoint.pathPointRadius,
-                  height: 2 * PathPoint.pathPointRadius,
+                  width: 2 * pointSetting.radius,
+                  height: 2 * pointSetting.radius,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: PathPoint.noneControlPointColor,
+                    color: pointSetting.color,
                   ),
                 ),
               ),
@@ -199,6 +268,8 @@ class _PathEditorState extends State<_PathEditor> {
                   onInControlDragEnd: (Offset position) {
                     widget.pathProps.finishInControlDrag(entery.key, position);
                   },
+                  enableControlPointsEdit: ctrlPressed,
+                  enableHeadingEdit: shiftPressed,
                   onOutControlDragEnd: (Offset position) {
                     print(position);
                     widget.pathProps.finishOutControlDrag(entery.key, position);

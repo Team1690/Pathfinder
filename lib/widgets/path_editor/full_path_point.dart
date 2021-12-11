@@ -1,7 +1,8 @@
 
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:grpc/grpc.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/widgets/path_editor/dashed_line_painter.dart';
 import 'package:pathfinder/widgets/path_editor/heading_line_painter.dart';
@@ -11,6 +12,8 @@ class FullPathPoint extends StatefulWidget {
   Key key;
   final Point point;
   final bool isSelected;
+  final bool enableControlPointsEdit;
+  final bool enableHeadingEdit;
   final Function(DragUpdateDetails) onDrag;
   final Function(DragEndDetails) onDragEnd;
   final Function() onTap;
@@ -26,24 +29,33 @@ class FullPathPoint extends StatefulWidget {
     required this.isSelected,
     required this.onInControlDragEnd,
     required this.onOutControlDragEnd,
+    required this.enableControlPointsEdit,
+    required this.enableHeadingEdit,
   });
 
   @override
   _FullPathPointState createState() =>
-    _FullPathPointState(point.inControlPoint, point.outControlPoint);
+    _FullPathPointState(point.inControlPoint, point.outControlPoint, point.heading);
+}
+
+double CalcAngle(Offset center, Offset edge) {
+  return atan((edge.dy - center.dy) / (edge.dx - center.dx));
 }
 
 class _FullPathPointState extends State<FullPathPoint> {
   Offset inControlPointDrag;
   Offset outControlPointDrag;
+  double headingDrag;
 
-  _FullPathPointState(this.inControlPointDrag, this.outControlPointDrag);
+  _FullPathPointState(this.inControlPointDrag, this.outControlPointDrag, this.headingDrag);
+
+  final double radius = pointSettings[PointType.path]!.radius;
 
   @override
   Widget build(final BuildContext context) {
     return Positioned(
-      top: widget.point.position.dy - PathPoint.pathPointRadius,
-      left: widget.point.position.dx - PathPoint.pathPointRadius,
+      top: widget.point.position.dy - radius,
+      left: widget.point.position.dx - radius,
       child: Stack(
         children: [
           // Actual point
@@ -57,16 +69,25 @@ class _FullPathPointState extends State<FullPathPoint> {
             onTap: () {
               widget.onTap();
             },
-            controlPoint: false,
+            pointType: PointType.path,
           ),
-          // Red line
-          CustomPaint(
-            painter: HeadingLinePainter(
-              heading: widget.point.heading,
-              position: Offset(-PathPoint.pathPointRadius, PathPoint.pathPointRadius),
-            ),
+          ...heading(
+            heading: headingDrag,
+            position: Offset(radius, radius),
+            onDrag: (DragUpdateDetails details) {
+              setState(() {
+                // headingDrag = CalcAngle(
+                //   widget.point.position,
+                //   Offset(
+                //     headingDrag.dx + details.dx,
+                //     headingDrag.dy + details.dy
+                //   )
+              });
+            },
+            onDragEnd: (_) {},
+            onTap: () {},
+            enableEdit: widget.enableHeadingEdit && widget.isSelected
           ),
-          // Control Point lines and dots
           if (widget.isSelected) ...[
             ...controlPoint(
               basePosition: widget.point.position,
@@ -80,10 +101,10 @@ class _FullPathPointState extends State<FullPathPoint> {
                 });
               },
               onDragEnd: (_) {
-                // inControlPointDrag
                 widget.onInControlDragEnd(inControlPointDrag);
               },
-              onTap: () {}
+              onTap: () {},
+              enableEdit: widget.enableControlPointsEdit
             ),
             ...controlPoint(
               basePosition: widget.point.position,
@@ -99,7 +120,8 @@ class _FullPathPointState extends State<FullPathPoint> {
               onDragEnd: (_) {
                 widget.onOutControlDragEnd(outControlPointDrag);
               },
-              onTap: () {}
+              onTap: () {},
+              enableEdit: widget.enableControlPointsEdit
             )
           ],
         ]
@@ -108,22 +130,51 @@ class _FullPathPointState extends State<FullPathPoint> {
   }
 }
 
+List<Widget> heading({
+  required double heading,
+  required Offset position,
+  required Function(DragUpdateDetails) onDrag,
+  required Function(DragEndDetails) onDragEnd,
+  required Function() onTap,
+  required bool enableEdit
+}) {
+  return [
+    CustomPaint(
+      painter: HeadingLinePainter(
+        heading: heading,
+        position: position,
+      ),
+    ),
+    if (enableEdit)
+      PathPoint(
+        onDrag: onDrag,
+        onDragEnd: onDragEnd,
+        onTap: onTap,
+        pointType: PointType.heading,
+      // )),
+      )
+  ];
+}
+
 List<Widget> controlPoint({
   required Offset basePosition,
   required  Offset deltaPosition,
   required Function(DragUpdateDetails) onDrag,
   required Function(DragEndDetails) onDragEnd,
   required Function() onTap,
+  required bool enableEdit,
   }) {
+
+  final double radius = pointSettings[PointType.control]!.radius; 
 
   return [
     CustomPaint(
       painter: DashedLinePainter(
         // start: Offset(-0.5 * PathPoint.pathPointRadius, 0.5 * PathPoint.controlPointRadius),
-        start: Offset(PathPoint.pathPointRadius, PathPoint.pathPointRadius),
+        start: Offset(radius, radius),
         end: Offset(
-                PathPoint.pathPointRadius + deltaPosition.dx,
-                PathPoint.pathPointRadius + deltaPosition.dy),
+                radius + deltaPosition.dx,
+                radius + deltaPosition.dy),
       ),
     ),
     //   // top: basePosition.dx + deltaPosition.dy,
@@ -131,12 +182,13 @@ List<Widget> controlPoint({
     //   child: Align(
     //     alignment: Alignment.centerRight,
         // child: PathPoint(
-        PathPoint(
-          controlPoint: true,
-          onDrag: onDrag,
-          onDragEnd: onDragEnd,
-          onTap: onTap,
-        // )),
-        )
+        if (enableEdit)
+          PathPoint(
+            onDrag: onDrag,
+            onDragEnd: onDragEnd,
+            onTap: onTap,
+            pointType: PointType.control,
+          // )),
+          )
   ];
 }
