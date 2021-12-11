@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 enum PointType {
   path,
-  control,
-  heading
+  inControl,
+  outControl,
+  heading,
 }
 
 class PointSettings {
@@ -22,26 +25,46 @@ class PointSettings {
   );
 }
 
+const double headingLength = 20;
+
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
-  PointType.control: PointSettings(Color(0xff111111), 7),
+  PointType.inControl: PointSettings(Color(0xff111111), 7),
+  PointType.outControl: PointSettings(Color(0xff111111), 7),
   PointType.heading: PointSettings(Color(0xffc80000), 7)
 };
 
 class FieldPainter extends CustomPainter {
   ui.Image image;
   List<Point> points;
+  int? selectedPoint;
+  DraggingPoint? dragPoint;
+  bool enableHeadingEditing;
+  bool enableControlEditing;
 
   FieldPainter(
     this.image,
     this.points,
+    this.selectedPoint,
+    this.dragPoint,
+    this.enableHeadingEditing,
+    this.enableControlEditing,
   );
 
-  void drawPointBackground(Canvas canvas, Offset position) {
+  void drawPointBackground(Canvas canvas, Offset position, bool isSelected) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
+    Color selectedColor = Color(0xffeeeeee);
+    final Paint paint = Paint()
+      ..color = isSelected ? selectedColor : currentPointSettings.color;
+    canvas.drawCircle(position, currentPointSettings.radius, paint);
+  }
+
+  void drawDragPoint(Canvas canvas, DraggingPoint dragPoint) {
+    final PointSettings currentPointSettings = pointSettings[dragPoint.type]!;
     final Paint paint = Paint()
       ..color = currentPointSettings.color;
-    canvas.drawCircle(position, currentPointSettings.radius, paint);
+
+    canvas.drawCircle(dragPoint.position, currentPointSettings.radius, paint);
   }
 
   void drawControlPoint(Canvas canvas, Offset position, Offset control, bool enableEdit) {
@@ -69,7 +92,6 @@ class FieldPainter extends CustomPainter {
 
   void drawHeadingLine(Canvas canvas, Offset position, double heading, enableEdit) {
     final Color color = Color(0xffc80000);
-    final double headingLength = 20;
     final Offset edge = position + Offset.fromDirection(heading, headingLength);
 
     final paint = Paint()
@@ -91,11 +113,13 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset OutControl) {
-    drawPointBackground(canvas, position);
-    drawHeadingLine(canvas, position, heading, true);
-    drawControlPoint(canvas, position, inControl, true);
-    drawControlPoint(canvas, position, OutControl, true);
+  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset OutControl, bool isSelected, bool enableHeadingEditing, enableControlEditing) {
+    drawPointBackground(canvas, position, isSelected);
+    drawHeadingLine(canvas, position, heading, enableHeadingEditing && isSelected);
+    if (isSelected) {
+      drawControlPoint(canvas, position, inControl, enableControlEditing);
+      drawControlPoint(canvas, position, OutControl, enableControlEditing);
+    }
 
   }
 
@@ -111,9 +135,13 @@ class FieldPainter extends CustomPainter {
     for (final entery in points.asMap().entries) {
       int index = entery.key;
       Point point = entery.value;
-      drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint);
+      drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
-    // canvas.drawCircle(Offset(600, 0), 10, paint);
+    print("DragPoint: ${dragPoint}");
+
+    if (dragPoint != null) {
+      drawDragPoint(canvas, dragPoint!);
+    }
   }
 
   @override
@@ -125,16 +153,21 @@ class FieldPainter extends CustomPainter {
 
 class FieldLoader extends StatefulWidget {
   List<Point> points;
+  int? selectedPoint;
+  DraggingPoint? dragPoint;
+  bool enableHeadingEditing;
+  bool enableControlEditing;
 
-  FieldLoader(this.points);
+  FieldLoader(this.points, this.selectedPoint, this.dragPoint, this.enableHeadingEditing, this.enableControlEditing);
 
   @override
   _FieldLoaderState createState() => _FieldLoaderState();
 }
 
+ui.Image? globalImage;
+
 class _FieldLoaderState extends State<FieldLoader> {
-  late ui.Image image;
-  bool isImageloaded = false;
+  bool isImageloaded = globalImage != null;
   void initState() {
     super.initState();
     init();
@@ -142,7 +175,7 @@ class _FieldLoaderState extends State<FieldLoader> {
 
   Future <Null> init() async {
     final ByteData data = await rootBundle.load('assets/images/frc_2020_field.png');
-    image = await loadImage(Uint8List.view(data.buffer));
+    globalImage = await loadImage(Uint8List.view(data.buffer));
   }
 
   Future<ui.Image> loadImage(Uint8List img) async {
@@ -161,9 +194,10 @@ class _FieldLoaderState extends State<FieldLoader> {
     double height = 0.6 * MediaQuery.of(context).size.height;
 
     if (this.isImageloaded) {
+    // if (false) {
       return Container(
         child: CustomPaint(
-          painter: FieldPainter(image, widget.points),
+          painter: FieldPainter(globalImage!, widget.points, widget.selectedPoint, widget.dragPoint, widget.enableHeadingEditing, widget.enableControlEditing),
           size: Size(width, height)
         )
       );

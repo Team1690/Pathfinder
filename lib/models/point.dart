@@ -22,8 +22,8 @@ class Point {
   factory Point.initial(Offset position) {
     return Point(
         position: position,
-        inControlPoint: Offset(30, 30),
-        outControlPoint: Offset(-30, -30),
+        inControlPoint: Offset(0.5, 0.5),
+        outControlPoint: Offset(-0.5, -0.5),
         heading: 0,
         useHeading: true,
         actions: []);
@@ -38,12 +38,12 @@ class Point {
     List<String>? actions,
   }) {
     return Point(
-        position: position ?? this.position,
-        inControlPoint: inControlPoint ?? this.inControlPoint,
-        outControlPoint: outControlPoint ?? this.outControlPoint,
-        heading: heading ?? this.heading,
-        useHeading: useHeading ?? this.useHeading,
-        actions: actions ?? this.actions);
+      position: position ?? this.position,
+      inControlPoint: inControlPoint ?? this.inControlPoint,
+      outControlPoint: outControlPoint ?? this.outControlPoint,
+      heading: heading ?? this.heading,
+      useHeading: useHeading ?? this.useHeading,
+      actions: actions ?? this.actions);
   }
 
   @override // TODO: implement hashCode
