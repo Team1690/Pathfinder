@@ -23,7 +23,7 @@ class TabState {
     return TabState(
       path: Path.initial(),
       robot: Robot(),
-      field: Field(),
+      field: Field.initial(),
       ui: TabUI.initial(),
     );
   }
@@ -41,7 +41,7 @@ class TabState {
       ui: ui ?? this.ui,
     );
   }
-  
+
   //TODD Implement operator == and hashCode
 }
 

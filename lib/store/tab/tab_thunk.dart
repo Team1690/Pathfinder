@@ -41,15 +41,15 @@ ThunkAction editPointThunk({
   };
 }
 
-ThunkAction editPointPositionThunk(int index, Offset position) {
+ThunkAction endDragThunk(int index, Offset position) {
   return editPointThunk(pointIndex:  index, position: position);
 }
 
-ThunkAction editInControlThunk(int index, Offset position) {
+ThunkAction endInControlDragThunk(int index, Offset position) {
   return editPointThunk(pointIndex:  index, inControlPoint: Offset(position.dx, position.dy));
 }
 
-ThunkAction editOutControlThunk(int index, Offset position) {
+ThunkAction endOutControlDragThunk(int index, Offset position) {
   return editPointThunk(pointIndex:  index, outControlPoint: Offset(position.dx, position.dy));
 }
 

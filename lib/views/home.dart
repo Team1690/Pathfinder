@@ -204,7 +204,7 @@ class SettingsDetails extends StatelessWidget {
     required this.onPointEdit,
   });
 
-  _cardSettingsDouble({label, initialValue, onChanged, unitLabel = 'cm'}) {
+  _cardSettingsDouble({label, initialValue, onChanged, unitLabel = 'm'}) {
     return CardSettingsDouble(
       label: label,
       initialValue: initialValue,
