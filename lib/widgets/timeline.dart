@@ -1,7 +1,70 @@
-import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+
+class PathTimeline extends StatelessWidget {
+  final List<TimeLineSegment> segments;
+
+  const PathTimeline({Key? key, required this.segments}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.centerLeft,
+      children: [
+        Row(
+          children: segments
+              .map(
+                (segment) => Expanded(
+                  //TODO: flex between 1-6
+                  flex: max(segment.points.length - 1, 1),
+                  child: TimeLineSegment(
+                    points: segment.points,
+                    color: segment.color,
+                    velocity: segment.velocity,
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(''),
+            SizedBox(height: 5),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: segments
+                    .map((segment) {
+                      // List<TimelinePoint> redeucedList =
+                      //     List.castFrom(segment.points);
+                      // redeucedList.removeLast();
+                      // return redeucedList;
+                      return segment.points;
+                    })
+                    .expand((points) => points)
+                    .toList()
+                // ..add(segments.last.points.last),
+                ),
+          ],
+        ),
+      ],
+    );
+    // return Stack(
+    //   children: [segments.removeAt(0)]..addAll(segments
+    //       .asMap()
+    //       .entries
+    //       .map((entry) => Positioned(
+    //             child: entry.value,
+    //             left: (entry.key + 1) *
+    //                 (TimeLineSegment.segmentWidth -
+    //                     TimelinePoint.pointRadius * 2),
+    //           ))
+    //       .toList()),
+    // );
+  }
+}
 
 class TimelinePoint extends StatelessWidget {
   final void Function() onTap;
@@ -61,70 +124,5 @@ class TimeLineSegment extends StatelessWidget {
         ]),
       ],
     );
-  }
-}
-
-class PathTimeline extends StatelessWidget {
-  final List<TimeLineSegment> segments;
-
-  const PathTimeline({Key? key, required this.segments}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    inspect(segments);
-
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          children: segments
-              .map(
-                (segment) => Expanded(
-                  //TODO: flex between 1-6
-                  flex: segment.points.length - 1,
-
-                  child: TimeLineSegment(
-                    points: segment.points,
-                    color: segment.color,
-                    velocity: segment.velocity,
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(''),
-            SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: segments
-                  .map((segment) {
-                    List<TimelinePoint> redeucedList =
-                        List.castFrom(segment.points);
-                    redeucedList.removeLast();
-                    return redeucedList;
-                  })
-                  .expand((points) => points)
-                  .toList()
-                ..add(segments.last.points.last),
-            ),
-          ],
-        ),
-      ],
-    );
-    // return Stack(
-    //   children: [segments.removeAt(0)]..addAll(segments
-    //       .asMap()
-    //       .entries
-    //       .map((entry) => Positioned(
-    //             child: entry.value,
-    //             left: (entry.key + 1) *
-    //                 (TimeLineSegment.segmentWidth -
-    //                     TimelinePoint.pointRadius * 2),
-    //           ))
-    //       .toList()),
-    // );
   }
 }

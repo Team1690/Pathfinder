@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/models/segment.dart';
 import 'package:redux/redux.dart';
 
 import 'tab_actions.dart';
@@ -40,33 +43,69 @@ TabState _splineCalculated(TabState tabState, SplineCalculated action) {
 }
 
 TabState _addPointToPath(TabState tabState, AddPointToPath action) {
-  return tabState.copyWith(
-      path: tabState.path.copyWith(points: [
-    ...tabState.path.points,
-    new Point.initial(action.position)
-  ]));
+  // If the segment to add is -1, treat it as if the addition is to the end
+  // of the point list and to the last segment
+  var insertIndex = action.insertIndex >= 0
+      ? action.insertIndex
+      : max(tabState.path.points.length - 1, 0);
+  var segmentIndex = action.segmentIndex >= 0
+      ? action.segmentIndex
+      : max(tabState.path.segments.length - 1, 0);
+
+  final newPoint = Point.initial(action.position);
+  var newPoints = [...tabState.path.points];
+
+  if (tabState.path.segments.length == 0) {
+    tabState.path.segments.add(Segment.initial());
+  }
+
+  newPoints.insert(insertIndex, newPoint);
+
+  final newState = tabState.copyWith(
+    path: tabState.path.copyWith(
+      points: newPoints,
+      segments: tabState.path.segments.asMap().entries.map((e) {
+        final pointIndexes = e.value.pointIndexes;
+
+        // Assuming the point indexes are sorted inside the segments we can
+        // add another index to the list and increment all the following indexes
+        if (e.key == segmentIndex) {
+          return e.value.copyWith(
+              pointIndexes: pointIndexes
+                ..add(pointIndexes.isEmpty ? 0 : pointIndexes.last + 1));
+        }
+
+        // Increment all following indexes
+        if (e.key > segmentIndex) {
+          return e.value.copyWith(
+            pointIndexes: pointIndexes.map((val) => val + 1).toList(),
+          );
+        }
+
+        return e.value;
+      }).toList(),
+    ),
+  );
+
+  return newState;
 }
 
 TabState editPoint(TabState tabState, EditPoint action) {
   return tabState.copyWith(
-    path: tabState.path.copyWith(
-      points: tabState.path.points.asMap().entries.map((entery) {
-        if (entery.key == action.pointIndex) {
-          return tabState.path.points[entery.key]
-              .copyWith(
-                position: action.position,
-                inControlPoint: action.inControlPoint,
-                outControlPoint: action.outControlPoint,
-                heading: action.heading,
-                useHeading: action.useHeading,
-                actions: action.actions
-              );
-        } else {
-          return tabState.path.points[entery.key];
-        }
-      }).toList()
-    )
-  );
+      path: tabState.path.copyWith(
+          points: tabState.path.points.asMap().entries.map((entery) {
+    if (entery.key == action.pointIndex) {
+      return tabState.path.points[entery.key].copyWith(
+          position: action.position,
+          inControlPoint: action.inControlPoint,
+          outControlPoint: action.outControlPoint,
+          heading: action.heading,
+          useHeading: action.useHeading,
+          actions: action.actions);
+    } else {
+      return tabState.path.points[entery.key];
+    }
+  }).toList()));
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {

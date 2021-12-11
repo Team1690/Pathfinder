@@ -24,4 +24,31 @@ class Segment {
     final this.splineParameters,
     final this.splineTypes,
   });
+
+  factory Segment.initial() {
+    return Segment(
+      pointIndexes: [],
+      maxVelocity: 3,
+    );
+  }
+
+  Segment copyWith({
+    List<int>? pointIndexes,
+    double? maxVelocity,
+    bool? isHidden,
+    List<SplineResponse_Point>? evaluatedPoints,
+    List<TrajectoryResponse_SwervePoint>? trajectoryPoints,
+    SplineParameters? splineParameters,
+    SplineTypes? splineTypes,
+  }) {
+    return Segment(
+      pointIndexes: pointIndexes ?? this.pointIndexes,
+      maxVelocity: maxVelocity ?? this.maxVelocity,
+      isHidden: isHidden ?? this.isHidden,
+      evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
+      trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
+      splineParameters: splineParameters ?? this.splineParameters,
+      splineTypes: splineTypes ?? this.splineTypes,
+    );
+  }
 }

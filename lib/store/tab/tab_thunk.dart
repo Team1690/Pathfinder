@@ -4,9 +4,9 @@ import 'package:pathfinder/store/tab/store.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
-ThunkAction addPointThunk(Offset position) {
+ThunkAction addPointThunk(Offset position, int segmentIndex, int insertIndex) {
   return (Store store) async {
-    store.dispatch(AddPointToPath(position));
+    store.dispatch(AddPointToPath(position, segmentIndex, insertIndex));
     store.dispatch(updateSplineThunk());
   };
 }
@@ -18,39 +18,39 @@ ThunkAction removePointThunk(int index) {
   };
 }
 
-ThunkAction editPointThunk({
-  required final int pointIndex,
-  final Offset? position,
-  final Offset? inControlPoint,
-  final Offset? outControlPoint,
-  final double? heading,
-  final bool? useHeading,
-  final List<String>? actions
-}) {
+ThunkAction editPointThunk(
+    {required final int pointIndex,
+    final Offset? position,
+    final Offset? inControlPoint,
+    final Offset? outControlPoint,
+    final double? heading,
+    final bool? useHeading,
+    final List<String>? actions}) {
   return (Store store) async {
     store.dispatch(EditPoint(
-      pointIndex: pointIndex,
-      position: position,
-      inControlPoint: inControlPoint,
-      outControlPoint: outControlPoint,
-      heading: heading,
-      useHeading: useHeading,
-      actions: actions
-    ));
+        pointIndex: pointIndex,
+        position: position,
+        inControlPoint: inControlPoint,
+        outControlPoint: outControlPoint,
+        heading: heading,
+        useHeading: useHeading,
+        actions: actions));
     store.dispatch(updateSplineThunk());
   };
 }
 
 ThunkAction endDragThunk(int index, Offset position) {
-  return editPointThunk(pointIndex:  index, position: position);
+  return editPointThunk(pointIndex: index, position: position);
 }
 
 ThunkAction endInControlDragThunk(int index, Offset position) {
-  return editPointThunk(pointIndex:  index, inControlPoint: Offset(position.dx, position.dy));
+  return editPointThunk(
+      pointIndex: index, inControlPoint: Offset(position.dx, position.dy));
 }
 
 ThunkAction endOutControlDragThunk(int index, Offset position) {
-  return editPointThunk(pointIndex:  index, outControlPoint: Offset(position.dx, position.dy));
+  return editPointThunk(
+      pointIndex: index, outControlPoint: Offset(position.dx, position.dy));
 }
 
 ThunkAction updateSplineThunk() {

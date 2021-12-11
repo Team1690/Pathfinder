@@ -52,7 +52,8 @@ class PathViewModel {
             ? store.state.tabState.ui.selectedIndex
             : null),
         addPoint: (Offset position) {
-          store.dispatch(addPointThunk(uiToMetersCoord(store, position)));
+          store.dispatch(
+              addPointThunk(uiToMetersCoord(store, position), -1, -1));
         },
         deletePoint: (int index) {
           store.dispatch(removePointThunk(index));

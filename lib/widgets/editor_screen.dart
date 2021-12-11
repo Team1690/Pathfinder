@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/views/timeline.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 import 'package:pathfinder/widgets/timeline.dart';
 
@@ -43,20 +44,7 @@ class _EditorScreenState extends State<EditorScreen> {
                   flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
-                    child: PathTimeline(
-                      segments: List.generate(
-                          3,
-                          (index) => TimeLineSegment(
-                              color: Random().nextBool() ? blue : red,
-                              velocity: Random().nextInt(5).roundToDouble(),
-                              points: List.generate(
-                                  Random().nextBool() ? 3 : 5,
-
-                                  // 5,
-                                  (index) => TimelinePoint(
-                                      onTap: () {},
-                                      color: Color(0xffE1E1E1CC))))),
-                    ),
+                    child: timeLineView(),
                   ),
                 ),
                 Expanded(
