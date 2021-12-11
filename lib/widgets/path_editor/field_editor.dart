@@ -24,7 +24,7 @@ class PointSettings {
   );
 }
 
-const double headingLength = 20;
+const double headingLength = 30;
 
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
@@ -58,16 +58,38 @@ class FieldPainter extends CustomPainter {
     canvas.drawCircle(position, currentPointSettings.radius, paint);
   }
 
-  void drawDragPoint(Canvas canvas, DraggingPoint dragPoint) {
+  void drawDragPoint(Canvas canvas, Point selectedPoint, DraggingPoint dragPoint) {
     final PointSettings currentPointSettings = pointSettings[dragPoint.type]!;
     final Paint paint = Paint()
       ..color = currentPointSettings.color;
 
-    canvas.drawCircle(dragPoint.position, currentPointSettings.radius, paint);
+    switch (dragPoint.type) {
+      case PointType.path:
+        canvas.drawCircle(dragPoint.position, currentPointSettings.radius, paint);
+        break;
+      case PointType.inControl:
+        continue control;
+      control:
+      case PointType.outControl:
+        Offset dragPosition = selectedPoint.position + dragPoint.position;
+        canvas.drawCircle(dragPosition, currentPointSettings.radius, paint);
+        drawControlPoint(canvas, selectedPoint.position, dragPoint.position, false);
+        break;
+      case PointType.heading:
+        Offset dragPosition = dragPoint.position;
+        double dragHeading = dragPosition.direction;
+        drawHeadingLine(canvas, selectedPoint.position, dragHeading, false);
+        break;
+      default:
+    }
+    if (dragPoint.type == PointType.path) {
+    } else {
+    }
   }
 
   void drawControlPoint(Canvas canvas, Offset position, Offset control, bool enableEdit) {
-    final Color color = Color(0xff111111);
+    final PointSettings settings = pointSettings[PointType.inControl]!;
+    final Color color = settings.color;
 
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
@@ -85,17 +107,17 @@ class FieldPainter extends CustomPainter {
       final dotPaint = Paint()
         ..color = color;
 
-      canvas.drawCircle(edge, 5, dotPaint);
+      canvas.drawCircle(edge, settings.radius, dotPaint);
     }
   }
 
   void drawHeadingLine(Canvas canvas, Offset position, double heading, enableEdit) {
-    final Color color = Color(0xffc80000);
+    final PointSettings pointSetting = pointSettings[PointType.heading]!;
     final Offset edge = position + Offset.fromDirection(heading, headingLength);
 
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..color = color
+      ..color = pointSetting.color
       ..strokeWidth = 5;
     final double circleRadius =
       1 / (paint.strokeWidth * paint.strokeWidth);
@@ -106,9 +128,9 @@ class FieldPainter extends CustomPainter {
 
     if (enableEdit) {
       final dotPaint = Paint()
-        ..color = color;
+        ..color = pointSetting.color;
 
-      canvas.drawCircle(edge, 5, dotPaint);
+      canvas.drawCircle(edge, pointSetting.radius, dotPaint);
     }
   }
 
@@ -136,11 +158,9 @@ class FieldPainter extends CustomPainter {
       Point point = entery.value;
       drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
-    print("Inner dragPoint: ${dragPoint}");
 
-    if (dragPoint != null) {
-      print("Drawing drag point");
-      drawDragPoint(canvas, dragPoint!);
+    if (dragPoint != null && selectedPoint != null) {
+      drawDragPoint(canvas, points[selectedPoint!], dragPoint!);
     }
   }
 

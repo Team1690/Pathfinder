@@ -11,6 +11,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
+import 'package:pathfinder/utils/coordinates_convertion.dart';
 
 class PathViewModel {
   final List<Point> points;
@@ -22,6 +23,7 @@ class PathViewModel {
   final Function(int) selectPoint;
   final Function(int, Offset) finishInControlDrag;
   final Function(int, Offset) finishOutControlDrag;
+  final Function(int, double) finishHeadingDrag;
   final List<rpc.SplineResponse_Point>? evaulatedPoints;
 
   PathViewModel({
@@ -35,38 +37,43 @@ class PathViewModel {
     required this.evaulatedPoints,
     required this.finishInControlDrag,
     required this.finishOutControlDrag,
+    required this.finishHeadingDrag,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
     return PathViewModel(
-        points: store.state.tabState.path.points
-            .map((p) => p.toUiCoord(store))
-            .toList(),
-        segments: store.state.tabState.path.segments,
-        evaulatedPoints: store.state.tabState.path.evaluatedPoints,
-        selectedPointIndex: (store.state.tabState.ui.selectedType == Point
-            ? store.state.tabState.ui.selectedIndex
-            : null),
-        addPoint: (Offset position) {
-          store.dispatch(addPointThunk(uiToMetersCoord(store, position)));
-        },
-        deletePoint: (int index) {
-          store.dispatch(removePointThunk(index));
-        },
-        finishDrag: (int index, Offset position) {
-          store.dispatch(endDragThunk(index, uiToMetersCoord(store, position)));
-        },
-        selectPoint: (int index) {
-          store.dispatch(ObjectSelected(index, Point));
-        },
-        finishInControlDrag: (int index, Offset position) {
-          store.dispatch(
-              endInControlDragThunk(index, uiToMetersCoord(store, position)));
-        },
-        finishOutControlDrag: (int index, Offset position) {
-          store.dispatch(
-              endOutControlDragThunk(index, uiToMetersCoord(store, position)));
-        });
+      points: store.state.tabState.path.points
+        .map((p) => p.toUiCoord(store))
+        .toList(),
+      segments: store.state.tabState.path.segments,
+      evaulatedPoints: store.state.tabState.path.evaluatedPoints,
+      selectedPointIndex: (store.state.tabState.ui.selectedType == Point
+        ? store.state.tabState.ui.selectedIndex
+        : null),
+      addPoint: (Offset position) {
+        store.dispatch(addPointThunk(uiToMetersCoord(store, position)));
+      },
+      deletePoint: (int index) {
+        store.dispatch(removePointThunk(index));
+      },
+      finishDrag: (int index, Offset position) {
+        store.dispatch(endDragThunk(index, uiToMetersCoord(store, position)));
+      },
+      selectPoint: (int index) {
+        store.dispatch(ObjectSelected(index, Point));
+      },
+      finishInControlDrag: (int index, Offset position) {
+        store.dispatch(
+          endInControlDragThunk(index, uiToMetersCoord(store, position)));
+      },
+      finishOutControlDrag: (int index, Offset position) {
+        store.dispatch(
+          endOutControlDragThunk(index, uiToMetersCoord(store, position)));
+      },
+      finishHeadingDrag: (int index, double heading) {
+        store.dispatch(endHeadingDragThunk(index, heading));
+      }
+    );
   }
 }
 
@@ -74,8 +81,8 @@ StoreConnector<AppState, PathViewModel> pathEditor() {
   return new StoreConnector<AppState, PathViewModel>(
       converter: (store) => PathViewModel.fromStore(store),
       builder: (_, props) => _PathEditor(pathProps: props));
-
 }
+
 class DraggingPoint {
   final PointType type;
   final Offset position;
@@ -116,28 +123,21 @@ class _PathEditorState extends State<_PathEditor> {
   }
 
   DraggingPoint? checkSelectedPointTap(Offset tapPosition, Point point) {
-    print("Chacking tapped point");
 
-    Offset headingPointCenter = Offset.fromDirection(point.heading, headingLength);
-    if ((headingPointCenter - tapPosition).distance < pointSettings[PointType.heading]!.radius) {
-      return DraggingPoint(PointType.heading, headingPointCenter);
+    Offset headingCenter = Offset.fromDirection(point.heading, headingLength);
+    Offset headingPosition = point.position + headingCenter;
+    if ((headingPosition - tapPosition).distance <
+        pointSettings[PointType.heading]!.radius) {
+      return DraggingPoint(PointType.heading, headingCenter);
     }
 
-    Offset inControlPosition = Offset(
-      point.position.dx + point.inControlPoint.dx,
-      point.position.dy + point.inControlPoint.dy
-    );
+    Offset inControlPosition = point.position + point.inControlPoint;
     if ((inControlPosition - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
-      print("Dragging inControl");
       return DraggingPoint(PointType.inControl, point.inControlPoint);
     }
 
-    Offset outControlPosition = Offset(
-      point.position.dx + point.outControlPoint.dx,
-      point.position.dy + point.outControlPoint.dy
-    );
+    Offset outControlPosition = point.position + point.outControlPoint;
     if ((outControlPosition - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
-      print("Dragging outControl");
       return DraggingPoint(PointType.outControl, point.outControlPoint);
     }
   }
@@ -145,7 +145,6 @@ class _PathEditorState extends State<_PathEditor> {
   @override
   Widget build(final BuildContext context) {
     final PointSettings pointSetting = pointSettings[PointType.path]!;
-    print("Outer dragging ${dragPoint}");
 
     return RawKeyboardListener(
       autofocus: true,
@@ -181,73 +180,90 @@ class _PathEditorState extends State<_PathEditor> {
         child: Stack(
           children: [
             GestureDetector(
-              child: FieldLoader(widget.pathProps.points, widget.pathProps.selectedPointIndex, dragPoint, shiftPressed, ctrlPressed),
-              onTapUp: (final TapUpDetails detailes) {
-                final Offset tapPos = detailes.localPosition;
+                child: FieldLoader(
+                    widget.pathProps.points,
+                    widget.pathProps.selectedPointIndex,
+                    dragPoint,
+                    shiftPressed,
+                    ctrlPressed),
+                onTapUp: (final TapUpDetails detailes) {
+                  final Offset tapPos = detailes.localPosition;
 
-                int? selectedPoint = getTappedPoint(tapPos, widget.pathProps.points);
-                if (selectedPoint != null) {
-                  widget.pathProps.selectPoint(selectedPoint);
-                  return;
-                } 
-
-                widget.pathProps.addPoint(tapPos);
-              },
-              onPanStart: (DragStartDetails details) {
-                int? currentSelecedPointIndex = widget.pathProps.selectedPointIndex;
-                if (currentSelecedPointIndex != null) {
-                  DraggingPoint? draggingPoint = checkSelectedPointTap(details.localPosition, widget.pathProps.points[currentSelecedPointIndex]);
-                  if (draggingPoint != null) {
-                    setState(() {
-                      dragPoint = draggingPoint;
-                      dragPointIndex = currentSelecedPointIndex;
-                    });
+                  int? selectedPoint =
+                      getTappedPoint(tapPos, widget.pathProps.points);
+                  if (selectedPoint != null) {
+                    widget.pathProps.selectPoint(selectedPoint);
                     return;
                   }
-                }
 
-                int? selectedPoint = getTappedPoint(details.localPosition, widget.pathProps.points);
-                if (selectedPoint != null) {
-                  setState(() {
-                    dragPointIndex = selectedPoint;
-                    dragPoint = DraggingPoint(PointType.path, widget.pathProps.points[selectedPoint].position);
-                  });
-                }
-              },
-              onPanUpdate: (DragUpdateDetails details) {
-                if (dragPoint != null) {
-                  print("Update dragging ${dragPoint!.type} ${dragPointIndex}");
-                  setState(() {
-                    dragPoint = DraggingPoint(dragPoint!.type, Offset(dragPoint!.position.dx + details.delta.dx, dragPoint!.position.dy + details.delta.dy));
-                  });
-                }
-              },
-              onPanEnd: (DragEndDetails details) {
-                print("Endind drag out ${dragPoint} ${dragPointIndex}");
-                if (dragPointIndex != null && dragPoint != null) {
-                  print("Endind drag ${dragPoint!.type}");
-                  switch (dragPoint!.type) {
-                    case PointType.path:
-                      widget.pathProps.finishDrag(dragPointIndex!, dragPoint!.position);
-                      break;
-                    case PointType.inControl:
-                      widget.pathProps.finishInControlDrag(dragPointIndex!, dragPoint!.position);
-                      break;
-                    case PointType.outControl:
-                      widget.pathProps.finishOutControlDrag(dragPointIndex!, dragPoint!.position);
-                      break;
-                    default:
-                      break;
+                  widget.pathProps.addPoint(tapPos);
+                },
+                onPanStart: (DragStartDetails details) {
+                  int? currentSelecedPointIndex =
+                      widget.pathProps.selectedPointIndex;
+                  if (currentSelecedPointIndex != null) {
+                    DraggingPoint? draggingPoint = checkSelectedPointTap(
+                        details.localPosition,
+                        widget.pathProps.points[currentSelecedPointIndex]);
+                    if (draggingPoint != null) {
+                      setState(() {
+                        dragPoint = draggingPoint;
+                        dragPointIndex = currentSelecedPointIndex;
+                      });
+                      return;
+                    }
                   }
-                }
 
-                setState(() {
-                  dragPointIndex = null;
-                  dragPoint = null;
-                });
-              }
-            ),
+                  int? selectedPoint = getTappedPoint(
+                      details.localPosition, widget.pathProps.points);
+                  if (selectedPoint != null) {
+                    setState(() {
+                      dragPointIndex = selectedPoint;
+                      dragPoint = DraggingPoint(PointType.path,
+                          widget.pathProps.points[selectedPoint].position);
+                    });
+                  }
+                },
+                onPanUpdate: (DragUpdateDetails details) {
+                  if (dragPoint != null) {
+                    setState(() {
+                      dragPoint = DraggingPoint(
+                          dragPoint!.type,
+                          Offset(dragPoint!.position.dx + details.delta.dx,
+                              dragPoint!.position.dy + details.delta.dy));
+                    });
+                  }
+                },
+                onPanEnd: (DragEndDetails details) {
+                  if (dragPointIndex != null && dragPoint != null) {
+                    switch (dragPoint!.type) {
+                      case PointType.path:
+                        widget.pathProps
+                            .finishDrag(dragPointIndex!, dragPoint!.position);
+                        break;
+                      case PointType.inControl:
+                        widget.pathProps.finishInControlDrag(
+                            dragPointIndex!, dragPoint!.position);
+                        break;
+                      case PointType.outControl:
+                        widget.pathProps.finishOutControlDrag(
+                            dragPointIndex!, dragPoint!.position);
+                        break;
+                      case PointType.heading:
+                        Offset dragPosition = dragPoint!.position;
+                        double dragHeading = dragPosition.direction;
+                        widget.pathProps.finishHeadingDrag(dragPointIndex!, dragHeading);
+                        break;
+                      default:
+                        break;
+                    }
+                  }
 
+                  setState(() {
+                    dragPointIndex = null;
+                    dragPoint = null;
+                  });
+                }),
             for (final evaluatedPoint in widget.pathProps.evaulatedPoints ?? [])
               SplinePoint(point: evaluatedPoint)
           ],
