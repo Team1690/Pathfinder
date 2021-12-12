@@ -12,6 +12,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, SplineCalculated>(_splineCalculated),
   TypedReducer<TabState, ServerError>(_setServerError),
   TypedReducer<TabState, EditPoint>(editPoint),
+  TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -90,4 +91,12 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
     );
   }
   return newState;
+}
+
+TabState _setFieldSizePixels (TabState tabState, SetFieldSizePixels action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      fieldSizePixels: action.size
+    )
+  );
 }

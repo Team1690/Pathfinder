@@ -60,3 +60,8 @@ class DeletePointFromPath extends TabAction {
   final int index;
   DeletePointFromPath(this.index);
 }
+
+class SetFieldSizePixels extends TabAction {
+  final Offset size;
+  SetFieldSizePixels(this.size);
+}

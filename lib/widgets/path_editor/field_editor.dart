@@ -199,6 +199,7 @@ class FieldLoader extends StatefulWidget {
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluatedPoints;
+  Function (Offset) setFieldSizePixels;
 
   FieldLoader(
     this.points,
@@ -207,6 +208,7 @@ class FieldLoader extends StatefulWidget {
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluatedPoints,
+    this.setFieldSizePixels,
   );
 
   @override
@@ -223,6 +225,10 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Future <Null> init() async {
+    if (globalImage != null) {
+      return;
+    }
+
     final ByteData data = await rootBundle.load('assets/images/frc_2020_field.png');
     globalImage = await loadImage(Uint8List.view(data.buffer));
   }
@@ -241,6 +247,7 @@ class _FieldLoaderState extends State<FieldLoader> {
   Widget _buildImage() {
     double width = 0.8 * MediaQuery.of(context).size.width;
     double height = 0.6 * MediaQuery.of(context).size.height;
+    widget.setFieldSizePixels(Offset(width, height));
 
     if (this.isImageloaded) {
     // if (false) {

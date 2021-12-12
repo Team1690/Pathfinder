@@ -24,6 +24,7 @@ class PathViewModel {
   final Function(int, Offset) finishInControlDrag;
   final Function(int, Offset) finishOutControlDrag;
   final Function(int, double) finishHeadingDrag;
+  final Function(Offset) setFieldSizePixels;
   final List<Offset>? evaulatedPoints;
 
   PathViewModel({
@@ -38,6 +39,7 @@ class PathViewModel {
     required this.finishInControlDrag,
     required this.finishOutControlDrag,
     required this.finishHeadingDrag,
+    required this.setFieldSizePixels,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -76,6 +78,11 @@ class PathViewModel {
       },
       finishHeadingDrag: (int index, double heading) {
         store.dispatch(endHeadingDragThunk(index, heading));
+      },
+      setFieldSizePixels: (Offset size) {
+        if (store.state.tabState.ui.fieldSizePixels != size) {
+          store.dispatch(SetFieldSizePixels(size));
+        }
       }
     );
   }
@@ -190,7 +197,8 @@ class _PathEditorState extends State<_PathEditor> {
                   dragPoint,
                   shiftPressed,
                   ctrlPressed,
-                  widget.pathProps.evaulatedPoints
+                  widget.pathProps.evaulatedPoints,
+                  widget.pathProps.setFieldSizePixels,
                 ),
                 onTapUp: (final TapUpDetails detailes) {
                   final Offset tapPos = detailes.localPosition;

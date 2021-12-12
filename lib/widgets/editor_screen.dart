@@ -23,21 +23,16 @@ class _EditorScreenState extends State<EditorScreen> {
       child: Column(
         children: [
           Container(
-            child: Padding(
-              // padding: const EdgeInsets.fromLTRB(200, 30, 200, 30),
-              padding: const EdgeInsets.fromLTRB(200, 30, 200, 30),
-              child: Container(
-                child: pathEditor(),
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 14,
-                    offset: Offset(0, 4), // changes position of shadow
-                  ),
-                ]),
-              ),
-            ),
+            // margin: const EdgeInsets.fromLTRB(200, 30, 200, 30),
+              child: pathEditor(),
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 14,
+                  offset: Offset(0, 4), // changes position of shadow
+                ),
+              ]),
           ),
           Expanded(
             child: Row(
