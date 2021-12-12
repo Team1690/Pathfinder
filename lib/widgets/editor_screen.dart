@@ -28,16 +28,14 @@ class _EditorScreenState extends State<EditorScreen> {
               padding: const EdgeInsets.fromLTRB(200, 30, 200, 30),
               child: Container(
                 child: pathEditor(),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 14,
-                      offset: Offset(0, 4), // changes position of shadow
-                    ),
-                  ]
-                ),
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 14,
+                    offset: Offset(0, 4), // changes position of shadow
+                  ),
+                ]),
               ),
             ),
           ),
@@ -75,15 +73,15 @@ class _EditorScreenState extends State<EditorScreen> {
                           label: Text('Path'),
                         ),
                         ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.trending_flat_rounded),
-                          label: Text('Trajectory'),
-                        ),
-                        ElevatedButton.icon(
                           onPressed: () {
                             PathFinderService.calculateTrjactory(
                                 store.state.tabState.path.points, 3);
                           },
+                          icon: Icon(Icons.trending_flat_rounded),
+                          label: Text('Trajectory'),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {},
                           icon: Icon(Icons.trending_up_rounded),
                           label: Text('Graph'),
                         )
