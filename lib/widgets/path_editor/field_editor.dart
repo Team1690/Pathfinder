@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as pro;
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 enum PointType {
@@ -40,6 +41,7 @@ class FieldPainter extends CustomPainter {
   DraggingPoint? dragPoint;
   bool enableHeadingEditing;
   bool enableControlEditing;
+  List<pro.SplineResponse_Point>? evaluetedPoints;
 
   FieldPainter(
     this.image,
@@ -48,6 +50,7 @@ class FieldPainter extends CustomPainter {
     this.dragPoint,
     this.enableHeadingEditing,
     this.enableControlEditing,
+    this.evaluetedPoints,
   );
 
   void drawPointBackground(Canvas canvas, Offset position, bool isSelected) {
@@ -141,7 +144,21 @@ class FieldPainter extends CustomPainter {
       drawControlPoint(canvas, position, inControl, enableControlEditing);
       drawControlPoint(canvas, position, OutControl, enableControlEditing);
     }
+  }
 
+  void drawPath(Canvas canvas, List<pro.SplineResponse_Point> evaluetedPoints) {
+    Paint paint = Paint()
+      ..color = Color(0xff00ddee)
+      ..strokeWidth = 5;
+
+    List<Offset> pathPoints = [];
+    for (pro.SplineResponse_Point splinePoint in evaluetedPoints) {
+      pathPoints.add(Offset(splinePoint.point.x, splinePoint.point.y));
+    }
+    Path path = Path();
+    path.addPolygon([], false);
+    print("Drawing path ${path}");
+    canvas.drawPath(path, paint);
   }
 
   @override
@@ -162,6 +179,10 @@ class FieldPainter extends CustomPainter {
     if (dragPoint != null && selectedPoint != null) {
       drawDragPoint(canvas, points[selectedPoint!], dragPoint!);
     }
+
+    if (evaluetedPoints != null) {
+      drawPath(canvas, evaluetedPoints!);
+    }
   }
 
   @override
@@ -177,8 +198,16 @@ class FieldLoader extends StatefulWidget {
   DraggingPoint? dragPoint;
   bool enableHeadingEditing;
   bool enableControlEditing;
+  List<pro.SplineResponse_Point>? evaluatedPoints;
 
-  FieldLoader(this.points, this.selectedPoint, this.dragPoint, this.enableHeadingEditing, this.enableControlEditing);
+  FieldLoader(
+    this.points,
+    this.selectedPoint,
+    this.dragPoint,
+    this.enableHeadingEditing,
+    this.enableControlEditing,
+    this.evaluatedPoints,
+  );
 
   @override
   _FieldLoaderState createState() => _FieldLoaderState();
@@ -217,7 +246,15 @@ class _FieldLoaderState extends State<FieldLoader> {
     // if (false) {
       return Container(
         child: CustomPaint(
-          painter: FieldPainter(globalImage!, widget.points, widget.selectedPoint, widget.dragPoint, widget.enableHeadingEditing, widget.enableControlEditing),
+          painter: FieldPainter(
+            globalImage!,
+            widget.points,
+            widget.selectedPoint,
+            widget.dragPoint,
+            widget.enableHeadingEditing,
+            widget.enableControlEditing,
+            widget.evaluatedPoints,
+          ),
           size: Size(width, height)
         )
       );

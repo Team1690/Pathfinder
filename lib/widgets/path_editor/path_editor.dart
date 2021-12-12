@@ -181,11 +181,13 @@ class _PathEditorState extends State<_PathEditor> {
           children: [
             GestureDetector(
                 child: FieldLoader(
-                    widget.pathProps.points,
-                    widget.pathProps.selectedPointIndex,
-                    dragPoint,
-                    shiftPressed,
-                    ctrlPressed),
+                  widget.pathProps.points,
+                  widget.pathProps.selectedPointIndex,
+                  dragPoint,
+                  shiftPressed,
+                  ctrlPressed,
+                  widget.pathProps.evaulatedPoints
+                ),
                 onTapUp: (final TapUpDetails detailes) {
                   final Offset tapPos = detailes.localPosition;
 
