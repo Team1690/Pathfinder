@@ -11,8 +11,8 @@ class PathFinderService {
     var client = rpc.PathFinderClient(GrpcClientSingleton().client);
 
     var requestPoints = points.map((p) => rpc.Point(
-          controlIn: toRpcVector(p.inControlPoint),
-          controlOut: toRpcVector(p.outControlPoint),
+          controlIn: toRpcVector(p.position + p.inControlPoint),
+          controlOut: toRpcVector(p.position + p.outControlPoint),
           position: toRpcVector(p.position),
         ));
 

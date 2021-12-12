@@ -62,7 +62,7 @@ ThunkAction updateSplineThunk() {
     try {
       final res = await PathFinderService.calculateSpline(
         store.state.tabState.path.points,
-        10,
+        0.1,
       );
 
       store.dispatch(SplineCalculated(res.evaluatedPoints));

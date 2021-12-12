@@ -4,8 +4,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/models/point.dart';
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as pro;
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 enum PointType {
@@ -41,7 +41,7 @@ class FieldPainter extends CustomPainter {
   DraggingPoint? dragPoint;
   bool enableHeadingEditing;
   bool enableControlEditing;
-  List<pro.SplineResponse_Point>? evaluetedPoints;
+  List<Offset>? evaluetedPoints;
 
   FieldPainter(
     this.image,
@@ -146,18 +146,18 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPath(Canvas canvas, List<pro.SplineResponse_Point> evaluetedPoints) {
+  void drawPath(Canvas canvas, List<Offset> evaluetedPoints) {
     Paint paint = Paint()
-      ..color = Color(0xff00ddee)
-      ..strokeWidth = 5;
+      ..color = blue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
 
     List<Offset> pathPoints = [];
-    for (pro.SplineResponse_Point splinePoint in evaluetedPoints) {
-      pathPoints.add(Offset(splinePoint.point.x, splinePoint.point.y));
+    for (Offset splinePoint in evaluetedPoints) {
+      pathPoints.add(splinePoint);
     }
     Path path = Path();
-    path.addPolygon([], false);
-    print("Drawing path ${path}");
+    path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
   }
 
@@ -170,6 +170,10 @@ class FieldPainter extends CustomPainter {
       image: image
     );
 
+    if (evaluetedPoints != null) {
+      drawPath(canvas, evaluetedPoints!);
+    }
+
     for (final entery in points.asMap().entries) {
       int index = entery.key;
       Point point = entery.value;
@@ -178,10 +182,6 @@ class FieldPainter extends CustomPainter {
 
     if (dragPoint != null && selectedPoint != null) {
       drawDragPoint(canvas, points[selectedPoint!], dragPoint!);
-    }
-
-    if (evaluetedPoints != null) {
-      drawPath(canvas, evaluetedPoints!);
     }
   }
 
@@ -198,7 +198,7 @@ class FieldLoader extends StatefulWidget {
   DraggingPoint? dragPoint;
   bool enableHeadingEditing;
   bool enableControlEditing;
-  List<pro.SplineResponse_Point>? evaluatedPoints;
+  List<Offset>? evaluatedPoints;
 
   FieldLoader(
     this.points,

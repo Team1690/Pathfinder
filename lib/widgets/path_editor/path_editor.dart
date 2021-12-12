@@ -24,7 +24,7 @@ class PathViewModel {
   final Function(int, Offset) finishInControlDrag;
   final Function(int, Offset) finishOutControlDrag;
   final Function(int, double) finishHeadingDrag;
-  final List<rpc.SplineResponse_Point>? evaulatedPoints;
+  final List<Offset>? evaulatedPoints;
 
   PathViewModel({
     required this.points,
@@ -46,7 +46,11 @@ class PathViewModel {
         .map((p) => p.toUiCoord(store))
         .toList(),
       segments: store.state.tabState.path.segments,
-      evaulatedPoints: store.state.tabState.path.evaluatedPoints,
+      evaulatedPoints: store.state.tabState.path.evaluatedPoints == null
+        ? []
+        : store.state.tabState.path.evaluatedPoints!
+          .map((p) => metersToUiCoord(store, Offset(p.point.x, p.point.y)))
+          .toList(),
       selectedPointIndex: (store.state.tabState.ui.selectedType == Point
         ? store.state.tabState.ui.selectedIndex
         : null),
@@ -265,9 +269,8 @@ class _PathEditorState extends State<_PathEditor> {
                     dragPointIndex = null;
                     dragPoint = null;
                   });
-                }),
-            for (final evaluatedPoint in widget.pathProps.evaulatedPoints ?? [])
-              SplinePoint(point: evaluatedPoint)
+                }
+              ),
           ],
         ),
       ),
