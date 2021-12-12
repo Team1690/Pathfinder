@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/main.dart';
+import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 import 'package:pathfinder/widgets/timeline.dart';
 
@@ -26,16 +28,14 @@ class _EditorScreenState extends State<EditorScreen> {
               padding: const EdgeInsets.fromLTRB(200, 30, 200, 30),
               child: Container(
                 child: pathEditor(),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 14,
-                      offset: Offset(0, 4), // changes position of shadow
-                    ),
-                  ]
-                ),
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 14,
+                    offset: Offset(0, 4), // changes position of shadow
+                  ),
+                ]),
               ),
             ),
           ),
@@ -73,7 +73,10 @@ class _EditorScreenState extends State<EditorScreen> {
                           label: Text('Path'),
                         ),
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            PathFinderService.calculateTrjactory(
+                                store.state.tabState.path.points, 3);
+                          },
                           icon: Icon(Icons.trending_flat_rounded),
                           label: Text('Trajectory'),
                         ),
