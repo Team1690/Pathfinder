@@ -7,13 +7,14 @@ import (
 )
 
 type Path struct {
-	Splines        []Spline
-	SForEachSpline float64
-	length         *float64
+	Splines         []Spline
+	SForEachSpline  float64
+	length          *float64
+	NumberOfSplines int
 }
 
 func NewPath(splines ...Spline) *Path {
-	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines))}
+	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines)), NumberOfSplines: len(splines)}
 }
 
 func (p *Path) Length() float64 {
@@ -59,4 +60,16 @@ func (p *Path) GetSplineIndex(s float64) int {
 	evaluatedSplineIndex := int((s - unscaledSForEvaluatedSpline) / p.SForEachSpline)
 
 	return int(evaluatedSplineIndex)
+}
+
+// Get an array of points on the path, evaluated in an interval which is defined in units of length.
+func (p *Path) EvaluateAtInterval(interval float64) []vector.Vector {
+	var points []vector.Vector
+	for _, spline := range p.Splines {
+		ds := interval / spline.Length()
+		for s := 0.0; s <= 1; s += ds {
+			points = append(points, spline.Evaluate(s))
+		}
+	}
+	return points
 }
