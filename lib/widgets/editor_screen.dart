@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/main.dart';
+import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 import 'package:pathfinder/widgets/timeline.dart';
 
@@ -78,7 +80,10 @@ class _EditorScreenState extends State<EditorScreen> {
                           label: Text('Trajectory'),
                         ),
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            PathFinderService.calculateTrjactory(
+                                store.state.tabState.path.points, 3);
+                          },
                           icon: Icon(Icons.trending_up_rounded),
                           label: Text('Graph'),
                         )

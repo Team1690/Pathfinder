@@ -23,26 +23,30 @@ class PathFinderService {
 
     return await client.calculateSplinePoints(request);
   }
+
+  static Future<rpc.TrajectoryResponse> calculateTrjactory(
+    List<Point> points,
+    double maxVelocity,
+  ) async {
+    var client = rpc.PathFinderClient(GrpcClientSingleton().client);
+
+    var requestPoints = points.map((p) => rpc.Point(
+          controlIn: toRpcVector(p.inControlPoint),
+          controlOut: toRpcVector(p.outControlPoint),
+          position: toRpcVector(p.position),
+        ));
+
+    var request = rpc.TrajectoryRequest(
+      sections: [
+        rpc.Section(segments: [
+          rpc.Segment(maxVelocity: maxVelocity, points: requestPoints)
+        ])
+      ],
+    );
+
+    return await client.calculateTrajectory(request);
+  }
 }
-
-//   static Future<rpc.TrajectoryResponse> calculateTrjactory(
-//     List<Se> points,
-//   ) async {
-//     var client = rpc.PathFinderClient(GrpcClientSingleton().client);
-
-//     var requestPoints = points.map((p) => rpc.Point(
-//           controlIn: toRpcVector(p.inControlPoint),
-//           controlOut: toRpcVector(p.outControlPoint),
-//           position: toRpcVector(p.position),
-//         ));
-
-//     var request = rpc.TrajectoryRequest(
-//       points: requestPoints,
-//     );
-
-//     return await client.calculateTrajectory(request);
-//   }
-// }
 
 rpc.Vector toRpcVector(Offset p) {
   return rpc.Vector(
