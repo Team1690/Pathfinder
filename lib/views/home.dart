@@ -6,6 +6,7 @@ import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/store/app/app_state.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
+import 'package:pathfinder/utils/math.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/widgets/tab.dart';
@@ -263,59 +264,67 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Control In X',
-                  initialValue: pointData.inControlPoint.dx,
+                  label: 'In Mag',
+                  initialValue: pointData.inControlPoint.distance,
                   onChanged: (value) {
                     onPointEdit(
-                        index,
-                        pointData.copyWith(
-                          inControlPoint:
-                              Offset(value ?? 0, pointData.inControlPoint.dy),
-                        ));
+                      index,
+                      pointData.copyWith(
+                        inControlPoint: Offset.fromDirection(
+                            pointData.inControlPoint.direction, value),
+                      ),
+                    );
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Control In Y',
-                  initialValue: pointData.inControlPoint.dy,
+                  label: 'In Angle',
+                  initialValue: degrees(pointData.inControlPoint.direction),
+                  unitLabel: "°",
                   onChanged: (value) {
                     onPointEdit(
-                        index,
-                        pointData.copyWith(
-                          inControlPoint:
-                              Offset(pointData.inControlPoint.dx, value ?? 0),
-                        ));
+                      index,
+                      pointData.copyWith(
+                        inControlPoint: Offset.fromDirection(
+                            radians(value), pointData.inControlPoint.distance),
+                      ),
+                    );
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Control Out X',
-                  initialValue: pointData.outControlPoint.dx,
+                  label: 'Out Mag',
+                  initialValue: pointData.outControlPoint.distance,
                   onChanged: (value) {
                     onPointEdit(
-                        index,
-                        pointData.copyWith(
-                          inControlPoint:
-                              Offset(value ?? 0, pointData.outControlPoint.dy),
-                        ));
+                      index,
+                      pointData.copyWith(
+                        inControlPoint: Offset.fromDirection(
+                            radians(pointData.outControlPoint.direction),
+                            value),
+                      ),
+                    );
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Control Out Y',
-                  initialValue: pointData.outControlPoint.dy,
+                  label: 'Out Angle',
+                  initialValue: degrees(pointData.outControlPoint.direction),
+                  unitLabel: "°",
                   onChanged: (value) {
                     onPointEdit(
-                        index,
-                        pointData.copyWith(
-                          inControlPoint:
-                              Offset(pointData.outControlPoint.dx, value ?? 0),
-                        ));
+                      index,
+                      pointData.copyWith(
+                        outControlPoint: Offset.fromDirection(
+                            radians(value), pointData.outControlPoint.distance),
+                      ),
+                    );
                   },
                 ),
                 _cardSettingsDouble(
                   label: 'Heading',
-                  initialValue: pointData.heading,
+                  initialValue: degrees(pointData.heading),
                   unitLabel: '°',
                   onChanged: (value) {
-                    onPointEdit(index, pointData.copyWith(heading: value ?? 0));
+                    onPointEdit(index,
+                        pointData.copyWith(heading: radians(value ?? 0)));
                   },
                 ),
               ],
