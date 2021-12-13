@@ -139,13 +139,11 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset OutControl, bool isSelected, bool enableHeadingEditing, enableControlEditing) {
+  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset outControl, bool isSelected, bool enableHeadingEditing, enableControlEditing) {
     drawPointBackground(canvas, position, isSelected);
-    drawHeadingLine(canvas, position, heading, enableHeadingEditing && isSelected);
-    if (isSelected) {
-      drawControlPoint(canvas, position, inControl, enableControlEditing);
-      drawControlPoint(canvas, position, OutControl, enableControlEditing);
-    }
+    drawHeadingLine(canvas, position, heading, enableHeadingEditing);
+    drawControlPoint(canvas, position, inControl, enableControlEditing);
+    drawControlPoint(canvas, position, outControl, enableControlEditing);
   }
 
   void drawPath(Canvas canvas, List<Offset> evaluetedPoints) {

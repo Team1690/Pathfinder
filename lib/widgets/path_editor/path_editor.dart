@@ -133,23 +133,33 @@ class _PathEditorState extends State<_PathEditor> {
     }
   }
 
-  DraggingPoint? checkSelectedPointTap(Offset tapPosition, Point point) {
-
-    Offset headingCenter = Offset.fromDirection(point.heading, headingLength);
-    Offset headingPosition = point.position + headingCenter;
-    if ((headingPosition - tapPosition).distance <
-        pointSettings[PointType.heading]!.radius) {
-      return DraggingPoint(PointType.heading, headingCenter);
+  DraggingPoint? checkSelectedPointTap(Offset tapPosition, Point point, PointType pointType) {
+    if (pointType == PointType.path) {
+      double radius = pointSettings[PointType.path]!.radius;
+      if ((tapPosition - point.position).distance <= radius) {
+        return DraggingPoint(PointType.path, point.position);
+      }
     }
 
-    Offset inControlPosition = point.position + point.inControlPoint;
-    if ((inControlPosition - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
-      return DraggingPoint(PointType.inControl, point.inControlPoint);
+    if (pointType == PointType.heading) {
+      Offset headingCenter = Offset.fromDirection(point.heading, headingLength);
+      Offset headingPosition = point.position + headingCenter;
+      if ((headingPosition - tapPosition).distance <
+          pointSettings[PointType.heading]!.radius) {
+        return DraggingPoint(PointType.heading, headingCenter);
+      }
     }
 
-    Offset outControlPosition = point.position + point.outControlPoint;
-    if ((outControlPosition - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
-      return DraggingPoint(PointType.outControl, point.outControlPoint);
+    if (pointType == PointType.inControl || pointType == PointType.outControl) {
+      Offset inControlPosition = point.position + point.inControlPoint;
+      if ((inControlPosition - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
+        return DraggingPoint(PointType.inControl, point.inControlPoint);
+      }
+
+      Offset outControlPosition = point.position + point.outControlPoint;
+      if ((outControlPosition - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
+        return DraggingPoint(PointType.outControl, point.outControlPoint);
+      }
     }
   }
 
@@ -214,29 +224,30 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.addPoint(tapPos);
                 },
                 onPanStart: (DragStartDetails details) {
-                  int? currentSelecedPointIndex =
-                      widget.pathProps.selectedPointIndex;
-                  if (currentSelecedPointIndex != null) {
+                  for (final entery in widget.pathProps.points.asMap().entries) {
+                    Point point = entery.value;
+                    int index = entery.key;
+
+                    PointType draggingType = PointType.path;
+                    if (shiftPressed) {
+                      draggingType = PointType.heading;
+                    } else if (ctrlPressed) {
+                      draggingType = PointType.inControl;
+                    }
+
                     DraggingPoint? draggingPoint = checkSelectedPointTap(
                         details.localPosition,
-                        widget.pathProps.points[currentSelecedPointIndex]);
+                        point,
+                        draggingType
+                    );
+
                     if (draggingPoint != null) {
                       setState(() {
                         dragPoint = draggingPoint;
-                        dragPointIndex = currentSelecedPointIndex;
+                        dragPointIndex = index;
                       });
                       return;
                     }
-                  }
-
-                  int? selectedPoint = getTappedPoint(
-                      details.localPosition, widget.pathProps.points);
-                  if (selectedPoint != null) {
-                    setState(() {
-                      dragPointIndex = selectedPoint;
-                      dragPoint = DraggingPoint(PointType.path,
-                          widget.pathProps.points[selectedPoint].position);
-                    });
                   }
                 },
                 onPanUpdate: (DragUpdateDetails details) {
