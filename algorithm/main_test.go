@@ -29,33 +29,22 @@ func Test(_ *testing.T) {
 			MaxVelocity: 3.6,
 			Points: []*rpc.Point{
 				{
-					Position:   &rpc.Vector{X: 0.01, Y: 0.01},
-					ControlOut: &rpc.Vector{X: 0.5, Y: -1.5},
+					Position:   &rpc.Vector{X: 0, Y: 0},
+					ControlOut: &rpc.Vector{X: -3, Y: 0},
 					Heading:    0,
 					UseHeading: true,
 				},
 				{
-					Position:   &rpc.Vector{X: 2, Y: 1},
-					ControlIn:  &rpc.Vector{X: 0.5, Y: -1.5},
-					Heading:    2 * math.Pi,
-					UseHeading: true,
-				},
-			},
-		}
-		secondSegment = &rpc.Segment{
-			SplineType:  rpc.SplineTypes_Bezier,
-			MaxVelocity: 3.6,
-			Points: []*rpc.Point{
-				{
-					Position:   &rpc.Vector{X: 2, Y: 1},
-					ControlOut: &rpc.Vector{X: 0.5, Y: -0.5},
+					Position:   &rpc.Vector{X: 1, Y: 1},
+					ControlIn:  &rpc.Vector{X: 3, Y: 1},
+					ControlOut: &rpc.Vector{X: -2, Y: 1},
 					Heading:    2 * math.Pi,
 					UseHeading: true,
 				},
 				{
-					Position:   &rpc.Vector{X: 0, Y: 0},
-					ControlIn:  &rpc.Vector{X: 0.5, Y: -0.5},
-					Heading:    math.Pi,
+					Position:   &rpc.Vector{X: -1, Y: 2},
+					ControlIn:  &rpc.Vector{X: -3, Y: 3},
+					Heading:    3 * math.Pi,
 					UseHeading: true,
 				},
 			},
@@ -63,16 +52,13 @@ func Test(_ *testing.T) {
 
 		firstSectionSegments = []*rpc.Segment{firstSegment}
 		firstSection         = rpc.Section{Segments: firstSectionSegments}
-
-		secondSectionSegments = []*rpc.Segment{secondSegment}
-		secondSection         = rpc.Section{Segments: secondSectionSegments}
 	)
 
 	grpcServer := NewServer()
 
 	res, err := grpcServer.CalculateTrajectory(context.TODO(), &rpc.TrajectoryRequest{
 		SwerveRobotParams: chester,
-		Sections:          []*rpc.Section{&firstSection, &secondSection},
+		Sections:          []*rpc.Section{&firstSection},
 	})
 	if err != nil {
 		if err != nil {

@@ -76,7 +76,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot)
+	// pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot)
 	pathfinder.CalculateKinematics(trajectory, robot)
 	pathfinder.CalculateKinematicsReverse(trajectory, robot)
 	pathfinder.CalculateDtAndOmegaAfterReverse(trajectory)
