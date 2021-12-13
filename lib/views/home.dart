@@ -40,6 +40,7 @@ class HomeViewModel {
           inControlPoint: point.inControlPoint,
           outControlPoint: point.outControlPoint,
           heading: point.heading,
+          cutSegment: point.cutSegment,
         ));
       },
     );
@@ -325,6 +326,19 @@ class SettingsDetails extends StatelessWidget {
                   onChanged: (value) {
                     onPointEdit(index,
                         pointData.copyWith(heading: radians(value ?? 0)));
+                  },
+                ),
+                CardSettingsSwitch(
+                  initialValue: pointData.cutSegment,
+                  validator: (value) {
+                    if (value ?? false) {
+                      if (index == 0 || index == points.length - 1)
+                        return 'Cutting point in one of the ends';
+                    }
+                  },
+                  label: 'Cut segments',
+                  onChanged: (value) {
+                    onPointEdit(index, pointData.copyWith(cutSegment: value));
                   },
                 ),
               ],

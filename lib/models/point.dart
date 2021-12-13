@@ -9,6 +9,7 @@ class Point {
   final double heading;
   final bool useHeading;
   final List<String> actions;
+  final bool cutSegment;
 
   Point({
     required this.position,
@@ -17,16 +18,19 @@ class Point {
     required this.heading,
     required this.useHeading,
     required this.actions,
+    required this.cutSegment,
   });
 
   factory Point.initial(Offset position) {
     return Point(
-        position: position,
-        inControlPoint: Offset(0.5, 0.5),
-        outControlPoint: Offset(-0.5, -0.5),
-        heading: 0,
-        useHeading: true,
-        actions: []);
+      position: position,
+      inControlPoint: Offset(0.5, 0.5),
+      outControlPoint: Offset(-0.5, -0.5),
+      heading: 0,
+      useHeading: true,
+      actions: [],
+      cutSegment: false,
+    );
   }
 
   Point copyWith({
@@ -36,6 +40,7 @@ class Point {
     double? heading,
     bool? useHeading,
     List<String>? actions,
+    bool? cutSegment,
   }) {
     return Point(
       position: position ?? this.position,
@@ -43,7 +48,9 @@ class Point {
       outControlPoint: outControlPoint ?? this.outControlPoint,
       heading: heading ?? this.heading,
       useHeading: useHeading ?? this.useHeading,
-      actions: actions ?? this.actions);
+      actions: actions ?? this.actions,
+      cutSegment: cutSegment ?? this.cutSegment,
+    );
   }
 
   @override // TODO: implement hashCode
@@ -56,7 +63,8 @@ class Point {
           inControlPoint == other.inControlPoint &&
           outControlPoint == other.outControlPoint &&
           heading == other.heading &&
-          useHeading == other.useHeading;
+          useHeading == other.useHeading &&
+          cutSegment == other.cutSegment;
     }
 
     return false;

@@ -48,15 +48,18 @@ class EditPoint extends TabAction {
   final double? heading;
   final bool? useHeading;
   final List<String>? actions;
+  final bool? cutSegment;
 
-  EditPoint(
-      {required this.pointIndex,
-      this.position,
-      this.inControlPoint,
-      this.outControlPoint,
-      this.heading,
-      this.useHeading,
-      this.actions});
+  EditPoint({
+    required this.pointIndex,
+    this.position,
+    this.inControlPoint,
+    this.outControlPoint,
+    this.heading,
+    this.useHeading,
+    this.actions,
+    this.cutSegment,
+  });
 }
 
 class DeletePointFromPath extends TabAction {

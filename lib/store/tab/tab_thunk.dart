@@ -18,23 +18,27 @@ ThunkAction removePointThunk(int index) {
   };
 }
 
-ThunkAction editPointThunk(
-    {required final int pointIndex,
-    final Offset? position,
-    final Offset? inControlPoint,
-    final Offset? outControlPoint,
-    final double? heading,
-    final bool? useHeading,
-    final List<String>? actions}) {
+ThunkAction editPointThunk({
+  required final int pointIndex,
+  final Offset? position,
+  final Offset? inControlPoint,
+  final Offset? outControlPoint,
+  final double? heading,
+  final bool? useHeading,
+  final bool? cutSegment,
+  final List<String>? actions,
+}) {
   return (Store store) async {
     store.dispatch(EditPoint(
-        pointIndex: pointIndex,
-        position: position,
-        inControlPoint: inControlPoint,
-        outControlPoint: outControlPoint,
-        heading: heading,
-        useHeading: useHeading,
-        actions: actions));
+      pointIndex: pointIndex,
+      position: position,
+      inControlPoint: inControlPoint,
+      outControlPoint: outControlPoint,
+      heading: heading,
+      useHeading: useHeading,
+      actions: actions,
+      cutSegment: cutSegment,
+    ));
     store.dispatch(updateSplineThunk());
   };
 }
@@ -54,7 +58,7 @@ ThunkAction endOutControlDragThunk(int index, Offset position) {
 }
 
 ThunkAction endHeadingDragThunk(int index, double heading) {
-  return editPointThunk(pointIndex:  index, heading: heading);
+  return editPointThunk(pointIndex: index, heading: heading);
 }
 
 ThunkAction updateSplineThunk() {

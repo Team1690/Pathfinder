@@ -92,23 +92,78 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
 }
 
 TabState editPoint(TabState tabState, EditPoint action) {
-  return tabState.copyWith(
+  bool addSegment = false;
+  bool removeSegment = false;
+
+  final newState = tabState.copyWith(
       path: tabState.path.copyWith(
-          points: tabState.path.points.asMap().entries.map((entery) {
-    if (entery.key == action.pointIndex) {
-      return tabState.path.points[entery.key].copyWith(
-          position: action.position,
-          inControlPoint: action.inControlPoint,
-          outControlPoint: action.outControlPoint,
-          heading: action.heading,
-          useHeading: action.useHeading,
-          actions: action.actions);
-    } else {
-      return tabState.path.points[entery.key];
+          points: tabState.path.points.asMap().entries.map((e) {
+    if (e.key != action.pointIndex) {
+      return tabState.path.points[e.key];
     }
+
+    // Dont allow to cut segments in the end or start of points list
+    final cutSegmentAllowed = action.pointIndex != 0 &&
+        action.pointIndex != tabState.path.points.length - 1;
+    var cutSegment =
+        (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
+
+    addSegment = (cutSegment) && !e.value.cutSegment;
+    removeSegment = !(cutSegment) && e.value.cutSegment;
+
+    return tabState.path.points[e.key].copyWith(
+      position: action.position,
+      inControlPoint: action.inControlPoint,
+      outControlPoint: action.outControlPoint,
+      heading: action.heading,
+      useHeading: action.useHeading,
+      actions: action.actions,
+      cutSegment: cutSegment,
+    );
   }).toList()));
+
+  if (addSegment) {
+    final newSegmentIndex = tabState.path.segments
+        .indexWhere((s) => s.pointIndexes.contains(action.pointIndex));
+
+    final newSegments = [...tabState.path.segments];
+    newSegments.insert(
+        newSegmentIndex, Segment.initial(pointIndexes: [action.pointIndex]));
+
+    return newState.copyWith(
+      path: newState.path.copyWith(
+        segments: newSegments.asMap().entries.map((e) {
+          if (e.key != newSegmentIndex) return e.value;
+          return e.value
+              .copyWith(pointIndexes: e.value.pointIndexes..removeLast());
+        }).toList(),
+      ),
+    );
+  }
+
+  if (removeSegment) {
+    final removedSegmentIndex = tabState.path.segments
+        .indexWhere((s) => s.pointIndexes.contains(action.pointIndex));
+
+    final newSegments = [...tabState.path.segments];
+    final removedPointIndxes =
+        newSegments.removeAt(removedSegmentIndex).pointIndexes;
+
+    return newState.copyWith(
+        path: tabState.path.copyWith(
+      segments: newSegments.asMap().entries.map((e) {
+        // TODO: think if this is the right logic and will not cause faulties on edge cases
+        if (e.key != removedSegmentIndex - 1) return e.value;
+        return e.value
+            .copyWith(pointIndexes: e.value.pointIndexes + removedPointIndxes);
+      }).toList(),
+    ));
+  }
+
+  return newState;
 }
 
+// TODO: !!!!!!! Remove segment when removing cutting point!!!!!!!:
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
   List<Point> newPoints = tabState.path.points;
   newPoints.removeAt(action.index);

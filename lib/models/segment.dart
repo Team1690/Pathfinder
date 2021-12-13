@@ -25,9 +25,9 @@ class Segment {
     final this.splineTypes,
   });
 
-  factory Segment.initial() {
+  factory Segment.initial({List<int>? pointIndexes}) {
     return Segment(
-      pointIndexes: [],
+      pointIndexes: pointIndexes ?? [],
       maxVelocity: 3,
     );
   }
