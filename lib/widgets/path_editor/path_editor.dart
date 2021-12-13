@@ -101,6 +101,14 @@ class DraggingPoint {
   DraggingPoint(this.type, this.position);
 }
 
+class FullDraggingPoint {
+  int index;
+  final DraggingPoint draggingPoint;
+
+  FullDraggingPoint(this.index, this.draggingPoint);
+}
+
+const int DraggingTollerance = 2;
 class _PathEditor extends StatefulWidget {
   final PathViewModel pathProps;
 
@@ -116,8 +124,8 @@ class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
   bool shiftPressed = false;
   bool ctrlPressed = false;
-  DraggingPoint? dragPoint;
-  int? dragPointIndex;
+  bool aPressed = false;
+  List<FullDraggingPoint> dragPoints = [];
 
   _PathEditorState();
 
@@ -126,8 +134,7 @@ class _PathEditorState extends State<_PathEditor> {
       Point point = entery.value;
       int index = entery.key;
 
-      double radius = pointSettings[PointType.path]!.radius;
-      if ((tapPosition - point.position).distance <= radius) {
+      if (checkSelectedPointTap(tapPosition, point, PointType.path) != null) {
         return index;
       }
     }
@@ -136,28 +143,30 @@ class _PathEditorState extends State<_PathEditor> {
   DraggingPoint? checkSelectedPointTap(Offset tapPosition, Point point, PointType pointType) {
     if (pointType == PointType.path) {
       double radius = pointSettings[PointType.path]!.radius;
-      if ((tapPosition - point.position).distance <= radius) {
+      if ((tapPosition - point.position).distance <= radius + DraggingTollerance) {
         return DraggingPoint(PointType.path, point.position);
       }
     }
 
     if (pointType == PointType.heading) {
       Offset headingCenter = Offset.fromDirection(point.heading, headingLength);
-      Offset headingPosition = point.position + headingCenter;
+      Offset headingPosition =  point.position + headingCenter;
       if ((headingPosition - tapPosition).distance <
-          pointSettings[PointType.heading]!.radius) {
+          pointSettings[PointType.heading]!.radius + DraggingTollerance) {
         return DraggingPoint(PointType.heading, headingCenter);
       }
     }
 
     if (pointType == PointType.inControl || pointType == PointType.outControl) {
       Offset inControlPosition = point.position + point.inControlPoint;
-      if ((inControlPosition - tapPosition).distance < pointSettings[PointType.inControl]!.radius) {
+      if ((inControlPosition - tapPosition).distance < 
+        pointSettings[PointType.inControl]!.radius + DraggingTollerance) {
         return DraggingPoint(PointType.inControl, point.inControlPoint);
       }
 
       Offset outControlPosition = point.position + point.outControlPoint;
-      if ((outControlPosition - tapPosition).distance < pointSettings[PointType.outControl]!.radius) {
+      if ((outControlPosition - tapPosition).distance <
+        pointSettings[PointType.outControl]!.radius + DraggingTollerance) {
         return DraggingPoint(PointType.outControl, point.outControlPoint);
       }
     }
@@ -165,19 +174,21 @@ class _PathEditorState extends State<_PathEditor> {
 
   @override
   Widget build(final BuildContext context) {
-    final PointSettings pointSetting = pointSettings[PointType.path]!;
-
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: (final RawKeyEvent event) {
         setState(() {
-          if (event is RawKeyDownEvent)
+          if (event is RawKeyDownEvent) {
             pressedKeys.add(event.logicalKey);
-          else if (event is RawKeyUpEvent) pressedKeys.remove(event.logicalKey);
+          } else if (event is RawKeyUpEvent) {
+            pressedKeys.remove(event.logicalKey);
+          }
+
           shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
           ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
               pressedKeys.contains(LogicalKeyboardKey.metaLeft);
+          aPressed = pressedKeys.contains(LogicalKeyboardKey.keyA);
         });
 
         // if (ctrlPressed) {
@@ -204,8 +215,7 @@ class _PathEditorState extends State<_PathEditor> {
                 child: FieldLoader(
                   widget.pathProps.points,
                   widget.pathProps.selectedPointIndex,
-                  dragPoint,
-                  dragPointIndex,
+                  dragPoints,
                   shiftPressed,
                   ctrlPressed,
                   widget.pathProps.evaulatedPoints,
@@ -228,57 +238,91 @@ class _PathEditorState extends State<_PathEditor> {
                     Point point = entery.value;
                     int index = entery.key;
 
-                    PointType draggingType = PointType.path;
+                    DraggingPoint? draggingPoint;
                     if (shiftPressed) {
-                      draggingType = PointType.heading;
-                    } else if (ctrlPressed) {
-                      draggingType = PointType.inControl;
+                      draggingPoint = checkSelectedPointTap(
+                          details.localPosition,
+                          point,
+                          PointType.heading
+                      );
+                    }
+                    
+                    if (ctrlPressed && draggingPoint == null) {
+                      draggingPoint = checkSelectedPointTap(
+                          details.localPosition,
+                          point,
+                          PointType.inControl
+                      );
                     }
 
-                    DraggingPoint? draggingPoint = checkSelectedPointTap(
-                        details.localPosition,
-                        point,
-                        draggingType
-                    );
+                    if (draggingPoint == null) {
+                      draggingPoint = checkSelectedPointTap(
+                          details.localPosition,
+                          point,
+                          PointType.path
+                      );
+                    }
 
                     if (draggingPoint != null) {
+                      List<FullDraggingPoint> draggingPoints = [FullDraggingPoint(index, draggingPoint)];
+                      if (aPressed) {
+                        if (draggingPoint.type == PointType.inControl) {
+                          draggingPoints.add(FullDraggingPoint(index, DraggingPoint(PointType.outControl, -point.inControlPoint)));
+                        } else if (draggingPoint.type == PointType.outControl) {
+                          draggingPoints.add(FullDraggingPoint(index, DraggingPoint(PointType.inControl, -point.outControlPoint)));
+                        }
+                      }
                       setState(() {
-                        dragPoint = draggingPoint;
-                        dragPointIndex = index;
+                        dragPoints = draggingPoints;
                       });
                       return;
                     }
                   }
                 },
                 onPanUpdate: (DragUpdateDetails details) {
-                  if (dragPoint != null) {
+                  if (dragPoints.length > 0) {
                     setState(() {
-                      dragPoint = DraggingPoint(
-                          dragPoint!.type,
-                          Offset(dragPoint!.position.dx + details.delta.dx,
-                              dragPoint!.position.dy + details.delta.dy));
+                      dragPoints = dragPoints.asMap().entries.map((entery) {
+                        int index = entery.key;
+                        FullDraggingPoint draggingPoint = entery.value;
+
+                        Offset delta = details.delta;
+                        if ((draggingPoint.draggingPoint.type == PointType.inControl
+                          || draggingPoint.draggingPoint.type == PointType.outControl)
+                          && aPressed && index % 2 == 1) {
+                            delta = -delta;
+                        }
+                        return FullDraggingPoint(
+                          draggingPoint.index,
+                          DraggingPoint(
+                            draggingPoint.draggingPoint.type,
+                            draggingPoint.draggingPoint.position + delta
+                          )
+                        );
+                      }).toList();
                     });
                   }
                 },
                 onPanEnd: (DragEndDetails details) {
-                  if (dragPointIndex != null && dragPoint != null) {
-                    switch (dragPoint!.type) {
+                  for (final draggingPoint in dragPoints) {
+                    switch (draggingPoint.draggingPoint.type) {
                       case PointType.path:
                         widget.pathProps
-                            .finishDrag(dragPointIndex!, dragPoint!.position);
+                            .finishDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
                         break;
                       case PointType.inControl:
-                        widget.pathProps.finishInControlDrag(
-                            dragPointIndex!, dragPoint!.position);
+                        widget.pathProps
+                            .finishInControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
                         break;
                       case PointType.outControl:
-                        widget.pathProps.finishOutControlDrag(
-                            dragPointIndex!, dragPoint!.position);
+                        widget.pathProps
+                            .finishOutControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
                         break;
                       case PointType.heading:
-                        Offset dragPosition = dragPoint!.position;
+                        Offset dragPosition = draggingPoint.draggingPoint.position;
                         double dragHeading = dragPosition.direction;
-                        widget.pathProps.finishHeadingDrag(dragPointIndex!, dragHeading);
+                        widget.pathProps
+                            .finishHeadingDrag(draggingPoint.index, dragHeading);
                         break;
                       default:
                         break;
@@ -286,8 +330,7 @@ class _PathEditorState extends State<_PathEditor> {
                   }
 
                   setState(() {
-                    dragPointIndex = null;
-                    dragPoint = null;
+                    dragPoints = [];
                   });
                 }
               ),

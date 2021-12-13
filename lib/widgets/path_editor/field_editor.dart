@@ -38,8 +38,7 @@ class FieldPainter extends CustomPainter {
   ui.Image image;
   List<Point> points;
   int? selectedPoint;
-  DraggingPoint? dragPoint;
-  int? dragPointIndex;
+  List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluetedPoints;
@@ -48,8 +47,7 @@ class FieldPainter extends CustomPainter {
     this.image,
     this.points,
     this.selectedPoint,
-    this.dragPoint,
-    this.dragPointIndex,
+    this.dragPoints,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluetedPoints,
@@ -180,8 +178,8 @@ class FieldPainter extends CustomPainter {
       drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
 
-    if (dragPoint != null && dragPointIndex != null) {
-      drawDragPoint(canvas, points[dragPointIndex!], dragPoint!);
+    for (final draggingPoint in dragPoints) {
+        drawDragPoint(canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
     }
   }
 
@@ -195,8 +193,7 @@ class FieldPainter extends CustomPainter {
 class FieldLoader extends StatefulWidget {
   List<Point> points;
   int? selectedPoint;
-  DraggingPoint? dragPoint;
-  int? dragPointIndex;
+  List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluatedPoints;
@@ -205,8 +202,7 @@ class FieldLoader extends StatefulWidget {
   FieldLoader(
     this.points,
     this.selectedPoint,
-    this.dragPoint,
-    this.dragPointIndex,
+    this.dragPoints,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluatedPoints,
@@ -259,8 +255,7 @@ class _FieldLoaderState extends State<FieldLoader> {
             globalImage!,
             widget.points,
             widget.selectedPoint,
-            widget.dragPoint,
-            widget.dragPointIndex,
+            widget.dragPoints,
             widget.enableHeadingEditing,
             widget.enableControlEditing,
             widget.evaluatedPoints,
