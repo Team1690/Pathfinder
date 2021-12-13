@@ -94,6 +94,7 @@ class _HomePageState extends State<HomePage> {
           inControlPoint: point.inControlPoint,
           outControlPoint: point.outControlPoint,
           heading: point.heading,
+          cutSegment: point.cutSegment,
         ));
 
     props.setPointData(index, point);
@@ -328,19 +329,14 @@ class SettingsDetails extends StatelessWidget {
                         pointData.copyWith(heading: radians(value ?? 0)));
                   },
                 ),
-                CardSettingsSwitch(
-                  initialValue: pointData.cutSegment,
-                  validator: (value) {
-                    if (value ?? false) {
-                      if (index == 0 || index == points.length - 1)
-                        return 'Cutting point in one of the ends';
-                    }
-                  },
-                  label: 'Cut segments',
-                  onChanged: (value) {
-                    onPointEdit(index, pointData.copyWith(cutSegment: value));
-                  },
-                ),
+                if (index != 0 && index != points.length - 1)
+                  CardSettingsSwitch(
+                    initialValue: pointData.cutSegment,
+                    label: 'Cut segments',
+                    onChanged: (value) {
+                      onPointEdit(index, pointData.copyWith(cutSegment: value));
+                    },
+                  ),
               ],
             ),
           ],

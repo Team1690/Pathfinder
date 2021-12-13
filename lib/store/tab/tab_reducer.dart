@@ -96,46 +96,57 @@ TabState editPoint(TabState tabState, EditPoint action) {
   bool removeSegment = false;
 
   final newState = tabState.copyWith(
-      path: tabState.path.copyWith(
-          points: tabState.path.points.asMap().entries.map((e) {
-    if (e.key != action.pointIndex) {
-      return tabState.path.points[e.key];
-    }
+    path: tabState.path.copyWith(
+      points: tabState.path.points.asMap().entries.map((e) {
+        if (e.key != action.pointIndex) {
+          return e.value;
+        }
 
-    // Dont allow to cut segments in the end or start of points list
-    final cutSegmentAllowed = action.pointIndex != 0 &&
-        action.pointIndex != tabState.path.points.length - 1;
-    var cutSegment =
-        (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
+        // Dont allow to cut segments in the end or start of points list
+        final cutSegmentAllowed = action.pointIndex != 0 &&
+            action.pointIndex != tabState.path.points.length - 1;
+        var cutSegment =
+            (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
 
-    addSegment = (cutSegment) && !e.value.cutSegment;
-    removeSegment = !(cutSegment) && e.value.cutSegment;
+        addSegment = (cutSegment) && !e.value.cutSegment;
+        removeSegment = !(cutSegment) && e.value.cutSegment;
 
-    return tabState.path.points[e.key].copyWith(
-      position: action.position,
-      inControlPoint: action.inControlPoint,
-      outControlPoint: action.outControlPoint,
-      heading: action.heading,
-      useHeading: action.useHeading,
-      actions: action.actions,
-      cutSegment: cutSegment,
-    );
-  }).toList()));
+        return e.value.copyWith(
+          position: action.position,
+          inControlPoint: action.inControlPoint,
+          outControlPoint: action.outControlPoint,
+          heading: action.heading,
+          useHeading: action.useHeading,
+          actions: action.actions,
+          cutSegment: cutSegment,
+        );
+      }).toList(),
+    ),
+  );
 
   if (addSegment) {
-    final newSegmentIndex = tabState.path.segments
+    final currentSegmentIndex = tabState.path.segments
         .indexWhere((s) => s.pointIndexes.contains(action.pointIndex));
 
     final newSegments = [...tabState.path.segments];
     newSegments.insert(
-        newSegmentIndex, Segment.initial(pointIndexes: [action.pointIndex]));
+        currentSegmentIndex + 1,
+        Segment.initial(
+          pointIndexes: newSegments[currentSegmentIndex]
+              .pointIndexes
+              .where((index) => index >= action.pointIndex)
+              .toList(),
+        ));
 
     return newState.copyWith(
       path: newState.path.copyWith(
         segments: newSegments.asMap().entries.map((e) {
-          if (e.key != newSegmentIndex) return e.value;
-          return e.value
-              .copyWith(pointIndexes: e.value.pointIndexes..removeLast());
+          if (e.key != currentSegmentIndex) return e.value;
+          return e.value.copyWith(
+            pointIndexes: e.value.pointIndexes
+                .where((index) => index < action.pointIndex)
+                .toList(),
+          );
         }).toList(),
       ),
     );
@@ -150,14 +161,15 @@ TabState editPoint(TabState tabState, EditPoint action) {
         newSegments.removeAt(removedSegmentIndex).pointIndexes;
 
     return newState.copyWith(
-        path: tabState.path.copyWith(
-      segments: newSegments.asMap().entries.map((e) {
-        // TODO: think if this is the right logic and will not cause faulties on edge cases
-        if (e.key != removedSegmentIndex - 1) return e.value;
-        return e.value
-            .copyWith(pointIndexes: e.value.pointIndexes + removedPointIndxes);
-      }).toList(),
-    ));
+      path: newState.path.copyWith(
+        segments: newSegments.asMap().entries.map((e) {
+          // TODO: think if this is the right logic and will not cause faulties on edge cases
+          if (e.key != removedSegmentIndex - 1) return e.value;
+          return e.value.copyWith(
+              pointIndexes: e.value.pointIndexes + removedPointIndxes);
+        }).toList(),
+      ),
+    );
   }
 
   return newState;
