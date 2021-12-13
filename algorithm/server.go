@@ -26,6 +26,26 @@ func NewServer(logger *log.Logger) *pathFinderServerImpl {
 	}
 }
 
+func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
+	path, err := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
+	if err != nil {
+		return nil, xerrors.Errorf("error in initPath: %w", err)
+	}
+
+	evaluatedPoints := path.EvaluateAtInterval(float64(r.EvaluatedPointsInterval))
+
+	var responsePoints []*rpc.SplineResponse_Point
+
+	for _, point := range evaluatedPoints {
+		responsePoints = append(responsePoints, &rpc.SplineResponse_Point{Point: point.ToRpc()})
+	}
+
+	return &rpc.SplineResponse{
+		SplineType:      rpc.SplineTypes_Bezier,
+		EvaluatedPoints: responsePoints,
+	}, nil
+}
+
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
 	res := &rpc.TrajectoryResponse{}
 	for _, section := range r.Sections {
@@ -37,6 +57,7 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 		res.SwervePoints = append(res.SwervePoints, points...)
 	}
 
+	// * Write results to a csv file
 	export.ExportTrajectory(res)
 
 	return res, nil
@@ -60,19 +81,21 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 
 	robot := toRobotParams(rpcRobot)
 
-	segClass := pathfinder.NewSegmentClassifier(path, section.Segments)
-
-	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, segClass)
+	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, section.Segments)
 	if err != nil {
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot, true)
-	pathfinder.SetHeading(trajectory, 0, math.Pi/2)
+	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot)
 	pathfinder.CalculateKinematics(trajectory, robot)
 	pathfinder.CalculateKinematicsReverse(trajectory, robot)
 	pathfinder.CalculateDtAndOmegaAfterReverse(trajectory)
-	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
+
+	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
+
+	pathfinder.ReverseTime(quantizedTrajectory)
+
+	trajectory2D := pathfinder.Get2DTrajectory(quantizedTrajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
 	for _, point := range trajectory2D {
@@ -80,31 +103,6 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 	}
 
 	return swerveTrajectory, nil
-}
-
-func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	s.logger.Print("Request: CalculateSplinePoints")
-
-	path, err := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
-	if err != nil {
-		return nil, xerrors.Errorf("error in init path: %w", err)
-	}
-
-	evaluatedPoints := []*rpc.SplineResponse_Point{}
-
-	// TODO s is not linear in splines and behaves differently in each spline
-	ds := float64(r.EvaluatedPointsInterval) / path.Length()
-
-	for s := 0.0; s <= 1; s += ds {
-		evaluatedPoints = append(evaluatedPoints, &rpc.SplineResponse_Point{Point: path.Evaluate(s).ToRpc()})
-	}
-
-	s.logger.Print("Response: CalculateSplinePoints")
-
-	return &rpc.SplineResponse{
-		SplineType:      rpc.SplineTypes_Bezier,
-		EvaluatedPoints: evaluatedPoints,
-	}, nil
 }
 
 func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.SplineParameters) (*spline.Path, error) {
@@ -129,11 +127,11 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 
 func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {
 	return &pathfinder.RobotParameters{
-		CycleTime:        0.02, // TODO add cycle time to rpc
+		CycleTime:        float64(rpcRobot.CycleTime),
 		MaxVelocity:      float64(rpcRobot.MaxVelocity),
 		MaxAcceleration:  float64(rpcRobot.MaxAcceleration),
-		SkidAcceleration: float64(rpcRobot.MaxAcceleration), // TODO add skid acceleration to rpc
+		SkidAcceleration: float64(rpcRobot.SkidAcceleration),
 		MaxJerk:          float64(rpcRobot.MaxJerk),
-		Radius:           math.Hypot(float64(rpcRobot.Height), float64(rpcRobot.Width)), // TODO add radius to rpc
+		Radius:           math.Hypot(float64(rpcRobot.Height), float64(rpcRobot.Width)),
 	}
 }

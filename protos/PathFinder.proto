@@ -90,17 +90,20 @@ message TrajectoryRequest {
 		float height = 2;
 		float maxVelocity = 3;
 		float maxAcceleration = 4;
-		float maxJerk = 5;
-		float maxAngularVelocity = 6;
-		float maxAngularAcceleration = 7;
+		float skidAcceleration = 5;
+		float maxJerk = 6;
+		float maxAngularVelocity = 7;
+		float maxAngularAcceleration = 8;
+		float cycleTime = 9;
 	}
-
+	
 	message TankRobotParams {
 		float width = 1;
 		float height = 2;
 		float maxVelocity = 3;
 		float maxAcceleration = 4;
 		float maxJerk = 5;
+		float cycleTime = 6;
 	}
 
 	repeated Section sections = 1;

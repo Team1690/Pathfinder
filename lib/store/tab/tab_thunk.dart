@@ -53,12 +53,16 @@ ThunkAction endOutControlDragThunk(int index, Offset position) {
       pointIndex: index, outControlPoint: Offset(position.dx, position.dy));
 }
 
+ThunkAction endHeadingDragThunk(int index, double heading) {
+  return editPointThunk(pointIndex:  index, heading: heading);
+}
+
 ThunkAction updateSplineThunk() {
   return (Store store) async {
     try {
       final res = await PathFinderService.calculateSpline(
         store.state.tabState.path.points,
-        10,
+        0.1,
       );
 
       store.dispatch(SplineCalculated(res.evaluatedPoints));

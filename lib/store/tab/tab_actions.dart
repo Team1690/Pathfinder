@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
-import 'package:pathfinder/widgets/path_editor_bloc/path_editor_event.dart';
 
 abstract class TabAction {
   @override
@@ -63,4 +62,9 @@ class EditPoint extends TabAction {
 class DeletePointFromPath extends TabAction {
   final int index;
   DeletePointFromPath(this.index);
+}
+
+class SetFieldSizePixels extends TabAction {
+  final Offset size;
+  SetFieldSizePixels(this.size);
 }

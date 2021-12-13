@@ -15,6 +15,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, SplineCalculated>(_splineCalculated),
   TypedReducer<TabState, ServerError>(_setServerError),
   TypedReducer<TabState, EditPoint>(editPoint),
+  TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -47,7 +48,7 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
   // of the point list and to the last segment
   var insertIndex = action.insertIndex >= 0
       ? action.insertIndex
-      : max(tabState.path.points.length - 1, 0);
+      : max(tabState.path.points.length, 0);
   var segmentIndex = action.segmentIndex >= 0
       ? action.segmentIndex
       : max(tabState.path.segments.length - 1, 0);
@@ -126,7 +127,27 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
         selectedType: Null,
         isSidebarOpen: false,
       ),
+      path: newState.path.copyWith(
+          segments: newState.path.segments
+              .map(
+                (segment) => segment.copyWith(
+                  pointIndexes: segment.pointIndexes
+                      .where((pointIndex) => pointIndex != action.index)
+                      .map((pointIndex) => pointIndex > action.index
+                          ? pointIndex - 1
+                          : pointIndex)
+                      .toList(),
+                ),
+              )
+              // Make sure no empty sgements are left
+              .where((segment) => segment.pointIndexes.isNotEmpty)
+              .toList()),
     );
   }
   return newState;
+}
+
+TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
+  return tabState.copyWith(
+      ui: tabState.ui.copyWith(fieldSizePixels: action.size));
 }
