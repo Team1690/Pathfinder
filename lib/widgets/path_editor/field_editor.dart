@@ -38,7 +38,7 @@ class FieldPainter extends CustomPainter {
   ui.Image image;
   List<Point> points;
   int? selectedPoint;
-  DraggingPoint? dragPoint;
+  List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluetedPoints;
@@ -47,7 +47,7 @@ class FieldPainter extends CustomPainter {
     this.image,
     this.points,
     this.selectedPoint,
-    this.dragPoint,
+    this.dragPoints,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluetedPoints,
@@ -137,13 +137,11 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset OutControl, bool isSelected, bool enableHeadingEditing, enableControlEditing) {
+  void drawPathPoint(Canvas canvas, Offset position, double heading, Offset inControl, Offset outControl, bool isSelected, bool enableHeadingEditing, enableControlEditing) {
     drawPointBackground(canvas, position, isSelected);
-    drawHeadingLine(canvas, position, heading, enableHeadingEditing && isSelected);
-    if (isSelected) {
-      drawControlPoint(canvas, position, inControl, enableControlEditing);
-      drawControlPoint(canvas, position, OutControl, enableControlEditing);
-    }
+    drawHeadingLine(canvas, position, heading, enableHeadingEditing);
+    drawControlPoint(canvas, position, inControl, enableControlEditing);
+    drawControlPoint(canvas, position, outControl, enableControlEditing);
   }
 
   void drawPath(Canvas canvas, List<Offset> evaluetedPoints) {
@@ -180,8 +178,8 @@ class FieldPainter extends CustomPainter {
       drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
 
-    if (dragPoint != null && selectedPoint != null) {
-      drawDragPoint(canvas, points[selectedPoint!], dragPoint!);
+    for (final draggingPoint in dragPoints) {
+        drawDragPoint(canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
     }
   }
 
@@ -195,7 +193,7 @@ class FieldPainter extends CustomPainter {
 class FieldLoader extends StatefulWidget {
   List<Point> points;
   int? selectedPoint;
-  DraggingPoint? dragPoint;
+  List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluatedPoints;
@@ -204,7 +202,7 @@ class FieldLoader extends StatefulWidget {
   FieldLoader(
     this.points,
     this.selectedPoint,
-    this.dragPoint,
+    this.dragPoints,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluatedPoints,
@@ -257,7 +255,7 @@ class _FieldLoaderState extends State<FieldLoader> {
             globalImage!,
             widget.points,
             widget.selectedPoint,
-            widget.dragPoint,
+            widget.dragPoints,
             widget.enableHeadingEditing,
             widget.enableControlEditing,
             widget.evaluatedPoints,
