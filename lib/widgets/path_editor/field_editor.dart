@@ -39,6 +39,7 @@ class FieldPainter extends CustomPainter {
   List<Point> points;
   int? selectedPoint;
   DraggingPoint? dragPoint;
+  int? dragPointIndex;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluetedPoints;
@@ -48,6 +49,7 @@ class FieldPainter extends CustomPainter {
     this.points,
     this.selectedPoint,
     this.dragPoint,
+    this.dragPointIndex,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluetedPoints,
@@ -180,8 +182,8 @@ class FieldPainter extends CustomPainter {
       drawPathPoint(canvas, point.position, point.heading, point.inControlPoint, point.outControlPoint, index == selectedPoint, enableHeadingEditing, enableControlEditing);
     }
 
-    if (dragPoint != null && selectedPoint != null) {
-      drawDragPoint(canvas, points[selectedPoint!], dragPoint!);
+    if (dragPoint != null && dragPointIndex != null) {
+      drawDragPoint(canvas, points[dragPointIndex!], dragPoint!);
     }
   }
 
@@ -196,6 +198,7 @@ class FieldLoader extends StatefulWidget {
   List<Point> points;
   int? selectedPoint;
   DraggingPoint? dragPoint;
+  int? dragPointIndex;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluatedPoints;
@@ -205,6 +208,7 @@ class FieldLoader extends StatefulWidget {
     this.points,
     this.selectedPoint,
     this.dragPoint,
+    this.dragPointIndex,
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluatedPoints,
@@ -258,6 +262,7 @@ class _FieldLoaderState extends State<FieldLoader> {
             widget.points,
             widget.selectedPoint,
             widget.dragPoint,
+            widget.dragPointIndex,
             widget.enableHeadingEditing,
             widget.enableControlEditing,
             widget.evaluatedPoints,

@@ -195,6 +195,7 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.points,
                   widget.pathProps.selectedPointIndex,
                   dragPoint,
+                  dragPointIndex,
                   shiftPressed,
                   ctrlPressed,
                   widget.pathProps.evaulatedPoints,
