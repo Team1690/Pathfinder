@@ -70,15 +70,35 @@ class TimelinePoint extends StatelessWidget {
   final void Function() onTap;
   final Color color;
   static double pointRadius = 10;
+  final bool isSelected;
 
-  TimelinePoint({required this.onTap, required this.color});
+  TimelinePoint({
+    required this.onTap,
+    required this.color,
+    required this.isSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
         width: 2 * pointRadius,
         height: 2 * pointRadius,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color));
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isSelected ? selectedPointColor : color,
+          boxShadow: !isSelected
+              ? []
+              : [
+                  BoxShadow(
+                    blurRadius: selectedPointHighlightRadius,
+                    color: color,
+                  ),
+                ],
+        ),
+      ),
+    );
   }
 }
 

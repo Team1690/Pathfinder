@@ -27,3 +27,26 @@ const Map<int, Color> orbitColors = {
   800: Color.fromRGBO(0, 0, 200, .9),
   900: Color.fromRGBO(0, 0, 200, 1),
 };
+
+// Sement colors
+List<Color> segmentColors = [
+  Color.fromARGB(255, 86, 86, 255),
+  Color.fromARGB(255, 255, 44, 44),
+  Color.fromARGB(255, 61, 255, 43),
+  Color.fromARGB(255, 255, 217, 0),
+];
+
+Color getSegmentColor(int index) {
+  final colorIndex = index % segmentColors.length;
+  return segmentColors[colorIndex];
+}
+
+// Selected point
+Color selectedPointColor = Color(0xffeeeeee);
+const double selectedPointHighlightRadius = 5;
+const selectedPointHighlightOpacity = 5;
+
+// UI utils
+double convertRadiusToSigma(double radius) {
+  return radius * 0.57735 + 0.5;
+}
