@@ -96,6 +96,10 @@ TabState editPoint(TabState tabState, EditPoint action) {
   bool removeSegment = false;
 
   final newState = tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      selectedIndex: action.pointIndex,
+      selectedType: Point,
+    ),
     path: tabState.path.copyWith(
       points: tabState.path.points.asMap().entries.map((e) {
         if (e.key != action.pointIndex) {
