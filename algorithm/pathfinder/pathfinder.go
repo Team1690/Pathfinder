@@ -10,7 +10,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const deltaDistanceForEvaluation = 0.00001
+const deltaDistanceForEvaluation = 0.0001
 
 type TrajectoryPoint struct {
 	Time         float64
@@ -65,21 +65,19 @@ type indexedHeadingPoint struct {
 }
 
 func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segments []*rpc.Segment) ([]*TrajectoryPoint, error) {
-	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Time: 0}
+	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Acceleration: 0, Time: 0}
 
 	trajectory := []*TrajectoryPoint{&firstPoint}
 
 	prevSplineIndex := 0
 
 	headingPoints := []*indexedHeadingPoint{
-		{index: 0, heading: float64(segments[0].Points[0].Heading)}, // * Always using first point's heading
+		{index: 0, heading: utils.WrapAngle(float64(segments[0].Points[0].Heading))}, // * Always using first point's heading
 	}
 
 	pathDerivative := path.Derivative()
 
 	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
-
-	currentHeading := segments[0].Points[0].Heading
 
 	for s := ds; s <= 1; s += ds {
 		ds = deltaDistanceForEvaluation / (pathDerivative.Evaluate(s).Norm() * float64(path.NumberOfSplines))
@@ -101,16 +99,14 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 		if splineIndex != prevSplineIndex {
 			waypoint := getWaypointByIndex(segments, splineIndex)
-			currentHeading = waypoint.Heading
 			if waypoint.UseHeading && s+ds < 1 {
+				prevHeading := headingPoints[len(headingPoints)-1].heading
 				headingPoints = append(headingPoints, &indexedHeadingPoint{
 					index:   len(trajectory),
-					heading: float64(waypoint.Heading),
+					heading: prevHeading + utils.WrapAngle(float64(waypoint.Heading)-prevHeading),
 				})
 			}
 		}
-
-		point.Heading = float64(currentHeading)
 
 		trajectory = append(trajectory, &point)
 
@@ -120,41 +116,55 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	// * Adding the final heading
 	lastSegment := segments[len(segments)-1]
 	lastPoint := lastSegment.Points[len(lastSegment.Points)-1]
+	prevHeading := headingPoints[len(headingPoints)-1].heading
 	if lastPoint.UseHeading {
-		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: float64(lastPoint.Heading)})
+		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: headingPoints[len(headingPoints)-1].heading + utils.WrapAngle(float64(lastPoint.Heading)-prevHeading)})
 	} else {
 		// * If the last point doesn't use heading, the heading at the end is the previous heading
-		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: float64(headingPoints[len(headingPoints)-1].heading)})
+		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: prevHeading})
 	}
 
-	calculateKinematicsNoHeading(trajectory, robot)
-	calculateKinematicsReverseNoHeading(trajectory, robot)
-	CalculateDtAndOmegaAfterReverse(trajectory)
+	CalculateKinematics(trajectory, robot)
+	CalculateKinematicsReverse(trajectory, robot)
+	CalculateDtAndOmega(trajectory, true)
 	LimitVelocityWithCentrifugalForce(trajectory, robot, headingPoints)
-
-	// for i := 0; i < len(headingPoints)-1; i++ {
-	// 	currentHeadingChangePoint := headingPoints[i]
-	// 	nextHeadingChangePoint := headingPoints[i+1]
-	// 	SetHeading(
-	// 		trajectory,
-	// 		currentHeadingChangePoint.heading,
-	// 		nextHeadingChangePoint.heading,
-	// 		currentHeadingChangePoint.index,
-	// 		nextHeadingChangePoint.index,
-	// 	)
-	// }
+	CalculateKinematics(trajectory, robot)
+	CalculateKinematicsReverse(trajectory, robot)
+	CalculateDtAndOmega(trajectory, true)
 
 	return trajectory, nil
 }
 
+func calculatePointHeading(trajectory []*TrajectoryPoint, pointIndex int) {
+	// * Taking the average omega between current and previous point
+	averageOmega := (trajectory[pointIndex].Omega + trajectory[pointIndex-1].Omega) / 2
+	dt := trajectory[pointIndex].Time - trajectory[pointIndex-1].Time
+	// * x(t) = x0 + vt
+	trajectory[pointIndex].Heading = trajectory[pointIndex-1].Heading + averageOmega*dt
+}
+
 func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, headingPoints []*indexedHeadingPoint) {
 	trajectoryPointsCount := len(trajectoryPoints)
+
+	currentHeadingPointIndex := 0
+
+	// * Setting heading of first points
+	trajectoryPoints[0].Heading = headingPoints[0].heading
+	trajectoryPoints[1].Heading = headingPoints[0].heading
+
+	// * Setting heading of last point
+	trajectoryPoints[trajectoryPointsCount-1].Heading = headingPoints[len(headingPoints)-1].heading
+
 	for i := 1; i < trajectoryPointsCount-1; i++ {
-		prevPointToCurrent := trajectoryPoints[i].Position.Sub(trajectoryPoints[i-1].Position)
+		prevTrajectoryPoint := trajectoryPoints[i-1]
+		currentTrajectoryPoint := trajectoryPoints[i]
+		nextTrajectoryPoint := trajectoryPoints[i+1]
 
-		distanceToPrevPoint := prevPointToCurrent.Norm()
+		prevPointToCurrent := currentTrajectoryPoint.Position.Sub(prevTrajectoryPoint.Position)
 
-		currentPointToNextPoint := trajectoryPoints[i+1].Position.Sub(trajectoryPoints[i].Position)
+		distanceToPrevPoint := currentTrajectoryPoint.Distance - prevTrajectoryPoint.Distance
+
+		currentPointToNextPoint := nextTrajectoryPoint.Position.Sub(currentTrajectoryPoint.Position)
 		dAngle := math.Abs(utils.WrapAngle(currentPointToNextPoint.Angle() - prevPointToCurrent.Angle()))
 
 		driveRadius := 0.0
@@ -166,63 +176,68 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 		}
 
 		maxVelAccordingToCentrifugalForce := math.Sqrt(driveRadius * robot.SkidAcceleration)
+		if maxVelAccordingToCentrifugalForce < trajectoryPoints[i].Velocity {
+			wantedDHeading := headingPoints[currentHeadingPointIndex+1].heading - headingPoints[currentHeadingPointIndex].heading
+			// * Transferring what's left of the velocity to omega
+			trajectoryPoints[i].Omega = float64(utils.Signum(wantedDHeading)) * (trajectoryPoints[i].Velocity - maxVelAccordingToCentrifugalForce) / robot.Radius
 
-		var maxVelAccordingToRobotAcceleration float64
-
-		if trajectoryPoints[i].Velocity > trajectoryPoints[i-1].Velocity {
-			maxVelAccordingToRobotAcceleration = trajectoryPoints[i].Velocity
-		} else {
-			maxVelAccordingToRobotAcceleration = robot.MaxVelocity
+			// * Setting the max velocity at this point
+			trajectoryPoints[i].Velocity = maxVelAccordingToCentrifugalForce
 		}
 
-		// * This is the max velocity allowed at this point
-		trajectoryPoints[i].Velocity = math.Min(trajectoryPoints[i].Velocity, maxVelAccordingToCentrifugalForce)
+		if i >= headingPoints[currentHeadingPointIndex+1].index {
+			currentHeadingPointIndex++
+			trajectoryPoints[i].Heading = headingPoints[currentHeadingPointIndex].heading
+		}
+	}
 
-		trajectoryPoints[i].Omega = (maxVelAccordingToRobotAcceleration - trajectoryPoints[i].Velocity) / driveRadius
+	// * After new velocity
+	CalculateDtAndOmega(trajectoryPoints, false)
+
+	for i := 1; i < len(trajectoryPoints); i++ {
+		// * Calculating heading via integration of omega
+		calculatePointHeading(trajectoryPoints, i)
 	}
 
 	for headingPointIndex := 0; headingPointIndex < len(headingPoints)-1; headingPointIndex++ {
 		currentHeadingPoint := headingPoints[headingPointIndex]
 		nextHeadingPoint := headingPoints[headingPointIndex+1]
 
-		trajectoryPoints[currentHeadingPoint.index].Heading = currentHeadingPoint.heading
-		for trajectoryPointIndex := currentHeadingPoint.index + 1; trajectoryPointIndex < nextHeadingPoint.index; trajectoryPointIndex++ {
-			currentTrajectoryPoint := trajectoryPoints[trajectoryPointIndex]
-			prevTrajectoryPoint := trajectoryPoints[trajectoryPointIndex-1]
-
-			averageOmega := (currentTrajectoryPoint.Omega + prevTrajectoryPoint.Omega) / 2
-			dt := currentTrajectoryPoint.Time - prevTrajectoryPoint.Time
-
-			trajectoryPoints[trajectoryPointIndex].Heading = trajectoryPoints[trajectoryPointIndex-1].Heading + averageOmega*dt
-		}
-
-		headingEnd := trajectoryPoints[nextHeadingPoint.index-1].Heading
+		headingEnd := trajectoryPoints[nextHeadingPoint.index].Heading
 		wantedDeltaHeading := nextHeadingPoint.heading - currentHeadingPoint.heading
-		actualDeltaHeading := headingEnd - currentHeadingPoint.heading
+		currentDeltaHeading := headingEnd - trajectoryPoints[currentHeadingPoint.index+1].Heading
 
-		if headingEnd >= nextHeadingPoint.heading {
+		if math.Abs(currentDeltaHeading) > math.Abs(wantedDeltaHeading) {
 			// * scale omega
-			omegaScaleFactor := wantedDeltaHeading / actualDeltaHeading
+			omegaScaleFactor := math.Abs(wantedDeltaHeading / currentDeltaHeading)
 
-			for trajectoryPointIndex := currentHeadingPoint.index; trajectoryPointIndex < nextHeadingPoint.index; trajectoryPointIndex++ {
-				trajectoryPoints[trajectoryPointIndex].Omega *= omegaScaleFactor
+			if wantedDeltaHeading == 0 {
+				omegaScaleFactor = 0
 			}
+
+			for trajectoryPointIndex := currentHeadingPoint.index + 1; trajectoryPointIndex <= nextHeadingPoint.index; trajectoryPointIndex++ {
+				trajectoryPoints[trajectoryPointIndex].Omega *= omegaScaleFactor
+				// * Update heading again according to new omega
+				calculatePointHeading(trajectoryPoints, trajectoryPointIndex)
+			}
+
 		} else {
 			// * spread left heading on top of current heading
-			dHeadingLeft := wantedDeltaHeading - actualDeltaHeading
+			dHeadingLeft := utils.WrapAngle(wantedDeltaHeading - currentDeltaHeading)
 			SetHeading(
 				trajectoryPoints,
 				dHeadingLeft,
 				currentHeadingPoint.index,
 				nextHeadingPoint.index,
 			)
+
+			if headingPointIndex <= len(headingPoints)-3 {
+				for trajectoryPointIndex := nextHeadingPoint.index + 1; trajectoryPointIndex <= headingPoints[headingPointIndex+2].index; trajectoryPointIndex++ {
+					trajectoryPoints[trajectoryPointIndex].Heading += dHeadingLeft
+				}
+			}
 		}
 	}
-
-	// for _, point := range trajectoryPoints {
-	// 	fmt.Println(point.Heading)
-	// }
-
 }
 
 func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingStartIndex int, headingEndIndex int) {
@@ -239,20 +254,22 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingSt
 	angularAcceleration := dHeading / (twiceAccelerationPercentageTimesOneMinus * travelDistanceSquared)
 	constantOmega := dHeading / (oneMinusDistancePercentageForAcceleration * travelDistance)
 
+	headingAtEndOfAcceleration := angularAcceleration * math.Pow(distanceToAccelerate, 2)
+
 	for i := headingStartIndex; i <= headingEndIndex; i++ {
 		distanceFromStartOfRotation := trajectoryPoints[i].Distance - trajectoryPoints[headingStartIndex].Distance
 
 		if distanceFromStartOfRotation < distanceToAccelerate {
-			// Acceleration parabola
+			// * Acceleration parabola
 			trajectoryPoints[i].Heading += angularAcceleration * math.Pow(distanceFromStartOfRotation, 2)
 
 		} else if distanceFromStartOfRotation < travelDistance-distanceToAccelerate {
-			// Constant omega linear interpolation
-			trajectoryPoints[i].Heading += constantOmega * (distanceFromStartOfRotation - distanceToAccelerate)
+			// * Constant omega linear interpolation
+			trajectoryPoints[i].Heading += headingAtEndOfAcceleration + constantOmega*(distanceFromStartOfRotation-distanceToAccelerate)
 
 		} else {
-			// Deceleration parabola
-			trajectoryPoints[i].Heading += angularAcceleration * math.Pow(travelDistance-distanceFromStartOfRotation, 2)
+			// * Deceleration parabola
+			trajectoryPoints[i].Heading += dHeading - angularAcceleration*math.Pow(travelDistance-distanceFromStartOfRotation, 2)
 		}
 	}
 }
@@ -264,63 +281,6 @@ func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
 		Time:         firstPointTime,
 		Velocity:     0.5 * robot.MaxJerk * firstPointTime * firstPointTime,
 		Acceleration: robot.MaxJerk * firstPointTime,
-	}
-}
-
-func calculateKinematicsNoHeading(trajectory []*TrajectoryPoint, robot *RobotParameters) {
-	firstPoint := GetFirstPoint(trajectory[1].Distance, robot)
-	trajectory[1].Time = firstPoint.Time
-	trajectory[1].Velocity = firstPoint.Velocity
-	trajectory[1].Acceleration = firstPoint.Acceleration
-
-	for i := 2; i < len(trajectory); i++ {
-		currentPoint := trajectory[i]
-		prevPoint := trajectory[i-1]
-		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
-		dt := distanceFromPrevPoint / prevPoint.Velocity
-
-		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
-
-		currentPoint.Acceleration = utils.Min(
-			robot.SkidAcceleration,
-			prevPoint.Acceleration+robot.MaxJerk*dt,
-		)
-
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, prevPoint.Velocity+prevPoint.Acceleration*dt)
-		currentPoint.Time = prevPoint.Time + dt
-	}
-}
-
-func calculateKinematicsReverseNoHeading(trajectory []*TrajectoryPoint, robot *RobotParameters) {
-	lastPoint := trajectory[len(trajectory)-1]
-	secondToLastPoint := trajectory[len(trajectory)-2]
-	distanceBetweenLastTwoPoints := lastPoint.Distance - secondToLastPoint.Distance
-
-	firstPoint := GetFirstPoint(distanceBetweenLastTwoPoints, robot)
-
-	trajectory[len(trajectory)-2].Time = firstPoint.Time
-	trajectory[len(trajectory)-2].Velocity = firstPoint.Velocity
-	trajectory[len(trajectory)-2].Acceleration = firstPoint.Acceleration
-
-	trajectory[len(trajectory)-1].Velocity = 0
-	trajectory[len(trajectory)-1].Acceleration = 0
-
-	for i := len(trajectory) - 3; i >= 0; i-- {
-		currentPoint := trajectory[i]
-		prevPoint := trajectory[i+1]
-
-		distanceFromPrevPoint := prevPoint.Distance - currentPoint.Distance
-		dt := distanceFromPrevPoint / prevPoint.Velocity
-
-		currentPoint.Omega = (prevPoint.Heading - currentPoint.Heading) / dt
-
-		currentPoint.Acceleration = utils.Min(
-			robot.SkidAcceleration,
-			robot.MaxAcceleration,
-			prevPoint.Acceleration+robot.MaxJerk*dt,
-		)
-
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, prevPoint.Velocity+prevPoint.Acceleration*dt)
 	}
 }
 
@@ -338,7 +298,7 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 
 		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
 
-		maxVelAccordingToOmega := robot.MaxVelocity - math.Abs(robot.Radius*currentPoint.Omega)
+		maxVelAccordingToOmega := math.Max(robot.MaxVelocity-math.Abs(robot.Radius*currentPoint.Omega), 0)
 
 		currentPoint.Acceleration = utils.Min(
 			robot.SkidAcceleration,
@@ -386,11 +346,13 @@ func CalculateKinematicsReverse(trajectoryPoints []*TrajectoryPoint, robot *Robo
 	}
 }
 
-func CalculateDtAndOmegaAfterReverse(trajectoryPoints []*TrajectoryPoint) {
+func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega bool) {
 	trajectoryPoints[0].Time = 0
 
-	// The time of the "first point"
+	// * The time of the "first point" found in reverse run
 	timeBetweenLastTwoPoints := trajectoryPoints[len(trajectoryPoints)-2].Time
+
+	// TODO second point time and omega (point at index 1)
 
 	for i := 2; i < len(trajectoryPoints)-1; i++ {
 		currentPoint := trajectoryPoints[i]
@@ -398,7 +360,10 @@ func CalculateDtAndOmegaAfterReverse(trajectoryPoints []*TrajectoryPoint) {
 		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
 		dt := distanceFromPrevPoint / prevPoint.Velocity
 
-		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
+		if calculateOmega {
+			currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
+		}
+
 		currentPoint.Time = prevPoint.Time + dt
 	}
 	trajectoryPoints[len(trajectoryPoints)-1].Time = trajectoryPoints[len(trajectoryPoints)-2].Time + timeBetweenLastTwoPoints
