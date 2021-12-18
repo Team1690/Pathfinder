@@ -162,9 +162,11 @@ const TrajectoryRequest_SwerveRobotParams$json = const {
     const {'1': 'height', '3': 2, '4': 1, '5': 2, '10': 'height'},
     const {'1': 'maxVelocity', '3': 3, '4': 1, '5': 2, '10': 'maxVelocity'},
     const {'1': 'maxAcceleration', '3': 4, '4': 1, '5': 2, '10': 'maxAcceleration'},
-    const {'1': 'maxJerk', '3': 5, '4': 1, '5': 2, '10': 'maxJerk'},
-    const {'1': 'maxAngularVelocity', '3': 6, '4': 1, '5': 2, '10': 'maxAngularVelocity'},
-    const {'1': 'maxAngularAcceleration', '3': 7, '4': 1, '5': 2, '10': 'maxAngularAcceleration'},
+    const {'1': 'skidAcceleration', '3': 5, '4': 1, '5': 2, '10': 'skidAcceleration'},
+    const {'1': 'maxJerk', '3': 6, '4': 1, '5': 2, '10': 'maxJerk'},
+    const {'1': 'maxAngularVelocity', '3': 7, '4': 1, '5': 2, '10': 'maxAngularVelocity'},
+    const {'1': 'maxAngularAcceleration', '3': 8, '4': 1, '5': 2, '10': 'maxAngularAcceleration'},
+    const {'1': 'cycleTime', '3': 9, '4': 1, '5': 2, '10': 'cycleTime'},
   ],
 };
 
@@ -177,6 +179,7 @@ const TrajectoryRequest_TankRobotParams$json = const {
     const {'1': 'maxVelocity', '3': 3, '4': 1, '5': 2, '10': 'maxVelocity'},
     const {'1': 'maxAcceleration', '3': 4, '4': 1, '5': 2, '10': 'maxAcceleration'},
     const {'1': 'maxJerk', '3': 5, '4': 1, '5': 2, '10': 'maxJerk'},
+    const {'1': 'cycleTime', '3': 6, '4': 1, '5': 2, '10': 'cycleTime'},
   ],
 };
 
@@ -190,7 +193,7 @@ const TrajectoryRequest_DriveTrain$json = const {
 };
 
 /// Descriptor for `TrajectoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List trajectoryRequestDescriptor = $convert.base64Decode('ChFUcmFqZWN0b3J5UmVxdWVzdBIkCghzZWN0aW9ucxgBIAMoCzIILlNlY3Rpb25SCHNlY3Rpb25zEj0KCmRyaXZlVHJhaW4YBCABKA4yHS5UcmFqZWN0b3J5UmVxdWVzdC5Ecml2ZVRyYWluUgpkcml2ZVRyYWluElIKEXN3ZXJ2ZVJvYm90UGFyYW1zGAUgASgLMiQuVHJhamVjdG9yeVJlcXVlc3QuU3dlcnZlUm9ib3RQYXJhbXNSEXN3ZXJ2ZVJvYm90UGFyYW1zEkwKD3RhbmtSb2JvdFBhcmFtcxgGIAEoCzIiLlRyYWplY3RvcnlSZXF1ZXN0LlRhbmtSb2JvdFBhcmFtc1IPdGFua1JvYm90UGFyYW1zGo8CChFTd2VydmVSb2JvdFBhcmFtcxIUCgV3aWR0aBgBIAEoAlIFd2lkdGgSFgoGaGVpZ2h0GAIgASgCUgZoZWlnaHQSIAoLbWF4VmVsb2NpdHkYAyABKAJSC21heFZlbG9jaXR5EigKD21heEFjY2VsZXJhdGlvbhgEIAEoAlIPbWF4QWNjZWxlcmF0aW9uEhgKB21heEplcmsYBSABKAJSB21heEplcmsSLgoSbWF4QW5ndWxhclZlbG9jaXR5GAYgASgCUhJtYXhBbmd1bGFyVmVsb2NpdHkSNgoWbWF4QW5ndWxhckFjY2VsZXJhdGlvbhgHIAEoAlIWbWF4QW5ndWxhckFjY2VsZXJhdGlvbhqlAQoPVGFua1JvYm90UGFyYW1zEhQKBXdpZHRoGAEgASgCUgV3aWR0aBIWCgZoZWlnaHQYAiABKAJSBmhlaWdodBIgCgttYXhWZWxvY2l0eRgDIAEoAlILbWF4VmVsb2NpdHkSKAoPbWF4QWNjZWxlcmF0aW9uGAQgASgCUg9tYXhBY2NlbGVyYXRpb24SGAoHbWF4SmVyaxgFIAEoAlIHbWF4SmVyayIiCgpEcml2ZVRyYWluEgoKBlN3ZXJ2ZRAAEggKBFRhbmsQAQ==');
+final $typed_data.Uint8List trajectoryRequestDescriptor = $convert.base64Decode('ChFUcmFqZWN0b3J5UmVxdWVzdBIkCghzZWN0aW9ucxgBIAMoCzIILlNlY3Rpb25SCHNlY3Rpb25zEj0KCmRyaXZlVHJhaW4YBCABKA4yHS5UcmFqZWN0b3J5UmVxdWVzdC5Ecml2ZVRyYWluUgpkcml2ZVRyYWluElIKEXN3ZXJ2ZVJvYm90UGFyYW1zGAUgASgLMiQuVHJhamVjdG9yeVJlcXVlc3QuU3dlcnZlUm9ib3RQYXJhbXNSEXN3ZXJ2ZVJvYm90UGFyYW1zEkwKD3RhbmtSb2JvdFBhcmFtcxgGIAEoCzIiLlRyYWplY3RvcnlSZXF1ZXN0LlRhbmtSb2JvdFBhcmFtc1IPdGFua1JvYm90UGFyYW1zGtkCChFTd2VydmVSb2JvdFBhcmFtcxIUCgV3aWR0aBgBIAEoAlIFd2lkdGgSFgoGaGVpZ2h0GAIgASgCUgZoZWlnaHQSIAoLbWF4VmVsb2NpdHkYAyABKAJSC21heFZlbG9jaXR5EigKD21heEFjY2VsZXJhdGlvbhgEIAEoAlIPbWF4QWNjZWxlcmF0aW9uEioKEHNraWRBY2NlbGVyYXRpb24YBSABKAJSEHNraWRBY2NlbGVyYXRpb24SGAoHbWF4SmVyaxgGIAEoAlIHbWF4SmVyaxIuChJtYXhBbmd1bGFyVmVsb2NpdHkYByABKAJSEm1heEFuZ3VsYXJWZWxvY2l0eRI2ChZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uGAggASgCUhZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uEhwKCWN5Y2xlVGltZRgJIAEoAlIJY3ljbGVUaW1lGsMBCg9UYW5rUm9ib3RQYXJhbXMSFAoFd2lkdGgYASABKAJSBXdpZHRoEhYKBmhlaWdodBgCIAEoAlIGaGVpZ2h0EiAKC21heFZlbG9jaXR5GAMgASgCUgttYXhWZWxvY2l0eRIoCg9tYXhBY2NlbGVyYXRpb24YBCABKAJSD21heEFjY2VsZXJhdGlvbhIYCgdtYXhKZXJrGAUgASgCUgdtYXhKZXJrEhwKCWN5Y2xlVGltZRgGIAEoAlIJY3ljbGVUaW1lIiIKCkRyaXZlVHJhaW4SCgoGU3dlcnZlEAASCAoEVGFuaxAB');
 @$core.Deprecated('Use trajectoryResponseDescriptor instead')
 const TrajectoryResponse$json = const {
   '1': 'TrajectoryResponse',

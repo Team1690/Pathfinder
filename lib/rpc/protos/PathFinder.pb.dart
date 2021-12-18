@@ -745,9 +745,11 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'height', $pb.PbFieldType.OF)
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
-    ..a<$core.double>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularVelocity', $pb.PbFieldType.OF, protoName: 'maxAngularVelocity')
-    ..a<$core.double>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularAcceleration', $pb.PbFieldType.OF, protoName: 'maxAngularAcceleration')
+    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'skidAcceleration', $pb.PbFieldType.OF, protoName: 'skidAcceleration')
+    ..a<$core.double>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
+    ..a<$core.double>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularVelocity', $pb.PbFieldType.OF, protoName: 'maxAngularVelocity')
+    ..a<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularAcceleration', $pb.PbFieldType.OF, protoName: 'maxAngularAcceleration')
+    ..a<$core.double>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
     ..hasRequiredFields = false
   ;
 
@@ -757,9 +759,11 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     $core.double? height,
     $core.double? maxVelocity,
     $core.double? maxAcceleration,
+    $core.double? skidAcceleration,
     $core.double? maxJerk,
     $core.double? maxAngularVelocity,
     $core.double? maxAngularAcceleration,
+    $core.double? cycleTime,
   }) {
     final _result = create();
     if (width != null) {
@@ -774,6 +778,9 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     if (maxAcceleration != null) {
       _result.maxAcceleration = maxAcceleration;
     }
+    if (skidAcceleration != null) {
+      _result.skidAcceleration = skidAcceleration;
+    }
     if (maxJerk != null) {
       _result.maxJerk = maxJerk;
     }
@@ -782,6 +789,9 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     }
     if (maxAngularAcceleration != null) {
       _result.maxAngularAcceleration = maxAngularAcceleration;
+    }
+    if (cycleTime != null) {
+      _result.cycleTime = cycleTime;
     }
     return _result;
   }
@@ -843,31 +853,49 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
   void clearMaxAcceleration() => clearField(4);
 
   @$pb.TagNumber(5)
-  $core.double get maxJerk => $_getN(4);
+  $core.double get skidAcceleration => $_getN(4);
   @$pb.TagNumber(5)
-  set maxJerk($core.double v) { $_setFloat(4, v); }
+  set skidAcceleration($core.double v) { $_setFloat(4, v); }
   @$pb.TagNumber(5)
-  $core.bool hasMaxJerk() => $_has(4);
+  $core.bool hasSkidAcceleration() => $_has(4);
   @$pb.TagNumber(5)
-  void clearMaxJerk() => clearField(5);
+  void clearSkidAcceleration() => clearField(5);
 
   @$pb.TagNumber(6)
-  $core.double get maxAngularVelocity => $_getN(5);
+  $core.double get maxJerk => $_getN(5);
   @$pb.TagNumber(6)
-  set maxAngularVelocity($core.double v) { $_setFloat(5, v); }
+  set maxJerk($core.double v) { $_setFloat(5, v); }
   @$pb.TagNumber(6)
-  $core.bool hasMaxAngularVelocity() => $_has(5);
+  $core.bool hasMaxJerk() => $_has(5);
   @$pb.TagNumber(6)
-  void clearMaxAngularVelocity() => clearField(6);
+  void clearMaxJerk() => clearField(6);
 
   @$pb.TagNumber(7)
-  $core.double get maxAngularAcceleration => $_getN(6);
+  $core.double get maxAngularVelocity => $_getN(6);
   @$pb.TagNumber(7)
-  set maxAngularAcceleration($core.double v) { $_setFloat(6, v); }
+  set maxAngularVelocity($core.double v) { $_setFloat(6, v); }
   @$pb.TagNumber(7)
-  $core.bool hasMaxAngularAcceleration() => $_has(6);
+  $core.bool hasMaxAngularVelocity() => $_has(6);
   @$pb.TagNumber(7)
-  void clearMaxAngularAcceleration() => clearField(7);
+  void clearMaxAngularVelocity() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.double get maxAngularAcceleration => $_getN(7);
+  @$pb.TagNumber(8)
+  set maxAngularAcceleration($core.double v) { $_setFloat(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasMaxAngularAcceleration() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearMaxAngularAcceleration() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.double get cycleTime => $_getN(8);
+  @$pb.TagNumber(9)
+  set cycleTime($core.double v) { $_setFloat(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasCycleTime() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearCycleTime() => clearField(9);
 }
 
 class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
@@ -877,6 +905,7 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
     ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
+    ..a<$core.double>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
     ..hasRequiredFields = false
   ;
 
@@ -887,6 +916,7 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
     $core.double? maxVelocity,
     $core.double? maxAcceleration,
     $core.double? maxJerk,
+    $core.double? cycleTime,
   }) {
     final _result = create();
     if (width != null) {
@@ -903,6 +933,9 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
     }
     if (maxJerk != null) {
       _result.maxJerk = maxJerk;
+    }
+    if (cycleTime != null) {
+      _result.cycleTime = cycleTime;
     }
     return _result;
   }
@@ -971,6 +1004,15 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
   $core.bool hasMaxJerk() => $_has(4);
   @$pb.TagNumber(5)
   void clearMaxJerk() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.double get cycleTime => $_getN(5);
+  @$pb.TagNumber(6)
+  set cycleTime($core.double v) { $_setFloat(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasCycleTime() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearCycleTime() => clearField(6);
 }
 
 class TrajectoryRequest extends $pb.GeneratedMessage {
