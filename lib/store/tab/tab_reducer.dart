@@ -66,14 +66,14 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
     path: tabState.path.copyWith(
       points: newPoints,
       segments: tabState.path.segments.asMap().entries.map((e) {
-        final pointIndexes = e.value.pointIndexes;
+        final pointIndexes = [...e.value.pointIndexes];
 
         // Assuming the point indexes are sorted inside the segments we can
         // add another index to the list and increment all the following indexes
         if (e.key == segmentIndex) {
-          return e.value.copyWith(
-              pointIndexes: pointIndexes
-                ..add(pointIndexes.isEmpty ? 0 : pointIndexes.last + 1));
+          final newPointIndexes = pointIndexes
+            ..add(pointIndexes.isEmpty ? 0 : pointIndexes.last + 1);
+          return e.value.copyWith(pointIndexes: newPointIndexes);
         }
 
         // Increment all following indexes
