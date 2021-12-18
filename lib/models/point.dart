@@ -10,6 +10,7 @@ class Point {
   final bool useHeading;
   final List<String> actions;
   final bool cutSegment;
+  final bool isStop;
 
   Point({
     required this.position,
@@ -19,6 +20,7 @@ class Point {
     required this.useHeading,
     required this.actions,
     required this.cutSegment,
+    required this.isStop,
   });
 
   factory Point.initial(Offset position) {
@@ -30,6 +32,7 @@ class Point {
       useHeading: true,
       actions: [],
       cutSegment: false,
+      isStop: false,
     );
   }
 
@@ -41,6 +44,7 @@ class Point {
     bool? useHeading,
     List<String>? actions,
     bool? cutSegment,
+    bool? isStop,
   }) {
     return Point(
       position: position ?? this.position,
@@ -50,6 +54,7 @@ class Point {
       useHeading: useHeading ?? this.useHeading,
       actions: actions ?? this.actions,
       cutSegment: cutSegment ?? this.cutSegment,
+      isStop: isStop ?? this.isStop,
     );
   }
 
@@ -64,7 +69,8 @@ class Point {
           outControlPoint == other.outControlPoint &&
           heading == other.heading &&
           useHeading == other.useHeading &&
-          cutSegment == other.cutSegment;
+          cutSegment == other.cutSegment &&
+          isStop == other.isStop;
     }
 
     return false;

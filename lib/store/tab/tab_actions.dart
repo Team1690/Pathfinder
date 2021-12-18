@@ -49,6 +49,7 @@ class EditPoint extends TabAction {
   final bool? useHeading;
   final List<String>? actions;
   final bool? cutSegment;
+  final bool? isStop;
 
   EditPoint({
     required this.pointIndex,
@@ -59,6 +60,7 @@ class EditPoint extends TabAction {
     this.useHeading,
     this.actions,
     this.cutSegment,
+    this.isStop,
   });
 }
 

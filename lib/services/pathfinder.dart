@@ -38,13 +38,15 @@ class PathFinderService {
 
     var request = rpc.TrajectoryRequest(
       swerveRobotParams: rpc.TrajectoryRequest_SwerveRobotParams(
-        width: 0.5,
-        height: 0.5,
-        maxAcceleration: 1,
+        width: 0.6,
+        height: 0.6,
+        maxAcceleration: 7.5,
         maxAngularAcceleration: 1,
         maxAngularVelocity: 3.141,
-        maxJerk: 100,
+        skidAcceleration: 7.5,
+        maxJerk: 50,
         maxVelocity: 3,
+        cycleTime: 0.02,
       ),
       sections: [
         rpc.Section(segments: [

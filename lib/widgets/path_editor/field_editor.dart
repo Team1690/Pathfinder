@@ -50,13 +50,25 @@ class FieldPainter extends CustomPainter {
     this.evaluetedPoints,
   );
 
-  void drawPointBackground(Canvas canvas, Offset position, bool isSelected) {
+  void drawPointBackground(
+    Canvas canvas,
+    Offset position,
+    bool isSelected,
+    bool isStopPoint,
+  ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    final Paint paint = Paint()
-      ..color = isSelected ? selectedPointColor : currentPointSettings.color;
+    var color = currentPointSettings.color;
+    var selectedColor = selectedPointColor;
+
+    if (isStopPoint) {
+      selectedColor = selectedStopPointColor;
+      color = stopPointColor;
+    }
+
+    final Paint paint = Paint()..color = isSelected ? selectedColor : color;
     final highlightPaint = Paint()
-      ..color = currentPointSettings.color
+      ..color = selectedPointHightlightColor
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, convertRadiusToSigma(5));
 
     // Highlight selected point
@@ -158,10 +170,11 @@ class FieldPainter extends CustomPainter {
     Offset inControl,
     Offset outControl,
     bool isSelected,
+    bool isStopPoint,
     bool enableHeadingEditing,
     enableControlEditing,
   ) {
-    drawPointBackground(canvas, position, isSelected);
+    drawPointBackground(canvas, position, isSelected, isStopPoint);
     drawHeadingLine(canvas, position, heading, enableHeadingEditing);
     drawControlPoint(canvas, position, inControl, enableControlEditing);
     drawControlPoint(canvas, position, outControl, enableControlEditing);
@@ -204,6 +217,7 @@ class FieldPainter extends CustomPainter {
         point.inControlPoint,
         point.outControlPoint,
         index == selectedPoint,
+        point.isStop,
         enableHeadingEditing,
         enableControlEditing,
       );

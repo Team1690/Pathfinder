@@ -1,9 +1,7 @@
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/path_editor/field_editor.dart';
 import 'package:pathfinder/utils/coordinates_convertion.dart';
-import 'package:pathfinder/widgets/path_editor/temp_spline_point.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +9,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/utils/coordinates_convertion.dart';
 
 class PathViewModel {
   final List<Point> points;

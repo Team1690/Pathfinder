@@ -41,8 +41,13 @@ Color getSegmentColor(int index) {
   return segmentColors[colorIndex];
 }
 
-// Selected point
+// Point
 Color selectedPointColor = Color(0xffeeeeee);
+
+const stopPointColor = Color.fromARGB(204, 224, 68, 68);
+Color selectedStopPointColor = Color.fromARGB(255, 255, 83, 83);
+
+const selectedPointHightlightColor = Color(0xffeeeeee);
 const double selectedPointHighlightRadius = 5;
 const selectedPointHighlightOpacity = 5;
 

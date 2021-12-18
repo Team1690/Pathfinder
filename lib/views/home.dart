@@ -41,6 +41,7 @@ class HomeViewModel {
           outControlPoint: point.outControlPoint,
           heading: point.heading,
           cutSegment: point.cutSegment,
+          isStop: point.isStop,
         ));
       },
     );
@@ -63,8 +64,8 @@ class HomeViewModel {
 
     if (ui.selectedIndex != -1) {
       if (ui.selectedType == Point &&
-          tabState.path.points[ui.selectedIndex] !=
-              other.tabState.path.points[otherUi.selectedIndex]) return false;
+          (tabState.path.points[ui.selectedIndex] !=
+              other.tabState.path.points[otherUi.selectedIndex])) return false;
     }
 
     return true;
@@ -80,39 +81,52 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState(props);
 }
 
+var _scaffoldKey = GlobalKey();
+// A very ugly workaround to rerender sidebar when needed
+// We don't have outer control of the form so we need to rerender to
+// set the initial value
+triggerSidebarRender() {
+  _scaffoldKey = GlobalKey();
+}
+
 class _HomePageState extends State<HomePage> {
   HomeViewModel props;
 
   _HomePageState(this.props);
 
   onPointEdit(int index, Point point) {
-    props.tabState = editPoint(
-        props.tabState,
-        EditPoint(
-          pointIndex: index,
-          position: point.position,
-          inControlPoint: point.inControlPoint,
-          outControlPoint: point.outControlPoint,
-          heading: point.heading,
-          cutSegment: point.cutSegment,
-        ));
+    setState(() {
+      props.tabState = editPoint(
+          props.tabState,
+          EditPoint(
+            pointIndex: index,
+            position: point.position,
+            inControlPoint: point.inControlPoint,
+            outControlPoint: point.outControlPoint,
+            heading: point.heading,
+            cutSegment: point.cutSegment,
+            isStop: point.isStop,
+          ));
+    });
 
     props.setPointData(index, point);
   }
 
   @override
   Widget build(final BuildContext context) {
+    // Handle store events to update the form if another widget changed state
     store.onChange.listen((event) {
       final newProps = HomeViewModel.fromStore(store);
       if (newProps != props) {
         setState(() {
           props = newProps;
         });
+
+        triggerSidebarRender();
       }
     });
 
     final theme = Theme.of(context);
-    final _scaffoldKey = GlobalKey();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -212,6 +226,7 @@ class SettingsDetails extends StatelessWidget {
       label: label,
       initialValue: initialValue,
       decimalDigits: 3,
+      hintText: label,
       unitLabel: unitLabel,
       validator: (value) {
         if (value == null) return '$label is required.';
@@ -255,7 +270,7 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Position X',
+                  label: 'Position Y',
                   initialValue: pointData.position.dy,
                   onChanged: (value) {
                     onPointEdit(
@@ -331,10 +346,21 @@ class SettingsDetails extends StatelessWidget {
                 ),
                 if (index != 0 && index != points.length - 1)
                   CardSettingsSwitch(
+                    enabled: !pointData.isStop,
                     initialValue: pointData.cutSegment,
                     label: 'Cut segments',
                     onChanged: (value) {
                       onPointEdit(index, pointData.copyWith(cutSegment: value));
+                      triggerSidebarRender();
+                    },
+                  ),
+                if (index != 0 && index != points.length - 1)
+                  CardSettingsSwitch(
+                    initialValue: pointData.isStop,
+                    label: 'Stop point',
+                    onChanged: (value) {
+                      onPointEdit(index, pointData.copyWith(isStop: value));
+                      triggerSidebarRender();
                     },
                   ),
               ],
