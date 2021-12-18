@@ -204,6 +204,7 @@ class _PathEditorState extends State<_PathEditor> {
         // }
 
         if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
+            pressedKeys.contains(LogicalKeyboardKey.shiftLeft) &&
             widget.pathProps.selectedPointIndex != null) {
           widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
         }
