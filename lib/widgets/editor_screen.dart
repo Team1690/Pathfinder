@@ -55,7 +55,9 @@ class _EditorScreenState extends State<EditorScreen> {
                         ElevatedButton.icon(
                           onPressed: () {
                             PathFinderService.calculateTrjactory(
-                                store.state.tabState.path.points, 3);
+                              store.state.tabState.path.points,
+                              store.state.tabState.path.segments,
+                            );
                           },
                           icon: Icon(Icons.trending_flat_rounded),
                           label: Text('Trajectory'),
