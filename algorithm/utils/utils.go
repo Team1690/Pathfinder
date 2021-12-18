@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-var twoPi float64 = math.Pi * 2
+const twoPi float64 = math.Pi * 2
 
 func WrapAngle(theta float64) float64 {
 	wrapped := math.Mod(theta, twoPi)
@@ -61,4 +61,14 @@ func Lerp(x float64, y float64, t float64) float64 {
 // Returns the ratio of the lerp of x and y that results in lerpValue
 func ReverseLerp(x float64, y float64, lerpValue float64) float64 {
 	return (lerpValue - x) / (y - x)
+}
+
+func Signum(x float64) int {
+	if x > 0 {
+		return 1
+	}
+	if x < 0 {
+		return -1
+	}
+	return 0
 }

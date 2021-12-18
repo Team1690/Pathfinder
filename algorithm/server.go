@@ -86,11 +86,6 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	pathfinder.LimitVelocityWithCentrifugalForce(trajectory, robot)
-	pathfinder.CalculateKinematics(trajectory, robot)
-	pathfinder.CalculateKinematicsReverse(trajectory, robot)
-	pathfinder.CalculateDtAndOmegaAfterReverse(trajectory)
-
 	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
 
 	pathfinder.ReverseTime(quantizedTrajectory)
@@ -132,6 +127,6 @@ func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinde
 		MaxAcceleration:  float64(rpcRobot.MaxAcceleration),
 		SkidAcceleration: float64(rpcRobot.SkidAcceleration),
 		MaxJerk:          float64(rpcRobot.MaxJerk),
-		Radius:           math.Hypot(float64(rpcRobot.Height), float64(rpcRobot.Width)),
+		Radius:           math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
 	}
 }
