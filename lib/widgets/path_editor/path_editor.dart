@@ -288,7 +288,9 @@ class _PathEditorState extends State<_PathEditor> {
                       dragPoint = currentDragPoint;
                       dragPoints = [currentDragPoint];
                       
-                      if (!widget.pathProps.points[currentDragPoint.index].isStop) {
+                      if (!widget.pathProps.points[currentDragPoint.index].isStop
+                        || pressedKeys.contains(LogicalKeyboardKey.keyF)) {
+
                         if (currentDragPoint.draggingPoint.type == PointType.inControl) {
                           dragPoints.add(
                             FullDraggingPoint(
