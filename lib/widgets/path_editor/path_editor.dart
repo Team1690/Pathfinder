@@ -23,6 +23,10 @@ class PathViewModel {
   final Function(int, double) finishHeadingDrag;
   final Function(Offset) setFieldSizePixels;
   final List<Offset>? evaulatedPoints;
+  final bool headingToggle;
+  final Function() toggleHeading;
+  final bool controlToggle;
+  final Function() toggleControl;
 
   PathViewModel({
     required this.points,
@@ -37,6 +41,10 @@ class PathViewModel {
     required this.finishOutControlDrag,
     required this.finishHeadingDrag,
     required this.setFieldSizePixels,
+    required this.headingToggle,
+    required this.toggleHeading,
+    required this.controlToggle,
+    required this.toggleControl,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -81,6 +89,14 @@ class PathViewModel {
           store.dispatch(SetFieldSizePixels(size));
         }
       },
+      headingToggle: store.state.tabState.ui.headingToggle,
+      toggleHeading: () {
+        store.dispatch(ToggleHeading());
+      },
+      controlToggle: store.state.tabState.ui.controlToggle,
+      toggleControl: () {
+        store.dispatch(ToggleControl());
+      },
     );
   }
 }
@@ -120,8 +136,6 @@ class _PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
-  bool headingToggle = false;
-  bool controlToggle = false;
   List<FullDraggingPoint> dragPoints = [];
 
   _PathEditorState();
@@ -181,9 +195,9 @@ class _PathEditorState extends State<_PathEditor> {
           if (event is RawKeyDownEvent) {
             if (!pressedKeys.contains(event.logicalKey)) {
               if (event.logicalKey == LogicalKeyboardKey.keyH) {
-                headingToggle = !headingToggle;
+                widget.pathProps.toggleHeading();
               } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
-                controlToggle = !controlToggle;
+                widget.pathProps.toggleControl();
               }
 
               pressedKeys.add(event.logicalKey);
@@ -209,8 +223,8 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.points,
                   widget.pathProps.selectedPointIndex,
                   dragPoints,
-                  headingToggle,
-                  controlToggle,
+                  widget.pathProps.headingToggle,
+                  widget.pathProps.controlToggle,
                   widget.pathProps.evaulatedPoints,
                   widget.pathProps.setFieldSizePixels,
                 ),
@@ -233,12 +247,12 @@ class _PathEditorState extends State<_PathEditor> {
                     int index = entery.key;
 
                     DraggingPoint? draggingPoint;
-                    if (headingToggle) {
+                    if (widget.pathProps.headingToggle) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.heading);
                     }
 
-                    if (controlToggle && draggingPoint == null) {
+                    if (widget.pathProps.controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.inControl);
                     }
@@ -252,18 +266,17 @@ class _PathEditorState extends State<_PathEditor> {
                       List<FullDraggingPoint> draggingPoints = [
                         FullDraggingPoint(index, draggingPoint)
                       ];
-                      if (true) {
-                        if (draggingPoint.type == PointType.inControl) {
-                          draggingPoints.add(FullDraggingPoint(
-                              index,
-                              DraggingPoint(PointType.outControl,
-                                  -point.inControlPoint)));
-                        } else if (draggingPoint.type == PointType.outControl) {
-                          draggingPoints.add(FullDraggingPoint(
-                              index,
-                              DraggingPoint(PointType.inControl,
-                                  -point.outControlPoint)));
-                        }
+
+                      if (draggingPoint.type == PointType.inControl) {
+                        draggingPoints.add(FullDraggingPoint(
+                            index,
+                            DraggingPoint(PointType.outControl,
+                                -point.inControlPoint)));
+                      } else if (draggingPoint.type == PointType.outControl) {
+                        draggingPoints.add(FullDraggingPoint(
+                            index,
+                            DraggingPoint(PointType.inControl,
+                                -point.outControlPoint)));
                       }
                       setState(() {
                         dragPoints = draggingPoints;

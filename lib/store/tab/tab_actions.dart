@@ -73,3 +73,9 @@ class SetFieldSizePixels extends TabAction {
   final Offset size;
   SetFieldSizePixels(this.size);
 }
+
+class ToggleHeading extends TabAction {
+}
+
+class ToggleControl extends TabAction {
+}

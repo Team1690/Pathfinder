@@ -16,6 +16,8 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, ServerError>(_setServerError),
   TypedReducer<TabState, EditPoint>(editPoint),
   TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
+  TypedReducer<TabState, ToggleHeading>(_toggleHeading),
+  TypedReducer<TabState, ToggleControl>(_toggleControl),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -255,4 +257,16 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
 TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
   return tabState.copyWith(
       ui: tabState.ui.copyWith(fieldSizePixels: action.size));
+}
+
+TabState _toggleHeading(TabState tabState, ToggleHeading action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(headingToggle: !tabState.ui.headingToggle)
+  );
+}
+
+TabState _toggleControl(TabState tabState, ToggleControl action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(controlToggle: !tabState.ui.controlToggle)
+  );
 }

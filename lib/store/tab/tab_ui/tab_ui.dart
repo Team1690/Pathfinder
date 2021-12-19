@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:grpc/grpc.dart';
 
 @immutable
 class TabUI {
@@ -9,6 +10,8 @@ class TabUI {
   final bool isGraphPageOpen;
   final double zoomLevel;
   final Offset pan;
+  final bool headingToggle;
+  final bool controlToggle;
   final String? serverError;
 
   const TabUI({
@@ -19,6 +22,8 @@ class TabUI {
     required this.isGraphPageOpen,
     required this.zoomLevel,
     required this.pan,
+    required this.headingToggle,
+    required this.controlToggle,
     this.serverError,
   });
 
@@ -30,6 +35,8 @@ class TabUI {
       fieldSizePixels: Offset(800, 400),
       isGraphPageOpen: false,
       zoomLevel: 1,
+      headingToggle: false,
+      controlToggle: false,
       pan: Offset(0, 0),
     );
   }
@@ -42,6 +49,8 @@ class TabUI {
     bool? isGraphPageOpen,
     double? zoomLevel,
     Offset? pan,
+    bool? headingToggle,
+    bool? controlToggle,
     String? serverError,
   }) {
     return TabUI(
@@ -52,6 +61,8 @@ class TabUI {
       isGraphPageOpen: isGraphPageOpen ?? this.isGraphPageOpen,
       zoomLevel: zoomLevel ?? this.zoomLevel,
       pan: pan ?? this.pan,
+      headingToggle: headingToggle ?? this.headingToggle,
+      controlToggle: controlToggle ?? this.controlToggle,
       serverError: serverError ?? this.serverError,
     );
   }
