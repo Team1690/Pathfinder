@@ -353,6 +353,26 @@ class SettingsDetails extends StatelessWidget {
                     ));
                   },
                 ),
+                _cardSettingsDouble(
+                  label: 'Max Angular Vel',
+                  unitLabel: '°/s',
+                  initialValue: robot.maxAngularVelocity,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      maxAngularVelocity: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Max Angular Accel',
+                  unitLabel: '°/s²',
+                  initialValue: robot.maxAngularAcceleration,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      maxAngularAcceleration: value ?? 0,
+                    ));
+                  },
+                ),
               ],
             ),
           ],
