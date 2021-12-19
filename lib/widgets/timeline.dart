@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 
@@ -14,19 +12,28 @@ class PathTimeline extends StatelessWidget {
       alignment: Alignment.centerLeft,
       children: [
         Row(
-          children: segments
-              .map(
-                (segment) => Expanded(
-                  //TODO: flex between 1-6
-                  flex: max(segment.points.length - 1, 1),
-                  child: TimeLineSegment(
-                    points: segment.points,
-                    color: segment.color,
-                    velocity: segment.velocity,
-                  ),
+          children: segments.map(
+            (segment) {
+              return Expanded(
+                //TODO: flex between 1-6
+                flex: segment.points.length,
+                child: TimeLineSegment(
+                  points: segment.points,
+                  color: segment.color,
+                  velocity: segment.velocity,
                 ),
-              )
-              .toList(),
+              );
+            },
+          ).toList()
+            ..removeLast()
+            ..add(Expanded(
+              flex: segments.last.points.length - 1,
+              child: TimeLineSegment(
+                points: segments.last.points,
+                color: segments.last.color,
+                velocity: segments.last.velocity,
+              ),
+            )),
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
