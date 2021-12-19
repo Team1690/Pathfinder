@@ -8,56 +8,57 @@ class PathTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          children: segments.map(
-            (segment) {
-              return Expanded(
-                //TODO: flex between 1-6
-                flex: segment.points.length,
-                child: TimeLineSegment(
-                  points: segment.points,
-                  color: segment.color,
-                  velocity: segment.velocity,
-                ),
-              );
-            },
-          ).toList()
-            ..removeLast()
-            ..add(Expanded(
-              flex: segments.last.points.length - 1,
-              child: TimeLineSegment(
-                points: segments.last.points,
-                color: segments.last.color,
-                velocity: segments.last.velocity,
+    return segments.length > 0 && segments.first.points.length > 1
+        ? Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              Row(
+                children: segments.map(
+                  (segment) {
+                    return Expanded(
+                      flex: segment.points.length,
+                      child: TimeLineSegment(
+                        points: segment.points,
+                        color: segment.color,
+                        velocity: segment.velocity,
+                      ),
+                    );
+                  },
+                ).toList()
+                  ..removeLast()
+                  ..add(Expanded(
+                    flex: segments.last.points.length - 1,
+                    child: TimeLineSegment(
+                      points: segments.last.points,
+                      color: segments.last.color,
+                      velocity: segments.last.velocity,
+                    ),
+                  )),
               ),
-            )),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(''),
-            SizedBox(height: 5),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: segments
-                    .map((segment) {
-                      // List<TimelinePoint> redeucedList =
-                      //     List.castFrom(segment.points);
-                      // redeucedList.removeLast();
-                      // return redeucedList;
-                      return segment.points;
-                    })
-                    .expand((points) => points)
-                    .toList()
-                // ..add(segments.last.points.last),
-                ),
-          ],
-        ),
-      ],
-    );
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(''),
+                  SizedBox(height: 5),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: segments
+                          .map((segment) {
+                            // List<TimelinePoint> redeucedList =
+                            //     List.castFrom(segment.points);
+                            // redeucedList.removeLast();
+                            // return redeucedList;
+                            return segment.points;
+                          })
+                          .expand((points) => points)
+                          .toList()
+                      // ..add(segments.last.points.last),
+                      ),
+                ],
+              ),
+            ],
+          )
+        : Container();
     // return Stack(
     //   children: [segments.removeAt(0)]..addAll(segments
     //       .asMap()
