@@ -120,9 +120,8 @@ class _PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
-  bool shiftPressed = false;
-  bool ctrlPressed = false;
-  bool aPressed = false;
+  bool headingToggle = false;
+  bool controlToggle = false;
   List<FullDraggingPoint> dragPoints = [];
 
   _PathEditorState();
@@ -180,34 +179,27 @@ class _PathEditorState extends State<_PathEditor> {
       onKey: (final RawKeyEvent event) {
         setState(() {
           if (event is RawKeyDownEvent) {
-            pressedKeys.add(event.logicalKey);
+            if (!pressedKeys.contains(event.logicalKey)) {
+              if (event.logicalKey == LogicalKeyboardKey.keyH) {
+                headingToggle = !headingToggle;
+              } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
+                controlToggle = !controlToggle;
+              }
+
+              pressedKeys.add(event.logicalKey);
+            }
           } else if (event is RawKeyUpEvent) {
+            if (
+              event.logicalKey == LogicalKeyboardKey.backspace
+              && (pressedKeys.contains(LogicalKeyboardKey.shiftLeft)
+                  || pressedKeys.contains(LogicalKeyboardKey.shiftRight))
+              && widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
+            }
+
             pressedKeys.remove(event.logicalKey);
           }
-
-          shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
-          ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-              pressedKeys.contains(LogicalKeyboardKey.metaLeft);
-          aPressed = pressedKeys.contains(LogicalKeyboardKey.keyA);
         });
-
-        // if (ctrlPressed) {
-        //   if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
-        //     _bloc.add(Undo());
-        //   else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
-        //     _bloc.add(Redo());
-
-        //   if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
-        //     _bloc.add(ClearAllPoints());
-        //     selectedPointIndex = null;
-        //   }
-        // }
-
-        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
-            pressedKeys.contains(LogicalKeyboardKey.shiftLeft) &&
-            widget.pathProps.selectedPointIndex != null) {
-          widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
-        }
       },
       child: Center(
         child: Stack(
@@ -217,8 +209,8 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.points,
                   widget.pathProps.selectedPointIndex,
                   dragPoints,
-                  shiftPressed,
-                  ctrlPressed,
+                  headingToggle,
+                  controlToggle,
                   widget.pathProps.evaulatedPoints,
                   widget.pathProps.setFieldSizePixels,
                 ),
@@ -241,12 +233,12 @@ class _PathEditorState extends State<_PathEditor> {
                     int index = entery.key;
 
                     DraggingPoint? draggingPoint;
-                    if (shiftPressed) {
+                    if (headingToggle) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.heading);
                     }
 
-                    if (ctrlPressed && draggingPoint == null) {
+                    if (controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.inControl);
                     }
@@ -260,7 +252,7 @@ class _PathEditorState extends State<_PathEditor> {
                       List<FullDraggingPoint> draggingPoints = [
                         FullDraggingPoint(index, draggingPoint)
                       ];
-                      if (aPressed) {
+                      if (true) {
                         if (draggingPoint.type == PointType.inControl) {
                           draggingPoints.add(FullDraggingPoint(
                               index,
@@ -292,7 +284,6 @@ class _PathEditorState extends State<_PathEditor> {
                                     PointType.inControl ||
                                 draggingPoint.draggingPoint.type ==
                                     PointType.outControl) &&
-                            aPressed &&
                             index % 2 == 1) {
                           delta = -delta;
                         }
