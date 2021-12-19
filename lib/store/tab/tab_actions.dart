@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
 
 abstract class TabAction {
@@ -82,5 +83,12 @@ class EditSegment extends TabAction {
     required this.index,
     this.velocity,
     this.isHidden,
+  });
+}
+
+class EditRobot extends TabAction {
+  final Robot robot;
+  EditRobot({
+    required this.robot,
   });
 }

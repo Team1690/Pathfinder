@@ -17,6 +17,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, EditPoint>(editPoint),
   TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
   TypedReducer<TabState, EditSegment>(_editSegment),
+  TypedReducer<TabState, EditRobot>(editRobot),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -268,6 +269,22 @@ TabState _editSegment(TabState tabState, EditSegment action) {
           maxVelocity: action.velocity,
         );
       }).toList(),
+    ),
+  );
+}
+
+TabState editRobot(TabState tabState, EditRobot action) {
+  return tabState.copyWith(
+    robot: tabState.robot.copyWith(
+      width: action.robot.width,
+      height: action.robot.height,
+      maxAcceleration: action.robot.maxAcceleration,
+      maxAngularAcceleration: action.robot.maxAngularAcceleration,
+      maxAngularVelocity: action.robot.maxAngularVelocity,
+      skidAcceleration: action.robot.skidAcceleration,
+      maxJerk: action.robot.maxJerk,
+      maxVelocity: action.robot.maxVelocity,
+      cycleTime: action.robot.cycleTime,
     ),
   );
 }

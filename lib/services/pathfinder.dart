@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart' as rpc;
 import 'package:pathfinder/utils/grpc.dart';
@@ -24,46 +25,13 @@ class PathFinderService {
   static Future<rpc.TrajectoryResponse> calculateTrjactory(
     List<Point> points,
     List<Segment> segments,
+    Robot robot,
   ) async {
     var client = rpc.PathFinderClient(GrpcClientSingleton().client);
 
-    final stopPointIndexes = points
-        .asMap()
-        .entries
-        .where((e) => e.value.isStop)
-        .map((e) => e.key)
-        .toList();
-
-    // Build a list of the indexes of the segments that define the sections
-    final stopPointSegmentIndexes = [0] +
-        stopPointIndexes
-            .map((i) => segments.indexWhere((s) => s.pointIndexes.contains(i)))
-            .toList() +
-        [segments.length];
-    final rpcSegments = toRpcSegments(segments, points);
-
-    final sections = stopPointSegmentIndexes
-        .sublist(0, stopPointSegmentIndexes.length - 1)
-        .asMap()
-        .entries
-        .map((e) => rpcSegments.sublist(
-            stopPointSegmentIndexes[e.key], stopPointSegmentIndexes[e.key + 1]))
-        .map((segments) => rpc.Section(segments: segments))
-        .toList();
-
     var request = rpc.TrajectoryRequest(
-      swerveRobotParams: rpc.TrajectoryRequest_SwerveRobotParams(
-        width: 0.6,
-        height: 0.6,
-        maxAcceleration: 7.5,
-        maxAngularAcceleration: 1,
-        maxAngularVelocity: 3.141,
-        skidAcceleration: 7.5,
-        maxJerk: 50,
-        maxVelocity: 3,
-        cycleTime: 0.02,
-      ),
-      sections: sections,
+      swerveRobotParams: toRpcSwerveRobotParams(robot),
+      sections: toRpcSections(points, segments),
     );
 
     return await client.calculateTrajectory(request);
@@ -104,5 +72,45 @@ rpc.Segment toRpcSegment(Segment s, List<Point> points) {
   return rpc.Segment(
     maxVelocity: s.maxVelocity,
     points: s.pointIndexes.map((i) => toRpcPoint(points[i])).toList(),
+  );
+}
+
+List<rpc.Section> toRpcSections(List<Point> points, List<Segment> segments) {
+  final stopPointIndexes = points
+      .asMap()
+      .entries
+      .where((e) => e.value.isStop)
+      .map((e) => e.key)
+      .toList();
+
+  // Build a list of the indexes of the segments that define the sections
+  final stopPointSegmentIndexes = [0] +
+      stopPointIndexes
+          .map((i) => segments.indexWhere((s) => s.pointIndexes.contains(i)))
+          .toList() +
+      [segments.length];
+  final rpcSegments = toRpcSegments(segments, points);
+
+  return stopPointSegmentIndexes
+      .sublist(0, stopPointSegmentIndexes.length - 1)
+      .asMap()
+      .entries
+      .map((e) => rpcSegments.sublist(
+          stopPointSegmentIndexes[e.key], stopPointSegmentIndexes[e.key + 1]))
+      .map((segments) => rpc.Section(segments: segments))
+      .toList();
+}
+
+rpc.TrajectoryRequest_SwerveRobotParams toRpcSwerveRobotParams(Robot r) {
+  return rpc.TrajectoryRequest_SwerveRobotParams(
+    width: r.width,
+    height: r.height,
+    maxAcceleration: r.maxAcceleration,
+    maxAngularAcceleration: r.maxAngularAcceleration,
+    maxAngularVelocity: r.maxAngularVelocity,
+    skidAcceleration: r.skidAcceleration,
+    maxJerk: r.maxJerk,
+    maxVelocity: r.maxVelocity,
+    cycleTime: r.cycleTime,
   );
 }

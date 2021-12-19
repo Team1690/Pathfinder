@@ -22,7 +22,7 @@ class TabState {
   factory TabState.initial() {
     return TabState(
       path: Path.initial(),
-      robot: Robot(),
+      robot: Robot.initial(),
       field: Field.initial(),
       ui: TabUI.initial(),
     );
@@ -41,8 +41,4 @@ class TabState {
       ui: ui ?? this.ui,
     );
   }
-
-  //TODD Implement operator == and hashCode
 }
-
-// Path, history, robot, ui, params (optimization, trajectory), field

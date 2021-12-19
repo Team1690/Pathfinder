@@ -57,6 +57,7 @@ class _EditorScreenState extends State<EditorScreen> {
                             PathFinderService.calculateTrjactory(
                               store.state.tabState.path.points,
                               store.state.tabState.path.segments,
+                              store.state.tabState.robot,
                             );
                           },
                           icon: Icon(Icons.trending_flat_rounded),

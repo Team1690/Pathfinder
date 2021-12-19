@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/store/app/app_state.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
@@ -17,34 +18,43 @@ class HomeViewModel {
   TabState tabState;
   bool isSidebarOpen;
   final Function(bool) setSidebarVisibility;
+  final Function selectRobot;
   final Function(int, Point) setPointData;
+  final Function(Robot) setRobot;
 
   HomeViewModel({
     required this.isSidebarOpen,
     required this.setSidebarVisibility,
+    required this.selectRobot,
     required this.tabState,
     required this.setPointData,
+    required this.setRobot,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
     return HomeViewModel(
-      tabState: store.state.tabState,
-      isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
-      setSidebarVisibility: (visibility) {
-        store.dispatch(SetSideBarVisibility(visibility));
-      },
-      setPointData: (int index, Point point) {
-        store.dispatch(editPointThunk(
-          pointIndex: index,
-          position: point.position,
-          inControlPoint: point.inControlPoint,
-          outControlPoint: point.outControlPoint,
-          heading: point.heading,
-          cutSegment: point.cutSegment,
-          isStop: point.isStop,
-        ));
-      },
-    );
+        tabState: store.state.tabState,
+        isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
+        setSidebarVisibility: (visibility) {
+          store.dispatch(SetSideBarVisibility(visibility));
+        },
+        selectRobot: () {
+          store.dispatch(ObjectSelected(0, Robot));
+        },
+        setPointData: (int index, Point point) {
+          store.dispatch(editPointThunk(
+            pointIndex: index,
+            position: point.position,
+            inControlPoint: point.inControlPoint,
+            outControlPoint: point.outControlPoint,
+            heading: point.heading,
+            cutSegment: point.cutSegment,
+            isStop: point.isStop,
+          ));
+        },
+        setRobot: (Robot robot) {
+          store.dispatch(EditRobot(robot: robot));
+        });
   }
 
   @override
@@ -66,6 +76,8 @@ class HomeViewModel {
       if (ui.selectedType == Point &&
           (tabState.path.points[ui.selectedIndex] !=
               other.tabState.path.points[otherUi.selectedIndex])) return false;
+      if (ui.selectedType == Robot && (tabState.robot != other.tabState.robot))
+        return false;
     }
 
     return true;
@@ -112,6 +124,14 @@ class _HomePageState extends State<HomePage> {
     props.setPointData(index, point);
   }
 
+  onRobotEdit(Robot robot) {
+    setState(() {
+      props.tabState = editRobot(props.tabState, EditRobot(robot: robot));
+    });
+
+    props.setRobot(robot);
+  }
+
   @override
   Widget build(final BuildContext context) {
     // Handle store events to update the form if another widget changed state
@@ -144,6 +164,13 @@ class _HomePageState extends State<HomePage> {
                         props.setSidebarVisibility(true);
                       },
                       icon: Icon(Icons.menu),
+                    ),
+                    IconButton(
+                      color: theme.textTheme.bodyText1?.color,
+                      onPressed: () {
+                        props.selectRobot();
+                      },
+                      icon: Icon(Icons.adb),
                     ),
                     BroswerTab(
                       name: 'TEST',
@@ -186,6 +213,7 @@ class _HomePageState extends State<HomePage> {
                             SettingsDetails(
                               tabState: props.tabState,
                               onPointEdit: onPointEdit,
+                              onRobotEdit: onRobotEdit,
                             ),
                           ],
                         ),
@@ -215,10 +243,12 @@ class _HomePageState extends State<HomePage> {
 class SettingsDetails extends StatelessWidget {
   final TabState tabState;
   final Function(int index, Point point) onPointEdit;
+  final Function(Robot robot) onRobotEdit;
 
   SettingsDetails({
     required this.tabState,
     required this.onPointEdit,
+    required this.onRobotEdit,
   });
 
   _cardSettingsDouble({label, initialValue, onChanged, unitLabel = 'm'}) {
@@ -239,9 +269,96 @@ class SettingsDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final index = tabState.ui.selectedIndex;
     final points = tabState.path.points;
+    final robot = tabState.robot;
 
     // On init the selected index may be negative
     if (index < 0) return SizedBox.shrink();
+
+    if (tabState.ui.selectedType == Robot) {
+      return Form(
+        child: CardSettings(
+          contentAlign: TextAlign.right,
+          labelAlign: TextAlign.left,
+          shrinkWrap: true,
+          children: <CardSettingsSection>[
+            CardSettingsSection(
+              children: <CardSettingsWidget>[
+                _cardSettingsDouble(
+                  label: 'Width',
+                  unitLabel: 'm',
+                  initialValue: robot.width,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      width: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Height',
+                  unitLabel: 'm',
+                  initialValue: robot.height,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      height: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Max Velocity',
+                  unitLabel: 'm/s',
+                  initialValue: robot.maxVelocity,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      maxVelocity: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Max Accel',
+                  unitLabel: 'm/s²',
+                  initialValue: robot.maxAcceleration,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      maxAcceleration: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Max Jerk',
+                  unitLabel: 'm/s³',
+                  initialValue: robot.maxJerk,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      maxJerk: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Skid Accel',
+                  unitLabel: 'm/s²',
+                  initialValue: robot.skidAcceleration,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      skidAcceleration: value ?? 0,
+                    ));
+                  },
+                ),
+                _cardSettingsDouble(
+                  label: 'Cycle Time',
+                  unitLabel: 's',
+                  initialValue: robot.cycleTime,
+                  onChanged: (value) {
+                    onRobotEdit(robot.copyWith(
+                      cycleTime: value ?? 0,
+                    ));
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
 
     if (tabState.ui.selectedType == Point) {
       if (points.length == 0) return SizedBox.shrink();
@@ -250,8 +367,6 @@ class SettingsDetails extends StatelessWidget {
 
       return Form(
         child: CardSettings(
-          // return CardSettings(
-          // cardless: true,
           contentAlign: TextAlign.right,
           labelAlign: TextAlign.left,
           shrinkWrap: true,
