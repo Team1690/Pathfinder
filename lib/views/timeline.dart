@@ -14,12 +14,14 @@ class TimeLineViewModel {
   final List<Segment> segments;
   final int? selectedPointIndex;
   final Function(int) selectPoint;
+  final Function(int, double, bool) editSegment;
 
   TimeLineViewModel({
     required this.points,
     required this.segments,
     required this.selectedPointIndex,
     required this.selectPoint,
+    required this.editSegment,
   });
 
   static TimeLineViewModel fromStore(Store<AppState> store) {
@@ -31,6 +33,13 @@ class TimeLineViewModel {
           : null),
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
+      },
+      editSegment: (int index, double vel, bool isHidden) {
+        store.dispatch(EditSegment(
+          index: index,
+          velocity: vel,
+          isHidden: isHidden,
+        ));
       },
     );
   }
@@ -68,6 +77,7 @@ class _TimeLineView extends StatelessWidget {
                     ),
                   )
                   .toList(),
+              onChange: (value) => props.editSegment(e.key, value, false),
             ),
           )
           .toList(),

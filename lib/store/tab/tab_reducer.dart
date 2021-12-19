@@ -16,6 +16,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, ServerError>(_setServerError),
   TypedReducer<TabState, EditPoint>(editPoint),
   TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
+  TypedReducer<TabState, EditSegment>(_editSegment),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -255,4 +256,18 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
 TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
   return tabState.copyWith(
       ui: tabState.ui.copyWith(fieldSizePixels: action.size));
+}
+
+TabState _editSegment(TabState tabState, EditSegment action) {
+  return tabState.copyWith(
+    path: tabState.path.copyWith(
+      segments: tabState.path.segments.asMap().entries.map((e) {
+        if (action.index != e.key) return e.value;
+        return e.value.copyWith(
+          isHidden: action.isHidden,
+          maxVelocity: action.velocity,
+        );
+      }).toList(),
+    ),
+  );
 }

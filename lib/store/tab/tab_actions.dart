@@ -73,3 +73,14 @@ class SetFieldSizePixels extends TabAction {
   final Offset size;
   SetFieldSizePixels(this.size);
 }
+
+class EditSegment extends TabAction {
+  final int index;
+  final double? velocity;
+  final bool? isHidden;
+  EditSegment({
+    required this.index,
+    this.velocity,
+    this.isHidden,
+  });
+}

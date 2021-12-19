@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/constants.dart';
 
 class PathTimeline extends StatelessWidget {
@@ -13,27 +14,15 @@ class PathTimeline extends StatelessWidget {
             alignment: Alignment.centerLeft,
             children: [
               Row(
-                children: segments.map(
-                  (segment) {
-                    return Expanded(
-                      flex: segment.points.length,
-                      child: TimeLineSegment(
-                        points: segment.points,
-                        color: segment.color,
-                        velocity: segment.velocity,
-                      ),
-                    );
-                  },
-                ).toList()
-                  ..removeLast()
-                  ..add(Expanded(
-                    flex: segments.last.points.length - 1,
-                    child: TimeLineSegment(
-                      points: segments.last.points,
-                      color: segments.last.color,
-                      velocity: segments.last.velocity,
-                    ),
-                  )),
+                children: segments
+                    .asMap()
+                    .entries
+                    .map(((e) => Expanded(
+                        flex: segments.length - 1 == e.key
+                            ? e.value.points.length - 1
+                            : e.value.points.length,
+                        child: e.value)))
+                    .toList(),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -44,33 +33,15 @@ class PathTimeline extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: segments
                           .map((segment) {
-                            // List<TimelinePoint> redeucedList =
-                            //     List.castFrom(segment.points);
-                            // redeucedList.removeLast();
-                            // return redeucedList;
                             return segment.points;
                           })
                           .expand((points) => points)
-                          .toList()
-                      // ..add(segments.last.points.last),
-                      ),
+                          .toList()),
                 ],
               ),
             ],
           )
         : Container();
-    // return Stack(
-    //   children: [segments.removeAt(0)]..addAll(segments
-    //       .asMap()
-    //       .entries
-    //       .map((entry) => Positioned(
-    //             child: entry.value,
-    //             left: (entry.key + 1) *
-    //                 (TimeLineSegment.segmentWidth -
-    //                     TimelinePoint.pointRadius * 2),
-    //           ))
-    //       .toList()),
-    // );
   }
 }
 
@@ -110,28 +81,53 @@ class TimelinePoint extends StatelessWidget {
   }
 }
 
-class TimeLineSegment extends StatelessWidget {
-  const TimeLineSegment(
-      {Key? key,
-      required this.points,
-      required this.color,
-      required this.velocity})
-      : super(key: key);
+class TimeLineSegment extends StatefulWidget {
+  TimeLineSegment({
+    Key? key,
+    required this.points,
+    required this.color,
+    required this.velocity,
+    required this.onChange,
+  }) : super(key: key);
 
   final List<TimelinePoint> points;
   final Color color;
   final double velocity;
+  final Function(double) onChange;
   static double segmentWidth = 300;
   static double segmentHeight = 50;
 
   @override
+  _TimeLineSegmentState createState() => _TimeLineSegmentState();
+}
+
+class _TimeLineSegmentState extends State<TimeLineSegment> {
+  final TextEditingController _velocityFieldController =
+      TextEditingController(text: '');
+
+  @override
+  void initState() {
+    super.initState();
+    _velocityFieldController.text = widget.velocity.toString();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _velocityFieldController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _velocityFieldController.text.length));
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints.tightFor(width: 40, height: 40),
           child: TextField(
+            controller: _velocityFieldController,
+            keyboardType: TextInputType.text,
+            onChanged: (value) {
+              widget.onChange(double.tryParse(value) ?? widget.velocity);
+              _velocityFieldController.text = value;
+            },
             textAlign: TextAlign.center,
             decoration: InputDecoration(
               // border: OutlineInputBorder(),
@@ -150,7 +146,7 @@ class TimeLineSegment extends StatelessWidget {
               )),
           Container(
             height: 2,
-            color: color,
+            color: widget.color,
           ),
         ]),
       ],
