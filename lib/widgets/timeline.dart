@@ -38,7 +38,7 @@ class PathTimeline extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(''),
+                  SizedBox(height: 40),
                   SizedBox(height: 5),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,12 +129,15 @@ class TimeLineSegment extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('$velocity m/s'),
-            SizedBox(width: 5),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: 40, height: 40),
+          child: TextField(
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              // border: OutlineInputBorder(),
+              hintText: 'm/s',
+            ),
+          ),
         ),
         SizedBox(height: 5),
         Stack(alignment: Alignment.center, children: [
