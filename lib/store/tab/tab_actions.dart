@@ -92,3 +92,7 @@ class EditRobot extends TabAction {
     required this.robot,
   });
 }
+
+class ToggleHeading extends TabAction {}
+
+class ToggleControl extends TabAction {}

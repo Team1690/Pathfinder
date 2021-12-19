@@ -18,6 +18,8 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, SetFieldSizePixels>(_setFieldSizePixels),
   TypedReducer<TabState, EditSegment>(_editSegment),
   TypedReducer<TabState, EditRobot>(editRobot),
+  TypedReducer<TabState, ToggleHeading>(_toggleHeading),
+  TypedReducer<TabState, ToggleControl>(_toggleControl),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -287,4 +289,14 @@ TabState editRobot(TabState tabState, EditRobot action) {
       cycleTime: action.robot.cycleTime,
     ),
   );
+}
+
+TabState _toggleHeading(TabState tabState, ToggleHeading action) {
+  return tabState.copyWith(
+      ui: tabState.ui.copyWith(headingToggle: !tabState.ui.headingToggle));
+}
+
+TabState _toggleControl(TabState tabState, ToggleControl action) {
+  return tabState.copyWith(
+      ui: tabState.ui.copyWith(controlToggle: !tabState.ui.controlToggle));
 }

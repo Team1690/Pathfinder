@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/path_editor/field_editor.dart';
@@ -23,6 +25,10 @@ class PathViewModel {
   final Function(int, double) finishHeadingDrag;
   final Function(Offset) setFieldSizePixels;
   final List<Offset>? evaulatedPoints;
+  final bool headingToggle;
+  final Function() toggleHeading;
+  final bool controlToggle;
+  final Function() toggleControl;
 
   PathViewModel({
     required this.points,
@@ -37,6 +43,10 @@ class PathViewModel {
     required this.finishOutControlDrag,
     required this.finishHeadingDrag,
     required this.setFieldSizePixels,
+    required this.headingToggle,
+    required this.toggleHeading,
+    required this.controlToggle,
+    required this.toggleControl,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -81,6 +91,14 @@ class PathViewModel {
           store.dispatch(SetFieldSizePixels(size));
         }
       },
+      headingToggle: store.state.tabState.ui.headingToggle,
+      toggleHeading: () {
+        store.dispatch(ToggleHeading());
+      },
+      controlToggle: store.state.tabState.ui.controlToggle,
+      toggleControl: () {
+        store.dispatch(ToggleControl());
+      },
     );
   }
 }
@@ -120,9 +138,7 @@ class _PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
-  bool shiftPressed = false;
-  bool ctrlPressed = false;
-  bool aPressed = false;
+  FullDraggingPoint? dragPoint;
   List<FullDraggingPoint> dragPoints = [];
 
   _PathEditorState();
@@ -157,13 +173,15 @@ class _PathEditorState extends State<_PathEditor> {
       }
     }
 
-    if (pointType == PointType.inControl || pointType == PointType.outControl) {
+    if (pointType == PointType.inControl) {
       Offset inControlPosition = point.position + point.inControlPoint;
       if ((inControlPosition - tapPosition).distance <
           pointSettings[PointType.inControl]!.radius + DraggingTollerance) {
         return DraggingPoint(PointType.inControl, point.inControlPoint);
       }
+    }
 
+    if (pointType == PointType.outControl) {
       Offset outControlPosition = point.position + point.outControlPoint;
       if ((outControlPosition - tapPosition).distance <
           pointSettings[PointType.outControl]!.radius + DraggingTollerance) {
@@ -180,34 +198,27 @@ class _PathEditorState extends State<_PathEditor> {
       onKey: (final RawKeyEvent event) {
         setState(() {
           if (event is RawKeyDownEvent) {
-            pressedKeys.add(event.logicalKey);
+            if (!pressedKeys.contains(event.logicalKey)) {
+              if (event.logicalKey == LogicalKeyboardKey.keyH) {
+                widget.pathProps.toggleHeading();
+              } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
+                widget.pathProps.toggleControl();
+              }
+
+              pressedKeys.add(event.logicalKey);
+            }
           } else if (event is RawKeyUpEvent) {
+            if (
+              event.logicalKey == LogicalKeyboardKey.backspace
+              && (pressedKeys.contains(LogicalKeyboardKey.shiftLeft)
+                  || pressedKeys.contains(LogicalKeyboardKey.shiftRight))
+              && widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
+            }
+
             pressedKeys.remove(event.logicalKey);
           }
-
-          shiftPressed = pressedKeys.contains(LogicalKeyboardKey.shiftLeft);
-          ctrlPressed = pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-              pressedKeys.contains(LogicalKeyboardKey.metaLeft);
-          aPressed = pressedKeys.contains(LogicalKeyboardKey.keyA);
         });
-
-        // if (ctrlPressed) {
-        //   if (pressedKeys.contains(LogicalKeyboardKey.keyZ))
-        //     _bloc.add(Undo());
-        //   else if (pressedKeys.contains(LogicalKeyboardKey.keyY))
-        //     _bloc.add(Redo());
-
-        //   if (pressedKeys.contains(LogicalKeyboardKey.backspace)) {
-        //     _bloc.add(ClearAllPoints());
-        //     selectedPointIndex = null;
-        //   }
-        // }
-
-        if (pressedKeys.contains(LogicalKeyboardKey.backspace) &&
-            pressedKeys.contains(LogicalKeyboardKey.shiftLeft) &&
-            widget.pathProps.selectedPointIndex != null) {
-          widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
-        }
       },
       child: Center(
         child: Stack(
@@ -217,8 +228,8 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.points,
                   widget.pathProps.selectedPointIndex,
                   dragPoints,
-                  shiftPressed,
-                  ctrlPressed,
+                  widget.pathProps.headingToggle,
+                  widget.pathProps.controlToggle,
                   widget.pathProps.evaulatedPoints,
                   widget.pathProps.setFieldSizePixels,
                 ),
@@ -241,14 +252,19 @@ class _PathEditorState extends State<_PathEditor> {
                     int index = entery.key;
 
                     DraggingPoint? draggingPoint;
-                    if (shiftPressed) {
+                    if (widget.pathProps.headingToggle) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.heading);
                     }
 
-                    if (ctrlPressed && draggingPoint == null) {
+                    if (widget.pathProps.controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.inControl);
+                    }
+
+                    if (widget.pathProps.controlToggle && draggingPoint == null) {
+                      draggingPoint = checkSelectedPointTap(
+                          details.localPosition, point, PointType.outControl);
                     }
 
                     if (draggingPoint == null) {
@@ -257,50 +273,59 @@ class _PathEditorState extends State<_PathEditor> {
                     }
 
                     if (draggingPoint != null) {
-                      List<FullDraggingPoint> draggingPoints = [
-                        FullDraggingPoint(index, draggingPoint)
-                      ];
-                      if (aPressed) {
-                        if (draggingPoint.type == PointType.inControl) {
-                          draggingPoints.add(FullDraggingPoint(
-                              index,
-                              DraggingPoint(PointType.outControl,
-                                  -point.inControlPoint)));
-                        } else if (draggingPoint.type == PointType.outControl) {
-                          draggingPoints.add(FullDraggingPoint(
-                              index,
-                              DraggingPoint(PointType.inControl,
-                                  -point.outControlPoint)));
-                        }
-                      }
+                      FullDraggingPoint fullDraggingPoint = 
+                        FullDraggingPoint(index, draggingPoint);
+
                       setState(() {
-                        dragPoints = draggingPoints;
+                        dragPoint = fullDraggingPoint;
                       });
-                      return;
+
+                      break;
                     }
                   }
                 },
                 onPanUpdate: (DragUpdateDetails details) {
-                  if (dragPoints.length > 0) {
+                  if (dragPoint != null) {
+                    FullDraggingPoint currentDragPoint = dragPoint!;
                     setState(() {
-                      dragPoints = dragPoints.asMap().entries.map((entery) {
-                        int index = entery.key;
-                        FullDraggingPoint draggingPoint = entery.value;
+                      currentDragPoint =  FullDraggingPoint(
+                          currentDragPoint.index,
+                          DraggingPoint(currentDragPoint.draggingPoint.type,
+                              currentDragPoint.draggingPoint.position + details.delta));
+                      dragPoint = currentDragPoint;
+                      dragPoints = [currentDragPoint];
+                      
+                      if (!widget.pathProps.points[currentDragPoint.index].isStop
+                        || pressedKeys.contains(LogicalKeyboardKey.keyF)) {
 
-                        Offset delta = details.delta;
-                        if ((draggingPoint.draggingPoint.type ==
-                                    PointType.inControl ||
-                                draggingPoint.draggingPoint.type ==
-                                    PointType.outControl) &&
-                            aPressed &&
-                            index % 2 == 1) {
-                          delta = -delta;
+                        if (currentDragPoint.draggingPoint.type == PointType.inControl) {
+                          dragPoints.add(
+                            FullDraggingPoint(
+                              currentDragPoint.index,
+                              DraggingPoint(
+                                PointType.outControl,
+                                Offset.fromDirection(
+                                  currentDragPoint.draggingPoint.position.direction + pi,
+                                  widget.pathProps.points[currentDragPoint.index].outControlPoint.distance
+                                )
+                              )
+                            )
+                          );
+                        } else if(currentDragPoint.draggingPoint.type == PointType.outControl) {
+                          dragPoints.add(
+                            FullDraggingPoint(
+                              currentDragPoint.index,
+                              DraggingPoint(
+                                PointType.inControl,
+                                Offset.fromDirection(
+                                  currentDragPoint.draggingPoint.position.direction + pi,
+                                  widget.pathProps.points[currentDragPoint.index].inControlPoint.distance
+                                )
+                              )
+                            )
+                          );
                         }
-                        return FullDraggingPoint(
-                            draggingPoint.index,
-                            DraggingPoint(draggingPoint.draggingPoint.type,
-                                draggingPoint.draggingPoint.position + delta));
-                      }).toList();
+                      }
                     });
                   }
                 },
@@ -335,6 +360,7 @@ class _PathEditorState extends State<_PathEditor> {
 
                   setState(() {
                     dragPoints = [];
+                    dragPoint = null;
                   });
                 }),
           ],
