@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/path_editor/field_editor.dart';
@@ -136,6 +138,7 @@ class _PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<_PathEditor> {
   Set<LogicalKeyboardKey> pressedKeys = {};
+  FullDraggingPoint? dragPoint;
   List<FullDraggingPoint> dragPoints = [];
 
   _PathEditorState();
@@ -263,48 +266,55 @@ class _PathEditorState extends State<_PathEditor> {
                     }
 
                     if (draggingPoint != null) {
-                      List<FullDraggingPoint> draggingPoints = [
-                        FullDraggingPoint(index, draggingPoint)
-                      ];
+                      FullDraggingPoint fullDraggingPoint = 
+                        FullDraggingPoint(index, draggingPoint);
 
-                      if (draggingPoint.type == PointType.inControl) {
-                        draggingPoints.add(FullDraggingPoint(
-                            index,
-                            DraggingPoint(PointType.outControl,
-                                -point.inControlPoint)));
-                      } else if (draggingPoint.type == PointType.outControl) {
-                        draggingPoints.add(FullDraggingPoint(
-                            index,
-                            DraggingPoint(PointType.inControl,
-                                -point.outControlPoint)));
-                      }
                       setState(() {
-                        dragPoints = draggingPoints;
+                        dragPoint = fullDraggingPoint;
                       });
-                      return;
+
+                      break;
                     }
                   }
                 },
                 onPanUpdate: (DragUpdateDetails details) {
-                  if (dragPoints.length > 0) {
+                  if (dragPoint != null) {
+                    FullDraggingPoint currentDragPoint = dragPoint!;
                     setState(() {
-                      dragPoints = dragPoints.asMap().entries.map((entery) {
-                        int index = entery.key;
-                        FullDraggingPoint draggingPoint = entery.value;
-
-                        Offset delta = details.delta;
-                        if ((draggingPoint.draggingPoint.type ==
-                                    PointType.inControl ||
-                                draggingPoint.draggingPoint.type ==
-                                    PointType.outControl) &&
-                            index % 2 == 1) {
-                          delta = -delta;
-                        }
-                        return FullDraggingPoint(
-                            draggingPoint.index,
-                            DraggingPoint(draggingPoint.draggingPoint.type,
-                                draggingPoint.draggingPoint.position + delta));
-                      }).toList();
+                      currentDragPoint =  FullDraggingPoint(
+                          currentDragPoint.index,
+                          DraggingPoint(currentDragPoint.draggingPoint.type,
+                              currentDragPoint.draggingPoint.position + details.delta));
+                      dragPoint = currentDragPoint;
+                      dragPoints = [currentDragPoint];
+                      
+                      if (currentDragPoint.draggingPoint.type == PointType.inControl) {
+                        dragPoints.add(
+                          FullDraggingPoint(
+                            currentDragPoint.index,
+                            DraggingPoint(
+                              PointType.outControl,
+                              Offset.fromDirection(
+                                currentDragPoint.draggingPoint.position.direction + pi,
+                                widget.pathProps.points[currentDragPoint.index].outControlPoint.distance
+                              )
+                            )
+                          )
+                        );
+                      } else if(currentDragPoint.draggingPoint.type == PointType.outControl) {
+                        dragPoints.add(
+                          FullDraggingPoint(
+                            currentDragPoint.index,
+                            DraggingPoint(
+                              PointType.inControl,
+                              Offset.fromDirection(
+                                currentDragPoint.draggingPoint.position.direction + pi,
+                                widget.pathProps.points[currentDragPoint.index].inControlPoint.distance
+                              )
+                            )
+                          )
+                        );
+                      }
                     });
                   }
                 },
