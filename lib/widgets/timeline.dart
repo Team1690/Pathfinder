@@ -8,7 +8,7 @@ class PathTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return segments.length > 0 && segments.first.points.length > 1
+    return segments.length > 0
         ? Stack(
             alignment: Alignment.centerLeft,
             children: [
