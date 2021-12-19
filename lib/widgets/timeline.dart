@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 
@@ -10,47 +8,57 @@ class PathTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          children: segments
-              .map(
-                (segment) => Expanded(
-                  //TODO: flex between 1-6
-                  flex: max(segment.points.length - 1, 1),
-                  child: TimeLineSegment(
-                    points: segment.points,
-                    color: segment.color,
-                    velocity: segment.velocity,
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(''),
-            SizedBox(height: 5),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: segments
-                    .map((segment) {
-                      // List<TimelinePoint> redeucedList =
-                      //     List.castFrom(segment.points);
-                      // redeucedList.removeLast();
-                      // return redeucedList;
-                      return segment.points;
-                    })
-                    .expand((points) => points)
-                    .toList()
-                // ..add(segments.last.points.last),
-                ),
-          ],
-        ),
-      ],
-    );
+    return segments.length > 0
+        ? Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              Row(
+                children: segments.map(
+                  (segment) {
+                    return Expanded(
+                      flex: segment.points.length,
+                      child: TimeLineSegment(
+                        points: segment.points,
+                        color: segment.color,
+                        velocity: segment.velocity,
+                      ),
+                    );
+                  },
+                ).toList()
+                  ..removeLast()
+                  ..add(Expanded(
+                    flex: segments.last.points.length - 1,
+                    child: TimeLineSegment(
+                      points: segments.last.points,
+                      color: segments.last.color,
+                      velocity: segments.last.velocity,
+                    ),
+                  )),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 40),
+                  SizedBox(height: 5),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: segments
+                          .map((segment) {
+                            // List<TimelinePoint> redeucedList =
+                            //     List.castFrom(segment.points);
+                            // redeucedList.removeLast();
+                            // return redeucedList;
+                            return segment.points;
+                          })
+                          .expand((points) => points)
+                          .toList()
+                      // ..add(segments.last.points.last),
+                      ),
+                ],
+              ),
+            ],
+          )
+        : Container();
     // return Stack(
     //   children: [segments.removeAt(0)]..addAll(segments
     //       .asMap()
@@ -121,12 +129,15 @@ class TimeLineSegment extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('$velocity m/s'),
-            SizedBox(width: 5),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: 40, height: 40),
+          child: TextField(
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              // border: OutlineInputBorder(),
+              hintText: 'm/s',
+            ),
+          ),
         ),
         SizedBox(height: 5),
         Stack(alignment: Alignment.center, children: [

@@ -26,7 +26,6 @@ TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
 TabState _objectSelected(TabState tabState, ObjectSelected action) {
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
-      isSidebarOpen: true,
       selectedIndex: action.index,
       selectedType: action.type,
     ),
