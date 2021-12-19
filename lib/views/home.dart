@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
           ),
           if (props.isSidebarOpen)
             Positioned(
-              left: 0,
+              right: 0,
               top: 0,
               width: 300,
               height: MediaQuery.of(context).size.height,
@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             ListTile(
                               // textColor: theme.textTheme.headline1?.color,
-                              title: Text("DATA"),
+                              title: Text(getSideBarHeadline(props.tabState)),
                             ),
                             Divider(
                               indent: 15,
@@ -508,4 +508,15 @@ class SettingsDetails extends StatelessWidget {
     }
     return SizedBox.shrink();
   }
+}
+
+String getSideBarHeadline(TabState tabState) {
+  final selectedIndex = tabState.ui.selectedIndex;
+  final selectedType = tabState.ui.selectedType;
+
+  if (selectedType == Robot) return "ROBOT DATA";
+  if (selectedType == Point && selectedIndex > -1)
+    return 'POINT $selectedIndex';
+
+  return "NO SELECTION";
 }

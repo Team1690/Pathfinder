@@ -290,13 +290,21 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Widget _buildImage() {
-    double width = 0.8 * MediaQuery.of(context).size.width;
+    double width = 0.7 * MediaQuery.of(context).size.width;
     double height = 0.6 * MediaQuery.of(context).size.height;
     widget.setFieldSizePixels(Offset(width, height));
 
     if (this.isImageloaded) {
       // if (false) {
       return Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 14,
+              offset: Offset(0, 4), // changes position of shadow
+            ),
+          ]),
           child: CustomPaint(
               painter: FieldPainter(
                 globalImage!,
