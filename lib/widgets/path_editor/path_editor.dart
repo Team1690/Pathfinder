@@ -288,32 +288,34 @@ class _PathEditorState extends State<_PathEditor> {
                       dragPoint = currentDragPoint;
                       dragPoints = [currentDragPoint];
                       
-                      if (currentDragPoint.draggingPoint.type == PointType.inControl) {
-                        dragPoints.add(
-                          FullDraggingPoint(
-                            currentDragPoint.index,
-                            DraggingPoint(
-                              PointType.outControl,
-                              Offset.fromDirection(
-                                currentDragPoint.draggingPoint.position.direction + pi,
-                                widget.pathProps.points[currentDragPoint.index].outControlPoint.distance
+                      if (!widget.pathProps.points[currentDragPoint.index].isStop) {
+                        if (currentDragPoint.draggingPoint.type == PointType.inControl) {
+                          dragPoints.add(
+                            FullDraggingPoint(
+                              currentDragPoint.index,
+                              DraggingPoint(
+                                PointType.outControl,
+                                Offset.fromDirection(
+                                  currentDragPoint.draggingPoint.position.direction + pi,
+                                  widget.pathProps.points[currentDragPoint.index].outControlPoint.distance
+                                )
                               )
                             )
-                          )
-                        );
-                      } else if(currentDragPoint.draggingPoint.type == PointType.outControl) {
-                        dragPoints.add(
-                          FullDraggingPoint(
-                            currentDragPoint.index,
-                            DraggingPoint(
-                              PointType.inControl,
-                              Offset.fromDirection(
-                                currentDragPoint.draggingPoint.position.direction + pi,
-                                widget.pathProps.points[currentDragPoint.index].inControlPoint.distance
+                          );
+                        } else if(currentDragPoint.draggingPoint.type == PointType.outControl) {
+                          dragPoints.add(
+                            FullDraggingPoint(
+                              currentDragPoint.index,
+                              DraggingPoint(
+                                PointType.inControl,
+                                Offset.fromDirection(
+                                  currentDragPoint.draggingPoint.position.direction + pi,
+                                  widget.pathProps.points[currentDragPoint.index].inControlPoint.distance
+                                )
                               )
                             )
-                          )
-                        );
+                          );
+                        }
                       }
                     });
                   }
