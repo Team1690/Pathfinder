@@ -173,13 +173,15 @@ class _PathEditorState extends State<_PathEditor> {
       }
     }
 
-    if (pointType == PointType.inControl || pointType == PointType.outControl) {
+    if (pointType == PointType.inControl) {
       Offset inControlPosition = point.position + point.inControlPoint;
       if ((inControlPosition - tapPosition).distance <
           pointSettings[PointType.inControl]!.radius + DraggingTollerance) {
         return DraggingPoint(PointType.inControl, point.inControlPoint);
       }
+    }
 
+    if (pointType == PointType.outControl) {
       Offset outControlPosition = point.position + point.outControlPoint;
       if ((outControlPosition - tapPosition).distance <
           pointSettings[PointType.outControl]!.radius + DraggingTollerance) {
@@ -258,6 +260,11 @@ class _PathEditorState extends State<_PathEditor> {
                     if (widget.pathProps.controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.inControl);
+                    }
+
+                    if (widget.pathProps.controlToggle && draggingPoint == null) {
+                      draggingPoint = checkSelectedPointTap(
+                          details.localPosition, point, PointType.outControl);
                     }
 
                     if (draggingPoint == null) {
@@ -353,6 +360,7 @@ class _PathEditorState extends State<_PathEditor> {
 
                   setState(() {
                     dragPoints = [];
+                    dragPoint = null;
                   });
                 }),
           ],

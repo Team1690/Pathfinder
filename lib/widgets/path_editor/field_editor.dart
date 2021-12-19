@@ -172,12 +172,18 @@ class FieldPainter extends CustomPainter {
     bool isSelected,
     bool isStopPoint,
     bool enableHeadingEditing,
-    enableControlEditing,
+    bool enableControlEditing,
+    bool isFirstPoint,
+    bool isLastPoint,
   ) {
     drawPointBackground(canvas, position, isSelected, isStopPoint);
     drawHeadingLine(canvas, position, heading, enableHeadingEditing);
-    drawControlPoint(canvas, position, inControl, enableControlEditing);
-    drawControlPoint(canvas, position, outControl, enableControlEditing);
+    if (!isFirstPoint) {
+      drawControlPoint(canvas, position, inControl, enableControlEditing);
+    }
+    if (!isLastPoint) {
+      drawControlPoint(canvas, position, outControl, enableControlEditing);
+    }
   }
 
   void drawPath(Canvas canvas, List<Offset> evaluetedPoints) {
@@ -220,12 +226,20 @@ class FieldPainter extends CustomPainter {
         point.isStop,
         enableHeadingEditing,
         enableControlEditing,
+        index == 0,
+        index == points.length - 1
       );
     }
 
-    for (final draggingPoint in dragPoints) {
-      drawDragPoint(
-          canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
+    for (final entery in dragPoints.asMap().entries) {
+      FullDraggingPoint draggingPoint = entery.value;
+      int index = entery.key;
+
+      if (!((draggingPoint.index == 0 && draggingPoint.draggingPoint.type == PointType.inControl)
+        || (draggingPoint.index == points.length - 1 && draggingPoint.draggingPoint.type == PointType.outControl))) {
+        drawDragPoint(
+            canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
+      }
     }
   }
 
