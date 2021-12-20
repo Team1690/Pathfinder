@@ -33,7 +33,7 @@ class SplineCalculated extends TabAction {
 
 // Point actions
 class AddPointToPath extends TabAction {
-  final Offset position;
+  final Offset? position;
   final int segmentIndex;
   final int insertIndex;
 

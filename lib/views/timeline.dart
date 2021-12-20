@@ -15,6 +15,7 @@ class TimeLineViewModel {
   final int? selectedPointIndex;
   final Function(int) selectPoint;
   final Function(int, double, bool) editSegment;
+  final Function(int, int) addPoint;
 
   TimeLineViewModel({
     required this.points,
@@ -22,6 +23,7 @@ class TimeLineViewModel {
     required this.selectedPointIndex,
     required this.selectPoint,
     required this.editSegment,
+    required this.addPoint,
   });
 
   static TimeLineViewModel fromStore(Store<AppState> store) {
@@ -40,6 +42,9 @@ class TimeLineViewModel {
           velocity: vel,
           isHidden: isHidden,
         ));
+      },
+      addPoint: (int segmentIndex, int insertIndex) {
+        store.dispatch(AddPointToPath(null, segmentIndex, insertIndex));
       },
     );
   }
@@ -61,6 +66,8 @@ class _TimeLineView extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return PathTimeline(
+      insertPoint: (int segmentIndex, int insertIndex) =>
+          props.addPoint(segmentIndex, insertIndex),
       segments: props.segments
           .asMap()
           .entries

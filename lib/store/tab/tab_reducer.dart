@@ -54,7 +54,15 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
       ? action.segmentIndex
       : max(tabState.path.segments.length - 1, 0);
 
-  final newPoint = Point.initial(action.position);
+  var position = action.position;
+  if (position == null) {
+    // If position is null, calculate it by the previues position and current position
+    final points = tabState.path.points;
+    position = (points[insertIndex - 1].position + points[insertIndex].position)
+        .scale(0.5, 0.5);
+  }
+
+  final newPoint = Point.initial(position);
   var newPoints = [...tabState.path.points];
 
   if (tabState.path.segments.length == 0) {

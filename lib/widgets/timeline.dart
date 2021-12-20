@@ -4,8 +4,11 @@ import 'package:pathfinder/constants.dart';
 
 class PathTimeline extends StatelessWidget {
   final List<TimeLineSegment> segments;
+  final void Function(int, int) insertPoint;
 
-  const PathTimeline({Key? key, required this.segments}) : super(key: key);
+  const PathTimeline(
+      {Key? key, required this.segments, required this.insertPoint})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +16,7 @@ class PathTimeline extends StatelessWidget {
         ? Stack(
             alignment: Alignment.centerLeft,
             children: [
+              //segments
               Row(
                 children: segments
                     .asMap()
@@ -24,6 +28,7 @@ class PathTimeline extends StatelessWidget {
                         child: e.value)))
                     .toList(),
               ),
+              //points
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -39,9 +44,75 @@ class PathTimeline extends StatelessWidget {
                           .toList()),
                 ],
               ),
+              //hover points
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 40),
+                  SizedBox(height: 5),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: segments
+                          .map((segment) => segment.points)
+                          .expand((points) => points)
+                          .toList()
+                          .asMap()
+                          .entries
+                          .map(
+                            (se) => AddPointInsideTimeline(
+                              onClick: () => insertPoint(
+                                  segments.indexWhere((element) => element
+                                      .points
+                                      .asMap()
+                                      .entries
+                                      .map((e) => e.key)
+                                      .contains(se.key)),
+                                  se.key + 1),
+                            ),
+                          )
+                          .toList()
+                            ..removeLast())
+                ],
+              ),
             ],
           )
         : Container();
+  }
+}
+
+class AddPointInsideTimeline extends StatefulWidget {
+  const AddPointInsideTimeline({
+    Key? key,
+    required this.onClick,
+  }) : super(key: key);
+
+  final void Function() onClick;
+
+  @override
+  _AddPointInsideTimelineState createState() => _AddPointInsideTimelineState();
+}
+
+class _AddPointInsideTimelineState extends State<AddPointInsideTimeline> {
+  bool visibility = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onHover: (event) => setState(() => visibility = true),
+      onExit: (event) => setState(() => visibility = false),
+      child: Visibility(
+        maintainSize: true,
+        maintainAnimation: true,
+        maintainState: true,
+        visible: visibility,
+        child: IconButton(
+          onPressed: () {
+            widget.onClick();
+          },
+          icon: Icon(Icons.add_circle_outline_rounded),
+        ),
+      ),
+    );
   }
 }
 
