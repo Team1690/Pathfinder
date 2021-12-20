@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/models/point.dart';
 
 class PathTimeline extends StatelessWidget {
   final List<TimeLineSegment> segments;
+  final List<TimelinePoint> points;
   final void Function(int, int) insertPoint;
 
   const PathTimeline(
-      {Key? key, required this.segments, required this.insertPoint})
+      {Key? key,
+      required this.segments,
+      required this.insertPoint,
+      required this.points})
       : super(key: key);
+
+  int findSegment(int pointIndex, List<TimeLineSegment> segments) {
+    List<int> segmentsLength = segments.map((e) => e.points.length).toList();
+
+    int segmentIndex = 0;
+    for (int i = 0; i < segments.length; i++) {
+      if (pointIndex + 1 > segmentsLength[i]) {
+        pointIndex -= segmentsLength[i];
+      } else {
+        segmentIndex = i;
+        break;
+      }
+    }
+    return segmentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +56,7 @@ class PathTimeline extends StatelessWidget {
                   SizedBox(height: 5),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: segments
-                          .map((segment) {
-                            return segment.points;
-                          })
-                          .expand((points) => points)
-                          .toList()),
+                      children: points),
                 ],
               ),
               //hover points
@@ -52,24 +67,13 @@ class PathTimeline extends StatelessWidget {
                   SizedBox(height: 5),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: segments
-                          .map((segment) => segment.points)
-                          .expand((points) => points)
-                          .toList()
+                      children: points
                           .asMap()
                           .entries
-                          .map(
-                            (se) => AddPointInsideTimeline(
-                              onClick: () => insertPoint(
-                                  segments.indexWhere((element) => element
-                                      .points
-                                      .asMap()
-                                      .entries
-                                      .map((e) => e.key)
-                                      .contains(se.key)),
-                                  se.key + 1),
-                            ),
-                          )
+                          .map((e) => AddPointInsideTimeline(
+                                onClick: () => insertPoint(
+                                    findSegment(e.key, segments), e.key + 1),
+                              ))
                           .toList()
                             ..removeLast())
                 ],

@@ -68,6 +68,17 @@ class _TimeLineView extends StatelessWidget {
     return PathTimeline(
       insertPoint: (int segmentIndex, int insertIndex) =>
           props.addPoint(segmentIndex, insertIndex),
+      points: props.points
+          .asMap()
+          .entries
+          .map(
+            (point) => TimelinePoint(
+              onTap: () => props.selectPoint(point.key),
+              isSelected: point.key == props.selectedPointIndex,
+              color: Color(0xffE1E1E1CC),
+            ),
+          )
+          .toList(),
       segments: props.segments
           .asMap()
           .entries
