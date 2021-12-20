@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/utils/coordinates_convertion.dart';
 import 'package:redux/redux.dart';
 
+const double defaultControlLength = 0.5;
 class Point {
   final Offset position;
   final Offset inControlPoint;
@@ -26,8 +29,8 @@ class Point {
   factory Point.initial(Offset position) {
     return Point(
       position: position,
-      inControlPoint: Offset(0.5, 0.5),
-      outControlPoint: Offset(-0.5, -0.5),
+      inControlPoint: Offset.fromDirection(pi/4, defaultControlLength),
+      outControlPoint: Offset.fromDirection((pi/4) + pi, defaultControlLength),
       heading: 0,
       useHeading: true,
       actions: [],
