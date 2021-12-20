@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
@@ -55,7 +56,15 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
       ? action.segmentIndex
       : max(tabState.path.segments.length - 1, 0);
 
-  final newPoint = Point.initial(action.position);
+  Point newPoint = Point.initial(action.position);
+  if (tabState.path.points.length > 0) {
+    Offset inControlOffset = Offset.fromDirection((tabState.path.points[tabState.path.points.length - 1].position - newPoint.position).direction, defaultControlLength);
+    Offset outControlOFfset = Offset.fromDirection(inControlOffset.direction + pi, inControlOffset.distance);
+    newPoint =  newPoint.copyWith(
+      inControlPoint: inControlOffset,
+      outControlPoint: outControlOFfset
+    );
+  }
   var newPoints = [...tabState.path.points];
 
   if (tabState.path.segments.length == 0) {
