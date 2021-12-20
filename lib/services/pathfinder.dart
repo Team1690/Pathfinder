@@ -50,6 +50,8 @@ rpc.Point toRpcPoint(Point p) {
     position: toRpcVector(p.position),
     controlIn: toRpcVector(p.position + p.inControlPoint),
     controlOut: toRpcVector(p.position + p.outControlPoint),
+    heading: p.heading,
+    useHeading: p.useHeading,
   );
 }
 
