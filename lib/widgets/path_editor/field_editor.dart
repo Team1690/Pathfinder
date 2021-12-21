@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -22,7 +24,7 @@ class PointSettings {
   PointSettings(this.color, this.radius);
 }
 
-const double headingLength = 30;
+const double headingLength = 50;
 
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
@@ -55,10 +57,14 @@ class FieldPainter extends CustomPainter {
     Offset position,
     bool isSelected,
     bool isStopPoint,
+    bool isFirstPoint,
+    bool isLastPoint,
   ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    var color = currentPointSettings.color;
+    var color = isFirstPoint
+        ? Color(0xff34A853)
+        : (isLastPoint ? Color(0xffAE4335) : currentPointSettings.color);
     var selectedColor = selectedPointColor;
 
     if (isStopPoint) {
@@ -149,7 +155,7 @@ class FieldPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = pointSetting.color
-      ..strokeWidth = 5;
+      ..strokeWidth = 4;
     final double circleRadius = 1 / (paint.strokeWidth * paint.strokeWidth);
 
     canvas.drawLine(position, edge, paint);
@@ -176,7 +182,8 @@ class FieldPainter extends CustomPainter {
     bool isFirstPoint,
     bool isLastPoint,
   ) {
-    drawPointBackground(canvas, position, isSelected, isStopPoint);
+    drawPointBackground(
+        canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
     drawHeadingLine(canvas, position, heading, enableHeadingEditing);
     if (!isFirstPoint) {
       drawControlPoint(canvas, position, inControl, enableControlEditing);
@@ -196,9 +203,61 @@ class FieldPainter extends CustomPainter {
     for (Offset splinePoint in evaluetedPoints) {
       pathPoints.add(splinePoint);
     }
+
     Path path = Path();
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
+  }
+
+  void drawPathShadow(Canvas canvas, List<Offset> evaluetedPoints) {
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4);
+
+    List<Offset> pathPoints = [];
+    for (Offset splinePoint in evaluetedPoints) {
+      pathPoints.add(splinePoint);
+    }
+
+    Path path = Path();
+    path.addPolygon(pathPoints, false);
+    canvas.drawPath(path, paint);
+  }
+
+  void drawWheelsPath(Canvas canvas, List<Offset> evaluetedPoints) {
+    double robotWidth = 60;
+
+    Paint paint = Paint()
+      ..color = white.withOpacity(0.8)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    List<Offset> leftPoints =
+        evaluetedPoints.sublist(1).asMap().entries.map((e) {
+      final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+      return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
+          .translate(
+              evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+    }).toList();
+    List<Offset> rightPoints =
+        evaluetedPoints.sublist(1).asMap().entries.map((e) {
+      final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+      return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
+          .translate(
+              evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+    }).toList();
+
+    // inspect(pathPoints);
+    Path leftPath = Path();
+    Path rightPath = Path();
+
+    leftPath.addPolygon(leftPoints, false);
+    canvas.drawPath(leftPath, paint);
+
+    rightPath.addPolygon(rightPoints, false);
+    canvas.drawPath(rightPath, paint);
   }
 
   @override
@@ -206,11 +265,18 @@ class FieldPainter extends CustomPainter {
     paintImage(
         canvas: canvas,
         rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
+        colorFilter:
+            ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.darken),
         image: image);
 
     if (evaluetedPoints != null) {
+      drawPathShadow(canvas, evaluetedPoints!);
       drawPath(canvas, evaluetedPoints!);
+      drawWheelsPath(canvas, evaluetedPoints!);
+
+      // drawWheelsPath(
+      //     canvas, evaluetedPoints!.map((e) => e.translate(50, 50)).toList());
     }
 
     for (final entery in points.asMap().entries) {
