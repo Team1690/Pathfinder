@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -28,8 +27,8 @@ const double headingLength = 50;
 
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
-  PointType.inControl: PointSettings(Color(0xff111111), 7),
-  PointType.outControl: PointSettings(Color(0xff111111), 7),
+  PointType.inControl: PointSettings(white, 7),
+  PointType.outControl: PointSettings(white, 7),
   PointType.heading: PointSettings(Color(0xffc80000), 7)
 };
 
@@ -230,34 +229,36 @@ class FieldPainter extends CustomPainter {
     double robotWidth = 60;
 
     Paint paint = Paint()
-      ..color = white.withOpacity(0.8)
+      ..color = white.withOpacity(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
-    List<Offset> leftPoints =
-        evaluetedPoints.sublist(1).asMap().entries.map((e) {
-      final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
-      return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
-          .translate(
-              evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
-    }).toList();
-    List<Offset> rightPoints =
-        evaluetedPoints.sublist(1).asMap().entries.map((e) {
-      final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
-      return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
-          .translate(
-              evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
-    }).toList();
+    if (evaluetedPoints.length > 0) {
+      List<Offset> leftPoints =
+          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
+            .translate(
+                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+      }).toList();
+      List<Offset> rightPoints =
+          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
+            .translate(
+                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+      }).toList();
 
-    // inspect(pathPoints);
-    Path leftPath = Path();
-    Path rightPath = Path();
+      // inspect(pathPoints);
+      Path leftPath = Path();
+      Path rightPath = Path();
 
-    leftPath.addPolygon(leftPoints, false);
-    canvas.drawPath(leftPath, paint);
+      leftPath.addPolygon(leftPoints, false);
+      canvas.drawPath(leftPath, paint);
 
-    rightPath.addPolygon(rightPoints, false);
-    canvas.drawPath(rightPath, paint);
+      rightPath.addPolygon(rightPoints, false);
+      canvas.drawPath(rightPath, paint);
+    }
   }
 
   @override
@@ -267,7 +268,7 @@ class FieldPainter extends CustomPainter {
         rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
         fit: BoxFit.cover,
         colorFilter:
-            ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.darken),
+            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
         image: image);
 
     if (evaluetedPoints != null) {
