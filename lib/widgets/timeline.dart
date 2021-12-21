@@ -1,11 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/models/point.dart';
 
 class PathTimeline extends StatelessWidget {
   final List<TimeLineSegment> segments;
+  final List<TimelinePoint> points;
+  final void Function(int, int) insertPoint;
 
-  const PathTimeline({Key? key, required this.segments}) : super(key: key);
+  const PathTimeline(
+      {Key? key,
+      required this.segments,
+      required this.insertPoint,
+      required this.points})
+      : super(key: key);
+
+  int findSegment(int pointIndex, List<TimeLineSegment> segments) {
+    List<int> segmentsLength = segments.map((e) => e.points.length).toList();
+
+    int segmentIndex = 0;
+    for (int i = 0; i < segments.length; i++) {
+      if (pointIndex + 1 > segmentsLength[i]) {
+        pointIndex -= segmentsLength[i];
+      } else {
+        segmentIndex = i;
+        break;
+      }
+    }
+    return segmentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +36,7 @@ class PathTimeline extends StatelessWidget {
         ? Stack(
             alignment: Alignment.centerLeft,
             children: [
+              //segments
               Row(
                 children: segments
                     .asMap()
@@ -24,6 +48,7 @@ class PathTimeline extends StatelessWidget {
                         child: e.value)))
                     .toList(),
               ),
+              //points
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -31,17 +56,67 @@ class PathTimeline extends StatelessWidget {
                   SizedBox(height: 5),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: segments
-                          .map((segment) {
-                            return segment.points;
-                          })
-                          .expand((points) => points)
-                          .toList()),
+                      children: points),
+                ],
+              ),
+              //hover points
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 40),
+                  SizedBox(height: 5),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: points
+                          .asMap()
+                          .entries
+                          .map((e) => AddPointInsideTimeline(
+                                onClick: () => insertPoint(
+                                    findSegment(e.key, segments), e.key + 1),
+                              ))
+                          .toList()
+                            ..removeLast())
                 ],
               ),
             ],
           )
         : Container();
+  }
+}
+
+class AddPointInsideTimeline extends StatefulWidget {
+  const AddPointInsideTimeline({
+    Key? key,
+    required this.onClick,
+  }) : super(key: key);
+
+  final void Function() onClick;
+
+  @override
+  _AddPointInsideTimelineState createState() => _AddPointInsideTimelineState();
+}
+
+class _AddPointInsideTimelineState extends State<AddPointInsideTimeline> {
+  bool visibility = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onHover: (event) => setState(() => visibility = true),
+      onExit: (event) => setState(() => visibility = false),
+      child: Visibility(
+        maintainSize: true,
+        maintainAnimation: true,
+        maintainState: true,
+        visible: visibility,
+        child: IconButton(
+          onPressed: () {
+            widget.onClick();
+          },
+          icon: Icon(Icons.add_circle_outline_rounded),
+        ),
+      ),
+    );
   }
 }
 
