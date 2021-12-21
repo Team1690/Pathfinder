@@ -251,17 +251,27 @@ class SettingsDetails extends StatelessWidget {
     required this.onRobotEdit,
   });
 
-  _cardSettingsDouble({label, initialValue, onChanged, unitLabel = 'm'}) {
-    return CardSettingsDouble(
+  _cardSettingsDouble({
+    required String label,
+    required double initialValue,
+    required Function(double?) onChanged,
+    bool allowNegative = true,
+    int fractionDigits = 3,
+    String unitLabel = 'm',
+  }) {
+    return CardSettingsText(
       label: label,
-      initialValue: initialValue,
-      decimalDigits: 3,
+      // Remove trailing zeros and set to the wanted fraction digits
+      initialValue:
+          double.parse(initialValue.toStringAsFixed(fractionDigits)).toString(),
       hintText: label,
       unitLabel: unitLabel,
       validator: (value) {
         if (value == null) return '$label is required.';
+        if (double.tryParse(value) == null) return 'Not a number';
+        if (!allowNegative && double.parse(value) < 0) return 'No negatives';
       },
-      onChanged: onChanged,
+      onChanged: (val) => onChanged(double.parse(val)),
     );
   }
 
@@ -286,6 +296,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Width',
                   unitLabel: 'm',
+                  allowNegative: false,
                   initialValue: robot.width,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -296,6 +307,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Height',
                   unitLabel: 'm',
+                  allowNegative: false,
                   initialValue: robot.height,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -306,6 +318,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Max Velocity',
                   unitLabel: 'm/s',
+                  allowNegative: false,
                   initialValue: robot.maxVelocity,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -316,6 +329,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Max Accel',
                   unitLabel: 'm/s²',
+                  allowNegative: false,
                   initialValue: robot.maxAcceleration,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -326,6 +340,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Max Jerk',
                   unitLabel: 'm/s³',
+                  allowNegative: false,
                   initialValue: robot.maxJerk,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -346,6 +361,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Cycle Time',
                   unitLabel: 's',
+                  allowNegative: false,
                   initialValue: robot.cycleTime,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -356,6 +372,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Max Angular Vel',
                   unitLabel: '°/s',
+                  allowNegative: false,
                   initialValue: robot.maxAngularVelocity,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -366,6 +383,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Max Angular Accel',
                   unitLabel: '°/s²',
+                  allowNegative: false,
                   initialValue: robot.maxAngularAcceleration,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
@@ -418,6 +436,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'In Mag',
                   initialValue: pointData.inControlPoint.distance,
+                  allowNegative: false,
                   onChanged: (value) {
                     onPointEdit(
                       index,
@@ -432,6 +451,7 @@ class SettingsDetails extends StatelessWidget {
                   label: 'In Angle',
                   initialValue: degrees(pointData.inControlPoint.direction),
                   unitLabel: "°",
+                  fractionDigits: 1,
                   onChanged: (value) {
                     onPointEdit(
                       index,
@@ -444,6 +464,7 @@ class SettingsDetails extends StatelessWidget {
                 ),
                 _cardSettingsDouble(
                   label: 'Out Mag',
+                  allowNegative: false,
                   initialValue: pointData.outControlPoint.distance,
                   onChanged: (value) {
                     onPointEdit(
@@ -459,6 +480,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Out Angle',
                   initialValue: degrees(pointData.outControlPoint.direction),
+                  fractionDigits: 1,
                   unitLabel: "°",
                   onChanged: (value) {
                     onPointEdit(
@@ -473,6 +495,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: 'Heading',
                   initialValue: degrees(pointData.heading),
+                  fractionDigits: 1,
                   unitLabel: '°',
                   onChanged: (value) {
                     onPointEdit(index,
