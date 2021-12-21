@@ -75,7 +75,7 @@ class PathTimeline extends StatelessWidget {
                                     findSegment(e.key, segments), e.key + 1),
                               ))
                           .toList()
-                            ..removeLast())
+                        ..removeLast())
                 ],
               ),
             ],
@@ -113,7 +113,7 @@ class _AddPointInsideTimelineState extends State<AddPointInsideTimeline> {
           onPressed: () {
             widget.onClick();
           },
-          icon: Icon(Icons.add_circle_outline_rounded),
+          icon: Icon(Icons.circle),
         ),
       ),
     );

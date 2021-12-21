@@ -1,4 +1,4 @@
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/timeline.dart';
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:redux/redux.dart';
@@ -44,7 +44,7 @@ class TimeLineViewModel {
         ));
       },
       addPoint: (int segmentIndex, int insertIndex) {
-        store.dispatch(AddPointToPath(null, segmentIndex, insertIndex));
+        store.dispatch(addPointThunk(null, segmentIndex, insertIndex));
       },
     );
   }
