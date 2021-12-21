@@ -56,18 +56,7 @@ rpc.Point toRpcPoint(Point p) {
 }
 
 List<rpc.Segment> toRpcSegments(List<Segment> segments, List<Point> points) {
-  return segments
-      .asMap()
-      .entries
-      .map((e) {
-        if (e.key == segments.length - 1) return e.value;
-        return e.value.copyWith(pointIndexes: [
-          ...e.value.pointIndexes,
-          segments[e.key].pointIndexes.first
-        ]);
-      })
-      .map((s) => toRpcSegment(s, points))
-      .toList();
+  return segments.map((s) => toRpcSegment(s, points)).toList();
 }
 
 rpc.Segment toRpcSegment(Segment s, List<Point> points) {

@@ -4,7 +4,7 @@ import 'package:pathfinder/store/tab/store.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
-ThunkAction addPointThunk(Offset position, int segmentIndex, int insertIndex) {
+ThunkAction addPointThunk(Offset? position, int segmentIndex, int insertIndex) {
   return (Store store) async {
     store.dispatch(AddPointToPath(position, segmentIndex, insertIndex));
     store.dispatch(updateSplineThunk());

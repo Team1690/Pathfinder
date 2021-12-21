@@ -58,15 +58,29 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
       ? action.segmentIndex
       : max(tabState.path.segments.length - 1, 0);
 
-  Point newPoint = Point.initial(action.position);
-  if (tabState.path.points.length > 0) {
-    Offset inControlOffset = Offset.fromDirection((tabState.path.points[tabState.path.points.length - 1].position - newPoint.position).direction, defaultControlLength);
-    Offset outControlOFfset = Offset.fromDirection(inControlOffset.direction + pi, inControlOffset.distance);
-    newPoint =  newPoint.copyWith(
-      inControlPoint: inControlOffset,
-      outControlPoint: outControlOFfset
-    );
+  var position = action.position;
+
+  if (position == null) {
+    // If position is null, calculate it by the previues position and current position
+    final points = tabState.path.points;
+    position = (points[insertIndex - 1].position + points[insertIndex].position)
+        .scale(0.5, 0.5);
   }
+
+  var newPoint = Point.initial(position);
+
+  if (tabState.path.points.length > 0) {
+    Offset inControlOffset = Offset.fromDirection(
+        (tabState.path.points[tabState.path.points.length - 1].position -
+                newPoint.position)
+            .direction,
+        defaultControlLength);
+    Offset outControlOFfset = Offset.fromDirection(
+        inControlOffset.direction + pi, inControlOffset.distance);
+    newPoint = newPoint.copyWith(
+        inControlPoint: inControlOffset, outControlPoint: outControlOFfset);
+  }
+
   var newPoints = [...tabState.path.points];
 
   if (tabState.path.segments.length == 0) {
