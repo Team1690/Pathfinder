@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/models/point.dart';
+import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 enum PointType {
@@ -22,12 +24,12 @@ class PointSettings {
   PointSettings(this.color, this.radius);
 }
 
-const double headingLength = 30;
+const double headingLength = 50;
 
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
-  PointType.inControl: PointSettings(Color(0xff111111), 7),
-  PointType.outControl: PointSettings(Color(0xff111111), 7),
+  PointType.inControl: PointSettings(white, 7),
+  PointType.outControl: PointSettings(white, 7),
   PointType.heading: PointSettings(Color(0xffc80000), 7)
 };
 
@@ -39,6 +41,7 @@ class FieldPainter extends CustomPainter {
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<Offset>? evaluetedPoints;
+  Robot robot;
 
   FieldPainter(
     this.image,
@@ -48,6 +51,7 @@ class FieldPainter extends CustomPainter {
     this.enableHeadingEditing,
     this.enableControlEditing,
     this.evaluetedPoints,
+    this.robot,
   );
 
   void drawPointBackground(
@@ -55,10 +59,14 @@ class FieldPainter extends CustomPainter {
     Offset position,
     bool isSelected,
     bool isStopPoint,
+    bool isFirstPoint,
+    bool isLastPoint,
   ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    var color = currentPointSettings.color;
+    var color = isFirstPoint
+        ? Color(0xff34A853)
+        : (isLastPoint ? Color(0xffAE4335) : currentPointSettings.color);
     var selectedColor = selectedPointColor;
 
     if (isStopPoint) {
@@ -128,7 +136,7 @@ class FieldPainter extends CustomPainter {
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = color
-      ..strokeWidth = 2;
+      ..strokeWidth = 1;
 
     final Offset edge =
         Offset(position.dx + control.dx, position.dy + control.dy);
@@ -149,7 +157,7 @@ class FieldPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = pointSetting.color
-      ..strokeWidth = 5;
+      ..strokeWidth = 3;
     final double circleRadius = 1 / (paint.strokeWidth * paint.strokeWidth);
 
     canvas.drawLine(position, edge, paint);
@@ -176,7 +184,8 @@ class FieldPainter extends CustomPainter {
     bool isFirstPoint,
     bool isLastPoint,
   ) {
-    drawPointBackground(canvas, position, isSelected, isStopPoint);
+    drawPointBackground(
+        canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
     drawHeadingLine(canvas, position, heading, enableHeadingEditing);
     if (!isFirstPoint) {
       drawControlPoint(canvas, position, inControl, enableControlEditing);
@@ -196,21 +205,79 @@ class FieldPainter extends CustomPainter {
     for (Offset splinePoint in evaluetedPoints) {
       pathPoints.add(splinePoint);
     }
+
     Path path = Path();
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
+  }
+
+  void drawPathShadow(Canvas canvas, List<Offset> evaluetedPoints) {
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4);
+
+    List<Offset> pathPoints = [];
+    for (Offset splinePoint in evaluetedPoints) {
+      pathPoints.add(splinePoint);
+    }
+
+    Path path = Path();
+    path.addPolygon(pathPoints, false);
+    canvas.drawPath(path, paint);
+  }
+
+  void drawWheelsPath(Canvas canvas, List<Offset> evaluetedPoints) {
+    double robotWidth = robot.width;
+
+    Paint paint = Paint()
+      ..color = white.withOpacity(0.5)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    if (evaluetedPoints.length > 0) {
+      List<Offset> leftPoints =
+          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
+            .translate(
+                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+      }).toList();
+      List<Offset> rightPoints =
+          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
+            .translate(
+                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+      }).toList();
+
+      // inspect(pathPoints);
+      Path leftPath = Path();
+      Path rightPath = Path();
+
+      leftPath.addPolygon(leftPoints, false);
+      canvas.drawPath(leftPath, paint);
+
+      rightPath.addPolygon(rightPoints, false);
+      canvas.drawPath(rightPath, paint);
+    }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     paintImage(
         canvas: canvas,
-        rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
         fit: BoxFit.fill,
+        rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
+        colorFilter:
+            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
         image: image);
 
     if (evaluetedPoints != null) {
+      drawPathShadow(canvas, evaluetedPoints!);
       drawPath(canvas, evaluetedPoints!);
+      drawWheelsPath(canvas, evaluetedPoints!);
     }
 
     for (final entery in points.asMap().entries) {
@@ -259,16 +326,17 @@ class FieldLoader extends StatefulWidget {
   bool enableControlEditing;
   List<Offset>? evaluatedPoints;
   Function(Offset) setFieldSizePixels;
+  Robot robot;
 
   FieldLoader(
-    this.points,
-    this.selectedPoint,
-    this.dragPoints,
-    this.enableHeadingEditing,
-    this.enableControlEditing,
-    this.evaluatedPoints,
-    this.setFieldSizePixels,
-  );
+      this.points,
+      this.selectedPoint,
+      this.dragPoints,
+      this.enableHeadingEditing,
+      this.enableControlEditing,
+      this.evaluatedPoints,
+      this.setFieldSizePixels,
+      this.robot);
 
   @override
   _FieldLoaderState createState() => _FieldLoaderState();
@@ -329,6 +397,7 @@ class _FieldLoaderState extends State<FieldLoader> {
                 widget.enableHeadingEditing,
                 widget.enableControlEditing,
                 widget.evaluatedPoints,
+                widget.robot,
               ),
               size: Size(width, height)));
     } else {

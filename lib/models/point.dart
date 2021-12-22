@@ -5,7 +5,7 @@ import 'package:pathfinder/utils/coordinates_convertion.dart';
 import 'package:pathfinder/utils/json.dart';
 import 'package:redux/redux.dart';
 
-const double defaultControlLength = 0.5;
+const double defaultControlLength = 1;
 
 class Point {
   final Offset position;

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/widgets/path_editor/field_editor.dart';
@@ -16,6 +17,7 @@ class PathViewModel {
   final List<Point> points;
   final List<Segment> segments;
   final int? selectedPointIndex;
+  final Robot robot;
   final Function(Offset) addPoint;
   final Function(int) deletePoint;
   final Function(int, Offset) finishDrag;
@@ -34,6 +36,7 @@ class PathViewModel {
     required this.points,
     required this.segments,
     required this.selectedPointIndex,
+    required this.robot,
     required this.addPoint,
     required this.deletePoint,
     required this.finishDrag,
@@ -63,6 +66,7 @@ class PathViewModel {
       selectedPointIndex: (store.state.tabState.ui.selectedType == Point
           ? store.state.tabState.ui.selectedIndex
           : null),
+      robot: store.state.tabState.robot.toUiCoord(store),
       addPoint: (Offset position) {
         store.dispatch(addPointThunk(uiToMetersCoord(store, position), -1, -1));
       },
@@ -208,12 +212,12 @@ class _PathEditorState extends State<_PathEditor> {
               pressedKeys.add(event.logicalKey);
             }
           } else if (event is RawKeyUpEvent) {
-            if (
-              event.logicalKey == LogicalKeyboardKey.backspace
-              && (pressedKeys.contains(LogicalKeyboardKey.shiftLeft)
-                  || pressedKeys.contains(LogicalKeyboardKey.shiftRight))
-              && widget.pathProps.selectedPointIndex != null) {
-              widget.pathProps.deletePoint(widget.pathProps.selectedPointIndex!);
+            if (event.logicalKey == LogicalKeyboardKey.backspace &&
+                (pressedKeys.contains(LogicalKeyboardKey.shiftLeft) ||
+                    pressedKeys.contains(LogicalKeyboardKey.shiftRight)) &&
+                widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps
+                  .deletePoint(widget.pathProps.selectedPointIndex!);
             }
 
             pressedKeys.remove(event.logicalKey);
@@ -232,6 +236,7 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.controlToggle,
                   widget.pathProps.evaulatedPoints,
                   widget.pathProps.setFieldSizePixels,
+                  widget.pathProps.robot,
                 ),
                 onTapUp: (final TapUpDetails detailes) {
                   final Offset tapPos = detailes.localPosition;
@@ -257,12 +262,14 @@ class _PathEditorState extends State<_PathEditor> {
                           details.localPosition, point, PointType.heading);
                     }
 
-                    if (widget.pathProps.controlToggle && draggingPoint == null) {
+                    if (widget.pathProps.controlToggle &&
+                        draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.inControl);
                     }
 
-                    if (widget.pathProps.controlToggle && draggingPoint == null) {
+                    if (widget.pathProps.controlToggle &&
+                        draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           details.localPosition, point, PointType.outControl);
                     }
@@ -273,8 +280,8 @@ class _PathEditorState extends State<_PathEditor> {
                     }
 
                     if (draggingPoint != null) {
-                      FullDraggingPoint fullDraggingPoint = 
-                        FullDraggingPoint(index, draggingPoint);
+                      FullDraggingPoint fullDraggingPoint =
+                          FullDraggingPoint(index, draggingPoint);
 
                       setState(() {
                         dragPoint = fullDraggingPoint;
@@ -288,42 +295,48 @@ class _PathEditorState extends State<_PathEditor> {
                   if (dragPoint != null) {
                     FullDraggingPoint currentDragPoint = dragPoint!;
                     setState(() {
-                      currentDragPoint =  FullDraggingPoint(
+                      currentDragPoint = FullDraggingPoint(
                           currentDragPoint.index,
-                          DraggingPoint(currentDragPoint.draggingPoint.type,
-                              currentDragPoint.draggingPoint.position + details.delta));
+                          DraggingPoint(
+                              currentDragPoint.draggingPoint.type,
+                              currentDragPoint.draggingPoint.position +
+                                  details.delta));
                       dragPoint = currentDragPoint;
                       dragPoints = [currentDragPoint];
-                      
-                      if (!widget.pathProps.points[currentDragPoint.index].isStop
-                        || pressedKeys.contains(LogicalKeyboardKey.keyF)) {
 
-                        if (currentDragPoint.draggingPoint.type == PointType.inControl) {
-                          dragPoints.add(
-                            FullDraggingPoint(
+                      if (!widget.pathProps.points[currentDragPoint.index]
+                              .isStop ||
+                          pressedKeys.contains(LogicalKeyboardKey.keyF)) {
+                        if (currentDragPoint.draggingPoint.type ==
+                            PointType.inControl) {
+                          dragPoints.add(FullDraggingPoint(
                               currentDragPoint.index,
                               DraggingPoint(
-                                PointType.outControl,
-                                Offset.fromDirection(
-                                  currentDragPoint.draggingPoint.position.direction + pi,
-                                  widget.pathProps.points[currentDragPoint.index].outControlPoint.distance
-                                )
-                              )
-                            )
-                          );
-                        } else if(currentDragPoint.draggingPoint.type == PointType.outControl) {
-                          dragPoints.add(
-                            FullDraggingPoint(
+                                  PointType.outControl,
+                                  Offset.fromDirection(
+                                      currentDragPoint.draggingPoint.position
+                                              .direction +
+                                          pi,
+                                      widget
+                                          .pathProps
+                                          .points[currentDragPoint.index]
+                                          .outControlPoint
+                                          .distance))));
+                        } else if (currentDragPoint.draggingPoint.type ==
+                            PointType.outControl) {
+                          dragPoints.add(FullDraggingPoint(
                               currentDragPoint.index,
                               DraggingPoint(
-                                PointType.inControl,
-                                Offset.fromDirection(
-                                  currentDragPoint.draggingPoint.position.direction + pi,
-                                  widget.pathProps.points[currentDragPoint.index].inControlPoint.distance
-                                )
-                              )
-                            )
-                          );
+                                  PointType.inControl,
+                                  Offset.fromDirection(
+                                      currentDragPoint.draggingPoint.position
+                                              .direction +
+                                          pi,
+                                      widget
+                                          .pathProps
+                                          .points[currentDragPoint.index]
+                                          .inControlPoint
+                                          .distance))));
                         }
                       }
                     });

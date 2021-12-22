@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:pathfinder/utils/coordinates_convertion.dart';
+import 'package:redux/redux.dart';
+
 class Robot {
   final double width;
   final double height;
@@ -78,6 +82,15 @@ class Robot {
     }
 
     return false;
+  }
+
+  Robot toUiCoord(Store store) {
+    final uiSize = metersToUiCoord(store, Offset(width, height));
+
+    return copyWith(
+      width: uiSize.dx,
+      height: uiSize.dy,
+    );
   }
 
   // Json
