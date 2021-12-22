@@ -142,7 +142,6 @@ func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryReque
 	velXTimeData := []vector.Vector{}
 	velYTimeData := []vector.Vector{}
 	velDistanceData := []vector.Vector{}
-	// accTimeData := []vector.Vector{}
 
 	headingTimeData := []vector.Vector{}
 	headingDistanceData := []vector.Vector{}
@@ -150,8 +149,6 @@ func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryReque
 	omegaTimeData := []vector.Vector{}
 	omegaDistanceData := []vector.Vector{}
 
-	// positionXData := []vector.Vector{}
-	// positionYData := []vector.Vector{}
 	positionData := []vector.Vector{}
 
 	curvatureDistanceData := []vector.Vector{}
