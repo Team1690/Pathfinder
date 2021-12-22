@@ -61,14 +61,18 @@ class FieldPainter extends CustomPainter {
   ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    var color = isFirstPoint
-        ? Color(0xff34A853)
-        : (isLastPoint ? Color(0xffAE4335) : currentPointSettings.color);
+    var color = currentPointSettings.color;
     var selectedColor = selectedPointColor;
 
     if (isStopPoint) {
       selectedColor = selectedStopPointColor;
       color = stopPointColor;
+    } else if (isFirstPoint) {
+      selectedColor = Color(0xff34A853).withGreen(230);
+      color = Color(0xff34A853);
+    } else if (isLastPoint) {
+      selectedColor = Color(0xffAE4335).withRed(230);
+      color = Color(0xffAE4335);
     }
 
     final Paint paint = Paint()..color = isSelected ? selectedColor : color;
