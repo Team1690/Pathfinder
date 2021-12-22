@@ -4,11 +4,13 @@ import (
 	"context"
 	"log"
 	"math"
+	"net/http"
 
 	"github.com/Team1690/Pathfinder/export"
 	"github.com/Team1690/Pathfinder/pathfinder"
 	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/spline"
+	"github.com/Team1690/Pathfinder/utils/plot"
 	"github.com/Team1690/Pathfinder/utils/vector"
 	"golang.org/x/xerrors"
 )
@@ -59,6 +61,9 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 
 	// * Write results to a csv file
 	export.ExportTrajectory(res)
+
+	// // * Generate debug graphs
+	// GenerateGraphs(res, r.SwerveRobotParams)
 
 	return res, nil
 }
@@ -129,4 +134,85 @@ func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinde
 		MaxJerk:          float64(rpcRobot.MaxJerk),
 		Radius:           math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
 	}
+}
+
+func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveRobotParams) {
+	velTimeData := []vector.Vector{}
+	velDirTimeData := []vector.Vector{}
+	velXTimeData := []vector.Vector{}
+	velYTimeData := []vector.Vector{}
+	velDistanceData := []vector.Vector{}
+	// accTimeData := []vector.Vector{}
+
+	headingTimeData := []vector.Vector{}
+	headingDistanceData := []vector.Vector{}
+
+	omegaTimeData := []vector.Vector{}
+	omegaDistanceData := []vector.Vector{}
+
+	// positionXData := []vector.Vector{}
+	// positionYData := []vector.Vector{}
+	positionData := []vector.Vector{}
+
+	curvatureDistanceData := []vector.Vector{}
+
+	distance := 0.0
+	prevPosition := vector.NewFromRpcVector(response.SwervePoints[0].Position)
+
+	time := 0.0
+
+	for _, point := range response.SwervePoints {
+		currentPosition := vector.NewFromRpcVector(point.Position)
+		prevToCurrentPosition := currentPosition.Sub(prevPosition)
+		distance += prevToCurrentPosition.Norm()
+
+		// * Position
+		positionData = append(positionData, currentPosition)
+
+		// * Velocity
+		currentVelocity := vector.NewFromRpcVector(point.Velocity)
+
+		velDirTimeData = append(velDirTimeData, vector.Vector{X: time, Y: currentVelocity.Angle()})
+
+		velNorm := currentVelocity.Norm()
+
+		velTimeData = append(velTimeData, vector.Vector{X: time, Y: velNorm})
+		velXTimeData = append(velXTimeData, vector.Vector{X: time, Y: currentVelocity.X})
+		velYTimeData = append(velYTimeData, vector.Vector{X: time, Y: currentVelocity.Y})
+		velDistanceData = append(velDistanceData, vector.Vector{X: distance, Y: velNorm})
+
+		// * Heading
+		headingTimeData = append(headingTimeData, vector.Vector{X: time, Y: float64(point.Heading)})
+		headingDistanceData = append(headingDistanceData, vector.Vector{X: distance, Y: float64(point.Heading)})
+
+		// * Omega
+		omegaTimeData = append(omegaTimeData, vector.Vector{X: time, Y: float64(point.AngularVelocity)})
+		omegaDistanceData = append(omegaDistanceData, vector.Vector{X: distance, Y: float64(point.AngularVelocity)})
+
+		// * curvature
+		dAngle := math.Abs(prevToCurrentPosition.Angle())
+		curvature := math.Min(dAngle/prevToCurrentPosition.Norm(), 1e6)
+		curvatureDistanceData = append(curvatureDistanceData, vector.Vector{X: distance, Y: curvature})
+
+		prevPosition = currentPosition
+		time += float64(robot.CycleTime)
+	}
+
+	plot.PlotScatter(positionData, "Position")
+
+	plot.PlotScatter(velTimeData, "Velocity-Time")
+	plot.PlotScatter(velDistanceData, "Velocity-Distance")
+	plot.PlotScatter(velDirTimeData, "VelocityDirection-Time")
+	plot.PlotScatter(velXTimeData, "VelocityX-Time")
+	plot.PlotScatter(velYTimeData, "VelocityY-Time")
+
+	plot.PlotScatter(headingTimeData, "Heading-Time")
+	plot.PlotScatter(headingDistanceData, "Heading-Distance")
+
+	plot.PlotScatter(omegaTimeData, "Omega-Time")
+	plot.PlotScatter(omegaDistanceData, "Omega-Distance")
+
+	plot.PlotScatter(curvatureDistanceData, "Curvature-Distance")
+
+	http.ListenAndServe(":8081", nil)
 }
