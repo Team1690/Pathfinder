@@ -254,7 +254,7 @@ class SettingsDetails extends StatelessWidget {
   _cardSettingsDouble({
     required String label,
     required double initialValue,
-    required Function(double?) onChanged,
+    required Function(double) onChanged,
     bool allowNegative = true,
     int fractionDigits = 3,
     String unitLabel = 'm',
@@ -271,7 +271,7 @@ class SettingsDetails extends StatelessWidget {
         if (double.tryParse(value) == null) return 'Not a number';
         if (!allowNegative && double.parse(value) < 0) return 'No negatives';
       },
-      onChanged: (val) => onChanged(double.parse(val)),
+      onChanged: (val) => onChanged(double.tryParse(val) ?? initialValue),
     );
   }
 
@@ -300,7 +300,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.width,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      width: value ?? 0,
+                      width: value,
                     ));
                   },
                 ),
@@ -311,7 +311,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.height,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      height: value ?? 0,
+                      height: value,
                     ));
                   },
                 ),
@@ -322,7 +322,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.maxVelocity,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxVelocity: value ?? 0,
+                      maxVelocity: value,
                     ));
                   },
                 ),
@@ -333,7 +333,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.maxAcceleration,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxAcceleration: value ?? 0,
+                      maxAcceleration: value,
                     ));
                   },
                 ),
@@ -344,7 +344,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.maxJerk,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxJerk: value ?? 0,
+                      maxJerk: value,
                     ));
                   },
                 ),
@@ -354,7 +354,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.skidAcceleration,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      skidAcceleration: value ?? 0,
+                      skidAcceleration: value,
                     ));
                   },
                 ),
@@ -365,7 +365,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.cycleTime,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      cycleTime: value ?? 0,
+                      cycleTime: value,
                     ));
                   },
                 ),
@@ -376,7 +376,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.maxAngularVelocity,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxAngularVelocity: value ?? 0,
+                      maxAngularVelocity: value,
                     ));
                   },
                 ),
@@ -387,7 +387,7 @@ class SettingsDetails extends StatelessWidget {
                   initialValue: robot.maxAngularAcceleration,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxAngularAcceleration: value ?? 0,
+                      maxAngularAcceleration: value,
                     ));
                   },
                 ),
@@ -418,7 +418,7 @@ class SettingsDetails extends StatelessWidget {
                     onPointEdit(
                         index,
                         pointData.copyWith(
-                          position: Offset(value ?? 0, pointData.position.dy),
+                          position: Offset(value, pointData.position.dy),
                         ));
                   },
                 ),
@@ -429,7 +429,7 @@ class SettingsDetails extends StatelessWidget {
                     onPointEdit(
                         index,
                         pointData.copyWith(
-                          position: Offset(pointData.position.dx, value ?? 0),
+                          position: Offset(pointData.position.dx, value),
                         ));
                   },
                 ),
@@ -498,8 +498,8 @@ class SettingsDetails extends StatelessWidget {
                   fractionDigits: 1,
                   unitLabel: '°',
                   onChanged: (value) {
-                    onPointEdit(index,
-                        pointData.copyWith(heading: radians(value ?? 0)));
+                    onPointEdit(
+                        index, pointData.copyWith(heading: radians(value)));
                   },
                 ),
                 if (index != 0 && index != points.length - 1)

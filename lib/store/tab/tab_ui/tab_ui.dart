@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:grpc/grpc.dart';
+import 'package:pathfinder/utils/json.dart';
 
 @immutable
 class TabUI {
@@ -65,5 +65,33 @@ class TabUI {
       controlToggle: controlToggle ?? this.controlToggle,
       serverError: serverError ?? this.serverError,
     );
+  }
+
+  // Json
+  TabUI.fromJson(Map<String, dynamic> json)
+      : selectedIndex = -1,
+        selectedType = Null,
+        isSidebarOpen = json['isSidebarOpen'],
+        fieldSizePixels = offsetFromJson(json['fieldSizePixels']),
+        isGraphPageOpen = json['isGraphPageOpen'],
+        zoomLevel = json['zoomLevel'],
+        pan = offsetFromJson(json['pan']),
+        headingToggle = json['headingToggle'],
+        controlToggle = json['controlToggle'],
+        serverError = null;
+
+  Map<String, dynamic> toJson() {
+    return {
+      // TODO: Serliaize these
+      // 'selectedIndex': selectedIndex,
+      // 'selectedType': selectedType,
+      'isSidebarOpen': isSidebarOpen,
+      'fieldSizePixels': offsetToJson(fieldSizePixels),
+      'isGraphPageOpen': isGraphPageOpen,
+      'zoomLevel': zoomLevel,
+      'pan': offsetToJson(pan),
+      'headingToggle': headingToggle,
+      'controlToggle': controlToggle,
+    };
   }
 }

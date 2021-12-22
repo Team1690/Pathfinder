@@ -41,4 +41,19 @@ class TabState {
       ui: ui ?? this.ui,
     );
   }
+
+  TabState.fromJson(Map<String, dynamic> json)
+      : path = Path.fromJson(json['path']),
+        robot = Robot.fromJson(json['robot']),
+        field = Field.fromJson(json['field']),
+        ui = TabUI.fromJson(json['ui']);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'path': path.toJson(),
+      'robot': robot.toJson(),
+      'field': field.toJson(),
+      'ui': ui.toJson(),
+    };
+  }
 }

@@ -28,4 +28,21 @@ class Path {
       evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
     );
   }
+
+  // Json
+  Path.fromJson(Map<String, dynamic> json)
+      : segments = List<Segment>.from(
+            json['segments'].map((p) => Segment.fromJson(p))),
+        points = List<Point>.from(json['points'].map((p) => Point.fromJson(p))),
+        evaluatedPoints = List<rpc.SplineResponse_Point>.from(
+            json['evaluatedPoints']
+                .map((p) => rpc.SplineResponse_Point.fromJson(p)));
+
+  Map<String, dynamic> toJson() {
+    return {
+      'segments': segments,
+      'points': points,
+      'evaluatedPoints': evaluatedPoints?.map((p) => p.writeToJson()).toList(),
+    };
+  }
 }

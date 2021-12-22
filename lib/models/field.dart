@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:pathfinder/utils/json.dart';
 
 const officialFieldWidth = 16.4846;
 const officialFieldHeight = 8.1026;
@@ -22,5 +23,14 @@ class Field {
     return Field(
       size: size ?? this.size,
     );
+  }
+
+  Field.fromJson(Map<String, dynamic> json)
+      : size = offsetFromJson(json['size']);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'size': offsetToJson(size),
+    };
   }
 }

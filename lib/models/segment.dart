@@ -51,4 +51,22 @@ class Segment {
       splineTypes: splineTypes ?? this.splineTypes,
     );
   }
+
+  // Json
+  Segment.fromJson(Map<String, dynamic> json)
+      : pointIndexes = json['pointIndexes'].cast<int>(),
+        maxVelocity = json['maxVelocity'],
+        isHidden = json['isHidden'],
+        evaluatedPoints = null,
+        trajectoryPoints = null,
+        splineParameters = null,
+        splineTypes = null;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'pointIndexes': pointIndexes,
+      'maxVelocity': maxVelocity,
+      'isHidden': isHidden,
+    };
+  }
 }

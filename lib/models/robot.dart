@@ -79,4 +79,30 @@ class Robot {
 
     return false;
   }
+
+  // Json
+  Robot.fromJson(Map<String, dynamic> json)
+      : width = json['width'],
+        height = json['height'],
+        maxAcceleration = json['maxAcceleration'],
+        maxAngularAcceleration = json['maxAngularAcceleration'],
+        maxAngularVelocity = json['maxAngularVelocity'],
+        skidAcceleration = json['skidAcceleration'],
+        maxJerk = json['maxJerk'],
+        maxVelocity = json['maxVelocity'],
+        cycleTime = json['cycleTime'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'width': width,
+      'height': height,
+      'maxAcceleration': maxAcceleration,
+      'maxAngularAcceleration': maxAngularAcceleration,
+      'maxAngularVelocity': maxAngularVelocity,
+      'skidAcceleration': skidAcceleration,
+      'maxJerk': maxJerk,
+      'maxVelocity': maxVelocity,
+      'cycleTime': cycleTime,
+    };
+  }
 }

@@ -23,11 +23,19 @@ class AppState {
   }
 
   @override
-  int get hashCode =>
-    tabState.hashCode;
+  int get hashCode => tabState.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is AppState && tabState == other.tabState;
+      identical(this, other) || other is AppState && tabState == other.tabState;
+
+  // Json
+  AppState.fromJson(Map<String, dynamic> json)
+      : tabState = TabState.fromJson(json['tabState']);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tabState': tabState.toJson(),
+    };
+  }
 }

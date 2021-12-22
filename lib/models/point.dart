@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/utils/coordinates_convertion.dart';
+import 'package:pathfinder/utils/json.dart';
 import 'package:redux/redux.dart';
 
 const double defaultControlLength = 0.5;
+
 class Point {
   final Offset position;
   final Offset inControlPoint;
@@ -29,8 +31,9 @@ class Point {
   factory Point.initial(Offset position) {
     return Point(
       position: position,
-      inControlPoint: Offset.fromDirection(pi/4, defaultControlLength),
-      outControlPoint: Offset.fromDirection((pi/4) + pi, defaultControlLength),
+      inControlPoint: Offset.fromDirection(pi / 4, defaultControlLength),
+      outControlPoint:
+          Offset.fromDirection((pi / 4) + pi, defaultControlLength),
       heading: 0,
       useHeading: true,
       actions: [],
@@ -85,5 +88,29 @@ class Point {
       inControlPoint: metersToUiCoord(store, inControlPoint),
       outControlPoint: metersToUiCoord(store, outControlPoint),
     );
+  }
+
+  // Json
+  Point.fromJson(Map<String, dynamic> json)
+      : position = offsetFromJson(json['position']),
+        inControlPoint = offsetFromJson(json['inControlPoint']),
+        outControlPoint = offsetFromJson(json['outControlPoint']),
+        heading = json['heading'],
+        useHeading = json['useHeading'],
+        actions = json['actions'].cast<String>(),
+        cutSegment = json['cutSegment'],
+        isStop = json['isStop'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'position': offsetToJson(position),
+      'inControlPoint': offsetToJson(inControlPoint),
+      'outControlPoint': offsetToJson(outControlPoint),
+      'heading': heading,
+      'useHeading': useHeading,
+      'actions': actions,
+      'cutSegment': cutSegment,
+      'isStop': isStop,
+    };
   }
 }
