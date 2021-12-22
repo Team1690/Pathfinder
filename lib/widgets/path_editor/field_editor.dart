@@ -127,6 +127,14 @@ class FieldPainter extends CustomPainter {
         Offset dragPosition = dragPoint.position;
         double dragHeading = dragPosition.direction;
         drawHeadingLine(canvas, selectedPoint.position, dragHeading, false);
+        drawPointBackground(
+            canvas,
+            selectedPoint.position +
+                Offset.fromDirection(dragHeading, headingLength),
+            true,
+            false,
+            false,
+            false);
         break;
       default:
     }
