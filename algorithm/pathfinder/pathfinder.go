@@ -7,10 +7,9 @@ import (
 	"github.com/Team1690/Pathfinder/spline"
 	"github.com/Team1690/Pathfinder/utils"
 	"github.com/Team1690/Pathfinder/utils/vector"
-	"golang.org/x/xerrors"
 )
 
-const deltaDistanceForEvaluation = 0.0001
+const deltaDistanceForEvaluation = 1e-4
 
 type TrajectoryPoint struct {
 	Time         float64
@@ -32,33 +31,6 @@ type RobotParameters struct {
 	CycleTime        float64
 }
 
-func getSegmentIndexBySplineIndex(segments []*rpc.Segment, splineIndex int) (int, error) {
-	numberOfSplinesUntilCurrentSegment := 0
-	for index, segment := range segments {
-		if splineIndex >= numberOfSplinesUntilCurrentSegment {
-			return index, nil
-		}
-
-		numberOfSplinesUntilCurrentSegment += len(segment.Points) - 1
-	}
-
-	return -1, xerrors.New("spline index is greater than number of splines in segments")
-}
-
-// Waypoint is a point which is used to define the splines (position, control in/out, heading, useHeading...)
-func getWaypointByIndex(segments []*rpc.Segment, pointIndex int) *rpc.Point {
-	numberOfPointUntilCurrentSegment := 0
-	for _, segment := range segments {
-		if pointIndex <= numberOfPointUntilCurrentSegment+len(segment.Points) {
-			return segment.Points[pointIndex-numberOfPointUntilCurrentSegment]
-		}
-
-		numberOfPointUntilCurrentSegment += len(segment.Points) - 1
-	}
-
-	return nil
-}
-
 type indexedHeadingPoint struct {
 	index   int
 	heading float64
@@ -69,14 +41,9 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 	trajectory := []*TrajectoryPoint{&firstPoint}
 
-	prevSplineIndex := 0
-
-	headingPoints := []*indexedHeadingPoint{
-		{index: 0, heading: utils.WrapAngle(float64(segments[0].Points[0].Heading))}, // * Always using first point's heading
-	}
+	segmentClassifier := NewSegmentClassifier(segments)
 
 	pathDerivative := path.Derivative()
-
 	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
 
 	for s := ds; s <= 1; s += ds {
@@ -88,46 +55,23 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 		point.Distance = trajectory[len(trajectory)-1].Distance + distanceToPrevPoint
 
-		splineIndex := path.GetSplineIndex(s + ds)
+		segmentClassifier.Update(&point.Position, len(trajectory))
 
-		currentSegmentIndex, err := getSegmentIndexBySplineIndex(segments, splineIndex)
-		if err != nil {
-			return nil, xerrors.Errorf("error in getting segment for point: %w", err)
-		}
-
-		point.Velocity = float64(segments[currentSegmentIndex].MaxVelocity)
-
-		if splineIndex != prevSplineIndex {
-			waypoint := getWaypointByIndex(segments, splineIndex)
-			if waypoint.UseHeading && s+ds < 1 {
-				prevHeading := headingPoints[len(headingPoints)-1].heading
-				headingPoints = append(headingPoints, &indexedHeadingPoint{
-					index:   len(trajectory),
-					heading: prevHeading + utils.WrapAngle(float64(waypoint.Heading)-prevHeading),
-				})
-			}
-		}
+		point.Velocity = segmentClassifier.GetMaxVel()
 
 		trajectory = append(trajectory, &point)
-
-		prevSplineIndex = splineIndex
 	}
 
-	// * Adding the final heading
-	lastSegment := segments[len(segments)-1]
-	lastPoint := lastSegment.Points[len(lastSegment.Points)-1]
-	prevHeading := headingPoints[len(headingPoints)-1].heading
-	if lastPoint.UseHeading {
-		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: headingPoints[len(headingPoints)-1].heading + utils.WrapAngle(float64(lastPoint.Heading)-prevHeading)})
-	} else {
-		// * If the last point doesn't use heading, the heading at the end is the previous heading
-		headingPoints = append(headingPoints, &indexedHeadingPoint{index: len(trajectory) - 1, heading: prevHeading})
-	}
+	segmentClassifier.AddLastHeading(len(trajectory))
 
+	// TODO: export all kinematics to thier corresponding file
 	CalculateKinematics(trajectory, robot)
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)
+
+	headingPoints := segmentClassifier.GetHeadingPoints()
 	LimitVelocityWithCentrifugalForce(trajectory, robot, headingPoints)
+
 	CalculateKinematics(trajectory, robot)
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)

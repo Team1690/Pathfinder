@@ -59,7 +59,7 @@ func (p *Path) GetSplineIndex(s float64) int {
 	unscaledSForEvaluatedSpline := math.Mod(s, p.SForEachSpline)
 	evaluatedSplineIndex := int((s - unscaledSForEvaluatedSpline) / p.SForEachSpline)
 
-	return int(evaluatedSplineIndex)
+	return evaluatedSplineIndex
 }
 
 // Get an array of points on the path, evaluated in an interval which is defined in units of length.
