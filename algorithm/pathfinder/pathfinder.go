@@ -175,8 +175,8 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 				nextHeadingPoint.index,
 			)
 
-			if headingPointIndex <= len(headingPoints)-3 {
-				for trajectoryPointIndex := nextHeadingPoint.index + 1; trajectoryPointIndex <= headingPoints[headingPointIndex+2].index; trajectoryPointIndex++ {
+			if headingPointIndex <= len(headingPoints)-2 {
+				for trajectoryPointIndex := nextHeadingPoint.index + 1; trajectoryPointIndex < len(trajectoryPoints); trajectoryPointIndex++ {
 					trajectoryPoints[trajectoryPointIndex].Heading += dHeadingLeft
 				}
 			}
