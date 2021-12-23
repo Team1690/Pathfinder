@@ -28,8 +28,8 @@ const double headingLength = 50;
 
 Map<PointType, PointSettings> pointSettings = {
   PointType.path: PointSettings(Color(0xbbdddddd), 10),
-  PointType.inControl: PointSettings(white, 7),
-  PointType.outControl: PointSettings(white, 7),
+  PointType.inControl: PointSettings(Colors.yellow, 7),
+  PointType.outControl: PointSettings(Colors.yellow, 7),
   PointType.heading: PointSettings(Color(0xffc80000), 7)
 };
 
@@ -64,14 +64,18 @@ class FieldPainter extends CustomPainter {
   ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    var color = isFirstPoint
-        ? Color(0xff34A853)
-        : (isLastPoint ? Color(0xffAE4335) : currentPointSettings.color);
+    var color = currentPointSettings.color;
     var selectedColor = selectedPointColor;
 
     if (isStopPoint) {
       selectedColor = selectedStopPointColor;
       color = stopPointColor;
+    } else if (isFirstPoint) {
+      selectedColor = Color(0xff34A853).withGreen(230);
+      color = Color(0xff34A853);
+    } else if (isLastPoint) {
+      selectedColor = Color(0xffAE4335).withRed(230);
+      color = Color(0xffAE4335);
     }
 
     final Paint paint = Paint()..color = isSelected ? selectedColor : color;
@@ -111,12 +115,29 @@ class FieldPainter extends CustomPainter {
         Offset dragPosition = selectedPoint.position + dragPoint.position;
         canvas.drawCircle(dragPosition, currentPointSettings.radius, paint);
         drawControlPoint(
-            canvas, selectedPoint.position, dragPoint.position, false);
+            canvas, selectedPoint.position, dragPoint.position, false, true);
+        drawPointBackground(
+            canvas,
+            Offset(selectedPoint.position.dx + dragPoint.position.dx,
+                selectedPoint.position.dy + dragPoint.position.dy),
+            true,
+            false,
+            false,
+            false);
+
         break;
       case PointType.heading:
         Offset dragPosition = dragPoint.position;
         double dragHeading = dragPosition.direction;
         drawHeadingLine(canvas, selectedPoint.position, dragHeading, false);
+        drawPointBackground(
+            canvas,
+            selectedPoint.position +
+                Offset.fromDirection(dragHeading, headingLength),
+            true,
+            false,
+            false,
+            false);
         break;
       default:
     }
@@ -129,6 +150,7 @@ class FieldPainter extends CustomPainter {
     Offset position,
     Offset control,
     bool enableEdit,
+    bool isSelected,
   ) {
     final PointSettings settings = pointSettings[PointType.inControl]!;
     final Color color = settings.color;
@@ -144,7 +166,6 @@ class FieldPainter extends CustomPainter {
 
     if (enableEdit) {
       final dotPaint = Paint()..color = color;
-
       canvas.drawCircle(edge, settings.radius, dotPaint);
     }
   }
@@ -188,10 +209,12 @@ class FieldPainter extends CustomPainter {
         canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
     drawHeadingLine(canvas, position, heading, enableHeadingEditing);
     if (!isFirstPoint) {
-      drawControlPoint(canvas, position, inControl, enableControlEditing);
+      drawControlPoint(
+          canvas, position, inControl, enableControlEditing, false);
     }
     if (!isLastPoint) {
-      drawControlPoint(canvas, position, outControl, enableControlEditing);
+      drawControlPoint(
+          canvas, position, outControl, enableControlEditing, false);
     }
   }
 

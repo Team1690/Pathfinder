@@ -25,40 +25,53 @@ class _EditorScreenState extends State<EditorScreen> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 4,
+                  flex: 6,
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
                     child: timeLineView(),
                   ),
                 ),
                 Expanded(
-                    flex: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.travel_explore),
-                          label: Text('Path'),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            PathFinderService.calculateTrjactory(
-                              store.state.tabState.path.points,
-                              store.state.tabState.path.segments,
-                              store.state.tabState.robot,
-                            );
-                          },
-                          icon: Icon(Icons.trending_flat_rounded),
-                          label: Text('Trajectory'),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.trending_up_rounded),
-                          label: Text('Graph'),
-                        )
-                      ],
-                    ))
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xff0078D7)),
+                        onPressed: () {},
+                        icon: Icon(Icons.search),
+                        label: Text('Path'),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xffD45C36)),
+                        onPressed: () {},
+                        icon: Icon(Icons.trending_up_rounded),
+                        label: Text('Graph'),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xffD7AD17)),
+                        onPressed: () {
+                          PathFinderService.calculateTrjactory(
+                            store.state.tabState.path.points,
+                            store.state.tabState.path.segments,
+                            store.state.tabState.robot,
+                          );
+                        },
+                        icon: Icon(Icons.trending_flat_rounded),
+                        label: Text('Trajectory'),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 350,
+                )
               ],
             ),
           ),
