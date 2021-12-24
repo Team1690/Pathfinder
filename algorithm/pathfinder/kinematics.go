@@ -95,7 +95,6 @@ func CalculateKinematicsReverse(trajectoryPoints []*TrajectoryPoint, robot *Robo
 	}
 }
 
-// ? would we need this if we were calculating time in reverse run of kinematics?
 func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega bool) {
 	trajectoryPoints[0].Time = 0
 
