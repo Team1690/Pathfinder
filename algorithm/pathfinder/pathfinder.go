@@ -64,7 +64,6 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 	segmentClassifier.AddLastHeading(len(trajectory))
 
-	// TODO: export all kinematics to thier corresponding file
 	CalculateKinematics(trajectory, robot)
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)
@@ -216,101 +215,6 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingSt
 			trajectoryPoints[i].Heading += dHeading - angularAcceleration*math.Pow(travelDistance-distanceFromStartOfRotation, 2)
 		}
 	}
-}
-
-func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
-	firstPointTime := math.Pow(6*distance/robot.MaxJerk, float64(1)/float64(3))
-
-	return &TrajectoryPoint{
-		Time:         firstPointTime,
-		Velocity:     0.5 * robot.MaxJerk * firstPointTime * firstPointTime,
-		Acceleration: robot.MaxJerk * firstPointTime,
-	}
-}
-
-func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
-	firstPoint := GetFirstPoint(trajectoryPoints[1].Distance, robot)
-	trajectoryPoints[1].Time = firstPoint.Time
-	trajectoryPoints[1].Velocity = firstPoint.Velocity
-	trajectoryPoints[1].Acceleration = firstPoint.Acceleration
-
-	for i := 2; i < len(trajectoryPoints); i++ {
-		currentPoint := trajectoryPoints[i]
-		prevPoint := trajectoryPoints[i-1]
-		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
-		dt := distanceFromPrevPoint / prevPoint.Velocity
-
-		currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
-
-		maxVelAccordingToOmega := math.Max(robot.MaxVelocity-math.Abs(robot.Radius*currentPoint.Omega), 0)
-
-		currentPoint.Acceleration = utils.Min(
-			robot.SkidAcceleration,
-			prevPoint.Acceleration+robot.MaxJerk*dt,
-			robot.MaxAcceleration*(1-prevPoint.Velocity/maxVelAccordingToOmega),
-		)
-
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, maxVelAccordingToOmega, prevPoint.Velocity+prevPoint.Acceleration*dt)
-		currentPoint.Time = prevPoint.Time + dt
-	}
-}
-
-func CalculateKinematicsReverse(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
-	lastPoint := trajectoryPoints[len(trajectoryPoints)-1]
-	secondToLastPoint := trajectoryPoints[len(trajectoryPoints)-2]
-	distanceBetweenLastTwoPoints := lastPoint.Distance - secondToLastPoint.Distance
-
-	firstPoint := GetFirstPoint(distanceBetweenLastTwoPoints, robot)
-
-	trajectoryPoints[len(trajectoryPoints)-2].Time = firstPoint.Time
-	trajectoryPoints[len(trajectoryPoints)-2].Velocity = firstPoint.Velocity
-	trajectoryPoints[len(trajectoryPoints)-2].Acceleration = firstPoint.Acceleration
-
-	trajectoryPoints[len(trajectoryPoints)-1].Velocity = 0
-	trajectoryPoints[len(trajectoryPoints)-1].Acceleration = 0
-
-	for i := len(trajectoryPoints) - 3; i >= 0; i-- {
-		currentPoint := trajectoryPoints[i]
-		prevPoint := trajectoryPoints[i+1]
-
-		distanceFromPrevPoint := prevPoint.Distance - currentPoint.Distance
-		dt := distanceFromPrevPoint / prevPoint.Velocity
-
-		currentPoint.Omega = (prevPoint.Heading - currentPoint.Heading) / dt
-
-		maxVelAccordingToOmega := robot.MaxVelocity - math.Abs(robot.Radius*currentPoint.Omega)
-
-		currentPoint.Acceleration = utils.Min(
-			robot.SkidAcceleration,
-			robot.MaxAcceleration,
-			prevPoint.Acceleration+robot.MaxJerk*dt,
-		)
-
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, maxVelAccordingToOmega, prevPoint.Velocity+prevPoint.Acceleration*dt)
-	}
-}
-
-func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega bool) {
-	trajectoryPoints[0].Time = 0
-
-	// * The time of the "first point" found in reverse run
-	timeBetweenLastTwoPoints := trajectoryPoints[len(trajectoryPoints)-2].Time
-
-	// TODO second point time and omega (point at index 1)
-
-	for i := 2; i < len(trajectoryPoints)-1; i++ {
-		currentPoint := trajectoryPoints[i]
-		prevPoint := trajectoryPoints[i-1]
-		distanceFromPrevPoint := currentPoint.Distance - prevPoint.Distance
-		dt := distanceFromPrevPoint / prevPoint.Velocity
-
-		if calculateOmega {
-			currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
-		}
-
-		currentPoint.Time = prevPoint.Time + dt
-	}
-	trajectoryPoints[len(trajectoryPoints)-1].Time = trajectoryPoints[len(trajectoryPoints)-2].Time + timeBetweenLastTwoPoints
 }
 
 func SearchForTime(trajectoryPoints []*TrajectoryPoint, time float64, lastSearchIndex int) int {
