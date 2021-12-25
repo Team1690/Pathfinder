@@ -82,13 +82,22 @@ List<rpc.Section> toRpcSections(List<Point> points, List<Segment> segments) {
       [segments.length];
   final rpcSegments = toRpcSegments(segments, points);
 
-  return stopPointSegmentIndexes
+  final sections = stopPointSegmentIndexes
       .sublist(0, stopPointSegmentIndexes.length - 1)
       .asMap()
       .entries
       .map((e) => rpcSegments.sublist(
           stopPointSegmentIndexes[e.key], stopPointSegmentIndexes[e.key + 1]))
       .map((segments) => rpc.Section(segments: segments))
+      .toList();
+
+  // Add the first point of every section (except for the first one) to the
+  // end of the previous one 
+  return sections
+      .sublist(0, sections.length -1)
+      .asMap()
+      .entries
+      .map((e) => sections[e.key]..last.points.add(sections[e.key + 1].first.points.first))
       .toList();
 }
 
