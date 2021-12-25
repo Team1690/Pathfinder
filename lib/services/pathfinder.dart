@@ -93,12 +93,13 @@ List<rpc.Section> toRpcSections(List<Point> points, List<Segment> segments) {
 
   // Add the first point of every section (except for the first one) to the
   // end of the previous one 
-  return sections
-      .sublist(0, sections.length -1)
-      .asMap()
-      .entries
-      .map((e) => sections[e.key]..last.points.add(sections[e.key + 1].first.points.first))
-      .toList();
+  sections
+    .sublist(0, sections.length -1)
+    .asMap()
+    .entries
+    .forEach((e) => sections[e.key].segments.last.points.add(sections[e.key + 1].segments.first.points.first));
+
+  return sections;
 }
 
 rpc.TrajectoryRequest_SwerveRobotParams toRpcSwerveRobotParams(Robot r) {
