@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/views/timeline.dart';
-import 'package:pathfinder/main.dart';
-import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 class EditorScreen extends StatefulWidget {
-  const EditorScreen({Key? key}) : super(key: key);
+  final Function calculateTrajectory;
+
+  const EditorScreen(this.calculateTrajectory, {Key? key}) : super(key: key);
 
   @override
   _EditorScreenState createState() => _EditorScreenState();
@@ -57,11 +57,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         style: ElevatedButton.styleFrom(
                             primary: Color(0xffD7AD17)),
                         onPressed: () {
-                          PathFinderService.calculateTrjactory(
-                            store.state.tabState.path.points,
-                            store.state.tabState.path.segments,
-                            store.state.tabState.robot,
-                          );
+                          widget.calculateTrajectory();
                         },
                         icon: Icon(Icons.trending_flat_rounded),
                         label: Text('Trajectory'),

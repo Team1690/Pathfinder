@@ -21,6 +21,7 @@ class HomeViewModel {
   final Function selectRobot;
   final Function(int, Point) setPointData;
   final Function(Robot) setRobot;
+  final Function() calculateTrajectory;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -29,33 +30,38 @@ class HomeViewModel {
     required this.tabState,
     required this.setPointData,
     required this.setRobot,
+    required this.calculateTrajectory,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
     return HomeViewModel(
-        tabState: store.state.tabState,
-        isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
-        setSidebarVisibility: (visibility) {
-          store.dispatch(SetSideBarVisibility(visibility));
-        },
-        selectRobot: () {
-          store.dispatch(ObjectSelected(0, Robot));
-        },
-        setPointData: (int index, Point point) {
-          store.dispatch(editPointThunk(
-            pointIndex: index,
-            position: point.position,
-            inControlPoint: point.inControlPoint,
-            outControlPoint: point.outControlPoint,
-            useHeading: point.useHeading,
-            heading: point.heading,
-            cutSegment: point.cutSegment,
-            isStop: point.isStop,
-          ));
-        },
-        setRobot: (Robot robot) {
-          store.dispatch(EditRobot(robot: robot));
-        });
+      tabState: store.state.tabState,
+      isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
+      setSidebarVisibility: (visibility) {
+        store.dispatch(SetSideBarVisibility(visibility));
+      },
+      selectRobot: () {
+        store.dispatch(ObjectSelected(0, Robot));
+      },
+      setPointData: (int index, Point point) {
+        store.dispatch(editPointThunk(
+          pointIndex: index,
+          position: point.position,
+          inControlPoint: point.inControlPoint,
+          outControlPoint: point.outControlPoint,
+          useHeading: point.useHeading,
+          heading: point.heading,
+          cutSegment: point.cutSegment,
+          isStop: point.isStop,
+        ));
+      },
+      setRobot: (Robot robot) {
+        store.dispatch(EditRobot(robot: robot));
+      },
+      calculateTrajectory: () => store.dispatch(
+        calculateTrajectoryThunk(),
+      ),
+    );
   }
 
   @override
@@ -181,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Expanded(child: EditorScreen()),
+              Expanded(child: EditorScreen(props.calculateTrajectory)),
             ],
           ),
           if (props.isSidebarOpen)

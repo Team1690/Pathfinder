@@ -171,7 +171,7 @@ class _PathEditorState extends State<_PathEditor> {
       }
     }
 
-    if (pointType == PointType.heading) {
+    if (pointType == PointType.heading && point.useHeading) {
       Offset headingCenter = Offset.fromDirection(point.heading, headingLength);
       Offset headingPosition = point.position + headingCenter;
       if ((headingPosition - tapPosition).distance <

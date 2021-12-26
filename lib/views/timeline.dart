@@ -13,6 +13,7 @@ class TimeLineViewModel {
   final List<Point> points;
   final List<Segment> segments;
   final int? selectedPointIndex;
+  final double autoDuration;
   final Function(int) selectPoint;
   final Function(int, double, bool) editSegment;
   final Function(int, int) addPoint;
@@ -24,6 +25,7 @@ class TimeLineViewModel {
     required this.selectPoint,
     required this.editSegment,
     required this.addPoint,
+    required this.autoDuration,
   });
 
   static TimeLineViewModel fromStore(Store<AppState> store) {
@@ -37,7 +39,7 @@ class TimeLineViewModel {
         store.dispatch(ObjectSelected(index, Point));
       },
       editSegment: (int index, double vel, bool isHidden) {
-        store.dispatch(EditSegment(
+        store.dispatch(editSegmentThunk(
           index: index,
           velocity: vel,
           isHidden: isHidden,
@@ -46,6 +48,7 @@ class TimeLineViewModel {
       addPoint: (int segmentIndex, int insertIndex) {
         store.dispatch(addPointThunk(null, segmentIndex, insertIndex));
       },
+      autoDuration: store.state.tabState.path.autoDuration,
     );
   }
 }
@@ -65,40 +68,45 @@ class _TimeLineView extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    return PathTimeline(
-      insertPoint: (int segmentIndex, int insertIndex) =>
-          props.addPoint(segmentIndex, insertIndex),
-      points: props.points
-          .asMap()
-          .entries
-          .map(
-            (point) => TimelinePoint(
-              onTap: () => props.selectPoint(point.key),
-              isSelected: point.key == props.selectedPointIndex,
-              color: Color(0xffE1E1E1CC),
-            ),
-          )
-          .toList(),
-      segments: props.segments
-          .asMap()
-          .entries
-          .map(
-            (e) => TimeLineSegment(
-              color: getSegmentColor(e.key),
-              velocity: e.value.maxVelocity,
-              points: e.value.pointIndexes
-                  .map(
-                    (pointIndex) => TimelinePoint(
-                      onTap: () => props.selectPoint(pointIndex),
-                      isSelected: pointIndex == props.selectedPointIndex,
-                      color: Color(0xffE1E1E1CC),
-                    ),
-                  )
-                  .toList(),
-              onChange: (value) => props.editSegment(e.key, value, false),
-            ),
-          )
-          .toList(),
-    );
+    final shownAutoDuration =
+        props.autoDuration >= 0 ? props.autoDuration.toStringAsFixed(3) : '...';
+
+    return Column(children: [
+      PathTimeline(
+        insertPoint: (int segmentIndex, int insertIndex) =>
+            props.addPoint(segmentIndex, insertIndex),
+        points: props.points
+            .asMap()
+            .entries
+            .map(
+              (e) => TimelinePoint(
+                onTap: () => props.selectPoint(e.key),
+                isSelected: e.key == props.selectedPointIndex,
+                isStop: e.value.isStop,
+                isFirstPoint: e.key == 0,
+                isLastPoint: e.key == props.points.length - 1,
+                color: Color(0xffE1E1E1CC),
+              ),
+            )
+            .toList(),
+        segments: props.segments
+            .asMap()
+            .entries
+            .map(
+              (e) => TimeLineSegment(
+                color: getSegmentColor(e.key),
+                velocity: e.value.maxVelocity,
+                pointAmount: e.value.pointIndexes.length,
+                onChange: (value) => props.editSegment(e.key, value, false),
+              ),
+            )
+            .toList(),
+      ),
+      Text(''),
+      if (props.autoDuration != 0)
+        Text(
+          'Duration: $shownAutoDuration s',
+        ),
+    ]);
   }
 }

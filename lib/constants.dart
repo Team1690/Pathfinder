@@ -51,7 +51,25 @@ const selectedPointHightlightColor = Color(0xffeeeeee);
 const double selectedPointHighlightRadius = 5;
 const selectedPointHighlightOpacity = 5;
 
-// UI utils
+Color getPointColor(Color defaultColor, bool isStopPoint, isFirstPoint,
+    isLastPoint, isSelected) {
+  var color = defaultColor;
+  var selectedColor = selectedPointColor;
+
+  if (isStopPoint) {
+    selectedColor = selectedStopPointColor;
+    color = stopPointColor;
+  } else if (isFirstPoint) {
+    selectedColor = Color(0xff34A853).withGreen(230);
+    color = Color(0xff34A853);
+  } else if (isLastPoint) {
+    selectedColor = Color(0xffAE4335).withRed(230);
+    color = Color(0xffAE4335);
+  }
+
+  return isSelected ? selectedColor : color;
+}
+
 double convertRadiusToSigma(double radius) {
   return radius * 0.57735 + 0.5;
 }

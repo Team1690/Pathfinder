@@ -32,6 +32,15 @@ class SplineCalculated extends TabAction {
   SplineCalculated(this.points);
 }
 
+class TrajectoryInProgress extends TabAction {
+  TrajectoryInProgress();
+}
+
+class TrajectoryCalculated extends TabAction {
+  final List<rpc.TrajectoryResponse_SwervePoint> points;
+  TrajectoryCalculated(this.points);
+}
+
 // Point actions
 class AddPointToPath extends TabAction {
   final Offset? position;

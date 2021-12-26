@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/models/point.dart';
 
 class PathTimeline extends StatelessWidget {
   final List<TimeLineSegment> segments;
   final List<TimelinePoint> points;
   final void Function(int, int) insertPoint;
 
-  const PathTimeline(
-      {Key? key,
-      required this.segments,
-      required this.insertPoint,
-      required this.points})
-      : super(key: key);
+  const PathTimeline({
+    Key? key,
+    required this.segments,
+    required this.insertPoint,
+    required this.points,
+  }) : super(key: key);
 
   int findSegment(int pointIndex, List<TimeLineSegment> segments) {
-    List<int> segmentsLength = segments.map((e) => e.points.length).toList();
+    List<int> segmentsLength = segments.map((e) => e.pointAmount).toList();
 
     int segmentIndex = 0;
     for (int i = 0; i < segments.length; i++) {
@@ -43,8 +41,8 @@ class PathTimeline extends StatelessWidget {
                     .entries
                     .map(((e) => Expanded(
                         flex: segments.length - 1 == e.key
-                            ? e.value.points.length - 1
-                            : e.value.points.length,
+                            ? e.value.pointAmount - 1
+                            : e.value.pointAmount,
                         child: e.value)))
                     .toList(),
               ),
@@ -125,15 +123,24 @@ class TimelinePoint extends StatelessWidget {
   final Color color;
   static double pointRadius = 10;
   final bool isSelected;
+  final bool isStop;
+  final bool isFirstPoint;
+  final bool isLastPoint;
 
   TimelinePoint({
     required this.onTap,
     required this.color,
     required this.isSelected,
+    required this.isStop,
+    required this.isFirstPoint,
+    required this.isLastPoint,
   });
 
   @override
   Widget build(BuildContext context) {
+    final _color =
+        getPointColor(color, isStop, isFirstPoint, isLastPoint, isSelected);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -141,7 +148,7 @@ class TimelinePoint extends StatelessWidget {
         height: 2 * pointRadius,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isSelected ? selectedPointColor : color,
+          color: _color,
           boxShadow: !isSelected
               ? []
               : [
@@ -157,20 +164,20 @@ class TimelinePoint extends StatelessWidget {
 }
 
 class TimeLineSegment extends StatefulWidget {
-  TimeLineSegment({
-    Key? key,
-    required this.points,
-    required this.color,
-    required this.velocity,
-    required this.onChange,
-  }) : super(key: key);
-
-  final List<TimelinePoint> points;
+  final int pointAmount;
   final Color color;
   final double velocity;
   final Function(double) onChange;
   static double segmentWidth = 300;
   static double segmentHeight = 50;
+
+  TimeLineSegment({
+    Key? key,
+    required this.pointAmount,
+    required this.color,
+    required this.velocity,
+    required this.onChange,
+  }) : super(key: key);
 
   @override
   _TimeLineSegmentState createState() => _TimeLineSegmentState();
@@ -199,15 +206,17 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
           child: TextField(
             controller: _velocityFieldController,
             keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              hintText: 'm/s',
+              errorText: double.tryParse(_velocityFieldController.text) == null
+                  ? 'Error'
+                  : null,
+            ),
             onChanged: (value) {
               widget.onChange(double.tryParse(value) ?? widget.velocity);
               _velocityFieldController.text = value;
             },
             textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              // border: OutlineInputBorder(),
-              hintText: 'm/s',
-            ),
           ),
         ),
         SizedBox(height: 5),

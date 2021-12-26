@@ -21,6 +21,8 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, EditRobot>(editRobot),
   TypedReducer<TabState, ToggleHeading>(_toggleHeading),
   TypedReducer<TabState, ToggleControl>(_toggleControl),
+  TypedReducer<TabState, TrajectoryCalculated>(_trajectoryCalculated),
+  TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -40,6 +42,35 @@ TabState _objectSelected(TabState tabState, ObjectSelected action) {
 
 TabState _setServerError(TabState tabState, ServerError action) {
   return tabState.copyWith(ui: tabState.ui.copyWith(serverError: action.error));
+}
+
+TabState _trajectoryInProgress(TabState tabState, TrajectoryInProgress action) {
+  return tabState.copyWith(
+      path: tabState.path.copyWith(
+    autoDuration: -1,
+  ));
+}
+
+TabState _trajectoryCalculated(TabState tabState, TrajectoryCalculated action) {
+  var autoDuartion = 0.0;
+  var firstPointTime = action.points.first.time;
+
+  action.points.asMap().forEach((index, p) {
+    if (index == action.points.length - 1) {
+      autoDuartion += firstPointTime;
+      return;
+    }
+
+    // Use '>' to avoid floating point errors in equality check
+    if (!(p.time > 0)) {
+      autoDuartion += firstPointTime;
+      firstPointTime = action.points[index + 1].time;
+    }
+  });
+
+  return tabState.copyWith(
+      ui: tabState.ui.copyWith(serverError: null),
+      path: tabState.path.copyWith(autoDuration: autoDuartion));
 }
 
 TabState _splineCalculated(TabState tabState, SplineCalculated action) {

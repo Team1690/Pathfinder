@@ -65,6 +65,25 @@ ThunkAction endHeadingDragThunk(int index, double heading) {
 
 ThunkAction updateSplineThunk() {
   return (Store store) async {
+    store.dispatch(calculateSplineThunk());
+    // TODO: throttle the trejectory request before adding them to here
+    // store.dispatch(calculateTrajectoryThunk());
+  };
+}
+
+ThunkAction editSegmentThunk({
+  required int index,
+  required double? velocity,
+  required bool? isHidden,
+}) {
+  return (Store store) {
+    store.dispatch(
+        EditSegment(index: index, velocity: velocity, isHidden: isHidden));
+  };
+}
+
+ThunkAction calculateSplineThunk() {
+  return (Store store) async {
     try {
       final res = await PathFinderService.calculateSpline(
         store.state.tabState.path.points,
@@ -72,6 +91,24 @@ ThunkAction updateSplineThunk() {
       );
 
       store.dispatch(SplineCalculated(res.evaluatedPoints));
+    } catch (e) {
+      store.dispatch(ServerError(e.toString()));
+    }
+  };
+}
+
+ThunkAction calculateTrajectoryThunk() {
+  return (Store store) async {
+    store.dispatch(TrajectoryInProgress());
+
+    try {
+      final res = await PathFinderService.calculateTrjactory(
+        store.state.tabState.path.points,
+        store.state.tabState.path.segments,
+        store.state.tabState.robot,
+      );
+
+      store.dispatch(TrajectoryCalculated(res.swervePoints));
     } catch (e) {
       store.dispatch(ServerError(e.toString()));
     }
