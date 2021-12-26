@@ -289,6 +289,9 @@ class FieldPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.scale(1, -1);
+    canvas.translate(0, -size.height);
+
     paintImage(
         canvas: canvas,
         fit: BoxFit.fill,

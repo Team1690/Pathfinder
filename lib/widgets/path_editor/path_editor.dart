@@ -31,6 +31,7 @@ class PathViewModel {
   final Function() toggleHeading;
   final bool controlToggle;
   final Function() toggleControl;
+  final Offset fieldSizePixels;
 
   PathViewModel({
     required this.points,
@@ -50,6 +51,7 @@ class PathViewModel {
     required this.toggleHeading,
     required this.controlToggle,
     required this.toggleControl,
+    required this.fieldSizePixels,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -103,6 +105,7 @@ class PathViewModel {
       toggleControl: () {
         store.dispatch(ToggleControl());
       },
+      fieldSizePixels: store.state.tabState.ui.fieldSizePixels,
     );
   }
 }
@@ -238,8 +241,9 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.setFieldSizePixels,
                   widget.pathProps.robot,
                 ),
-                onTapUp: (final TapUpDetails detailes) {
-                  final Offset tapPos = detailes.localPosition;
+                onTapUp: (final TapUpDetails details) {
+                  Offset tapPos = flipYAxisByField(
+                      details.localPosition, widget.pathProps.fieldSizePixels);
 
                   int? selectedPoint =
                       getTappedPoint(tapPos, widget.pathProps.points);
@@ -251,6 +255,9 @@ class _PathEditorState extends State<_PathEditor> {
                   widget.pathProps.addPoint(tapPos);
                 },
                 onPanStart: (DragStartDetails details) {
+                  Offset tapPos = flipYAxisByField(
+                      details.localPosition, widget.pathProps.fieldSizePixels);
+
                   for (final entery
                       in widget.pathProps.points.asMap().entries) {
                     Point point = entery.value;
@@ -259,24 +266,24 @@ class _PathEditorState extends State<_PathEditor> {
                     DraggingPoint? draggingPoint;
                     if (widget.pathProps.headingToggle) {
                       draggingPoint = checkSelectedPointTap(
-                          details.localPosition, point, PointType.heading);
+                          tapPos, point, PointType.heading);
                     }
 
                     if (widget.pathProps.controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
-                          details.localPosition, point, PointType.inControl);
+                          tapPos, point, PointType.inControl);
                     }
 
                     if (widget.pathProps.controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
-                          details.localPosition, point, PointType.outControl);
+                          tapPos, point, PointType.outControl);
                     }
 
                     if (draggingPoint == null) {
-                      draggingPoint = checkSelectedPointTap(
-                          details.localPosition, point, PointType.path);
+                      draggingPoint =
+                          checkSelectedPointTap(tapPos, point, PointType.path);
                     }
 
                     if (draggingPoint != null) {
@@ -300,7 +307,7 @@ class _PathEditorState extends State<_PathEditor> {
                           DraggingPoint(
                               currentDragPoint.draggingPoint.type,
                               currentDragPoint.draggingPoint.position +
-                                  details.delta));
+                                  flipYAxis(details.delta)));
                       dragPoint = currentDragPoint;
                       dragPoints = [currentDragPoint];
 

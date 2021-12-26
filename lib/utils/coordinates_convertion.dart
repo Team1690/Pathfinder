@@ -19,3 +19,12 @@ Offset metersToUiCoord(Store store, Offset val) {
 
   return val.scale(xScaler, yScaler);
 }
+
+Offset flipYAxisByField(Offset val, Offset fieldSizePixels) {
+  val = val.scale(1, -1);
+  return val.translate(0, fieldSizePixels.dy);
+}
+
+Offset flipYAxis(Offset val) {
+  return val.scale(1, -1);
+}
