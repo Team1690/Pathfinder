@@ -202,12 +202,15 @@ class FieldPainter extends CustomPainter {
     bool isStopPoint,
     bool enableHeadingEditing,
     bool enableControlEditing,
+    bool useHeading,
     bool isFirstPoint,
     bool isLastPoint,
   ) {
     drawPointBackground(
         canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
-    drawHeadingLine(canvas, position, heading, enableHeadingEditing);
+    if (useHeading) {
+      drawHeadingLine(canvas, position, heading, enableHeadingEditing);
+    }
     if (!isFirstPoint) {
       drawControlPoint(
           canvas, position, inControl, enableControlEditing, false);
@@ -319,6 +322,7 @@ class FieldPainter extends CustomPainter {
           point.isStop,
           enableHeadingEditing,
           enableControlEditing,
+          point.useHeading,
           index == 0,
           index == points.length - 1);
     }

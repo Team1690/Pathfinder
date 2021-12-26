@@ -47,6 +47,7 @@ class HomeViewModel {
             position: point.position,
             inControlPoint: point.inControlPoint,
             outControlPoint: point.outControlPoint,
+            useHeading: point.useHeading,
             heading: point.heading,
             cutSegment: point.cutSegment,
             isStop: point.isStop,
@@ -115,6 +116,7 @@ class _HomePageState extends State<HomePage> {
             position: point.position,
             inControlPoint: point.inControlPoint,
             outControlPoint: point.outControlPoint,
+            useHeading: point.useHeading,
             heading: point.heading,
             cutSegment: point.cutSegment,
             isStop: point.isStop,
@@ -402,6 +404,7 @@ class SettingsDetails extends StatelessWidget {
       if (points.length == 0) return SizedBox.shrink();
 
       final pointData = points[index];
+      final isFirstOrLast = index == 0 || index == points.length - 1;
 
       return Form(
         child: CardSettings(
@@ -492,17 +495,27 @@ class SettingsDetails extends StatelessWidget {
                     );
                   },
                 ),
-                _cardSettingsDouble(
-                  label: 'Heading',
-                  initialValue: degrees(pointData.heading),
-                  fractionDigits: 1,
-                  unitLabel: '°',
+                CardSettingsSwitch(
+                  enabled: index != 0,
+                  initialValue: pointData.useHeading,
+                  label: 'Use Heading',
                   onChanged: (value) {
-                    onPointEdit(
-                        index, pointData.copyWith(heading: radians(value)));
+                    onPointEdit(index, pointData.copyWith(useHeading: value));
+                    triggerSidebarRender();
                   },
                 ),
-                if (index != 0 && index != points.length - 1)
+                if (pointData.useHeading)
+                  _cardSettingsDouble(
+                    label: 'Heading',
+                    initialValue: degrees(pointData.heading),
+                    fractionDigits: 1,
+                    unitLabel: '°',
+                    onChanged: (value) {
+                      onPointEdit(
+                          index, pointData.copyWith(heading: radians(value)));
+                    },
+                  ),
+                if (!isFirstOrLast)
                   CardSettingsSwitch(
                     enabled: !pointData.isStop,
                     initialValue: pointData.cutSegment,
@@ -512,7 +525,7 @@ class SettingsDetails extends StatelessWidget {
                       triggerSidebarRender();
                     },
                   ),
-                if (index != 0 && index != points.length - 1)
+                if (!isFirstOrLast)
                   CardSettingsSwitch(
                     initialValue: pointData.isStop,
                     label: 'Stop point',

@@ -137,6 +137,10 @@ TabState editPoint(TabState tabState, EditPoint action) {
         final cutSegmentAllowed = action.pointIndex != 0 &&
             action.pointIndex != tabState.path.points.length - 1;
 
+        // Always set use heading true for the first point
+        var useHeading =
+            action.useHeading ?? e.value.useHeading || action.pointIndex == 0;
+
         // Get and validate cut & stop values
         var cutSegment =
             (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
@@ -156,7 +160,7 @@ TabState editPoint(TabState tabState, EditPoint action) {
           inControlPoint: action.inControlPoint ?? e.value.inControlPoint,
           outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
           heading: action.heading ?? e.value.heading,
-          useHeading: action.useHeading ?? e.value.useHeading,
+          useHeading: useHeading,
           actions: action.actions ?? e.value.actions,
           cutSegment: cutSegment,
           isStop: isStop,
@@ -249,6 +253,12 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
     }
 
     newPoints.removeAt(action.index);
+
+    // If the first point is deleted make sure that the new first point has correct
+    // parameters for a first point
+    if (action.index == 0) {
+      newPoints[0] = newPoints[0].copyWith(useHeading: true);
+    }
 
     return newState.copyWith(
       ui: newState.ui.copyWith(
