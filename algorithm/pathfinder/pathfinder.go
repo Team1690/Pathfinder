@@ -361,6 +361,7 @@ type SwerveTrajectoryPoint struct {
 	Velocity vector.Vector
 	Heading  float64
 	Omega    float64
+	Action   string
 }
 
 func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []SwerveTrajectoryPoint {
@@ -375,6 +376,7 @@ func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []Swer
 			Velocity: vector.FromPolar(pathDerivative.Evaluate(trajectoryPoint1D.S).Angle(), trajectoryPoint1D.Velocity),
 			Heading:  trajectoryPoint1D.Heading,
 			Omega:    trajectoryPoint1D.Omega,
+			Action:   trajectoryPoint1D.Action,
 		})
 	}
 
@@ -388,6 +390,7 @@ func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.TrajectoryResponse_Swer
 		Velocity:        point.Velocity.ToRpc(),
 		Heading:         float32(point.Heading),
 		AngularVelocity: float32(point.Omega),
+		Action:          point.Action,
 	}
 }
 

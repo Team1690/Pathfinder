@@ -13,7 +13,7 @@ type OutputTrajectoryPoint struct {
 	VelocityY       float32 `csv:"velocity_y"`
 	Heading         float32 `csv:"heading"`
 	AngularVelocity float32 `csv:"angular_velocity"`
-	Vision          int     `csv:"vision"` // For old vision code in chester
+	Action          string  `csv:"action"`
 }
 
 func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
@@ -27,7 +27,7 @@ func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 			VelocityY:       point.Velocity.Y,
 			Heading:         point.Heading,
 			AngularVelocity: point.AngularVelocity,
-			Vision:          0,
+			Action:          point.Action,
 		})
 	}
 
