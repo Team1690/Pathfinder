@@ -42,6 +42,22 @@ func shoutestRouteToHeading(initialHeading float64, endHeading float64) float64 
 	return initialHeading + utils.WrapAngle(endHeading-initialHeading)
 }
 
+func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex int) {
+	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
+	s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{
+		// * Taking the shortest route to the wanted heading by wrapping angles
+		heading: shoutestRouteToHeading(prevHeading, float64(waypoint.Heading)),
+		index:   trajectoryIndex,
+	})
+}
+
+func (s *SegmentClassifier) checkForNewSegment() {
+	if s.currentPointIndexInsideSegment >= len(s.segments[s.currentSegmentIndex].Points) {
+		s.currentSegmentIndex++
+		s.currentPointIndexInsideSegment = 0
+	}
+}
+
 func (s *SegmentClassifier) Update(position *vector.Vector, trajectoryIndex int) {
 	nextWaypointPosition := vector.NewFromRpcVector(s.wayPoints[s.currentPointIndex+1].Position)
 
@@ -49,25 +65,16 @@ func (s *SegmentClassifier) Update(position *vector.Vector, trajectoryIndex int)
 		s.currentPointIndex++
 
 		if s.currentPointIndex == len(s.wayPoints)-1 {
-			return // * Taking care of last heading in a seperate function
+			return // * Taking care of last heading in a separate function
 		}
 
 		currentWaypoint := s.wayPoints[s.currentPointIndex]
 		if currentWaypoint.UseHeading {
-			prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
-			s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{
-				// * Taking the shortest route to the wanted heading by wrapping angles
-				heading: shoutestRouteToHeading(prevHeading, float64(currentWaypoint.Heading)),
-				index:   trajectoryIndex,
-			})
+			s.addHeadingPoint(currentWaypoint, trajectoryIndex)
 		}
 
 		s.currentPointIndexInsideSegment++
-
-		if s.currentPointIndexInsideSegment >= len(s.segments[s.currentSegmentIndex].Points) {
-			s.currentSegmentIndex++
-			s.currentPointIndexInsideSegment = 0
-		}
+		s.checkForNewSegment()
 	}
 }
 
@@ -85,6 +92,10 @@ func (s *SegmentClassifier) AddLastHeading(trajectoryLength int) {
 
 func (s *SegmentClassifier) GetMaxVel() float64 {
 	return float64(s.segments[s.currentSegmentIndex].MaxVelocity)
+}
+
+func (s *SegmentClassifier) GetAction() string {
+	return s.wayPoints[s.currentPointIndex].Action
 }
 
 func (s *SegmentClassifier) GetHeadingPoints() []*indexedHeadingPoint {

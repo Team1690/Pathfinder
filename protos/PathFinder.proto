@@ -21,6 +21,8 @@ message Point {
 
 	bool useHeading = 4;
 	float heading = 5;
+
+	string action = 6;
 }
 
 message Segment {

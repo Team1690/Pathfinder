@@ -20,6 +20,7 @@ type TrajectoryPoint struct {
 	Acceleration float64
 	Heading      float64
 	Omega        float64
+	Action       string
 }
 
 type RobotParameters struct {
@@ -58,6 +59,8 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		segmentClassifier.Update(&point.Position, len(trajectory))
 
 		point.Velocity = segmentClassifier.GetMaxVel()
+
+		point.Action = segmentClassifier.GetAction()
 
 		trajectory = append(trajectory, &point)
 	}
