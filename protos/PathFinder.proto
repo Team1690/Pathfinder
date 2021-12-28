@@ -95,6 +95,7 @@ message TrajectoryRequest {
 		float maxAngularVelocity = 7;
 		float maxAngularAcceleration = 8;
 		float cycleTime = 9;
+		float angularAccPercentage = 10; // the percentage of the angular acceleration when spreading heading over distance
 	}
 	
 	message TankRobotParams {
