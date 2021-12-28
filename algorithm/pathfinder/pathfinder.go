@@ -159,7 +159,7 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 				omegaScaleFactor = 0
 			}
 
-			for trajectoryPointIndex := currentHeadingPoint.index + 1; trajectoryPointIndex <= nextHeadingPoint.index; trajectoryPointIndex++ {
+			for trajectoryPointIndex := currentHeadingPoint.index + 1; trajectoryPointIndex < len(trajectoryPoints); trajectoryPointIndex++ {
 				trajectoryPoints[trajectoryPointIndex].Omega *= omegaScaleFactor
 				// * Update heading again according to new omega
 				calculatePointHeading(trajectoryPoints, trajectoryPointIndex)
