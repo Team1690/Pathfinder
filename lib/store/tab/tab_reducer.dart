@@ -192,7 +192,8 @@ TabState editPoint(TabState tabState, EditPoint action) {
           outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
           heading: action.heading ?? e.value.heading,
           useHeading: useHeading,
-          actions: action.actions ?? e.value.actions,
+          action: action.action ?? e.value.action,
+          actionTime: action.actionTime ?? e.value.actionTime,
           cutSegment: cutSegment,
           isStop: isStop,
         );

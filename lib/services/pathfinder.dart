@@ -52,6 +52,10 @@ rpc.Point toRpcPoint(Point p) {
     controlOut: toRpcVector(p.position + p.outControlPoint),
     heading: p.heading,
     useHeading: p.useHeading,
+    action: rpc.RobotAction(
+      actionType: p.action,
+      time: p.actionTime,
+    ),
   );
 }
 
