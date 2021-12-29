@@ -129,7 +129,7 @@ func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinde
 		SkidAcceleration:     float64(rpcRobot.SkidAcceleration),
 		MaxJerk:              float64(rpcRobot.MaxJerk),
 		Radius:               math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
-		AngularAccPercentage: float64(rpcRobot.AngularAccPercentage),
+		AngularAccPercentage: float64(rpcRobot.AngularAccelerationPercentage),
 	}
 }
 
