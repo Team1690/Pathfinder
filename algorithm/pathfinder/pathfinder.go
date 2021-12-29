@@ -24,12 +24,13 @@ type TrajectoryPoint struct {
 }
 
 type RobotParameters struct {
-	Radius           float64
-	MaxVelocity      float64
-	MaxAcceleration  float64
-	SkidAcceleration float64
-	MaxJerk          float64
-	CycleTime        float64
+	Radius               float64
+	MaxVelocity          float64
+	MaxAcceleration      float64
+	SkidAcceleration     float64
+	MaxJerk              float64
+	CycleTime            float64
+	AngularAccPercentage float64
 }
 
 type indexedHeadingPoint struct {
@@ -198,6 +199,7 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 				dHeadingLeft,
 				currentHeadingPoint.index,
 				nextHeadingPoint.index,
+				robot,
 			)
 
 			if headingPointIndex <= len(headingPoints)-2 {
@@ -209,14 +211,13 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 	}
 }
 
-func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingStartIndex int, headingEndIndex int) {
-	const distancePercentageForAngularAcceleration float64 = 0.1
-	const oneMinusDistancePercentageForAcceleration float64 = 1 - distancePercentageForAngularAcceleration
-	const twiceAccelerationPercentageTimesOneMinus = 2 * distancePercentageForAngularAcceleration * oneMinusDistancePercentageForAcceleration
+func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingStartIndex int, headingEndIndex int, robot *RobotParameters) {
+	oneMinusDistancePercentageForAcceleration := 1 - robot.AngularAccPercentage
+	twiceAccelerationPercentageTimesOneMinus := 2 * robot.AngularAccPercentage * oneMinusDistancePercentageForAcceleration
 
 	travelDistance := trajectoryPoints[headingEndIndex].Distance - trajectoryPoints[headingStartIndex].Distance
 
-	distanceToAccelerate := distancePercentageForAngularAcceleration * travelDistance
+	distanceToAccelerate := robot.AngularAccPercentage * travelDistance
 
 	travelDistanceSquared := math.Pow(travelDistance, 2)
 
