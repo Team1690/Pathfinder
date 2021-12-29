@@ -351,6 +351,7 @@ TabState editRobot(TabState tabState, EditRobot action) {
       maxJerk: action.robot.maxJerk,
       maxVelocity: action.robot.maxVelocity,
       cycleTime: action.robot.cycleTime,
+      angularAccelerationPercentage: action.robot.angularAccelerationPercentage,
     ),
   );
 }

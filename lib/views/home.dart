@@ -378,24 +378,13 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Max Angular Vel',
-                  unitLabel: '°/s',
+                  label: 'Angular Accel Perc',
+                  unitLabel: '%',
                   allowNegative: false,
-                  initialValue: robot.maxAngularVelocity,
+                  initialValue: 100 * robot.angularAccelerationPercentage,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxAngularVelocity: value,
-                    ));
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: 'Max Angular Accel',
-                  unitLabel: '°/s²',
-                  allowNegative: false,
-                  initialValue: robot.maxAngularAcceleration,
-                  onChanged: (value) {
-                    onRobotEdit(robot.copyWith(
-                      maxAngularAcceleration: value,
+                      angularAccelerationPercentage: value / 100,
                     ));
                   },
                 ),
