@@ -13,6 +13,67 @@ import 'PathFinder.pbenum.dart';
 
 export 'PathFinder.pbenum.dart';
 
+class RobotAction extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RobotAction', createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'actionType', protoName: 'actionType')
+    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time', $pb.PbFieldType.OF)
+    ..hasRequiredFields = false
+  ;
+
+  RobotAction._() : super();
+  factory RobotAction({
+    $core.String? actionType,
+    $core.double? time,
+  }) {
+    final _result = create();
+    if (actionType != null) {
+      _result.actionType = actionType;
+    }
+    if (time != null) {
+      _result.time = time;
+    }
+    return _result;
+  }
+  factory RobotAction.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RobotAction.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  RobotAction clone() => RobotAction()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  RobotAction copyWith(void Function(RobotAction) updates) => super.copyWith((message) => updates(message as RobotAction)) as RobotAction; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static RobotAction create() => RobotAction._();
+  RobotAction createEmptyInstance() => create();
+  static $pb.PbList<RobotAction> createRepeated() => $pb.PbList<RobotAction>();
+  @$core.pragma('dart2js:noInline')
+  static RobotAction getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RobotAction>(create);
+  static RobotAction? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get actionType => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set actionType($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasActionType() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearActionType() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.double get time => $_getN(1);
+  @$pb.TagNumber(2)
+  set time($core.double v) { $_setFloat(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasTime() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTime() => clearField(2);
+}
+
 class Vector extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Vector', createEmptyInstance: create)
     ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'x', $pb.PbFieldType.OF)
@@ -81,6 +142,7 @@ class Point extends $pb.GeneratedMessage {
     ..aOM<Vector>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'controlOut', protoName: 'controlOut', subBuilder: Vector.create)
     ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'useHeading', protoName: 'useHeading')
     ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
+    ..aOM<RobotAction>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action', subBuilder: RobotAction.create)
     ..hasRequiredFields = false
   ;
 
@@ -91,6 +153,7 @@ class Point extends $pb.GeneratedMessage {
     Vector? controlOut,
     $core.bool? useHeading,
     $core.double? heading,
+    RobotAction? action,
   }) {
     final _result = create();
     if (position != null) {
@@ -107,6 +170,9 @@ class Point extends $pb.GeneratedMessage {
     }
     if (heading != null) {
       _result.heading = heading;
+    }
+    if (action != null) {
+      _result.action = action;
     }
     return _result;
   }
@@ -181,6 +247,17 @@ class Point extends $pb.GeneratedMessage {
   $core.bool hasHeading() => $_has(4);
   @$pb.TagNumber(5)
   void clearHeading() => clearField(5);
+
+  @$pb.TagNumber(6)
+  RobotAction get action => $_getN(5);
+  @$pb.TagNumber(6)
+  set action(RobotAction v) { setField(6, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasAction() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAction() => clearField(6);
+  @$pb.TagNumber(6)
+  RobotAction ensureAction() => $_ensure(5);
 }
 
 class Segment extends $pb.GeneratedMessage {
@@ -750,6 +827,7 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     ..a<$core.double>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularVelocity', $pb.PbFieldType.OF, protoName: 'maxAngularVelocity')
     ..a<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularAcceleration', $pb.PbFieldType.OF, protoName: 'maxAngularAcceleration')
     ..a<$core.double>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
+    ..a<$core.double>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'angularAccelerationPercentage', $pb.PbFieldType.OF, protoName: 'angularAccelerationPercentage')
     ..hasRequiredFields = false
   ;
 
@@ -764,6 +842,7 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     $core.double? maxAngularVelocity,
     $core.double? maxAngularAcceleration,
     $core.double? cycleTime,
+    $core.double? angularAccelerationPercentage,
   }) {
     final _result = create();
     if (width != null) {
@@ -792,6 +871,9 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     }
     if (cycleTime != null) {
       _result.cycleTime = cycleTime;
+    }
+    if (angularAccelerationPercentage != null) {
+      _result.angularAccelerationPercentage = angularAccelerationPercentage;
     }
     return _result;
   }
@@ -896,6 +978,15 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
   $core.bool hasCycleTime() => $_has(8);
   @$pb.TagNumber(9)
   void clearCycleTime() => clearField(9);
+
+  @$pb.TagNumber(10)
+  $core.double get angularAccelerationPercentage => $_getN(9);
+  @$pb.TagNumber(10)
+  set angularAccelerationPercentage($core.double v) { $_setFloat(9, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasAngularAccelerationPercentage() => $_has(9);
+  @$pb.TagNumber(10)
+  void clearAngularAccelerationPercentage() => clearField(10);
 }
 
 class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
@@ -1109,6 +1200,7 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
     ..aOM<Vector>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'velocity', subBuilder: Vector.create)
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
     ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'angularVelocity', $pb.PbFieldType.OF, protoName: 'angularVelocity')
+    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action')
     ..hasRequiredFields = false
   ;
 
@@ -1119,6 +1211,7 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
     Vector? velocity,
     $core.double? heading,
     $core.double? angularVelocity,
+    $core.String? action,
   }) {
     final _result = create();
     if (time != null) {
@@ -1135,6 +1228,9 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
     }
     if (angularVelocity != null) {
       _result.angularVelocity = angularVelocity;
+    }
+    if (action != null) {
+      _result.action = action;
     }
     return _result;
   }
@@ -1207,6 +1303,15 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
   $core.bool hasAngularVelocity() => $_has(4);
   @$pb.TagNumber(5)
   void clearAngularVelocity() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get action => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set action($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasAction() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAction() => clearField(6);
 }
 
 class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
@@ -1216,6 +1321,7 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'rightVelocity', $pb.PbFieldType.OF, protoName: 'rightVelocity')
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'leftVelocity', $pb.PbFieldType.OF, protoName: 'leftVelocity')
     ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
+    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action')
     ..hasRequiredFields = false
   ;
 
@@ -1226,6 +1332,7 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
     $core.double? rightVelocity,
     $core.double? leftVelocity,
     $core.double? heading,
+    $core.String? action,
   }) {
     final _result = create();
     if (time != null) {
@@ -1242,6 +1349,9 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
     }
     if (heading != null) {
       _result.heading = heading;
+    }
+    if (action != null) {
+      _result.action = action;
     }
     return _result;
   }
@@ -1312,6 +1422,15 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
   $core.bool hasHeading() => $_has(4);
   @$pb.TagNumber(5)
   void clearHeading() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get action => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set action($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasAction() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAction() => clearField(6);
 }
 
 class TrajectoryResponse extends $pb.GeneratedMessage {

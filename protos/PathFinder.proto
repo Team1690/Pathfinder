@@ -61,12 +61,12 @@ message SplineRequest {
 
 		message Polynomial { }
 
-		
+
 		Hermite hermite = 5;
 		Bezier bezier = 6;
 		Polynomial polynomial = 7;
 	}
-	
+
 	repeated Point points = 1;
 	SplineTypes splineType = 2;
 	float evaluatedPointsInterval = 3; // meters
@@ -102,9 +102,9 @@ message TrajectoryRequest {
 		float maxAngularVelocity = 7;
 		float maxAngularAcceleration = 8;
 		float cycleTime = 9;
-		float angularAccPercentage = 10; // the percentage of the angular acceleration when spreading heading over distance
+		float angularAccelerationPercentage = 10; // the percentage of the angular acceleration when spreading heading over distance
 	}
-	
+
 	message TankRobotParams {
 		float width = 1;
 		float height = 2;

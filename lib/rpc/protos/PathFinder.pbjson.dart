@@ -21,6 +21,17 @@ const SplineTypes$json = const {
 
 /// Descriptor for `SplineTypes`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List splineTypesDescriptor = $convert.base64Decode('CgtTcGxpbmVUeXBlcxIICgROb25lEAASCwoHSGVybWl0ZRABEgoKBkJlemllchACEg4KClBvbHlub21pYWwQAw==');
+@$core.Deprecated('Use robotActionDescriptor instead')
+const RobotAction$json = const {
+  '1': 'RobotAction',
+  '2': const [
+    const {'1': 'actionType', '3': 1, '4': 1, '5': 9, '10': 'actionType'},
+    const {'1': 'time', '3': 2, '4': 1, '5': 2, '10': 'time'},
+  ],
+};
+
+/// Descriptor for `RobotAction`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List robotActionDescriptor = $convert.base64Decode('CgtSb2JvdEFjdGlvbhIeCgphY3Rpb25UeXBlGAEgASgJUgphY3Rpb25UeXBlEhIKBHRpbWUYAiABKAJSBHRpbWU=');
 @$core.Deprecated('Use vectorDescriptor instead')
 const Vector$json = const {
   '1': 'Vector',
@@ -41,11 +52,12 @@ const Point$json = const {
     const {'1': 'controlOut', '3': 3, '4': 1, '5': 11, '6': '.Vector', '10': 'controlOut'},
     const {'1': 'useHeading', '3': 4, '4': 1, '5': 8, '10': 'useHeading'},
     const {'1': 'heading', '3': 5, '4': 1, '5': 2, '10': 'heading'},
+    const {'1': 'action', '3': 6, '4': 1, '5': 11, '6': '.RobotAction', '10': 'action'},
   ],
 };
 
 /// Descriptor for `Point`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List pointDescriptor = $convert.base64Decode('CgVQb2ludBIjCghwb3NpdGlvbhgBIAEoCzIHLlZlY3RvclIIcG9zaXRpb24SJQoJY29udHJvbEluGAIgASgLMgcuVmVjdG9yUgljb250cm9sSW4SJwoKY29udHJvbE91dBgDIAEoCzIHLlZlY3RvclIKY29udHJvbE91dBIeCgp1c2VIZWFkaW5nGAQgASgIUgp1c2VIZWFkaW5nEhgKB2hlYWRpbmcYBSABKAJSB2hlYWRpbmc=');
+final $typed_data.Uint8List pointDescriptor = $convert.base64Decode('CgVQb2ludBIjCghwb3NpdGlvbhgBIAEoCzIHLlZlY3RvclIIcG9zaXRpb24SJQoJY29udHJvbEluGAIgASgLMgcuVmVjdG9yUgljb250cm9sSW4SJwoKY29udHJvbE91dBgDIAEoCzIHLlZlY3RvclIKY29udHJvbE91dBIeCgp1c2VIZWFkaW5nGAQgASgIUgp1c2VIZWFkaW5nEhgKB2hlYWRpbmcYBSABKAJSB2hlYWRpbmcSJAoGYWN0aW9uGAYgASgLMgwuUm9ib3RBY3Rpb25SBmFjdGlvbg==');
 @$core.Deprecated('Use segmentDescriptor instead')
 const Segment$json = const {
   '1': 'Segment',
@@ -167,6 +179,7 @@ const TrajectoryRequest_SwerveRobotParams$json = const {
     const {'1': 'maxAngularVelocity', '3': 7, '4': 1, '5': 2, '10': 'maxAngularVelocity'},
     const {'1': 'maxAngularAcceleration', '3': 8, '4': 1, '5': 2, '10': 'maxAngularAcceleration'},
     const {'1': 'cycleTime', '3': 9, '4': 1, '5': 2, '10': 'cycleTime'},
+    const {'1': 'angularAccelerationPercentage', '3': 10, '4': 1, '5': 2, '10': 'angularAccelerationPercentage'},
   ],
 };
 
@@ -193,7 +206,7 @@ const TrajectoryRequest_DriveTrain$json = const {
 };
 
 /// Descriptor for `TrajectoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List trajectoryRequestDescriptor = $convert.base64Decode('ChFUcmFqZWN0b3J5UmVxdWVzdBIkCghzZWN0aW9ucxgBIAMoCzIILlNlY3Rpb25SCHNlY3Rpb25zEj0KCmRyaXZlVHJhaW4YBCABKA4yHS5UcmFqZWN0b3J5UmVxdWVzdC5Ecml2ZVRyYWluUgpkcml2ZVRyYWluElIKEXN3ZXJ2ZVJvYm90UGFyYW1zGAUgASgLMiQuVHJhamVjdG9yeVJlcXVlc3QuU3dlcnZlUm9ib3RQYXJhbXNSEXN3ZXJ2ZVJvYm90UGFyYW1zEkwKD3RhbmtSb2JvdFBhcmFtcxgGIAEoCzIiLlRyYWplY3RvcnlSZXF1ZXN0LlRhbmtSb2JvdFBhcmFtc1IPdGFua1JvYm90UGFyYW1zGtkCChFTd2VydmVSb2JvdFBhcmFtcxIUCgV3aWR0aBgBIAEoAlIFd2lkdGgSFgoGaGVpZ2h0GAIgASgCUgZoZWlnaHQSIAoLbWF4VmVsb2NpdHkYAyABKAJSC21heFZlbG9jaXR5EigKD21heEFjY2VsZXJhdGlvbhgEIAEoAlIPbWF4QWNjZWxlcmF0aW9uEioKEHNraWRBY2NlbGVyYXRpb24YBSABKAJSEHNraWRBY2NlbGVyYXRpb24SGAoHbWF4SmVyaxgGIAEoAlIHbWF4SmVyaxIuChJtYXhBbmd1bGFyVmVsb2NpdHkYByABKAJSEm1heEFuZ3VsYXJWZWxvY2l0eRI2ChZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uGAggASgCUhZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uEhwKCWN5Y2xlVGltZRgJIAEoAlIJY3ljbGVUaW1lGsMBCg9UYW5rUm9ib3RQYXJhbXMSFAoFd2lkdGgYASABKAJSBXdpZHRoEhYKBmhlaWdodBgCIAEoAlIGaGVpZ2h0EiAKC21heFZlbG9jaXR5GAMgASgCUgttYXhWZWxvY2l0eRIoCg9tYXhBY2NlbGVyYXRpb24YBCABKAJSD21heEFjY2VsZXJhdGlvbhIYCgdtYXhKZXJrGAUgASgCUgdtYXhKZXJrEhwKCWN5Y2xlVGltZRgGIAEoAlIJY3ljbGVUaW1lIiIKCkRyaXZlVHJhaW4SCgoGU3dlcnZlEAASCAoEVGFuaxAB');
+final $typed_data.Uint8List trajectoryRequestDescriptor = $convert.base64Decode('ChFUcmFqZWN0b3J5UmVxdWVzdBIkCghzZWN0aW9ucxgBIAMoCzIILlNlY3Rpb25SCHNlY3Rpb25zEj0KCmRyaXZlVHJhaW4YBCABKA4yHS5UcmFqZWN0b3J5UmVxdWVzdC5Ecml2ZVRyYWluUgpkcml2ZVRyYWluElIKEXN3ZXJ2ZVJvYm90UGFyYW1zGAUgASgLMiQuVHJhamVjdG9yeVJlcXVlc3QuU3dlcnZlUm9ib3RQYXJhbXNSEXN3ZXJ2ZVJvYm90UGFyYW1zEkwKD3RhbmtSb2JvdFBhcmFtcxgGIAEoCzIiLlRyYWplY3RvcnlSZXF1ZXN0LlRhbmtSb2JvdFBhcmFtc1IPdGFua1JvYm90UGFyYW1zGp8DChFTd2VydmVSb2JvdFBhcmFtcxIUCgV3aWR0aBgBIAEoAlIFd2lkdGgSFgoGaGVpZ2h0GAIgASgCUgZoZWlnaHQSIAoLbWF4VmVsb2NpdHkYAyABKAJSC21heFZlbG9jaXR5EigKD21heEFjY2VsZXJhdGlvbhgEIAEoAlIPbWF4QWNjZWxlcmF0aW9uEioKEHNraWRBY2NlbGVyYXRpb24YBSABKAJSEHNraWRBY2NlbGVyYXRpb24SGAoHbWF4SmVyaxgGIAEoAlIHbWF4SmVyaxIuChJtYXhBbmd1bGFyVmVsb2NpdHkYByABKAJSEm1heEFuZ3VsYXJWZWxvY2l0eRI2ChZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uGAggASgCUhZtYXhBbmd1bGFyQWNjZWxlcmF0aW9uEhwKCWN5Y2xlVGltZRgJIAEoAlIJY3ljbGVUaW1lEkQKHWFuZ3VsYXJBY2NlbGVyYXRpb25QZXJjZW50YWdlGAogASgCUh1hbmd1bGFyQWNjZWxlcmF0aW9uUGVyY2VudGFnZRrDAQoPVGFua1JvYm90UGFyYW1zEhQKBXdpZHRoGAEgASgCUgV3aWR0aBIWCgZoZWlnaHQYAiABKAJSBmhlaWdodBIgCgttYXhWZWxvY2l0eRgDIAEoAlILbWF4VmVsb2NpdHkSKAoPbWF4QWNjZWxlcmF0aW9uGAQgASgCUg9tYXhBY2NlbGVyYXRpb24SGAoHbWF4SmVyaxgFIAEoAlIHbWF4SmVyaxIcCgljeWNsZVRpbWUYBiABKAJSCWN5Y2xlVGltZSIiCgpEcml2ZVRyYWluEgoKBlN3ZXJ2ZRAAEggKBFRhbmsQAQ==');
 @$core.Deprecated('Use trajectoryResponseDescriptor instead')
 const TrajectoryResponse$json = const {
   '1': 'TrajectoryResponse',
@@ -213,6 +226,7 @@ const TrajectoryResponse_SwervePoint$json = const {
     const {'1': 'velocity', '3': 3, '4': 1, '5': 11, '6': '.Vector', '10': 'velocity'},
     const {'1': 'heading', '3': 4, '4': 1, '5': 2, '10': 'heading'},
     const {'1': 'angularVelocity', '3': 5, '4': 1, '5': 2, '10': 'angularVelocity'},
+    const {'1': 'action', '3': 6, '4': 1, '5': 9, '10': 'action'},
   ],
 };
 
@@ -225,8 +239,9 @@ const TrajectoryResponse_TankPoint$json = const {
     const {'1': 'rightVelocity', '3': 3, '4': 1, '5': 2, '10': 'rightVelocity'},
     const {'1': 'leftVelocity', '3': 4, '4': 1, '5': 2, '10': 'leftVelocity'},
     const {'1': 'heading', '3': 5, '4': 1, '5': 2, '10': 'heading'},
+    const {'1': 'action', '3': 6, '4': 1, '5': 9, '10': 'action'},
   ],
 };
 
 /// Descriptor for `TrajectoryResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List trajectoryResponseDescriptor = $convert.base64Decode('ChJUcmFqZWN0b3J5UmVzcG9uc2USQwoMc3dlcnZlUG9pbnRzGAEgAygLMh8uVHJhamVjdG9yeVJlc3BvbnNlLlN3ZXJ2ZVBvaW50Ugxzd2VydmVQb2ludHMSPQoKdGFua1BvaW50cxgCIAMoCzIdLlRyYWplY3RvcnlSZXNwb25zZS5UYW5rUG9pbnRSCnRhbmtQb2ludHMarwEKC1N3ZXJ2ZVBvaW50EhIKBHRpbWUYASABKAJSBHRpbWUSIwoIcG9zaXRpb24YAiABKAsyBy5WZWN0b3JSCHBvc2l0aW9uEiMKCHZlbG9jaXR5GAMgASgLMgcuVmVjdG9yUgh2ZWxvY2l0eRIYCgdoZWFkaW5nGAQgASgCUgdoZWFkaW5nEigKD2FuZ3VsYXJWZWxvY2l0eRgFIAEoAlIPYW5ndWxhclZlbG9jaXR5GqgBCglUYW5rUG9pbnQSEgoEdGltZRgBIAEoAlIEdGltZRIjCghwb3NpdGlvbhgCIAEoCzIHLlZlY3RvclIIcG9zaXRpb24SJAoNcmlnaHRWZWxvY2l0eRgDIAEoAlINcmlnaHRWZWxvY2l0eRIiCgxsZWZ0VmVsb2NpdHkYBCABKAJSDGxlZnRWZWxvY2l0eRIYCgdoZWFkaW5nGAUgASgCUgdoZWFkaW5n');
+final $typed_data.Uint8List trajectoryResponseDescriptor = $convert.base64Decode('ChJUcmFqZWN0b3J5UmVzcG9uc2USQwoMc3dlcnZlUG9pbnRzGAEgAygLMh8uVHJhamVjdG9yeVJlc3BvbnNlLlN3ZXJ2ZVBvaW50Ugxzd2VydmVQb2ludHMSPQoKdGFua1BvaW50cxgCIAMoCzIdLlRyYWplY3RvcnlSZXNwb25zZS5UYW5rUG9pbnRSCnRhbmtQb2ludHMaxwEKC1N3ZXJ2ZVBvaW50EhIKBHRpbWUYASABKAJSBHRpbWUSIwoIcG9zaXRpb24YAiABKAsyBy5WZWN0b3JSCHBvc2l0aW9uEiMKCHZlbG9jaXR5GAMgASgLMgcuVmVjdG9yUgh2ZWxvY2l0eRIYCgdoZWFkaW5nGAQgASgCUgdoZWFkaW5nEigKD2FuZ3VsYXJWZWxvY2l0eRgFIAEoAlIPYW5ndWxhclZlbG9jaXR5EhYKBmFjdGlvbhgGIAEoCVIGYWN0aW9uGsABCglUYW5rUG9pbnQSEgoEdGltZRgBIAEoAlIEdGltZRIjCghwb3NpdGlvbhgCIAEoCzIHLlZlY3RvclIIcG9zaXRpb24SJAoNcmlnaHRWZWxvY2l0eRgDIAEoAlINcmlnaHRWZWxvY2l0eRIiCgxsZWZ0VmVsb2NpdHkYBCABKAJSDGxlZnRWZWxvY2l0eRIYCgdoZWFkaW5nGAUgASgCUgdoZWFkaW5nEhYKBmFjdGlvbhgGIAEoCVIGYWN0aW9u');
