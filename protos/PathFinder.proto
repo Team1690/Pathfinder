@@ -8,6 +8,11 @@ service PathFinder {
 	rpc CalculateSplinePoints(SplineRequest) returns (SplineResponse) {}
 }
 
+message RobotAction {
+	string actionType = 1;
+	float time = 2; // sec
+}
+
 message Vector {
 	float x = 1;
 	float y = 2;
@@ -22,7 +27,7 @@ message Point {
 	bool useHeading = 4;
 	float heading = 5;
 
-	string action = 6;
+	RobotAction action = 6;
 }
 
 message Segment {

@@ -91,11 +91,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
-
-	pathfinder.ReverseTime(quantizedTrajectory)
-
-	trajectory2D := pathfinder.Get2DTrajectory(quantizedTrajectory, path)
+	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
 	for _, point := range trajectory2D {

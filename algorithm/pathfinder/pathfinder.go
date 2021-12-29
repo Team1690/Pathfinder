@@ -60,14 +60,12 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 		point.Velocity = segmentClassifier.GetMaxVel()
 
-		point.Action = segmentClassifier.GetAction()
-
 		trajectory = append(trajectory, &point)
 	}
 
 	segmentClassifier.AddLastHeading(len(trajectory))
 
-	// TODO: export all kinematics to thier corresponding file
+	// TODO: export all kinematics to their corresponding file
 	CalculateKinematics(trajectory, robot)
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)
@@ -79,7 +77,31 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)
 
-	return trajectory, nil
+	actionPoints := segmentClassifier.GetActionPoints()
+	addActions(trajectory, actionPoints)
+
+	quantizedTrajectory := QuantizeTrajectory(trajectory, robot.CycleTime)
+
+	ReverseTime(quantizedTrajectory) // * In the output file, the time goes backwards
+
+	return quantizedTrajectory, nil
+}
+
+func addActions(trajectory []*TrajectoryPoint, actionPoints []*indexedActionPoint) {
+	for _, actionPoint := range actionPoints {
+		searchDirection := utils.Signum(float64(actionPoint.action.Time))
+		startTime := trajectory[actionPoint.index].Time
+		currentSearchTime := startTime
+		for i := actionPoint.index; true; i += searchDirection {
+			currentSearchTime = trajectory[i].Time
+
+			foundPoint := currentSearchTime-startTime == float64(actionPoint.action.Time)
+			if foundPoint {
+				trajectory[i].Action = actionPoint.action.ActionType
+				break
+			}
+		}
+	}
 }
 
 func calculatePointHeading(trajectory []*TrajectoryPoint, pointIndex int) {
@@ -348,6 +370,7 @@ func QuantizeTrajectory(trajectoryPoints []*TrajectoryPoint, cycleTime float64) 
 			Acceleration: utils.Lerp(prevPoint.Acceleration, nextPoint.Acceleration, nextToPreviousPointRatio),
 			Heading:      utils.Lerp(prevPoint.Heading, nextPoint.Heading, nextToPreviousPointRatio),
 			Omega:        utils.Lerp(prevPoint.Omega, nextPoint.Omega, nextToPreviousPointRatio),
+			Action:       prevPoint.Action, // ? Use next point's action?
 		}
 		quantizedTrajectory = append(quantizedTrajectory, &quantizedPoint)
 	}

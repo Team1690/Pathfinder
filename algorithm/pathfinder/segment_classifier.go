@@ -6,6 +6,11 @@ import (
 	"github.com/Team1690/Pathfinder/utils/vector"
 )
 
+type indexedActionPoint struct {
+	action *rpc.RobotAction
+	index  int
+}
+
 type SegmentClassifier struct {
 	segments  []*rpc.Segment
 	wayPoints []*rpc.Point
@@ -15,6 +20,8 @@ type SegmentClassifier struct {
 	currentPointIndexInsideSegment int
 
 	headingPoints []*indexedHeadingPoint
+
+	actionPoints []*indexedActionPoint
 }
 
 func NewSegmentClassifier(segments []*rpc.Segment) *SegmentClassifier {
@@ -73,6 +80,11 @@ func (s *SegmentClassifier) Update(position *vector.Vector, trajectoryIndex int)
 			s.addHeadingPoint(currentWaypoint, trajectoryIndex)
 		}
 
+		if currentWaypoint.Action.ActionType != "" {
+			s.actionPoints = append(s.actionPoints,
+				&indexedActionPoint{index: trajectoryIndex, action: currentWaypoint.Action})
+		}
+
 		s.currentPointIndexInsideSegment++
 		s.checkForNewSegment()
 	}
@@ -94,8 +106,8 @@ func (s *SegmentClassifier) GetMaxVel() float64 {
 	return float64(s.segments[s.currentSegmentIndex].MaxVelocity)
 }
 
-func (s *SegmentClassifier) GetAction() string {
-	return s.wayPoints[s.currentPointIndex].Action
+func (s *SegmentClassifier) GetActionPoints() []*indexedActionPoint {
+	return s.actionPoints
 }
 
 func (s *SegmentClassifier) GetHeadingPoints() []*indexedHeadingPoint {
