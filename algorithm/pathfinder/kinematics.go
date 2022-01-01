@@ -89,6 +89,7 @@ func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega boo
 func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
+	totalHeading := math.Max(trajectory[0].Heading, trajectory[len(trajectory)-1].Heading)
 
 	var reversedTrajectory []*TrajectoryPoint
 
@@ -97,6 +98,7 @@ func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 		var newPoint *TrajectoryPoint = oldPoint
 
 		newPoint.Distance = totalDistance - oldPoint.Distance
+		newPoint.Heading = totalHeading - oldPoint.Heading
 		newPoint.Time = totalTime - oldPoint.Time
 
 		reversedTrajectory = append(reversedTrajectory, newPoint)
