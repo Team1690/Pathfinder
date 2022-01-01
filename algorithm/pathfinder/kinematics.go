@@ -35,7 +35,7 @@ func maxVelAccordingToOmega(robot *RobotParameters, omega float64) float64 {
 	return math.Max(robot.MaxVelocity-math.Abs(robot.Radius*omega), 0)
 }
 
-func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, reversed bool) {
 	trajectoryPoints[0].Velocity = 0
 	trajectoryPoints[0].Acceleration = 0
 
@@ -53,7 +53,13 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 
 		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
 
-		maxAccForward := robot.MaxAcceleration * (1 - prevPoint.Velocity/maxVelAccordingToOmega)
+		var maxAccForward float64
+
+		if !reversed {
+			maxAccForward = robot.MaxAcceleration * (1 - prevPoint.Velocity/maxVelAccordingToOmega)
+		} else {
+			maxAccForward = robot.MaxAcceleration
+		}
 
 		currentPoint.Acceleration = utils.Min(
 			robot.SkidAcceleration,
@@ -107,9 +113,9 @@ func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 }
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
-	CalculateKinematics(trajectory, robot)
+	CalculateKinematics(trajectory, robot, false)
 	trajectory = ReverseTrajectory(trajectory)
-	CalculateKinematics(trajectory, robot)
+	CalculateKinematics(trajectory, robot, true)
 	trajectory = ReverseTrajectory(trajectory)
 	return trajectory
 }
