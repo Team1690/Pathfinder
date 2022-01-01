@@ -65,6 +65,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	}
 
 	segmentClassifier.AddLastHeading(len(trajectory))
+	segmentClassifier.AddLastAction(len(trajectory))
 
 	// TODO: export all kinematics to their corresponding file
 	CalculateKinematics(trajectory, robot)
@@ -78,30 +79,39 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	CalculateKinematicsReverse(trajectory, robot)
 	CalculateDtAndOmega(trajectory, true)
 
-	actionPoints := segmentClassifier.GetActionPoints()
-	addActions(trajectory, actionPoints)
-
 	quantizedTrajectory := QuantizeTrajectory(trajectory, robot.CycleTime)
+
+	actionPoints := segmentClassifier.GetActionPoints()
+
+	var absoluteTimedActionPoints []*rpc.RobotAction
+	for _, indexedActionPoint := range actionPoints {
+		absoluteTimedActionPoints = append(absoluteTimedActionPoints, &rpc.RobotAction{
+			ActionType: indexedActionPoint.action.ActionType,
+			Time:       float32(trajectory[indexedActionPoint.index].Time) + indexedActionPoint.action.Time,
+		})
+	}
+
+	// * Limiting time of last action to the time of the quantized profile
+	lastActionTime := absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time
+	absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time =
+		float32(math.Min(float64(lastActionTime), float64(len(quantizedTrajectory)-2)*robot.CycleTime))
+
+	addActions(quantizedTrajectory, absoluteTimedActionPoints)
 
 	ReverseTime(quantizedTrajectory) // * In the output file, the time goes backwards
 
 	return quantizedTrajectory, nil
 }
 
-func addActions(trajectory []*TrajectoryPoint, actionPoints []*indexedActionPoint) {
-	for _, actionPoint := range actionPoints {
-		searchDirection := utils.Signum(float64(actionPoint.action.Time))
-		startTime := trajectory[actionPoint.index].Time
-		currentSearchTime := startTime
-		for i := actionPoint.index; true; i += searchDirection {
-			currentSearchTime = trajectory[i].Time
-
-			foundPoint := currentSearchTime-startTime == float64(actionPoint.action.Time)
-			if foundPoint {
-				trajectory[i].Action = actionPoint.action.ActionType
-				break
-			}
+func addActions(trajectory []*TrajectoryPoint, actions []*rpc.RobotAction) {
+	prevTimeSearchIndex := 0
+	for _, action := range actions {
+		timeSearchIndex := SearchForTime(trajectory, float64(action.Time), prevTimeSearchIndex)
+		if timeSearchIndex == -1 {
+			continue // * Ignoring actions out of the profile
 		}
+		trajectory[timeSearchIndex].Action = action.ActionType
+		prevTimeSearchIndex = timeSearchIndex
 	}
 }
 
@@ -375,7 +385,6 @@ func QuantizeTrajectory(trajectoryPoints []*TrajectoryPoint, cycleTime float64) 
 			Acceleration: utils.Lerp(prevPoint.Acceleration, nextPoint.Acceleration, nextToPreviousPointRatio),
 			Heading:      utils.Lerp(prevPoint.Heading, nextPoint.Heading, nextToPreviousPointRatio),
 			Omega:        utils.Lerp(prevPoint.Omega, nextPoint.Omega, nextToPreviousPointRatio),
-			Action:       prevPoint.Action, // ? Use next point's action?
 		}
 		quantizedTrajectory = append(quantizedTrajectory, &quantizedPoint)
 	}

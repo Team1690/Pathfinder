@@ -25,23 +25,33 @@ type SegmentClassifier struct {
 }
 
 func NewSegmentClassifier(segments []*rpc.Segment) *SegmentClassifier {
-	points := []*rpc.Point{}
+	waypoints := []*rpc.Point{}
 
 	for _, segment := range segments {
-		points = append(points, segment.Points...)
+		waypoints = append(waypoints, segment.Points...)
 	}
 
+	firstWaypoint := waypoints[0]
+
 	headingPoints := []*indexedHeadingPoint{
-		{heading: float64(segments[0].Points[0].Heading), index: 0}, // * Always using first point's heading
+		{heading: float64(firstWaypoint.Heading), index: 0}, // * Always using first point's heading
+	}
+
+	var actionPoints []*indexedActionPoint
+
+	// * Add first waypoint's action if exists
+	if firstWaypoint.Action.ActionType != "" {
+		actionPoints = append(actionPoints, &indexedActionPoint{action: firstWaypoint.Action, index: 0})
 	}
 
 	return &SegmentClassifier{
 		segments:                       segments,
-		wayPoints:                      points,
+		wayPoints:                      waypoints,
 		currentPointIndex:              0,
 		currentPointIndexInsideSegment: 0,
 		currentSegmentIndex:            0,
 		headingPoints:                  headingPoints,
+		actionPoints:                   actionPoints,
 	}
 }
 
@@ -56,6 +66,15 @@ func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex
 		heading: shoutestRouteToHeading(prevHeading, float64(waypoint.Heading)),
 		index:   trajectoryIndex,
 	})
+}
+
+func (s *SegmentClassifier) addActionPoint(waypoint *rpc.Point, trajectoryIndex int) {
+	if waypoint.Action.ActionType != "" { // * Checking if action exists
+		s.actionPoints = append(
+			s.actionPoints,
+			&indexedActionPoint{index: trajectoryIndex, action: waypoint.Action},
+		)
+	}
 }
 
 func (s *SegmentClassifier) checkForNewSegment() {
@@ -80,10 +99,7 @@ func (s *SegmentClassifier) Update(position *vector.Vector, trajectoryIndex int)
 			s.addHeadingPoint(currentWaypoint, trajectoryIndex)
 		}
 
-		if currentWaypoint.Action.ActionType != "" {
-			s.actionPoints = append(s.actionPoints,
-				&indexedActionPoint{index: trajectoryIndex, action: currentWaypoint.Action})
-		}
+		s.addActionPoint(currentWaypoint, trajectoryIndex)
 
 		s.currentPointIndexInsideSegment++
 		s.checkForNewSegment()
@@ -100,6 +116,10 @@ func (s *SegmentClassifier) AddLastHeading(trajectoryLength int) {
 		// * If the last point doesn't use heading, the heading at the end is the previous heading
 		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: prevHeading})
 	}
+}
+
+func (s *SegmentClassifier) AddLastAction(trajectoryLength int) {
+	s.addActionPoint(s.wayPoints[len(s.wayPoints)-1], trajectoryLength-1)
 }
 
 func (s *SegmentClassifier) GetMaxVel() float64 {
