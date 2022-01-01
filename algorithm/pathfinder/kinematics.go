@@ -36,6 +36,9 @@ func maxVelAccordingToOmega(robot *RobotParameters, omega float64) float64 {
 }
 
 func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
+	trajectoryPoints[0].Velocity = 0
+	trajectoryPoints[0].Acceleration = 0
+
 	firstPoint := GetFirstPoint(trajectoryPoints[1].Distance, robot)
 	trajectoryPoints[1].Time = firstPoint.Time
 	trajectoryPoints[1].Velocity = firstPoint.Velocity
@@ -50,59 +53,25 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 
 		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
 
+		maxAccForward := robot.MaxAcceleration * (1 - prevPoint.Velocity/maxVelAccordingToOmega)
+
 		currentPoint.Acceleration = utils.Min(
 			robot.SkidAcceleration,
 			prevPoint.Acceleration+robot.MaxJerk*dt,
-			robot.MaxAcceleration*(1-prevPoint.Velocity/maxVelAccordingToOmega),
+			maxAccForward,
 		)
 
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, maxVelAccordingToOmega, prevPoint.Velocity+prevPoint.Acceleration*dt)
+		currentPoint.Velocity = utils.Min(
+			currentPoint.Velocity,
+			maxVelAccordingToOmega,
+			prevPoint.Velocity+prevPoint.Acceleration*dt,
+		)
+
 		currentPoint.Time = prevPoint.Time + dt
 	}
 }
 
-func CalculateKinematicsReverse(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters) {
-	lastPoint := trajectoryPoints[len(trajectoryPoints)-1]
-	secondToLastPoint := trajectoryPoints[len(trajectoryPoints)-2]
-	distanceBetweenLastTwoPoints := lastPoint.Distance - secondToLastPoint.Distance
-
-	firstPoint := GetFirstPoint(distanceBetweenLastTwoPoints, robot)
-
-	trajectoryPoints[len(trajectoryPoints)-2].Time = firstPoint.Time
-	trajectoryPoints[len(trajectoryPoints)-2].Velocity = firstPoint.Velocity
-	trajectoryPoints[len(trajectoryPoints)-2].Acceleration = firstPoint.Acceleration
-
-	trajectoryPoints[len(trajectoryPoints)-1].Velocity = 0
-	trajectoryPoints[len(trajectoryPoints)-1].Acceleration = 0
-
-	for i := len(trajectoryPoints) - 3; i >= 0; i-- {
-		currentPoint := trajectoryPoints[i]
-		prevPoint := trajectoryPoints[i+1]
-
-		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
-
-		currentPoint.Omega = calcOmega(prevPoint, currentPoint, dt)
-
-		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
-
-		currentPoint.Acceleration = utils.Min(
-			robot.SkidAcceleration,
-			robot.MaxAcceleration,
-			prevPoint.Acceleration+robot.MaxJerk*dt,
-		)
-
-		currentPoint.Velocity = utils.Min(currentPoint.Velocity, maxVelAccordingToOmega, prevPoint.Velocity+prevPoint.Acceleration*dt)
-	}
-}
-
 func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega bool) {
-	trajectoryPoints[0].Time = 0
-
-	// * The time of the "first point" found in reverse run
-	timeBetweenLastTwoPoints := trajectoryPoints[len(trajectoryPoints)-2].Time
-
-	// TODO second point time and omega (point at index 1)
-
 	for i := 2; i < len(trajectoryPoints)-1; i++ {
 		currentPoint := trajectoryPoints[i]
 		prevPoint := trajectoryPoints[i-1]
@@ -115,5 +84,30 @@ func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega boo
 
 		currentPoint.Time = prevPoint.Time + dt
 	}
-	trajectoryPoints[len(trajectoryPoints)-1].Time = trajectoryPoints[len(trajectoryPoints)-2].Time + timeBetweenLastTwoPoints
+}
+
+func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
+	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
+	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
+
+	var reversedTrajectory []*TrajectoryPoint
+
+	for i := len(trajectory) - 1; i >= 0; i-- {
+		oldPoint := trajectory[i]
+		var newPoint *TrajectoryPoint = oldPoint
+
+		newPoint.Distance = totalDistance - oldPoint.Distance
+		newPoint.Time = totalTime - oldPoint.Time
+
+		reversedTrajectory = append(reversedTrajectory, newPoint)
+	}
+	return reversedTrajectory
+}
+
+func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
+	CalculateKinematics(trajectory, robot)
+	trajectory = ReverseTrajectory(trajectory)
+	CalculateKinematics(trajectory, robot)
+	trajectory = ReverseTrajectory(trajectory)
+	return trajectory
 }

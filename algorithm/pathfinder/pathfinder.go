@@ -64,16 +64,12 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 	segmentClassifier.AddLastHeading(len(trajectory))
 
-	CalculateKinematics(trajectory, robot)
-	CalculateKinematicsReverse(trajectory, robot)
-	CalculateDtAndOmega(trajectory, true)
+	trajectory = DoKinematics(trajectory, robot)
 
 	headingPoints := segmentClassifier.GetHeadingPoints()
 	LimitVelocityWithCentrifugalForce(trajectory, robot, headingPoints)
 
-	CalculateKinematics(trajectory, robot)
-	CalculateKinematicsReverse(trajectory, robot)
-	CalculateDtAndOmega(trajectory, true)
+	trajectory = DoKinematics(trajectory, robot)
 
 	return trajectory, nil
 }
