@@ -72,3 +72,8 @@ func Signum(x float64) int {
 	}
 	return 0
 }
+
+func RoundToDecimal(x float64, decimalPlace int) float64 {
+	tenToTheDecimal := math.Pow10(decimalPlace)
+	return math.Round(float64(x*tenToTheDecimal)) / tenToTheDecimal
+}

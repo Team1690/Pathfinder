@@ -20,7 +20,7 @@ func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 	var out []*OutputTrajectoryPoint
 	for _, point := range trajectory.SwervePoints {
 		out = append(out, &OutputTrajectoryPoint{
-			Time:            point.Time,
+			Time:            float32(utils.RoundToDecimal(float64(point.Time), 2)),
 			PositionX:       point.Position.X,
 			PositionY:       point.Position.Y,
 			VelocityX:       point.Velocity.X,
