@@ -86,12 +86,15 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		})
 	}
 
-	// * Limiting time of last action to the time of the quantized profile
-	lastActionTime := absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time
-	absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time =
-		float32(math.Min(float64(lastActionTime), float64(len(quantizedTrajectory)-2)*robot.CycleTime))
+	if len(absoluteTimedActionPoints) > 0 {
+		// * Limiting time of last action to the time of the quantized profile
+		lastActionTime := absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time
+		absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time =
+			float32(math.Min(float64(lastActionTime), float64(len(quantizedTrajectory)-2)*robot.CycleTime))
 
-	addActions(quantizedTrajectory, absoluteTimedActionPoints)
+		// * Placing the actions in the trajectory
+		addActions(quantizedTrajectory, absoluteTimedActionPoints)
+	}
 
 	ReverseTime(quantizedTrajectory) // * In the output file, the time goes backwards
 
