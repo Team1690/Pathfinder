@@ -67,12 +67,11 @@ message SplineRequest {
 		Polynomial polynomial = 7;
 	}
 
-	repeated Point points = 1;
-	SplineTypes splineType = 2;
+	repeated Segment segments = 1;
+	SplineParameters splineParameters = 2;
 	float evaluatedPointsInterval = 3; // meters
 
-	SplineParameters splineParameters = 4;
-	OptimizationParams optimizationParams = 5;
+	OptimizationParams optimizationParams = 4;
 }
 
 message SplineResponse {
@@ -81,6 +80,7 @@ message SplineResponse {
 
 	message Point {
 		Vector point = 1;
+		int32 segmentIndex = 2;
 	}
 
 	repeated Point evaluatedPoints = 3;

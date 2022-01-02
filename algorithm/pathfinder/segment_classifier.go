@@ -133,3 +133,7 @@ func (s *SegmentClassifier) GetActionPoints() []*indexedActionPoint {
 func (s *SegmentClassifier) GetHeadingPoints() []*indexedHeadingPoint {
 	return s.headingPoints
 }
+
+func (s *SegmentClassifier) GetCurrentSegmentIndex() int {
+	return s.currentSegmentIndex
+}

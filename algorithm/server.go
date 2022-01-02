@@ -29,17 +29,30 @@ func NewServer(logger *log.Logger) *pathFinderServerImpl {
 }
 
 func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	path, err := initPath(r.Points, rpc.SplineTypes_Bezier, r.SplineParameters)
+	points := []*rpc.Point{}
+
+	for _, segment := range r.Segments {
+		points = append(points, segment.Points...)
+	}
+
+	path, err := initPath(points, rpc.SplineTypes_Bezier, r.SplineParameters)
 	if err != nil {
 		return nil, xerrors.Errorf("error in initPath: %w", err)
 	}
 
 	evaluatedPoints := path.EvaluateAtInterval(float64(r.EvaluatedPointsInterval))
 
-	var responsePoints []*rpc.SplineResponse_Point
+	segmentClassifier := pathfinder.NewSegmentClassifier(r.Segments)
 
-	for _, point := range evaluatedPoints {
-		responsePoints = append(responsePoints, &rpc.SplineResponse_Point{Point: point.ToRpc()})
+	var responsePoints []*rpc.SplineResponse_Point
+	for index, evaluatedPoint := range evaluatedPoints {
+		segmentClassifier.Update(&evaluatedPoint, index)
+		responsePoints = append(responsePoints,
+			&rpc.SplineResponse_Point{
+				Point:        evaluatedPoint.ToRpc(),
+				SegmentIndex: int32(segmentClassifier.GetCurrentSegmentIndex()),
+			},
+		)
 	}
 
 	return &rpc.SplineResponse{
