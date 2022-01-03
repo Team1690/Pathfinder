@@ -472,9 +472,8 @@ class SettingsDetails extends StatelessWidget {
                     onPointEdit(
                       index,
                       pointData.copyWith(
-                        inControlPoint: Offset.fromDirection(
-                            radians(pointData.outControlPoint.direction),
-                            value),
+                        outControlPoint: Offset.fromDirection(
+                            pointData.outControlPoint.direction, value),
                       ),
                     );
                   },
