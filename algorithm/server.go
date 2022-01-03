@@ -73,7 +73,9 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 	}
 
 	// * Write results to a csv file
-	export.ExportTrajectory(res)
+	if err := export.ExportTrajectory(res, r.TrajectoryFileName); err != nil {
+		return nil, xerrors.Errorf("error in ExportTrajectory: %w", err)
+	}
 
 	// // * Generate debug graphs
 	// GenerateGraphs(res, r.SwerveRobotParams)

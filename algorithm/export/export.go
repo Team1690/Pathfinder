@@ -1,8 +1,13 @@
 package export
 
 import (
+	"io/fs"
+	"os"
+	"path"
+
 	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/utils"
+	"golang.org/x/xerrors"
 )
 
 type OutputTrajectoryPoint struct {
@@ -16,7 +21,7 @@ type OutputTrajectoryPoint struct {
 	Action          string  `csv:"action"`
 }
 
-func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
+func ExportTrajectory(trajectory *rpc.TrajectoryResponse, fileName string) error {
 	var out []*OutputTrajectoryPoint
 	for _, point := range trajectory.SwervePoints {
 		out = append(out, &OutputTrajectoryPoint{
@@ -31,6 +36,16 @@ func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 		})
 	}
 
-	const outputFilePath = "./out/output.csv"
-	utils.SaveCSV(outputFilePath, &out)
+	const outputDirectory = "out"
+	if err := os.MkdirAll(outputDirectory, fs.ModePerm); err != nil {
+		return xerrors.Errorf("error in MkdirAll: %w", err)
+	}
+
+	outputFilePath := path.Join(outputDirectory, fileName)
+
+	if err := utils.SaveCSV(outputFilePath, &out); err != nil {
+		return xerrors.Errorf("error in SaveCsv: %w", err)
+	}
+
+	return nil
 }

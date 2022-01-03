@@ -1,4 +1,5 @@
-OUTPUT_DIR=dist
+COMMIT_SUFFIX=$(git rev-parse --short HEAD)
+OUTPUT_DIR=dist-$COMMIT_SUFFIX
 
 rm -rf $OUTPUT_DIR
 

@@ -108,6 +108,7 @@ ThunkAction calculateTrajectoryThunk() {
         store.state.tabState.path.points,
         store.state.tabState.path.segments,
         store.state.tabState.robot,
+        store.state.tabState.ui.trajectoryFileName,
       );
 
       store.dispatch(TrajectoryCalculated(res.swervePoints));

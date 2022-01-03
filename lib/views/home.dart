@@ -22,6 +22,8 @@ class HomeViewModel {
   final Function(int, Point) setPointData;
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
+  final String trajectoryFileName;
+  final Function(String) editTrajectoryFileName;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -31,6 +33,8 @@ class HomeViewModel {
     required this.setPointData,
     required this.setRobot,
     required this.calculateTrajectory,
+    required this.trajectoryFileName,
+    required this.editTrajectoryFileName,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
@@ -63,6 +67,10 @@ class HomeViewModel {
       calculateTrajectory: () => store.dispatch(
         calculateTrajectoryThunk(),
       ),
+      trajectoryFileName: store.state.tabState.ui.trajectoryFileName,
+      editTrajectoryFileName: (String fileName) {
+        store.dispatch(TrajectoryFileNameChanged(fileName));
+      },
     );
   }
 
@@ -184,14 +192,16 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
-                    BroswerTab(
-                      name: 'TEST',
-                      activated: false,
-                    ),
                   ],
                 ),
               ),
-              Expanded(child: EditorScreen(props.calculateTrajectory)),
+              Expanded(
+                child: EditorScreen(
+                  calculateTrajectory: props.calculateTrajectory,
+                  trajectoryFileName: props.trajectoryFileName,
+                  editTrajectoryFileName: props.editTrajectoryFileName,
+                ),
+              ),
             ],
           ),
           if (props.isSidebarOpen)
@@ -472,9 +482,8 @@ class SettingsDetails extends StatelessWidget {
                     onPointEdit(
                       index,
                       pointData.copyWith(
-                        inControlPoint: Offset.fromDirection(
-                            radians(pointData.outControlPoint.direction),
-                            value),
+                        outControlPoint: Offset.fromDirection(
+                            pointData.outControlPoint.direction, value),
                       ),
                     );
                   },
