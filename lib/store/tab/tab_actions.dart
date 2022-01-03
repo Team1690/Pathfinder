@@ -60,6 +60,8 @@ class EditPoint extends TabAction {
   final List<String>? actions;
   final bool? cutSegment;
   final bool? isStop;
+  final String? action;
+  final double? actionTime;
 
   EditPoint({
     required this.pointIndex,
@@ -71,6 +73,8 @@ class EditPoint extends TabAction {
     this.actions,
     this.cutSegment,
     this.isStop,
+    this.action,
+    this.actionTime,
   });
 }
 

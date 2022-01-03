@@ -12,6 +12,7 @@ class Robot {
   final double maxJerk;
   final double maxVelocity;
   final double cycleTime;
+  final double angularAccelerationPercentage;
 
   Robot({
     required this.width,
@@ -20,6 +21,7 @@ class Robot {
     required this.maxAngularAcceleration,
     required this.maxAngularVelocity,
     required this.skidAcceleration,
+    required this.angularAccelerationPercentage,
     required this.maxJerk,
     required this.maxVelocity,
     required this.cycleTime,
@@ -33,6 +35,7 @@ class Robot {
       maxAngularAcceleration: 1,
       maxAngularVelocity: 3.141,
       skidAcceleration: 7.5,
+      angularAccelerationPercentage: 0.1,
       maxJerk: 50,
       maxVelocity: 3,
       cycleTime: 0.02,
@@ -49,6 +52,7 @@ class Robot {
     double? maxJerk,
     double? maxVelocity,
     double? cycleTime,
+    double? angularAccelerationPercentage,
   }) {
     return Robot(
       width: width ?? this.width,
@@ -61,6 +65,8 @@ class Robot {
       maxJerk: maxJerk ?? this.maxJerk,
       maxVelocity: maxVelocity ?? this.maxVelocity,
       cycleTime: cycleTime ?? this.cycleTime,
+      angularAccelerationPercentage:
+          angularAccelerationPercentage ?? this.angularAccelerationPercentage,
     );
   }
 
@@ -78,7 +84,8 @@ class Robot {
           skidAcceleration == skidAcceleration &&
           maxJerk == maxJerk &&
           maxVelocity == maxVelocity &&
-          cycleTime == cycleTime;
+          cycleTime == cycleTime &&
+          angularAccelerationPercentage == angularAccelerationPercentage;
     }
 
     return false;
@@ -103,7 +110,9 @@ class Robot {
         skidAcceleration = json['skidAcceleration'],
         maxJerk = json['maxJerk'],
         maxVelocity = json['maxVelocity'],
-        cycleTime = json['cycleTime'];
+        cycleTime = json['cycleTime'],
+        angularAccelerationPercentage =
+            json['angularAccelerationPercentage'] ?? 0.1;
 
   Map<String, dynamic> toJson() {
     return {
@@ -116,6 +125,7 @@ class Robot {
       'maxJerk': maxJerk,
       'maxVelocity': maxVelocity,
       'cycleTime': cycleTime,
+      'angularAccelerationPercentage': angularAccelerationPercentage,
     };
   }
 }

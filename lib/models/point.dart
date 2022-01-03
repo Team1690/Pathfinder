@@ -13,7 +13,8 @@ class Point {
   final Offset outControlPoint;
   final double heading;
   final bool useHeading;
-  final List<String> actions;
+  final String action;
+  final double actionTime;
   final bool cutSegment;
   final bool isStop;
 
@@ -23,7 +24,8 @@ class Point {
     required this.outControlPoint,
     required this.heading,
     required this.useHeading,
-    required this.actions,
+    required this.action,
+    required this.actionTime,
     required this.cutSegment,
     required this.isStop,
   });
@@ -36,7 +38,8 @@ class Point {
           Offset.fromDirection((pi / 4) + pi, defaultControlLength),
       heading: 0,
       useHeading: true,
-      actions: [],
+      action: "",
+      actionTime: 0,
       cutSegment: false,
       isStop: false,
     );
@@ -48,7 +51,8 @@ class Point {
     Offset? outControlPoint,
     double? heading,
     bool? useHeading,
-    List<String>? actions,
+    String? action,
+    double? actionTime,
     bool? cutSegment,
     bool? isStop,
   }) {
@@ -58,7 +62,8 @@ class Point {
       outControlPoint: outControlPoint ?? this.outControlPoint,
       heading: heading ?? this.heading,
       useHeading: useHeading ?? this.useHeading,
-      actions: actions ?? this.actions,
+      action: action ?? this.action,
+      actionTime: actionTime ?? this.actionTime,
       cutSegment: cutSegment ?? this.cutSegment,
       isStop: isStop ?? this.isStop,
     );
@@ -76,7 +81,9 @@ class Point {
           heading == other.heading &&
           useHeading == other.useHeading &&
           cutSegment == other.cutSegment &&
-          isStop == other.isStop;
+          isStop == other.isStop &&
+          action == other.action &&
+          actionTime == other.actionTime;
     }
 
     return false;
@@ -97,7 +104,8 @@ class Point {
         outControlPoint = offsetFromJson(json['outControlPoint']),
         heading = json['heading'],
         useHeading = json['useHeading'],
-        actions = json['actions'].cast<String>(),
+        action = json['action'] ?? "",
+        actionTime = json['actionTime'] ?? 0,
         cutSegment = json['cutSegment'],
         isStop = json['isStop'];
 
@@ -108,7 +116,8 @@ class Point {
       'outControlPoint': offsetToJson(outControlPoint),
       'heading': heading,
       'useHeading': useHeading,
-      'actions': actions,
+      'action': action,
+      'actionTime': actionTime,
       'cutSegment': cutSegment,
       'isStop': isStop,
     };

@@ -27,7 +27,8 @@ ThunkAction editPointThunk({
   final bool? useHeading,
   final bool? cutSegment,
   final bool? isStop,
-  final List<String>? actions,
+  final String? action,
+  final double? actionTime,
 }) {
   return (Store store) async {
     store.dispatch(EditPoint(
@@ -37,9 +38,10 @@ ThunkAction editPointThunk({
       outControlPoint: outControlPoint,
       heading: heading,
       useHeading: useHeading,
-      actions: actions,
       cutSegment: cutSegment,
       isStop: isStop,
+      action: action,
+      actionTime: actionTime,
     ));
     store.dispatch(updateSplineThunk());
   };

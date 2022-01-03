@@ -91,11 +91,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	quantizedTrajectory := pathfinder.QuantizeTrajectory(trajectory, robot.CycleTime)
-
-	pathfinder.ReverseTime(quantizedTrajectory)
-
-	trajectory2D := pathfinder.Get2DTrajectory(quantizedTrajectory, path)
+	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
 	for _, point := range trajectory2D {
@@ -127,12 +123,13 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 
 func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {
 	return &pathfinder.RobotParameters{
-		CycleTime:        float64(rpcRobot.CycleTime),
-		MaxVelocity:      float64(rpcRobot.MaxVelocity),
-		MaxAcceleration:  float64(rpcRobot.MaxAcceleration),
-		SkidAcceleration: float64(rpcRobot.SkidAcceleration),
-		MaxJerk:          float64(rpcRobot.MaxJerk),
-		Radius:           math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
+		CycleTime:            float64(rpcRobot.CycleTime),
+		MaxVelocity:          float64(rpcRobot.MaxVelocity),
+		MaxAcceleration:      float64(rpcRobot.MaxAcceleration),
+		SkidAcceleration:     float64(rpcRobot.SkidAcceleration),
+		MaxJerk:              float64(rpcRobot.MaxJerk),
+		Radius:               math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
+		AngularAccPercentage: float64(rpcRobot.AngularAccelerationPercentage),
 	}
 }
 

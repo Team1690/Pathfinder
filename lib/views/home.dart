@@ -51,6 +51,8 @@ class HomeViewModel {
           outControlPoint: point.outControlPoint,
           useHeading: point.useHeading,
           heading: point.heading,
+          action: point.action,
+          actionTime: point.actionTime,
           cutSegment: point.cutSegment,
           isStop: point.isStop,
         ));
@@ -126,6 +128,8 @@ class _HomePageState extends State<HomePage> {
             heading: point.heading,
             cutSegment: point.cutSegment,
             isStop: point.isStop,
+            action: point.action,
+            actionTime: point.actionTime,
           ));
     });
 
@@ -378,24 +382,13 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
-                  label: 'Max Angular Vel',
-                  unitLabel: '°/s',
+                  label: 'Angular Accel Perc',
+                  unitLabel: '%',
                   allowNegative: false,
-                  initialValue: robot.maxAngularVelocity,
+                  initialValue: 100 * robot.angularAccelerationPercentage,
                   onChanged: (value) {
                     onRobotEdit(robot.copyWith(
-                      maxAngularVelocity: value,
-                    ));
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: 'Max Angular Accel',
-                  unitLabel: '°/s²',
-                  allowNegative: false,
-                  initialValue: robot.maxAngularAcceleration,
-                  onChanged: (value) {
-                    onRobotEdit(robot.copyWith(
-                      maxAngularAcceleration: value,
+                      angularAccelerationPercentage: value / 100,
                     ));
                   },
                 ),
@@ -413,7 +406,7 @@ class SettingsDetails extends StatelessWidget {
       final isFirstOrLast = index == 0 || index == points.length - 1;
 
       return Form(
-        child: CardSettings(
+        child: CardSettings.sectioned(
           contentAlign: TextAlign.right,
           labelAlign: TextAlign.left,
           shrinkWrap: true,
@@ -542,6 +535,35 @@ class SettingsDetails extends StatelessWidget {
                   ),
               ],
             ),
+            CardSettingsSection(
+              children: [
+                CardSettingsListPicker(
+                  label: "Action",
+                  initialItem:
+                      pointData.action == "" ? "None" : pointData.action,
+                  items: [
+                    "None",
+                    ...[
+                      "Camera",
+                      "Arm",
+                    ]
+                  ],
+                  onChanged: (String value) {
+                    if (value == "None") value = "";
+                    onPointEdit(index, pointData.copyWith(action: value));
+                  },
+                ),
+                if (pointData.action != "")
+                  _cardSettingsDouble(
+                    label: "Action Time",
+                    initialValue: pointData.actionTime,
+                    unitLabel: 's',
+                    onChanged: (value) {
+                      onPointEdit(index, pointData.copyWith(actionTime: value));
+                    },
+                  )
+              ],
+            )
           ],
           // );
           // },

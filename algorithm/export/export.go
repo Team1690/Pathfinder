@@ -13,21 +13,21 @@ type OutputTrajectoryPoint struct {
 	VelocityY       float32 `csv:"velocity_y"`
 	Heading         float32 `csv:"heading"`
 	AngularVelocity float32 `csv:"angular_velocity"`
-	Vision          int     `csv:"vision"` // For old vision code in chester
+	Action          string  `csv:"action"`
 }
 
 func ExportTrajectory(trajectory *rpc.TrajectoryResponse) {
 	var out []*OutputTrajectoryPoint
 	for _, point := range trajectory.SwervePoints {
 		out = append(out, &OutputTrajectoryPoint{
-			Time:            point.Time,
+			Time:            float32(utils.RoundToDecimal(float64(point.Time), 2)),
 			PositionX:       point.Position.X,
 			PositionY:       point.Position.Y,
 			VelocityX:       point.Velocity.X,
 			VelocityY:       point.Velocity.Y,
 			Heading:         point.Heading,
 			AngularVelocity: point.AngularVelocity,
-			Vision:          0,
+			Action:          point.Action,
 		})
 	}
 

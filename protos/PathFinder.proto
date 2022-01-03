@@ -8,6 +8,11 @@ service PathFinder {
 	rpc CalculateSplinePoints(SplineRequest) returns (SplineResponse) {}
 }
 
+message RobotAction {
+	string actionType = 1;
+	float time = 2; // sec
+}
+
 message Vector {
 	float x = 1;
 	float y = 2;
@@ -21,6 +26,8 @@ message Point {
 
 	bool useHeading = 4;
 	float heading = 5;
+
+	RobotAction action = 6;
 }
 
 message Segment {
@@ -54,12 +61,12 @@ message SplineRequest {
 
 		message Polynomial { }
 
-		
+
 		Hermite hermite = 5;
 		Bezier bezier = 6;
 		Polynomial polynomial = 7;
 	}
-	
+
 	repeated Point points = 1;
 	SplineTypes splineType = 2;
 	float evaluatedPointsInterval = 3; // meters
@@ -95,8 +102,9 @@ message TrajectoryRequest {
 		float maxAngularVelocity = 7;
 		float maxAngularAcceleration = 8;
 		float cycleTime = 9;
+		float angularAccelerationPercentage = 10; // the percentage of the angular acceleration when spreading heading over distance
 	}
-	
+
 	message TankRobotParams {
 		float width = 1;
 		float height = 2;
@@ -120,6 +128,7 @@ message TrajectoryResponse {
 		Vector velocity = 3;
 		float heading = 4;
 		float angularVelocity = 5;
+		string action = 6;
 	}
 
 	message TankPoint {
@@ -128,6 +137,7 @@ message TrajectoryResponse {
 		float rightVelocity = 3;
 		float leftVelocity = 4;
 		float heading = 5;
+		string action = 6;
 	}
 
 	repeated SwervePoint swervePoints = 1;
