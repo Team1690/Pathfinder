@@ -28,11 +28,15 @@ class App extends StatelessWidget {
 }
 
 final store = Store<AppState>(
-  appStateReducer,
+  (AppState state, dynamic action) {
+    final newState = appStateReducer(state, action);
+    saveCacheState(newState);
+
+    return newState;
+  },
   initialState: loadInitialStateFromCache(),
   middleware: [
     thunkMiddleware,
-    saveCacheMiddleware,
   ],
 );
 
@@ -45,9 +49,7 @@ AppState loadInitialStateFromCache() {
   return AppState.initial();
 }
 
-dynamic saveCacheMiddleware(store, action, next) {
-  final stateJson = jsonEncode(store.state.toJson());
+dynamic saveCacheState(state) {
+  final stateJson = jsonEncode(state.toJson());
   File(cacheFilePath).writeAsString(stateJson);
-
-  return next(action);
 }

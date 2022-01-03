@@ -23,6 +23,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, ToggleControl>(_toggleControl),
   TypedReducer<TabState, TrajectoryCalculated>(_trajectoryCalculated),
   TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
+  TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -365,4 +366,13 @@ TabState _toggleHeading(TabState tabState, ToggleHeading action) {
 TabState _toggleControl(TabState tabState, ToggleControl action) {
   return tabState.copyWith(
       ui: tabState.ui.copyWith(controlToggle: !tabState.ui.controlToggle));
+}
+
+TabState _trajectoryFileNameChanged(
+    TabState tabState, TrajectoryFileNameChanged action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      trajectoryFileName: action.fileName,
+    ),
+  );
 }

@@ -1112,6 +1112,7 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
     ..e<TrajectoryRequest_DriveTrain>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'driveTrain', $pb.PbFieldType.OE, protoName: 'driveTrain', defaultOrMaker: TrajectoryRequest_DriveTrain.Swerve, valueOf: TrajectoryRequest_DriveTrain.valueOf, enumValues: TrajectoryRequest_DriveTrain.values)
     ..aOM<TrajectoryRequest_SwerveRobotParams>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'swerveRobotParams', protoName: 'swerveRobotParams', subBuilder: TrajectoryRequest_SwerveRobotParams.create)
     ..aOM<TrajectoryRequest_TankRobotParams>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tankRobotParams', protoName: 'tankRobotParams', subBuilder: TrajectoryRequest_TankRobotParams.create)
+    ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'trajectoryFileName', protoName: 'trajectoryFileName')
     ..hasRequiredFields = false
   ;
 
@@ -1121,6 +1122,7 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
     TrajectoryRequest_DriveTrain? driveTrain,
     TrajectoryRequest_SwerveRobotParams? swerveRobotParams,
     TrajectoryRequest_TankRobotParams? tankRobotParams,
+    $core.String? trajectoryFileName,
   }) {
     final _result = create();
     if (sections != null) {
@@ -1134,6 +1136,9 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
     }
     if (tankRobotParams != null) {
       _result.tankRobotParams = tankRobotParams;
+    }
+    if (trajectoryFileName != null) {
+      _result.trajectoryFileName = trajectoryFileName;
     }
     return _result;
   }
@@ -1191,6 +1196,15 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
   void clearTankRobotParams() => clearField(6);
   @$pb.TagNumber(6)
   TrajectoryRequest_TankRobotParams ensureTankRobotParams() => $_ensure(3);
+
+  @$pb.TagNumber(7)
+  $core.String get trajectoryFileName => $_getSZ(4);
+  @$pb.TagNumber(7)
+  set trajectoryFileName($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasTrajectoryFileName() => $_has(4);
+  @$pb.TagNumber(7)
+  void clearTrajectoryFileName() => clearField(7);
 }
 
 class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {

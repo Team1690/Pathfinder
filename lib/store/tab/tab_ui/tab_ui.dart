@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/utils/json.dart';
 
+const defaultTrajectoryFileName = "output";
+
 @immutable
 class TabUI {
   final int selectedIndex;
@@ -13,6 +15,7 @@ class TabUI {
   final bool headingToggle;
   final bool controlToggle;
   final String? serverError;
+  final String trajectoryFileName;
 
   const TabUI({
     required this.selectedIndex,
@@ -24,6 +27,7 @@ class TabUI {
     required this.pan,
     required this.headingToggle,
     required this.controlToggle,
+    required this.trajectoryFileName,
     this.serverError,
   });
 
@@ -38,6 +42,7 @@ class TabUI {
       headingToggle: false,
       controlToggle: false,
       pan: Offset(0, 0),
+      trajectoryFileName: defaultTrajectoryFileName,
     );
   }
 
@@ -52,6 +57,7 @@ class TabUI {
     bool? headingToggle,
     bool? controlToggle,
     String? serverError,
+    String? trajectoryFileName,
   }) {
     return TabUI(
       selectedIndex: selectedIndex ?? this.selectedIndex,
@@ -64,6 +70,7 @@ class TabUI {
       headingToggle: headingToggle ?? this.headingToggle,
       controlToggle: controlToggle ?? this.controlToggle,
       serverError: serverError ?? this.serverError,
+      trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
     );
   }
 
@@ -78,7 +85,9 @@ class TabUI {
         pan = offsetFromJson(json['pan']),
         headingToggle = json['headingToggle'],
         controlToggle = json['controlToggle'],
-        serverError = null;
+        serverError = null,
+        trajectoryFileName =
+            json['trajectoryFileName'] ?? defaultTrajectoryFileName;
 
   Map<String, dynamic> toJson() {
     return {
@@ -92,6 +101,7 @@ class TabUI {
       'pan': offsetToJson(pan),
       'headingToggle': headingToggle,
       'controlToggle': controlToggle,
+      'trajectoryFileName': trajectoryFileName,
     };
   }
 }

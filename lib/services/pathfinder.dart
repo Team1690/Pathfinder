@@ -3,6 +3,7 @@ import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart' as rpc;
+import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:pathfinder/utils/grpc.dart';
 
 class PathFinderService {
@@ -26,12 +27,16 @@ class PathFinderService {
     List<Point> points,
     List<Segment> segments,
     Robot robot,
+    String fileName,
   ) async {
     var client = rpc.PathFinderClient(GrpcClientSingleton().client);
+
+    fileName = fileName == "" ? defaultTrajectoryFileName : fileName;
 
     var request = rpc.TrajectoryRequest(
       swerveRobotParams: toRpcSwerveRobotParams(robot),
       sections: toRpcSections(points, segments),
+      trajectoryFileName: '$fileName.csv',
     );
 
     return await client.calculateTrajectory(request);

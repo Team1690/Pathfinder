@@ -119,6 +119,7 @@ message TrajectoryRequest {
 	DriveTrain driveTrain = 4;
 	SwerveRobotParams swerveRobotParams = 5;
 	TankRobotParams tankRobotParams = 6;
+	string trajectoryFileName = 7;
 }
 
 message TrajectoryResponse {

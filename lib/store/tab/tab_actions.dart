@@ -109,3 +109,8 @@ class EditRobot extends TabAction {
 class ToggleHeading extends TabAction {}
 
 class ToggleControl extends TabAction {}
+
+class TrajectoryFileNameChanged extends TabAction {
+  final String fileName;
+  TrajectoryFileNameChanged(this.fileName);
+}

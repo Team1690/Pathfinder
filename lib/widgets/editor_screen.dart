@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:pathfinder/views/timeline.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 class EditorScreen extends StatefulWidget {
   final Function calculateTrajectory;
+  final String trajectoryFileName;
+  final Function(String) editTrajectoryFileName;
 
-  const EditorScreen(this.calculateTrajectory, {Key? key}) : super(key: key);
+  const EditorScreen({
+    Key? key,
+    required this.calculateTrajectory,
+    required this.trajectoryFileName,
+    required this.editTrajectoryFileName,
+  }) : super(key: key);
 
   @override
   _EditorScreenState createState() => _EditorScreenState();
 }
 
 class _EditorScreenState extends State<EditorScreen> {
+  final TextEditingController _trajectoryFileNameController =
+      TextEditingController(text: '');
+
   @override
   Widget build(BuildContext context) {
+    _trajectoryFileNameController.text = widget.trajectoryFileName;
+
     return Container(
       width: 10000,
       color: primary,
@@ -37,22 +50,45 @@ class _EditorScreenState extends State<EditorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            primary: Color(0xff0078D7)),
-                        onPressed: () {},
-                        icon: Icon(Icons.search),
-                        label: Text('Path'),
-                      ),
+                      // ElevatedButton.icon(
+                      //   style: ElevatedButton.styleFrom(
+                      //       primary: Color(0xff0078D7)),
+                      //   onPressed: () {},
+                      //   icon: Icon(Icons.search),
+                      //   label: Text('Path'),
+                      // ),
+                      // SizedBox(height: 10),
+                      // ElevatedButton.icon(
+                      //   style: ElevatedButton.styleFrom(
+                      //       primary: Color(0xffD45C36)),
+                      //   onPressed: () {},
+                      //   icon: Icon(Icons.trending_up_rounded),
+                      //   label: Text('Graph'),
+                      // ),
                       SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            primary: Color(0xffD45C36)),
-                        onPressed: () {},
-                        icon: Icon(Icons.trending_up_rounded),
-                        label: Text('Graph'),
+                      ConstrainedBox(
+                        constraints:
+                            BoxConstraints.tightFor(width: 100, height: 60),
+                        child: TextField(
+                          controller: _trajectoryFileNameController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            focusColor: white,
+                            fillColor: white,
+                            hintText: defaultTrajectoryFileName,
+                            labelText: 'Trajectory File Name',
+                            suffixText: '.csv',
+                          ),
+                          onChanged: (value) {
+                            widget.editTrajectoryFileName(value);
+                            _trajectoryFileNameController.text = value;
+                            _trajectoryFileNameController.selection =
+                                TextSelection.fromPosition(
+                                    TextPosition(offset: value.length));
+                          },
+                          textAlign: TextAlign.left,
+                        ),
                       ),
-                      SizedBox(height: 10),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             primary: Color(0xffD7AD17)),
