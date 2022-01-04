@@ -95,11 +95,10 @@ final $typed_data.Uint8List splineParametersDescriptor = $convert.base64Decode('
 const SplineRequest$json = const {
   '1': 'SplineRequest',
   '2': const [
-    const {'1': 'points', '3': 1, '4': 3, '5': 11, '6': '.Point', '10': 'points'},
-    const {'1': 'splineType', '3': 2, '4': 1, '5': 14, '6': '.SplineTypes', '10': 'splineType'},
+    const {'1': 'segments', '3': 1, '4': 3, '5': 11, '6': '.Segment', '10': 'segments'},
+    const {'1': 'splineParameters', '3': 2, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
     const {'1': 'evaluatedPointsInterval', '3': 3, '4': 1, '5': 2, '10': 'evaluatedPointsInterval'},
-    const {'1': 'splineParameters', '3': 4, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
-    const {'1': 'optimizationParams', '3': 5, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams', '10': 'optimizationParams'},
+    const {'1': 'optimizationParams', '3': 4, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams', '10': 'optimizationParams'},
   ],
   '3': const [SplineRequest_OptimizationParams$json],
 };
@@ -131,7 +130,7 @@ const SplineRequest_OptimizationParams_Polynomial$json = const {
 };
 
 /// Descriptor for `SplineRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List splineRequestDescriptor = $convert.base64Decode('Cg1TcGxpbmVSZXF1ZXN0Eh4KBnBvaW50cxgBIAMoCzIGLlBvaW50UgZwb2ludHMSLAoKc3BsaW5lVHlwZRgCIAEoDjIMLlNwbGluZVR5cGVzUgpzcGxpbmVUeXBlEjgKF2V2YWx1YXRlZFBvaW50c0ludGVydmFsGAMgASgCUhdldmFsdWF0ZWRQb2ludHNJbnRlcnZhbBI9ChBzcGxpbmVQYXJhbWV0ZXJzGAQgASgLMhEuU3BsaW5lUGFyYW1ldGVyc1IQc3BsaW5lUGFyYW1ldGVycxJRChJvcHRpbWl6YXRpb25QYXJhbXMYBSABKAsyIS5TcGxpbmVSZXF1ZXN0Lk9wdGltaXphdGlvblBhcmFtc1ISb3B0aW1pemF0aW9uUGFyYW1zGowCChJPcHRpbWl6YXRpb25QYXJhbXMSQwoHaGVybWl0ZRgFIAEoCzIpLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLkhlcm1pdGVSB2hlcm1pdGUSQAoGYmV6aWVyGAYgASgLMiguU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXMuQmV6aWVyUgZiZXppZXISTAoKcG9seW5vbWlhbBgHIAEoCzIsLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zLlBvbHlub21pYWxSCnBvbHlub21pYWwaCQoHSGVybWl0ZRoICgZCZXppZXIaDAoKUG9seW5vbWlhbA==');
+final $typed_data.Uint8List splineRequestDescriptor = $convert.base64Decode('Cg1TcGxpbmVSZXF1ZXN0EiQKCHNlZ21lbnRzGAEgAygLMgguU2VnbWVudFIIc2VnbWVudHMSPQoQc3BsaW5lUGFyYW1ldGVycxgCIAEoCzIRLlNwbGluZVBhcmFtZXRlcnNSEHNwbGluZVBhcmFtZXRlcnMSOAoXZXZhbHVhdGVkUG9pbnRzSW50ZXJ2YWwYAyABKAJSF2V2YWx1YXRlZFBvaW50c0ludGVydmFsElEKEm9wdGltaXphdGlvblBhcmFtcxgEIAEoCzIhLlNwbGluZVJlcXVlc3QuT3B0aW1pemF0aW9uUGFyYW1zUhJvcHRpbWl6YXRpb25QYXJhbXMajAIKEk9wdGltaXphdGlvblBhcmFtcxJDCgdoZXJtaXRlGAUgASgLMikuU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXMuSGVybWl0ZVIHaGVybWl0ZRJACgZiZXppZXIYBiABKAsyKC5TcGxpbmVSZXF1ZXN0Lk9wdGltaXphdGlvblBhcmFtcy5CZXppZXJSBmJlemllchJMCgpwb2x5bm9taWFsGAcgASgLMiwuU3BsaW5lUmVxdWVzdC5PcHRpbWl6YXRpb25QYXJhbXMuUG9seW5vbWlhbFIKcG9seW5vbWlhbBoJCgdIZXJtaXRlGggKBkJlemllchoMCgpQb2x5bm9taWFs');
 @$core.Deprecated('Use splineResponseDescriptor instead')
 const SplineResponse$json = const {
   '1': 'SplineResponse',
@@ -148,11 +147,12 @@ const SplineResponse_Point$json = const {
   '1': 'Point',
   '2': const [
     const {'1': 'point', '3': 1, '4': 1, '5': 11, '6': '.Vector', '10': 'point'},
+    const {'1': 'segmentIndex', '3': 2, '4': 1, '5': 5, '10': 'segmentIndex'},
   ],
 };
 
 /// Descriptor for `SplineResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List splineResponseDescriptor = $convert.base64Decode('Cg5TcGxpbmVSZXNwb25zZRI9ChBzcGxpbmVQYXJhbWV0ZXJzGAEgASgLMhEuU3BsaW5lUGFyYW1ldGVyc1IQc3BsaW5lUGFyYW1ldGVycxIsCgpzcGxpbmVUeXBlGAIgASgOMgwuU3BsaW5lVHlwZXNSCnNwbGluZVR5cGUSPwoPZXZhbHVhdGVkUG9pbnRzGAMgAygLMhUuU3BsaW5lUmVzcG9uc2UuUG9pbnRSD2V2YWx1YXRlZFBvaW50cxomCgVQb2ludBIdCgVwb2ludBgBIAEoCzIHLlZlY3RvclIFcG9pbnQ=');
+final $typed_data.Uint8List splineResponseDescriptor = $convert.base64Decode('Cg5TcGxpbmVSZXNwb25zZRI9ChBzcGxpbmVQYXJhbWV0ZXJzGAEgASgLMhEuU3BsaW5lUGFyYW1ldGVyc1IQc3BsaW5lUGFyYW1ldGVycxIsCgpzcGxpbmVUeXBlGAIgASgOMgwuU3BsaW5lVHlwZXNSCnNwbGluZVR5cGUSPwoPZXZhbHVhdGVkUG9pbnRzGAMgAygLMhUuU3BsaW5lUmVzcG9uc2UuUG9pbnRSD2V2YWx1YXRlZFBvaW50cxpKCgVQb2ludBIdCgVwb2ludBgBIAEoCzIHLlZlY3RvclIFcG9pbnQSIgoMc2VnbWVudEluZGV4GAIgASgFUgxzZWdtZW50SW5kZXg=');
 @$core.Deprecated('Use trajectoryRequestDescriptor instead')
 const TrajectoryRequest$json = const {
   '1': 'TrajectoryRequest',

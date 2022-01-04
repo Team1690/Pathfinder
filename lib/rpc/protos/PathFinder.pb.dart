@@ -597,34 +597,29 @@ class SplineRequest_OptimizationParams extends $pb.GeneratedMessage {
 
 class SplineRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest', createEmptyInstance: create)
-    ..pc<Point>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'points', $pb.PbFieldType.PM, subBuilder: Point.create)
-    ..e<SplineTypes>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
+    ..pc<Segment>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: Segment.create)
+    ..aOM<SplineParameters>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'evaluatedPointsInterval', $pb.PbFieldType.OF, protoName: 'evaluatedPointsInterval')
-    ..aOM<SplineParameters>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
-    ..aOM<SplineRequest_OptimizationParams>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
+    ..aOM<SplineRequest_OptimizationParams>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
     ..hasRequiredFields = false
   ;
 
   SplineRequest._() : super();
   factory SplineRequest({
-    $core.Iterable<Point>? points,
-    SplineTypes? splineType,
-    $core.double? evaluatedPointsInterval,
+    $core.Iterable<Segment>? segments,
     SplineParameters? splineParameters,
+    $core.double? evaluatedPointsInterval,
     SplineRequest_OptimizationParams? optimizationParams,
   }) {
     final _result = create();
-    if (points != null) {
-      _result.points.addAll(points);
-    }
-    if (splineType != null) {
-      _result.splineType = splineType;
-    }
-    if (evaluatedPointsInterval != null) {
-      _result.evaluatedPointsInterval = evaluatedPointsInterval;
+    if (segments != null) {
+      _result.segments.addAll(segments);
     }
     if (splineParameters != null) {
       _result.splineParameters = splineParameters;
+    }
+    if (evaluatedPointsInterval != null) {
+      _result.evaluatedPointsInterval = evaluatedPointsInterval;
     }
     if (optimizationParams != null) {
       _result.optimizationParams = optimizationParams;
@@ -653,16 +648,18 @@ class SplineRequest extends $pb.GeneratedMessage {
   static SplineRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<Point> get points => $_getList(0);
+  $core.List<Segment> get segments => $_getList(0);
 
   @$pb.TagNumber(2)
-  SplineTypes get splineType => $_getN(1);
+  SplineParameters get splineParameters => $_getN(1);
   @$pb.TagNumber(2)
-  set splineType(SplineTypes v) { setField(2, v); }
+  set splineParameters(SplineParameters v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasSplineType() => $_has(1);
+  $core.bool hasSplineParameters() => $_has(1);
   @$pb.TagNumber(2)
-  void clearSplineType() => clearField(2);
+  void clearSplineParameters() => clearField(2);
+  @$pb.TagNumber(2)
+  SplineParameters ensureSplineParameters() => $_ensure(1);
 
   @$pb.TagNumber(3)
   $core.double get evaluatedPointsInterval => $_getN(2);
@@ -674,41 +671,35 @@ class SplineRequest extends $pb.GeneratedMessage {
   void clearEvaluatedPointsInterval() => clearField(3);
 
   @$pb.TagNumber(4)
-  SplineParameters get splineParameters => $_getN(3);
+  SplineRequest_OptimizationParams get optimizationParams => $_getN(3);
   @$pb.TagNumber(4)
-  set splineParameters(SplineParameters v) { setField(4, v); }
+  set optimizationParams(SplineRequest_OptimizationParams v) { setField(4, v); }
   @$pb.TagNumber(4)
-  $core.bool hasSplineParameters() => $_has(3);
+  $core.bool hasOptimizationParams() => $_has(3);
   @$pb.TagNumber(4)
-  void clearSplineParameters() => clearField(4);
+  void clearOptimizationParams() => clearField(4);
   @$pb.TagNumber(4)
-  SplineParameters ensureSplineParameters() => $_ensure(3);
-
-  @$pb.TagNumber(5)
-  SplineRequest_OptimizationParams get optimizationParams => $_getN(4);
-  @$pb.TagNumber(5)
-  set optimizationParams(SplineRequest_OptimizationParams v) { setField(5, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasOptimizationParams() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearOptimizationParams() => clearField(5);
-  @$pb.TagNumber(5)
-  SplineRequest_OptimizationParams ensureOptimizationParams() => $_ensure(4);
+  SplineRequest_OptimizationParams ensureOptimizationParams() => $_ensure(3);
 }
 
 class SplineResponse_Point extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineResponse.Point', createEmptyInstance: create)
     ..aOM<Vector>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'point', subBuilder: Vector.create)
+    ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'segmentIndex', $pb.PbFieldType.O3, protoName: 'segmentIndex')
     ..hasRequiredFields = false
   ;
 
   SplineResponse_Point._() : super();
   factory SplineResponse_Point({
     Vector? point,
+    $core.int? segmentIndex,
   }) {
     final _result = create();
     if (point != null) {
       _result.point = point;
+    }
+    if (segmentIndex != null) {
+      _result.segmentIndex = segmentIndex;
     }
     return _result;
   }
@@ -743,6 +734,15 @@ class SplineResponse_Point extends $pb.GeneratedMessage {
   void clearPoint() => clearField(1);
   @$pb.TagNumber(1)
   Vector ensurePoint() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $core.int get segmentIndex => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set segmentIndex($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasSegmentIndex() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearSegmentIndex() => clearField(2);
 }
 
 class SplineResponse extends $pb.GeneratedMessage {

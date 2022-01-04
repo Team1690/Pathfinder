@@ -88,6 +88,7 @@ ThunkAction calculateSplineThunk() {
   return (Store store) async {
     try {
       final res = await PathFinderService.calculateSpline(
+        store.state.tabState.path.segments,
         store.state.tabState.path.points,
         0.1,
       );

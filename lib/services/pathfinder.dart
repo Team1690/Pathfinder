@@ -8,16 +8,15 @@ import 'package:pathfinder/utils/grpc.dart';
 
 class PathFinderService {
   static Future<rpc.SplineResponse> calculateSpline(
+    List<Segment> segments,
     List<Point> points,
     double interval,
   ) async {
     var client = rpc.PathFinderClient(GrpcClientSingleton().client);
 
-    var requestPoints = points.map(toRpcPoint).toList();
-
     var request = rpc.SplineRequest(
       evaluatedPointsInterval: interval,
-      points: requestPoints,
+      segments: toRpcSegments(segments, points),
     );
 
     return await client.calculateSplinePoints(request);
