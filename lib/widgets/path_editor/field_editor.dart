@@ -3,9 +3,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/models/path.dart' as modelspath;
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
@@ -40,7 +42,7 @@ class FieldPainter extends CustomPainter {
   List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
-  List<Offset>? evaluetedPoints;
+  List<modelspath.SplinePoint> evaluetedPoints;
   Robot robot;
 
   FieldPainter(
@@ -210,40 +212,43 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPath(Canvas canvas, List<Offset> evaluetedPoints) {
-    Paint paint = Paint()
-      ..color = getSegmentColor(0)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+  void drawPath(Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
+    final segmentIndexToSplinePoints = groupBy(
+      evaluetedPoints,
+      (modelspath.SplinePoint p) => p.segmentIndex,
+    );
 
-    List<Offset> pathPoints = [];
-    for (Offset splinePoint in evaluetedPoints) {
-      pathPoints.add(splinePoint);
+    for (final e in segmentIndexToSplinePoints.entries) {
+      Paint paint = Paint()
+        ..color = getSegmentColor(e.key)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
+
+      Path path = Path();
+      final pathPoints = e.value.map((p) => p.position).toList();
+
+      path.addPolygon(pathPoints, false);
+      canvas.drawPath(path, paint);
     }
-
-    Path path = Path();
-    path.addPolygon(pathPoints, false);
-    canvas.drawPath(path, paint);
   }
 
-  void drawPathShadow(Canvas canvas, List<Offset> evaluetedPoints) {
+  void drawPathShadow(
+      Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
     Paint paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4);
 
-    List<Offset> pathPoints = [];
-    for (Offset splinePoint in evaluetedPoints) {
-      pathPoints.add(splinePoint);
-    }
+    final pathPoints = evaluetedPoints.map((p) => p.position).toList();
 
     Path path = Path();
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
   }
 
-  void drawWheelsPath(Canvas canvas, List<Offset> evaluetedPoints) {
+  void drawWheelsPath(
+      Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
     double robotWidth = robot.width;
 
     Paint paint = Paint()
@@ -254,17 +259,19 @@ class FieldPainter extends CustomPainter {
     if (evaluetedPoints.length > 0) {
       List<Offset> leftPoints =
           evaluetedPoints.sublist(1).asMap().entries.map((e) {
-        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        final Offset dist = evaluetedPoints[e.key + 1].position -
+            evaluetedPoints[e.key].position;
         return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
-            .translate(
-                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+            .translate(evaluetedPoints[e.key + 1].position.dx,
+                evaluetedPoints[e.key + 1].position.dy);
       }).toList();
       List<Offset> rightPoints =
           evaluetedPoints.sublist(1).asMap().entries.map((e) {
-        final Offset dist = evaluetedPoints[e.key + 1] - evaluetedPoints[e.key];
+        final Offset dist = evaluetedPoints[e.key + 1].position -
+            evaluetedPoints[e.key].position;
         return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
-            .translate(
-                evaluetedPoints[e.key + 1].dx, evaluetedPoints[e.key + 1].dy);
+            .translate(evaluetedPoints[e.key + 1].position.dx,
+                evaluetedPoints[e.key + 1].position.dy);
       }).toList();
 
       // inspect(pathPoints);
@@ -292,11 +299,9 @@ class FieldPainter extends CustomPainter {
             ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
         image: image);
 
-    if (evaluetedPoints != null) {
-      drawPathShadow(canvas, evaluetedPoints!);
-      drawPath(canvas, evaluetedPoints!);
-      drawWheelsPath(canvas, evaluetedPoints!);
-    }
+    drawPathShadow(canvas, evaluetedPoints);
+    drawPath(canvas, evaluetedPoints);
+    // drawWheelsPath(canvas, evaluetedPoints!);
 
     for (final entery in points.asMap().entries) {
       int index = entery.key;
@@ -343,7 +348,7 @@ class FieldLoader extends StatefulWidget {
   List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
-  List<Offset>? evaluatedPoints;
+  List<modelspath.SplinePoint> evaluatedPoints;
   Function(Offset) setFieldSizePixels;
   Robot robot;
 

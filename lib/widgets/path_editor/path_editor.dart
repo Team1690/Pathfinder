@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/store/tab/tab_thunk.dart';
@@ -26,7 +27,7 @@ class PathViewModel {
   final Function(int, Offset) finishOutControlDrag;
   final Function(int, double) finishHeadingDrag;
   final Function(Offset) setFieldSizePixels;
-  final List<Offset>? evaulatedPoints;
+  final List<SplinePoint> evaulatedPoints;
   final bool headingToggle;
   final Function() toggleHeading;
   final bool controlToggle;
@@ -60,11 +61,9 @@ class PathViewModel {
           .map((p) => p.toUiCoord(store))
           .toList(),
       segments: store.state.tabState.path.segments,
-      evaulatedPoints: store.state.tabState.path.evaluatedPoints == null
-          ? []
-          : store.state.tabState.path.evaluatedPoints!
-              .map((p) => metersToUiCoord(store, Offset(p.point.x, p.point.y)))
-              .toList(),
+      evaulatedPoints: store.state.tabState.path.evaluatedPoints
+          .map((p) => p.toUiCoord(store))
+          .toList(),
       selectedPointIndex: (store.state.tabState.ui.selectedType == Point
           ? store.state.tabState.ui.selectedIndex
           : null),

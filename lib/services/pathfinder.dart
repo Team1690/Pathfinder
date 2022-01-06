@@ -125,3 +125,7 @@ rpc.TrajectoryRequest_SwerveRobotParams toRpcSwerveRobotParams(Robot r) {
     angularAccelerationPercentage: r.angularAccelerationPercentage,
   );
 }
+
+Offset fromRpcVector(rpc.Vector v) {
+  return Offset(v.x, v.y);
+}

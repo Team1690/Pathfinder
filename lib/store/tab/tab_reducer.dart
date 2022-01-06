@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
+import 'package:pathfinder/services/pathfinder.dart';
 import 'package:redux/redux.dart';
 
 import 'tab_actions.dart';
@@ -75,9 +77,16 @@ TabState _trajectoryCalculated(TabState tabState, TrajectoryCalculated action) {
 }
 
 TabState _splineCalculated(TabState tabState, SplineCalculated action) {
+  final evaluatedPoints = action.points
+      .map((p) => SplinePoint(
+            position: fromRpcVector(p.point),
+            segmentIndex: p.segmentIndex,
+          ))
+      .toList();
+
   return tabState.copyWith(
       ui: tabState.ui.copyWith(serverError: null),
-      path: tabState.path.copyWith(evaluatedPoints: action.points));
+      path: tabState.path.copyWith(evaluatedPoints: evaluatedPoints));
 }
 
 TabState _addPointToPath(TabState tabState, AddPointToPath action) {
