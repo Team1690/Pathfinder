@@ -10,6 +10,7 @@ import 'package:pathfinder/constants.dart';
 import 'package:pathfinder/models/path.dart' as modelspath;
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
+import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
 
 enum PointType {
@@ -38,6 +39,7 @@ Map<PointType, PointSettings> pointSettings = {
 class FieldPainter extends CustomPainter {
   ui.Image image;
   List<Point> points;
+  List<Segment> segments;
   int? selectedPoint;
   List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
@@ -48,6 +50,7 @@ class FieldPainter extends CustomPainter {
   FieldPainter(
     this.image,
     this.points,
+    this.segments,
     this.selectedPoint,
     this.dragPoints,
     this.enableHeadingEditing,
@@ -55,6 +58,84 @@ class FieldPainter extends CustomPainter {
     this.evaluetedPoints,
     this.robot,
   );
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(1, -1);
+    canvas.translate(0, -size.height);
+
+    paintImage(
+        canvas: canvas,
+        fit: BoxFit.fill,
+        rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
+        colorFilter:
+            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+        image: image);
+
+    // Group spline points by segment index
+    final segmentIndexToSplinePoints = groupBy(
+      evaluetedPoints,
+      (modelspath.SplinePoint p) => p.segmentIndex,
+    );
+
+    // Draw the path each segment at a time
+    segmentIndexToSplinePoints.entries.forEach((e) {
+      // Skip and don't draw hidden segments
+      if (segments[e.key].isHidden) return;
+
+      final segmentColor = getSegmentColor(e.key);
+      drawPathShadow(canvas, e.value);
+      drawPath(canvas, e.value, segmentColor);
+      // drawWheelsPath(canvas, evaluetedPoints!);
+    });
+
+    // Get the 'isHidden' value for each point (large points with controls) according
+    // to the segment data, keep all the points in the list to keep the point indexes
+    final segmentPointsWithIsHidden = points.asMap().entries.map((e) {
+      final pointSegments = segments.whereIndexed(
+        (index, segment) =>
+            segment.pointIndexes.contains(e.key) ||
+            segment.pointIndexes.last + 1 == e.key,
+      );
+      return [e.value, pointSegments.every((s) => s.isHidden)];
+    }).toList();
+
+    // Draw the path points (large points with controls)
+    segmentPointsWithIsHidden.asMap().entries.forEach((e) {
+      int index = e.key;
+      Point point = e.value[0] as Point;
+      bool isHidden = e.value[1] as bool;
+
+      if (isHidden) return;
+
+      drawPathPoint(
+          canvas,
+          point.position,
+          point.heading,
+          point.inControlPoint,
+          point.outControlPoint,
+          index == selectedPoint,
+          point.isStop,
+          enableHeadingEditing,
+          enableControlEditing,
+          point.useHeading,
+          index == 0,
+          index == points.length - 1);
+    });
+
+    for (final entery in dragPoints.asMap().entries) {
+      FullDraggingPoint draggingPoint = entery.value;
+      int index = entery.key;
+
+      if (!((draggingPoint.index == 0 &&
+              draggingPoint.draggingPoint.type == PointType.inControl) ||
+          (draggingPoint.index == points.length - 1 &&
+              draggingPoint.draggingPoint.type == PointType.outControl))) {
+        drawDragPoint(
+            canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
+      }
+    }
+  }
 
   void drawPointBackground(
     Canvas canvas,
@@ -212,24 +293,21 @@ class FieldPainter extends CustomPainter {
     }
   }
 
-  void drawPath(Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
-    final segmentIndexToSplinePoints = groupBy(
-      evaluetedPoints,
-      (modelspath.SplinePoint p) => p.segmentIndex,
-    );
+  void drawPath(
+    Canvas canvas,
+    List<modelspath.SplinePoint> evaluetedPoints,
+    Color color,
+  ) {
+    Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
 
-    for (final e in segmentIndexToSplinePoints.entries) {
-      Paint paint = Paint()
-        ..color = getSegmentColor(e.key)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
+    Path path = Path();
+    final pathPoints = evaluetedPoints.map((p) => p.position).toList();
 
-      Path path = Path();
-      final pathPoints = e.value.map((p) => p.position).toList();
-
-      path.addPolygon(pathPoints, false);
-      canvas.drawPath(path, paint);
-    }
+    path.addPolygon(pathPoints, false);
+    canvas.drawPath(path, paint);
   }
 
   void drawPathShadow(
@@ -287,55 +365,6 @@ class FieldPainter extends CustomPainter {
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
-    canvas.scale(1, -1);
-    canvas.translate(0, -size.height);
-
-    paintImage(
-        canvas: canvas,
-        fit: BoxFit.fill,
-        rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
-        colorFilter:
-            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-        image: image);
-
-    drawPathShadow(canvas, evaluetedPoints);
-    drawPath(canvas, evaluetedPoints);
-    // drawWheelsPath(canvas, evaluetedPoints!);
-
-    for (final entery in points.asMap().entries) {
-      int index = entery.key;
-      Point point = entery.value;
-      drawPathPoint(
-          canvas,
-          point.position,
-          point.heading,
-          point.inControlPoint,
-          point.outControlPoint,
-          index == selectedPoint,
-          point.isStop,
-          enableHeadingEditing,
-          enableControlEditing,
-          point.useHeading,
-          index == 0,
-          index == points.length - 1);
-    }
-
-    for (final entery in dragPoints.asMap().entries) {
-      FullDraggingPoint draggingPoint = entery.value;
-      int index = entery.key;
-
-      if (!((draggingPoint.index == 0 &&
-              draggingPoint.draggingPoint.type == PointType.inControl) ||
-          (draggingPoint.index == points.length - 1 &&
-              draggingPoint.draggingPoint.type == PointType.outControl))) {
-        drawDragPoint(
-            canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
-      }
-    }
-  }
-
-  @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     // TODO: implement shouldRepaint
     return true;
@@ -344,6 +373,7 @@ class FieldPainter extends CustomPainter {
 
 class FieldLoader extends StatefulWidget {
   List<Point> points;
+  List<Segment> segments;
   int? selectedPoint;
   List<FullDraggingPoint> dragPoints;
   bool enableHeadingEditing;
@@ -354,6 +384,7 @@ class FieldLoader extends StatefulWidget {
 
   FieldLoader(
       this.points,
+      this.segments,
       this.selectedPoint,
       this.dragPoints,
       this.enableHeadingEditing,
@@ -416,6 +447,7 @@ class _FieldLoaderState extends State<FieldLoader> {
               painter: FieldPainter(
                 globalImage!,
                 widget.points,
+                widget.segments,
                 widget.selectedPoint,
                 widget.dragPoints,
                 widget.enableHeadingEditing,

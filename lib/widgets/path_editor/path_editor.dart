@@ -232,6 +232,7 @@ class _PathEditorState extends State<_PathEditor> {
             GestureDetector(
                 child: FieldLoader(
                   widget.pathProps.points,
+                  widget.pathProps.segments,
                   widget.pathProps.selectedPointIndex,
                   dragPoints,
                   widget.pathProps.headingToggle,

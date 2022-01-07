@@ -95,6 +95,9 @@ class _TimeLineView extends StatelessWidget {
             .map(
               (e) => TimeLineSegment(
                 color: getSegmentColor(e.key),
+                onHidePressed: () => props.editSegment(
+                    e.key, e.value.maxVelocity, !e.value.isHidden),
+                isHidden: e.value.isHidden,
                 velocity: e.value.maxVelocity,
                 pointAmount: e.value.pointIndexes.length,
                 onChange: (value) => props.editSegment(e.key, value, false),

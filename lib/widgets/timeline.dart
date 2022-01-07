@@ -165,6 +165,8 @@ class TimelinePoint extends StatelessWidget {
 
 class TimeLineSegment extends StatefulWidget {
   final int pointAmount;
+  final bool isHidden;
+  final Function() onHidePressed;
   final Color color;
   final double velocity;
   final Function(double) onChange;
@@ -174,6 +176,8 @@ class TimeLineSegment extends StatefulWidget {
   TimeLineSegment({
     Key? key,
     required this.pointAmount,
+    required this.isHidden,
+    required this.onHidePressed,
     required this.color,
     required this.velocity,
     required this.onChange,
@@ -195,29 +199,46 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     _velocityFieldController.selection = TextSelection.fromPosition(
         TextPosition(offset: _velocityFieldController.text.length));
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ConstrainedBox(
-          constraints: BoxConstraints.tightFor(width: 40, height: 40),
-          child: TextField(
-            controller: _velocityFieldController,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              hintText: 'm/s',
-              errorText: double.tryParse(_velocityFieldController.text) == null
-                  ? 'Error'
-                  : null,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: 40, height: 40),
+              child: TextField(
+                controller: _velocityFieldController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: 'm/s',
+                  errorText:
+                      double.tryParse(_velocityFieldController.text) == null
+                          ? 'Error'
+                          : null,
+                ),
+                onChanged: (value) {
+                  widget.onChange(double.tryParse(value) ?? widget.velocity);
+                  _velocityFieldController.text = value;
+                },
+                textAlign: TextAlign.center,
+              ),
             ),
-            onChanged: (value) {
-              widget.onChange(double.tryParse(value) ?? widget.velocity);
-              _velocityFieldController.text = value;
-            },
-            textAlign: TextAlign.center,
-          ),
+            IconButton(
+              iconSize: 20,
+              color: theme.textTheme.headline3?.color,
+              onPressed: widget.onHidePressed,
+              icon: Icon(widget.isHidden
+                  ? Icons.remove_red_eye_outlined
+                  : Icons.remove_red_eye),
+            ),
+          ],
         ),
         SizedBox(height: 5),
         Stack(alignment: Alignment.center, children: [
