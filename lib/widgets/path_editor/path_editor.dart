@@ -23,6 +23,7 @@ class PathViewModel {
   final Function(int) deletePoint;
   final Function(int, Offset) finishDrag;
   final Function(int) selectPoint;
+  final Function() unSelectPoint;
   final Function(int, Offset) finishInControlDrag;
   final Function(int, Offset) finishOutControlDrag;
   final Function(int, double) finishHeadingDrag;
@@ -43,6 +44,7 @@ class PathViewModel {
     required this.deletePoint,
     required this.finishDrag,
     required this.selectPoint,
+    required this.unSelectPoint,
     required this.evaulatedPoints,
     required this.finishInControlDrag,
     required this.finishOutControlDrag,
@@ -75,10 +77,14 @@ class PathViewModel {
         store.dispatch(removePointThunk(index));
       },
       finishDrag: (int index, Offset position) {
+        store.dispatch(ObjectSelected(index, Point));
         store.dispatch(endDragThunk(index, uiToMetersCoord(store, position)));
       },
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
+      },
+      unSelectPoint: () {
+        store.dispatch(ObjectUnselected());
       },
       finishInControlDrag: (int index, Offset position) {
         store.dispatch(
@@ -247,6 +253,12 @@ class _PathEditorState extends State<_PathEditor> {
 
                   int? selectedPoint =
                       getTappedPoint(tapPos, widget.pathProps.points);
+
+                  if (selectedPoint == widget.pathProps.selectedPointIndex) {
+                    widget.pathProps.unSelectPoint();
+                    return;
+                  }
+
                   if (selectedPoint != null) {
                     widget.pathProps.selectPoint(selectedPoint);
                     return;
@@ -264,18 +276,28 @@ class _PathEditorState extends State<_PathEditor> {
                     int index = entery.key;
 
                     DraggingPoint? draggingPoint;
-                    if (widget.pathProps.headingToggle) {
+
+                    var controlToggle = widget.pathProps.controlToggle;
+                    var headingToggle = widget.pathProps.headingToggle;
+
+                    if (widget.pathProps.selectedPointIndex != null
+                      && widget.pathProps.selectedPointIndex! >= 0) {
+                        controlToggle = widget.pathProps.selectedPointIndex == index;
+                        headingToggle = widget.pathProps.selectedPointIndex == index;
+                    }
+
+                    if (headingToggle) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.heading);
                     }
 
-                    if (widget.pathProps.controlToggle &&
+                    if (controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.inControl);
                     }
 
-                    if (widget.pathProps.controlToggle &&
+                    if (controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.outControl);
