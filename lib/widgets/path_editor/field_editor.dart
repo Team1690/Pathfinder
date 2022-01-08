@@ -30,10 +30,10 @@ class PointSettings {
 const double headingLength = 50;
 
 Map<PointType, PointSettings> pointSettings = {
-  PointType.path: PointSettings(Color(0xbbdddddd), 10),
-  PointType.inControl: PointSettings(Colors.yellow, 7),
-  PointType.outControl: PointSettings(Colors.yellow, 7),
-  PointType.heading: PointSettings(Color(0xffc80000), 7)
+  PointType.path: PointSettings(Color(0xbbdddddd), 8),
+  PointType.inControl: PointSettings(Colors.orange, 6),
+  PointType.outControl: PointSettings(Colors.yellow, 6),
+  PointType.heading: PointSettings(Color(0xffc80000), 6)
 };
 
 class FieldPainter extends CustomPainter {
@@ -186,8 +186,8 @@ class FieldPainter extends CustomPainter {
       case PointType.outControl:
         Offset dragPosition = selectedPoint.position + dragPoint.position;
         canvas.drawCircle(dragPosition, currentPointSettings.radius, paint);
-        drawControlPoint(
-            canvas, selectedPoint.position, dragPoint.position, false, true);
+        drawControlPoint(canvas, dragPoint.type, selectedPoint.position,
+            dragPoint.position, false, true);
         drawPointBackground(
             canvas,
             Offset(selectedPoint.position.dx + dragPoint.position.dx,
@@ -219,12 +219,13 @@ class FieldPainter extends CustomPainter {
 
   void drawControlPoint(
     Canvas canvas,
+    PointType pointType,
     Offset position,
     Offset control,
     bool enableEdit,
     bool isSelected,
   ) {
-    final PointSettings settings = pointSettings[PointType.inControl]!;
+    final PointSettings settings = pointSettings[pointType]!;
     final Color color = settings.color;
 
     final linePaint = Paint()
@@ -281,15 +282,16 @@ class FieldPainter extends CustomPainter {
     drawPointBackground(
         canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
     if (useHeading) {
-      drawHeadingLine(canvas, position, heading, enableHeadingEditing || isSelected);
+      drawHeadingLine(
+          canvas, position, heading, enableHeadingEditing || isSelected);
     }
     if (!isFirstPoint) {
-      drawControlPoint(
-          canvas, position, inControl, enableControlEditing || isSelected, false);
+      drawControlPoint(canvas, PointType.inControl, position, inControl,
+          enableControlEditing || isSelected, false);
     }
     if (!isLastPoint) {
-      drawControlPoint(
-          canvas, position, outControl, enableControlEditing || isSelected, false);
+      drawControlPoint(canvas, PointType.outControl, position, outControl,
+          enableControlEditing || isSelected, false);
     }
   }
 
