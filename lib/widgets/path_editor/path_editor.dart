@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
 
@@ -26,6 +27,8 @@ class PathViewModel {
   final Function(int) selectPoint;
   final Function() unSelectPoint;
   final Function(int, Offset, Offset) finishControlDrag;
+  final Function(int, Offset) finishInControlDrag;
+  final Function(int, Offset) finishOutControlDrag;
   final Function(int, double) finishHeadingDrag;
   final Function(Offset) setFieldSizePixels;
   final List<SplinePoint> evaulatedPoints;
@@ -47,6 +50,8 @@ class PathViewModel {
     required this.unSelectPoint,
     required this.evaulatedPoints,
     required this.finishControlDrag,
+    required this.finishInControlDrag,
+    required this.finishOutControlDrag,
     required this.finishHeadingDrag,
     required this.setFieldSizePixels,
     required this.headingToggle,
@@ -93,6 +98,12 @@ class PathViewModel {
             uiToMetersCoord(store, outPosition)
           )
         );
+      },
+      finishInControlDrag: (int index, Offset position) {
+        store.dispatch(endInControlDragThunk(index, uiToMetersCoord(store, position)));
+      },
+      finishOutControlDrag: (int index, Offset position) {
+        store.dispatch(endOutControlDragThunk(index, uiToMetersCoord(store, position)));
       },
       finishHeadingDrag: (int index, double heading) {
         store.dispatch(endHeadingDragThunk(index, heading));
@@ -382,7 +393,7 @@ class _PathEditorState extends State<_PathEditor> {
                   }
                 },
                 onPanEnd: (DragEndDetails details) {
-                  FullDraggingPoint? previusDraggingPoint = null;
+                  FullDraggingPoint? previusDraggingPoint;
 
                   for (final draggingPoint in dragPoints) {
                     switch (draggingPoint.draggingPoint.type) {
@@ -391,6 +402,11 @@ class _PathEditorState extends State<_PathEditor> {
                             draggingPoint.draggingPoint.position);
                         break;
                       case PointType.inControl:
+                        if (widget.pathProps.points[draggingPoint.index].isStop) {
+                          widget.pathProps.finishInControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
+                          break;
+                        }
+
                         if (previusDraggingPoint == null) {
                           previusDraggingPoint = draggingPoint;
                           break;
@@ -402,6 +418,11 @@ class _PathEditorState extends State<_PathEditor> {
                             previusDraggingPoint.draggingPoint.position);
                         break;
                       case PointType.outControl:
+                        if (widget.pathProps.points[draggingPoint.index].isStop) {
+                          widget.pathProps.finishOutControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
+                          break;
+                        }
+
                         if (previusDraggingPoint == null) {
                           previusDraggingPoint = draggingPoint;
                           break;
