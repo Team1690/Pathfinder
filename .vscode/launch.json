@@ -11,6 +11,7 @@
       "args": [
         "--port",
         "3000",
+        "dev"
       ],
       "mode": "auto",
       "program": "${workspaceFolder}/algorithm"
