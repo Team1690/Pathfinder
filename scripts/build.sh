@@ -8,7 +8,7 @@ flutter build windows --no-sound-null-safety
 
 echo "Building go"
 cd algorithm
-go build .
+go build -ldflags="-H windowsgui" .
 cd ../
 
 echo "Putting everything in './$OUTPUT_DIR'"
