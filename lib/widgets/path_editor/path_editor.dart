@@ -215,6 +215,8 @@ class _PathEditorState extends State<_PathEditor> {
                 widget.pathProps.toggleHeading();
               } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
                 widget.pathProps.toggleControl();
+              } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+                widget.pathProps.unSelectPoint();
               }
 
               pressedKeys.add(event.logicalKey);
