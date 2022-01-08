@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"os/exec"
+	"path"
 	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
@@ -56,10 +58,16 @@ func startAlgorithmServer(port *int, logger *log.Logger) {
 }
 
 func startGui(logger *log.Logger, wg *sync.WaitGroup) {
-	err := exec.Command("pathfinder.exe").Run()
+	currentPath, err := os.Executable()
 	if err != nil {
+		log.Fatalf("Failed to locate path: %v", err)
+	}
+
+	pathToGui := path.Join(currentPath, "pathfinder.exe")
+	if err := exec.Command(pathToGui).Run(); err != nil {
 		log.Fatalf("Failed to run GUI: %v", err)
 	}
+
 	wg.Done()
 
 	// Run 'wg.Done' again to kill the server too
