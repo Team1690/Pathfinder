@@ -254,7 +254,10 @@ class _PathEditorState extends State<_PathEditor> {
                   int? selectedPoint =
                       getTappedPoint(tapPos, widget.pathProps.points);
 
-                  if (selectedPoint == widget.pathProps.selectedPointIndex) {
+                  if (
+                    widget.pathProps.selectedPointIndex != null
+                    && widget.pathProps.selectedPointIndex! >= 0
+                    && selectedPoint == widget.pathProps.selectedPointIndex) {
                     widget.pathProps.unSelectPoint();
                     return;
                   }
