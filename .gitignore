@@ -49,3 +49,4 @@ app.*.map.json
 algorithm/out
 
 .temp-state
+dist-*/
