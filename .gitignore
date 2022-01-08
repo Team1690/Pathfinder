@@ -47,3 +47,5 @@ app.*.map.json
 
 # Output of algorithm testing
 algorithm/out
+
+.temp-state
