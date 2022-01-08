@@ -269,7 +269,12 @@ class _PathEditorState extends State<_PathEditor> {
                     return;
                   }
 
-                  widget.pathProps.addPoint(tapPos);
+                  if (pressedKeys.contains(LogicalKeyboardKey.controlRight) || pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
+                    widget.pathProps.addPoint(tapPos);
+                    return;
+                  }
+
+                  widget.pathProps.unSelectPoint();
                 },
                 onPanStart: (DragStartDetails details) {
                   Offset tapPos = flipYAxisByField(
