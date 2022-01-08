@@ -14,8 +14,28 @@ import (
 
 var (
 	port  = flag.Int("port", 3000, "The server port")
-	debug = flag.Bool("debug", false, "Don't run GUI")
+	isDev = flag.Bool("dev", false, "Don't run GUI")
 )
+
+func main() {
+	logger := log.Default()
+
+	// Get variables from command line
+	flag.Parse()
+
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go startAlgorithmServer(port, logger)
+
+	// Run GUI if not in debug
+	if !*isDev {
+		wg.Add(1)
+		go startGui(logger, &wg)
+	}
+
+	wg.Wait()
+}
 
 func startAlgorithmServer(port *int, logger *log.Logger) {
 	// Start network listener on the relevant port
@@ -41,24 +61,7 @@ func startGui(logger *log.Logger, wg *sync.WaitGroup) {
 		log.Fatalf("Failed to run GUI: %v", err)
 	}
 	wg.Done()
-}
 
-func main() {
-	logger := log.Default()
-
-	// Get variables from command line
-	flag.Parse()
-
-	wg := sync.WaitGroup{}
-
-	// start algorirthm server without wait group - closes with GUI
-	go startAlgorithmServer(port, logger)
-
-	// Run GUI if not in debug
-	if !*debug {
-		wg.Add(1)
-		go startGui(logger, &wg)
-	}
-
-	wg.Wait()
+	// Run 'wg.Done' again to kill the server too
+	wg.Done()
 }
