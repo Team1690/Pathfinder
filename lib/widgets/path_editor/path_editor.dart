@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:pathfinder/models/path.dart';
@@ -23,8 +24,8 @@ class PathViewModel {
   final Function(int) deletePoint;
   final Function(int, Offset) finishDrag;
   final Function(int) selectPoint;
-  final Function(int, Offset) finishInControlDrag;
-  final Function(int, Offset) finishOutControlDrag;
+  final Function() unSelectPoint;
+  final Function(int, Offset, Offset) finishControlDrag;
   final Function(int, double) finishHeadingDrag;
   final Function(Offset) setFieldSizePixels;
   final List<SplinePoint> evaulatedPoints;
@@ -43,9 +44,9 @@ class PathViewModel {
     required this.deletePoint,
     required this.finishDrag,
     required this.selectPoint,
+    required this.unSelectPoint,
     required this.evaulatedPoints,
-    required this.finishInControlDrag,
-    required this.finishOutControlDrag,
+    required this.finishControlDrag,
     required this.finishHeadingDrag,
     required this.setFieldSizePixels,
     required this.headingToggle,
@@ -75,18 +76,23 @@ class PathViewModel {
         store.dispatch(removePointThunk(index));
       },
       finishDrag: (int index, Offset position) {
+        store.dispatch(ObjectSelected(index, Point));
         store.dispatch(endDragThunk(index, uiToMetersCoord(store, position)));
       },
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
       },
-      finishInControlDrag: (int index, Offset position) {
-        store.dispatch(
-            endInControlDragThunk(index, uiToMetersCoord(store, position)));
+      unSelectPoint: () {
+        store.dispatch(ObjectUnselected());
       },
-      finishOutControlDrag: (int index, Offset position) {
+      finishControlDrag: (int index, Offset inPosition, Offset outPosition) {
         store.dispatch(
-            endOutControlDragThunk(index, uiToMetersCoord(store, position)));
+          endControlDrag(
+            index,
+            uiToMetersCoord(store, inPosition),
+            uiToMetersCoord(store, outPosition)
+          )
+        );
       },
       finishHeadingDrag: (int index, double heading) {
         store.dispatch(endHeadingDragThunk(index, heading));
@@ -209,6 +215,8 @@ class _PathEditorState extends State<_PathEditor> {
                 widget.pathProps.toggleHeading();
               } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
                 widget.pathProps.toggleControl();
+              } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+                widget.pathProps.unSelectPoint();
               }
 
               pressedKeys.add(event.logicalKey);
@@ -247,12 +255,26 @@ class _PathEditorState extends State<_PathEditor> {
 
                   int? selectedPoint =
                       getTappedPoint(tapPos, widget.pathProps.points);
+
+                  if (
+                    widget.pathProps.selectedPointIndex != null
+                    && widget.pathProps.selectedPointIndex! >= 0
+                    && selectedPoint == widget.pathProps.selectedPointIndex) {
+                    widget.pathProps.unSelectPoint();
+                    return;
+                  }
+
                   if (selectedPoint != null) {
                     widget.pathProps.selectPoint(selectedPoint);
                     return;
                   }
 
-                  widget.pathProps.addPoint(tapPos);
+                  if (pressedKeys.contains(LogicalKeyboardKey.controlRight) || pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
+                    widget.pathProps.addPoint(tapPos);
+                    return;
+                  }
+
+                  widget.pathProps.unSelectPoint();
                 },
                 onPanStart: (DragStartDetails details) {
                   Offset tapPos = flipYAxisByField(
@@ -264,18 +286,28 @@ class _PathEditorState extends State<_PathEditor> {
                     int index = entery.key;
 
                     DraggingPoint? draggingPoint;
-                    if (widget.pathProps.headingToggle) {
+
+                    var controlToggle = widget.pathProps.controlToggle;
+                    var headingToggle = widget.pathProps.headingToggle;
+
+                    if (widget.pathProps.selectedPointIndex != null
+                      && widget.pathProps.selectedPointIndex! >= 0) {
+                        controlToggle = widget.pathProps.selectedPointIndex == index;
+                        headingToggle = widget.pathProps.selectedPointIndex == index;
+                    }
+
+                    if (headingToggle) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.heading);
                     }
 
-                    if (widget.pathProps.controlToggle &&
+                    if (controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.inControl);
                     }
 
-                    if (widget.pathProps.controlToggle &&
+                    if (controlToggle &&
                         draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.outControl);
@@ -350,6 +382,8 @@ class _PathEditorState extends State<_PathEditor> {
                   }
                 },
                 onPanEnd: (DragEndDetails details) {
+                  FullDraggingPoint? previusDraggingPoint = null;
+
                   for (final draggingPoint in dragPoints) {
                     switch (draggingPoint.draggingPoint.type) {
                       case PointType.path:
@@ -357,13 +391,25 @@ class _PathEditorState extends State<_PathEditor> {
                             draggingPoint.draggingPoint.position);
                         break;
                       case PointType.inControl:
-                        widget.pathProps.finishInControlDrag(
+                        if (previusDraggingPoint == null) {
+                          previusDraggingPoint = draggingPoint;
+                          break;
+                        }
+
+                        widget.pathProps.finishControlDrag(
                             draggingPoint.index,
-                            draggingPoint.draggingPoint.position);
+                            draggingPoint.draggingPoint.position,
+                            previusDraggingPoint.draggingPoint.position);
                         break;
                       case PointType.outControl:
-                        widget.pathProps.finishOutControlDrag(
+                        if (previusDraggingPoint == null) {
+                          previusDraggingPoint = draggingPoint;
+                          break;
+                        }
+
+                        widget.pathProps.finishControlDrag(
                             draggingPoint.index,
+                            previusDraggingPoint.draggingPoint.position,
                             draggingPoint.draggingPoint.position);
                         break;
                       case PointType.heading:

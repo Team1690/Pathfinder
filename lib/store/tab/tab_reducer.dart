@@ -13,6 +13,7 @@ import 'tab_state.dart';
 Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),
   TypedReducer<TabState, ObjectSelected>(_objectSelected),
+  TypedReducer<TabState, ObjectUnselected>(_objectUnselected),
   TypedReducer<TabState, AddPointToPath>(_addPointToPath),
   TypedReducer<TabState, DeletePointFromPath>(_deletePointFromPath),
   TypedReducer<TabState, SplineCalculated>(_splineCalculated),
@@ -39,6 +40,16 @@ TabState _objectSelected(TabState tabState, ObjectSelected action) {
       isSidebarOpen: true,
       selectedIndex: action.index,
       selectedType: action.type,
+    ),
+  );
+}
+
+TabState _objectUnselected(TabState tabState, ObjectUnselected action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      isSidebarOpen: false,
+      selectedIndex: -1,
+      selectedType: Null,
     ),
   );
 }
@@ -164,10 +175,6 @@ TabState editPoint(TabState tabState, EditPoint action) {
   bool removeSegment = false;
 
   final newState = tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      selectedIndex: action.pointIndex,
-      selectedType: Point,
-    ),
     path: tabState.path.copyWith(
       points: tabState.path.points.asMap().entries.map((e) {
         if (e.key != action.pointIndex) {

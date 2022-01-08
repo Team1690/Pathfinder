@@ -53,12 +53,20 @@ ThunkAction endDragThunk(int index, Offset position) {
 
 ThunkAction endInControlDragThunk(int index, Offset position) {
   return editPointThunk(
-      pointIndex: index, inControlPoint: Offset(position.dx, position.dy));
+      pointIndex: index, inControlPoint: position);
 }
 
 ThunkAction endOutControlDragThunk(int index, Offset position) {
   return editPointThunk(
-      pointIndex: index, outControlPoint: Offset(position.dx, position.dy));
+      pointIndex: index, outControlPoint: position);
+}
+
+ThunkAction endControlDrag(int index, Offset inPosition, Offset outPosition) {
+  return editPointThunk(
+    pointIndex: index,
+    outControlPoint: outPosition,
+    inControlPoint: inPosition
+  );
 }
 
 ThunkAction endHeadingDragThunk(int index, double heading) {

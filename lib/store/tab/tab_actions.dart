@@ -21,6 +21,10 @@ class ObjectSelected extends TabAction {
   ObjectSelected(this.index, this.type);
 }
 
+class ObjectUnselected extends TabAction {
+  ObjectUnselected();
+}
+
 // Server actions
 class ServerError extends TabAction {
   final String? error;
