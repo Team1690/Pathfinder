@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
 
@@ -27,6 +29,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, TrajectoryCalculated>(_trajectoryCalculated),
   TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
   TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
+  TypedReducer<TabState, OpenFile>(_openFile),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -391,4 +394,9 @@ TabState _trajectoryFileNameChanged(
       trajectoryFileName: action.fileName,
     ),
   );
+}
+
+TabState _openFile(TabState tabState, OpenFile action) {
+  inspect(TabState.fromJson(jsonDecode(action.file)));
+  return TabState.fromJson(jsonDecode(action.file));
 }

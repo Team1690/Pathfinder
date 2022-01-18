@@ -1,5 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/store/app/app_reducer.dart';
 import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:pathfinder/views/timeline.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
@@ -8,12 +10,16 @@ class EditorScreen extends StatefulWidget {
   final Function calculateTrajectory;
   final String trajectoryFileName;
   final Function(String) editTrajectoryFileName;
+  final Function() openFile;
+  final Function() saveFile;
 
   const EditorScreen({
     Key? key,
     required this.calculateTrajectory,
     required this.trajectoryFileName,
     required this.editTrajectoryFileName,
+    required this.openFile,
+    required this.saveFile,
   }) : super(key: key);
 
   @override
@@ -86,7 +92,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             primary: Color(0xff0078D7)),
-                        onPressed: () {},
+                        onPressed: widget.openFile,
                         icon: Icon(Icons.search),
                         label: Text('Open'),
                       ),
@@ -94,7 +100,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             primary: Color(0xffD45C36)),
-                        onPressed: () {},
+                        onPressed: widget.saveFile,
                         icon: Icon(Icons.save),
                         label: Text('Save'),
                       ),

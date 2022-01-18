@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
@@ -24,6 +25,8 @@ class HomeViewModel {
   final Function() calculateTrajectory;
   final String trajectoryFileName;
   final Function(String) editTrajectoryFileName;
+  final Function() openFile;
+  final Function() saveFile;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -35,6 +38,8 @@ class HomeViewModel {
     required this.calculateTrajectory,
     required this.trajectoryFileName,
     required this.editTrajectoryFileName,
+    required this.openFile,
+    required this.saveFile,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
@@ -71,6 +76,8 @@ class HomeViewModel {
       editTrajectoryFileName: (String fileName) {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
+      saveFile: () {},
+      openFile: () => store.dispatch(openFileThunk()),
     );
   }
 
@@ -200,6 +207,8 @@ class _HomePageState extends State<HomePage> {
                   calculateTrajectory: props.calculateTrajectory,
                   trajectoryFileName: props.trajectoryFileName,
                   editTrajectoryFileName: props.editTrajectoryFileName,
+                  openFile: props.openFile,
+                  saveFile: () {},
                 ),
               ),
             ],

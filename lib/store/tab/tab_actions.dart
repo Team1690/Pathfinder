@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import 'package:pathfinder/store/tab/store.dart';
 
 abstract class TabAction {
   @override
@@ -117,4 +118,9 @@ class ToggleControl extends TabAction {}
 class TrajectoryFileNameChanged extends TabAction {
   final String fileName;
   TrajectoryFileNameChanged(this.fileName);
+}
+
+class OpenFile extends TabAction {
+  final String file;
+  OpenFile(this.file);
 }

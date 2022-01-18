@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/store/tab/store.dart';
@@ -52,21 +53,18 @@ ThunkAction endDragThunk(int index, Offset position) {
 }
 
 ThunkAction endInControlDragThunk(int index, Offset position) {
-  return editPointThunk(
-      pointIndex: index, inControlPoint: position);
+  return editPointThunk(pointIndex: index, inControlPoint: position);
 }
 
 ThunkAction endOutControlDragThunk(int index, Offset position) {
-  return editPointThunk(
-      pointIndex: index, outControlPoint: position);
+  return editPointThunk(pointIndex: index, outControlPoint: position);
 }
 
 ThunkAction endControlDrag(int index, Offset inPosition, Offset outPosition) {
   return editPointThunk(
-    pointIndex: index,
-    outControlPoint: outPosition,
-    inControlPoint: inPosition
-  );
+      pointIndex: index,
+      outControlPoint: outPosition,
+      inControlPoint: inPosition);
 }
 
 ThunkAction endHeadingDragThunk(int index, double heading) {
@@ -123,6 +121,19 @@ ThunkAction calculateTrajectoryThunk() {
       store.dispatch(TrajectoryCalculated(res.swervePoints));
     } catch (e) {
       store.dispatch(ServerError(e.toString()));
+    }
+  };
+}
+
+Future<ThunkAction> openFileThunk() async {
+  FilePickerResult? file;
+  file = await FilePicker.platform.pickFiles(withData: true);
+  return (Store store) {
+    store.dispatch(OpenFile(
+      String.fromCharCodes(file!.files.first.bytes!.toList()),
+    ));
+    try {} catch (e) {
+      Exception(e);
     }
   };
 }
