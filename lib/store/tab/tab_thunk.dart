@@ -125,10 +125,10 @@ ThunkAction calculateTrajectoryThunk() {
   };
 }
 
-Future<ThunkAction> openFileThunk() async {
-  FilePickerResult? file;
-  file = await FilePicker.platform.pickFiles(withData: true);
-  return (Store store) {
+ThunkAction openFileThunk() {
+  return (Store store) async {
+    FilePickerResult? file;
+    file = await FilePicker.platform.pickFiles(withData: true);
     store.dispatch(OpenFile(
       String.fromCharCodes(file!.files.first.bytes!.toList()),
     ));

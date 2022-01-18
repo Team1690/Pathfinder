@@ -397,6 +397,5 @@ TabState _trajectoryFileNameChanged(
 }
 
 TabState _openFile(TabState tabState, OpenFile action) {
-  inspect(TabState.fromJson(jsonDecode(action.file)));
-  return TabState.fromJson(jsonDecode(action.file));
+  return TabState.fromJson(jsonDecode(action.file)['tabState']);
 }
