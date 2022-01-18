@@ -121,8 +121,8 @@ class TrajectoryFileNameChanged extends TabAction {
 }
 
 class OpenFile extends TabAction {
-  final String file;
-  OpenFile(this.file);
+  final String fileContent;
+  OpenFile(this.fileContent);
 }
 
 class SaveFile extends TabAction {}

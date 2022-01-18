@@ -131,7 +131,7 @@ ThunkAction openFileThunk() {
   return (Store store) async {
     FilePickerResult? file;
     file = await FilePicker.platform.pickFiles(withData: true);
-    if (file != null) {
+    if (file != null && file.files.isNotEmpty) {
       store.dispatch(OpenFile(
         String.fromCharCodes(file.files.first.bytes!.toList()),
       ));
