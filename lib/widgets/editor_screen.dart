@@ -50,22 +50,6 @@ class _EditorScreenState extends State<EditorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ElevatedButton.icon(
-                      //   style: ElevatedButton.styleFrom(
-                      //       primary: Color(0xff0078D7)),
-                      //   onPressed: () {},
-                      //   icon: Icon(Icons.search),
-                      //   label: Text('Path'),
-                      // ),
-                      // SizedBox(height: 10),
-                      // ElevatedButton.icon(
-                      //   style: ElevatedButton.styleFrom(
-                      //       primary: Color(0xffD45C36)),
-                      //   onPressed: () {},
-                      //   icon: Icon(Icons.trending_up_rounded),
-                      //   label: Text('Graph'),
-                      // ),
-                      SizedBox(height: 10),
                       ConstrainedBox(
                         constraints:
                             BoxConstraints.tightFor(width: 100, height: 60),
@@ -97,6 +81,22 @@ class _EditorScreenState extends State<EditorScreen> {
                         },
                         icon: Icon(Icons.trending_flat_rounded),
                         label: Text('Trajectory'),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xff0078D7)),
+                        onPressed: () {},
+                        icon: Icon(Icons.search),
+                        label: Text('Open'),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xffD45C36)),
+                        onPressed: () {},
+                        icon: Icon(Icons.save),
+                        label: Text('Save'),
                       ),
                     ],
                   ),
