@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/services/pathfinder.dart';
@@ -129,11 +131,22 @@ ThunkAction openFileThunk() {
   return (Store store) async {
     FilePickerResult? file;
     file = await FilePicker.platform.pickFiles(withData: true);
-    store.dispatch(OpenFile(
-      String.fromCharCodes(file!.files.first.bytes!.toList()),
-    ));
-    try {} catch (e) {
-      Exception(e);
+    if (file != null) {
+      store.dispatch(OpenFile(
+        String.fromCharCodes(file.files.first.bytes!.toList()),
+      ));
+    }
+  };
+}
+
+ThunkAction saveFileThunk() {
+  return (Store store) async {
+    String? filePath;
+    filePath = await FilePicker.platform.saveFile(fileName: 'path.temp-state');
+
+    if (filePath != null) {
+      File file = File(filePath);
+      file.writeAsStringSync(jsonEncode(store.state));
     }
   };
 }

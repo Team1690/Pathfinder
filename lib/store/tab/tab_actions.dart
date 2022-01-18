@@ -124,3 +124,5 @@ class OpenFile extends TabAction {
   final String file;
   OpenFile(this.file);
 }
+
+class SaveFile extends TabAction {}

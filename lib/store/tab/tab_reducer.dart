@@ -30,6 +30,7 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
   TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
   TypedReducer<TabState, OpenFile>(_openFile),
+  TypedReducer<TabState, SaveFile>(_saveFile),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -398,4 +399,8 @@ TabState _trajectoryFileNameChanged(
 
 TabState _openFile(TabState tabState, OpenFile action) {
   return TabState.fromJson(jsonDecode(action.file)['tabState']);
+}
+
+TabState _saveFile(TabState tabState, SaveFile action) {
+  return tabState;
 }

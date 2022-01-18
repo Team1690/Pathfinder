@@ -76,8 +76,8 @@ class HomeViewModel {
       editTrajectoryFileName: (String fileName) {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
-      saveFile: () {},
       openFile: () => store.dispatch(openFileThunk()),
+      saveFile: () => store.dispatch(saveFileThunk()),
     );
   }
 
@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                   trajectoryFileName: props.trajectoryFileName,
                   editTrajectoryFileName: props.editTrajectoryFileName,
                   openFile: props.openFile,
-                  saveFile: () {},
+                  saveFile: props.saveFile,
                 ),
               ),
             ],
