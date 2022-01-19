@@ -24,6 +24,7 @@ class HomeViewModel {
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
   final String trajectoryFileName;
+  final String autoFileName;
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
   final Function() saveFile;
@@ -37,6 +38,7 @@ class HomeViewModel {
     required this.setRobot,
     required this.calculateTrajectory,
     required this.trajectoryFileName,
+    required this.autoFileName,
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
@@ -73,6 +75,7 @@ class HomeViewModel {
         calculateTrajectoryThunk(),
       ),
       trajectoryFileName: store.state.tabState.ui.trajectoryFileName,
+      autoFileName: store.state.tabState.ui.autoFileName,
       editTrajectoryFileName: (String fileName) {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
@@ -103,6 +106,8 @@ class HomeViewModel {
       if (ui.selectedType == Robot && (tabState.robot != other.tabState.robot))
         return false;
     }
+
+    if (ui.autoFileName != otherUi.autoFileName) return false;
 
     return true;
   }
@@ -199,6 +204,7 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
+                    Text(props.autoFileName)
                   ],
                 ),
               ),

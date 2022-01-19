@@ -398,9 +398,25 @@ TabState _trajectoryFileNameChanged(
 }
 
 TabState _openFile(TabState tabState, OpenFile action) {
-  return TabState.fromJson(jsonDecode(action.fileContent)['tabState']);
+  // Json decode may fail so wrap with try/catch
+  try {
+    final decodedState = jsonDecode(action.fileContent)['tabState'];
+    final fileState = TabState.fromJson(decodedState);
+
+    return fileState.copyWith(
+      ui: fileState.ui.copyWith(
+        autoFileName: action.fileName,
+      ),
+    );
+  } catch (e) {}
+
+  return tabState;
 }
 
 TabState _saveFile(TabState tabState, SaveFile action) {
-  return tabState;
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      autoFileName: action.fileName,
+    ),
+  );
 }

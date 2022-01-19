@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -129,24 +129,51 @@ ThunkAction calculateTrajectoryThunk() {
 
 ThunkAction openFileThunk() {
   return (Store store) async {
-    FilePickerResult? file;
-    file = await FilePicker.platform.pickFiles(withData: true);
-    if (file != null && file.files.isNotEmpty) {
-      store.dispatch(OpenFile(
-        String.fromCharCodes(file.files.first.bytes!.toList()),
-      ));
-    }
+    try {
+      final file = OpenFilePicker()
+        ..defaultFilterIndex = 0
+        ..defaultExtension = "auto"
+        ..filterSpecification = {
+          "Auto files (.auto)": "*auto",
+          "All": "*",
+        }
+        ..title = 'Select an auto file';
+
+      final result = file.getFile();
+      if (result != null) {
+        final content = await result.readAsString();
+
+        store.dispatch(OpenFile(
+          fileContent: content,
+          fileName: basename(result.path),
+        ));
+      }
+    } catch (e) {}
   };
 }
 
 ThunkAction saveFileThunk() {
   return (Store store) async {
-    String? filePath;
-    filePath = await FilePicker.platform.saveFile(fileName: 'path.temp-state');
+    try {
+      final file = SaveFilePicker()
+        ..fileName = store.state.tabState.ui.autoFileName
+        ..defaultExtension = "auto"
+        ..filterSpecification = {
+          "Auto file (.auto)": "*auto",
+          "Other": "*",
+        }
+        ..defaultFilterIndex = 0
+        ..title = 'Choose where to save the auto file';
 
-    if (filePath != null) {
-      File file = File(filePath);
-      file.writeAsStringSync(jsonEncode(store.state));
-    }
+      final result = file.getFile();
+      if (result != null) {
+        final chosenFileName = basename(result.path);
+        store.dispatch(SaveFile(
+          fileName: chosenFileName,
+        ));
+
+        await result.writeAsString(jsonEncode(store.state));
+      }
+    } catch (e) {}
   };
 }

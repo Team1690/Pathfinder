@@ -38,7 +38,7 @@ final store = Store<AppState>(
   initialState: loadInitialStateFromCache(),
   middleware: [
     thunkMiddleware,
-    LoggingMiddleware.printer(),
+    // LoggingMiddleware.printer(),
   ],
 );
 
