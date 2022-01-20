@@ -12,6 +12,7 @@ class EditorScreen extends StatefulWidget {
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
   final Function() saveFile;
+  final Function() saveFileAs;
   final bool changesSaved;
 
   const EditorScreen({
@@ -21,6 +22,7 @@ class EditorScreen extends StatefulWidget {
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
+    required this.saveFileAs,
     required this.changesSaved,
   }) : super(key: key);
 
@@ -83,7 +85,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                            primary: Color(0xffD7AD17)),
+                          primary: Color(0xffD7AD17),
+                          textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+                        ),
                         onPressed: () {
                           widget.calculateTrajectory();
                         },
@@ -93,22 +97,46 @@ class _EditorScreenState extends State<EditorScreen> {
                       SizedBox(height: 10),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                            primary: Color(0xff0078D7)),
+                          primary: Color(0xff0078D7),
+                          textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+                        ),
                         onPressed: widget.openFile,
                         icon: Icon(Icons.search),
                         label: Text('Open'),
                       ),
                       SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          primary: widget.changesSaved
-                              ? Color.fromARGB(255, 116, 116, 116)
-                              : Color(0xffD45C36),
-                        ),
-                        onPressed: widget.saveFile,
-                        icon: Icon(Icons.save),
-                        label: Text('Save'),
-                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: widget.changesSaved
+                                      ? Color.fromARGB(255, 116, 116, 116)
+                                      : Color(0xffD45C36),
+                                  padding: EdgeInsets.all(1),
+                                  textStyle:
+                                      TextStyle(overflow: TextOverflow.clip)),
+                              onPressed: widget.saveFile,
+                              child: Icon(Icons.save),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xffD45C36),
+                                textStyle:
+                                    TextStyle(overflow: TextOverflow.ellipsis),
+                              ),
+                              onPressed: widget.saveFileAs,
+                              child: Text('Save As'),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),

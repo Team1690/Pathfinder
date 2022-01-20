@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
@@ -145,35 +146,40 @@ ThunkAction openFileThunk() {
 
         store.dispatch(OpenFile(
           fileContent: content,
-          fileName: basename(result.path),
+          fileName: result.path,
         ));
       }
     } catch (e) {}
   };
 }
 
-ThunkAction saveFileThunk() {
+ThunkAction saveFileThunk(bool isSaveAs) {
   return (Store store) async {
     try {
-      final file = SaveFilePicker()
-        ..fileName = store.state.tabState.ui.autoFileName
-        ..defaultExtension = "auto"
-        ..filterSpecification = {
-          "Auto file (.auto)": "*auto",
-          "Other": "*",
-        }
-        ..defaultFilterIndex = 0
-        ..title = 'Choose where to save the auto file';
+      var savingPath = store.state.tabState.ui.autoFileName;
 
-      final result = file.getFile();
-      if (result != null) {
-        final chosenFileName = basename(result.path);
-        store.dispatch(SaveFile(
-          fileName: chosenFileName,
-        ));
+      if (isSaveAs) {
+        final file = SaveFilePicker()
+          ..fileName = basename(store.state.tabState.ui.autoFileName)
+          ..defaultExtension = "auto"
+          ..filterSpecification = {
+            "Auto file (.auto)": "*auto",
+            "Other": "*",
+          }
+          ..defaultFilterIndex = 0
+          ..title = 'Choose where to save the auto file';
 
-        await result.writeAsString(jsonEncode(store.state));
+        final result = file.getFile();
+        if (result == null) return;
+
+        savingPath = result.path;
       }
+
+      await File(savingPath).writeAsString(jsonEncode(store.state));
+
+      store.dispatch(SaveFile(
+        fileName: savingPath,
+      ));
     } catch (e) {}
   };
 }

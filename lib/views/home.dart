@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
@@ -11,7 +10,7 @@ import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/utils/math.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/widgets/tab.dart';
+import 'package:path/path.dart';
 import 'package:redux/redux.dart';
 import 'package:card_settings/card_settings.dart';
 
@@ -28,6 +27,7 @@ class HomeViewModel {
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
   final Function() saveFile;
+  final Function() saveFileAs;
   final bool changesSaved;
 
   HomeViewModel({
@@ -43,6 +43,7 @@ class HomeViewModel {
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
+    required this.saveFileAs,
     required this.changesSaved,
   });
 
@@ -82,7 +83,8 @@ class HomeViewModel {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
       openFile: () => store.dispatch(openFileThunk()),
-      saveFile: () => store.dispatch(saveFileThunk()),
+      saveFile: () => store.dispatch(saveFileThunk(false)),
+      saveFileAs: () => store.dispatch(saveFileThunk(true)),
       changesSaved: store.state.tabState.ui.changesSaved,
     );
   }
@@ -209,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
-                    Text(props.autoFileName),
+                    Text(basename(props.autoFileName)),
                     if (!props.changesSaved)
                       Text(
                         " •",
@@ -225,6 +227,7 @@ class _HomePageState extends State<HomePage> {
                   editTrajectoryFileName: props.editTrajectoryFileName,
                   openFile: props.openFile,
                   saveFile: props.saveFile,
+                  saveFileAs: props.saveFileAs,
                   changesSaved: props.changesSaved,
                 ),
               ),
