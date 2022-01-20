@@ -18,6 +18,7 @@ class TabUI {
   final String? serverError;
   final String trajectoryFileName;
   final String autoFileName;
+  final bool changesSaved;
 
   const TabUI({
     required this.selectedIndex,
@@ -31,6 +32,7 @@ class TabUI {
     required this.controlToggle,
     required this.trajectoryFileName,
     required this.autoFileName,
+    required this.changesSaved,
     this.serverError,
   });
 
@@ -47,6 +49,7 @@ class TabUI {
       pan: Offset(0, 0),
       trajectoryFileName: defaultTrajectoryFileName,
       autoFileName: defaultAutoFileName,
+      changesSaved: true,
     );
   }
 
@@ -63,6 +66,7 @@ class TabUI {
     String? serverError,
     String? trajectoryFileName,
     String? autoFileName,
+    bool? changesSaved,
   }) {
     return TabUI(
       selectedIndex: selectedIndex ?? this.selectedIndex,
@@ -77,6 +81,7 @@ class TabUI {
       serverError: serverError ?? this.serverError,
       trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
       autoFileName: autoFileName ?? this.autoFileName,
+      changesSaved: changesSaved ?? this.changesSaved,
     );
   }
 
@@ -94,7 +99,8 @@ class TabUI {
         serverError = null,
         trajectoryFileName =
             json['trajectoryFileName'] ?? defaultTrajectoryFileName,
-        autoFileName = json['autoFileName'] ?? defaultAutoFileName;
+        autoFileName = json['autoFileName'] ?? defaultAutoFileName,
+        changesSaved = json['changesSaved'] ?? true;
 
   Map<String, dynamic> toJson() {
     return {
@@ -110,6 +116,7 @@ class TabUI {
       'controlToggle': controlToggle,
       'trajectoryFileName': trajectoryFileName,
       'autoFileName': autoFileName,
+      'changesSaved': changesSaved,
     };
   }
 }

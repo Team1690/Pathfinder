@@ -28,6 +28,7 @@ class HomeViewModel {
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
   final Function() saveFile;
+  final bool changesSaved;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -42,6 +43,7 @@ class HomeViewModel {
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
+    required this.changesSaved,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
@@ -81,6 +83,7 @@ class HomeViewModel {
       },
       openFile: () => store.dispatch(openFileThunk()),
       saveFile: () => store.dispatch(saveFileThunk()),
+      changesSaved: store.state.tabState.ui.changesSaved,
     );
   }
 
@@ -108,6 +111,8 @@ class HomeViewModel {
     }
 
     if (ui.autoFileName != otherUi.autoFileName) return false;
+
+    if (ui.changesSaved != otherUi.changesSaved) return false;
 
     return true;
   }
@@ -204,7 +209,12 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
-                    Text(props.autoFileName)
+                    Text(props.autoFileName),
+                    if (!props.changesSaved)
+                      Text(
+                        " •",
+                        style: TextStyle(fontSize: 30),
+                      ),
                   ],
                 ),
               ),
@@ -215,6 +225,7 @@ class _HomePageState extends State<HomePage> {
                   editTrajectoryFileName: props.editTrajectoryFileName,
                   openFile: props.openFile,
                   saveFile: props.saveFile,
+                  changesSaved: props.changesSaved,
                 ),
               ),
             ],

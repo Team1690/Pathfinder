@@ -406,6 +406,7 @@ TabState _openFile(TabState tabState, OpenFile action) {
     return fileState.copyWith(
       ui: fileState.ui.copyWith(
         autoFileName: action.fileName,
+        changesSaved: true,
       ),
     );
   } catch (e) {}
@@ -417,6 +418,7 @@ TabState _saveFile(TabState tabState, SaveFile action) {
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
       autoFileName: action.fileName,
+      changesSaved: true,
     ),
   );
 }

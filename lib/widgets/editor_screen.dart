@@ -12,6 +12,7 @@ class EditorScreen extends StatefulWidget {
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
   final Function() saveFile;
+  final bool changesSaved;
 
   const EditorScreen({
     Key? key,
@@ -20,6 +21,7 @@ class EditorScreen extends StatefulWidget {
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
+    required this.changesSaved,
   }) : super(key: key);
 
   @override
@@ -99,7 +101,10 @@ class _EditorScreenState extends State<EditorScreen> {
                       SizedBox(height: 10),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                            primary: Color(0xffD45C36)),
+                          primary: widget.changesSaved
+                              ? Color.fromARGB(255, 116, 116, 116)
+                              : Color(0xffD45C36),
+                        ),
                         onPressed: widget.saveFile,
                         icon: Icon(Icons.save),
                         label: Text('Save'),
