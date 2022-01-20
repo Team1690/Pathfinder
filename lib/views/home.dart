@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
@@ -10,7 +11,7 @@ import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/utils/math.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/widgets/tab.dart';
+import 'package:path/path.dart' as path;
 import 'package:redux/redux.dart';
 import 'package:card_settings/card_settings.dart';
 
@@ -23,7 +24,12 @@ class HomeViewModel {
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
   final String trajectoryFileName;
+  final String autoFileName;
   final Function(String) editTrajectoryFileName;
+  final Function() openFile;
+  final Function() saveFile;
+  final Function() saveFileAs;
+  final bool changesSaved;
 
   HomeViewModel({
     required this.isSidebarOpen,
@@ -34,7 +40,12 @@ class HomeViewModel {
     required this.setRobot,
     required this.calculateTrajectory,
     required this.trajectoryFileName,
+    required this.autoFileName,
     required this.editTrajectoryFileName,
+    required this.openFile,
+    required this.saveFile,
+    required this.saveFileAs,
+    required this.changesSaved,
   });
 
   static HomeViewModel fromStore(Store<AppState> store) {
@@ -68,9 +79,14 @@ class HomeViewModel {
         calculateTrajectoryThunk(),
       ),
       trajectoryFileName: store.state.tabState.ui.trajectoryFileName,
+      autoFileName: store.state.tabState.ui.autoFileName,
       editTrajectoryFileName: (String fileName) {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
+      openFile: () => store.dispatch(openFileThunk()),
+      saveFile: () => store.dispatch(saveFileThunk(false)),
+      saveFileAs: () => store.dispatch(saveFileThunk(true)),
+      changesSaved: store.state.tabState.ui.changesSaved,
     );
   }
 
@@ -96,6 +112,10 @@ class HomeViewModel {
       if (ui.selectedType == Robot && (tabState.robot != other.tabState.robot))
         return false;
     }
+
+    if (ui.autoFileName != otherUi.autoFileName) return false;
+
+    if (ui.changesSaved != otherUi.changesSaved) return false;
 
     return true;
   }
@@ -192,6 +212,25 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
+                    Text(
+                      path.dirname(props.autoFileName) + Platform.pathSeparator,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontStyle: FontStyle.italic,
+                        color:
+                            theme.textTheme.bodyText1!.color!.withOpacity(0.7),
+                      ),
+                    ),
+                    SizedBox(width: 1),
+                    Text(path.basename(props.autoFileName)),
+                    if (!props.changesSaved)
+                      Text(
+                        " •",
+                        style: TextStyle(
+                          fontSize: 30,
+                          height: 1.1,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -200,6 +239,10 @@ class _HomePageState extends State<HomePage> {
                   calculateTrajectory: props.calculateTrajectory,
                   trajectoryFileName: props.trajectoryFileName,
                   editTrajectoryFileName: props.editTrajectoryFileName,
+                  openFile: props.openFile,
+                  saveFile: props.saveFile,
+                  saveFileAs: props.saveFileAs,
+                  changesSaved: props.changesSaved,
                 ),
               ),
             ],

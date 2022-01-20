@@ -37,6 +37,8 @@ class PathViewModel {
   final bool controlToggle;
   final Function() toggleControl;
   final Offset fieldSizePixels;
+  final Function() saveFile;
+  final Function() saveFileAs;
 
   PathViewModel({
     required this.points,
@@ -59,6 +61,8 @@ class PathViewModel {
     required this.controlToggle,
     required this.toggleControl,
     required this.fieldSizePixels,
+    required this.saveFile,
+    required this.saveFileAs,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -91,19 +95,16 @@ class PathViewModel {
         store.dispatch(ObjectUnselected());
       },
       finishControlDrag: (int index, Offset inPosition, Offset outPosition) {
-        store.dispatch(
-          endControlDrag(
-            index,
-            uiToMetersCoord(store, inPosition),
-            uiToMetersCoord(store, outPosition)
-          )
-        );
+        store.dispatch(endControlDrag(index, uiToMetersCoord(store, inPosition),
+            uiToMetersCoord(store, outPosition)));
       },
       finishInControlDrag: (int index, Offset position) {
-        store.dispatch(endInControlDragThunk(index, uiToMetersCoord(store, position)));
+        store.dispatch(
+            endInControlDragThunk(index, uiToMetersCoord(store, position)));
       },
       finishOutControlDrag: (int index, Offset position) {
-        store.dispatch(endOutControlDragThunk(index, uiToMetersCoord(store, position)));
+        store.dispatch(
+            endOutControlDragThunk(index, uiToMetersCoord(store, position)));
       },
       finishHeadingDrag: (int index, double heading) {
         store.dispatch(endHeadingDragThunk(index, heading));
@@ -122,6 +123,8 @@ class PathViewModel {
         store.dispatch(ToggleControl());
       },
       fieldSizePixels: store.state.tabState.ui.fieldSizePixels,
+      saveFile: () => store.dispatch(saveFileThunk(false)),
+      saveFileAs: () => store.dispatch(saveFileThunk(true)),
     );
   }
 }
@@ -241,6 +244,20 @@ class _PathEditorState extends State<_PathEditor> {
                   .deletePoint(widget.pathProps.selectedPointIndex!);
             }
 
+            if (event.logicalKey == LogicalKeyboardKey.keyS) {
+              // Handle ctrl press
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                // Handle ctrl+shift
+                if (pressedKeys.contains(LogicalKeyboardKey.shiftLeft) ||
+                    pressedKeys.contains(LogicalKeyboardKey.shiftRight)) {
+                  widget.pathProps.saveFileAs();
+                } else {
+                  widget.pathProps.saveFile();
+                }
+              }
+            }
+
             pressedKeys.remove(event.logicalKey);
           }
         });
@@ -267,10 +284,9 @@ class _PathEditorState extends State<_PathEditor> {
                   int? selectedPoint =
                       getTappedPoint(tapPos, widget.pathProps.points);
 
-                  if (
-                    widget.pathProps.selectedPointIndex != null
-                    && widget.pathProps.selectedPointIndex! >= 0
-                    && selectedPoint == widget.pathProps.selectedPointIndex) {
+                  if (widget.pathProps.selectedPointIndex != null &&
+                      widget.pathProps.selectedPointIndex! >= 0 &&
+                      selectedPoint == widget.pathProps.selectedPointIndex) {
                     widget.pathProps.unSelectPoint();
                     return;
                   }
@@ -280,7 +296,8 @@ class _PathEditorState extends State<_PathEditor> {
                     return;
                   }
 
-                  if (pressedKeys.contains(LogicalKeyboardKey.controlRight) || pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
+                  if (pressedKeys.contains(LogicalKeyboardKey.controlRight) ||
+                      pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
                     widget.pathProps.addPoint(tapPos);
                     return;
                   }
@@ -301,10 +318,12 @@ class _PathEditorState extends State<_PathEditor> {
                     var controlToggle = widget.pathProps.controlToggle;
                     var headingToggle = widget.pathProps.headingToggle;
 
-                    if (widget.pathProps.selectedPointIndex != null
-                      && widget.pathProps.selectedPointIndex! >= 0) {
-                        controlToggle = widget.pathProps.selectedPointIndex == index;
-                        headingToggle = widget.pathProps.selectedPointIndex == index;
+                    if (widget.pathProps.selectedPointIndex != null &&
+                        widget.pathProps.selectedPointIndex! >= 0) {
+                      controlToggle =
+                          widget.pathProps.selectedPointIndex == index;
+                      headingToggle =
+                          widget.pathProps.selectedPointIndex == index;
                     }
 
                     if (headingToggle) {
@@ -312,14 +331,12 @@ class _PathEditorState extends State<_PathEditor> {
                           tapPos, point, PointType.heading);
                     }
 
-                    if (controlToggle &&
-                        draggingPoint == null) {
+                    if (controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.inControl);
                     }
 
-                    if (controlToggle &&
-                        draggingPoint == null) {
+                    if (controlToggle && draggingPoint == null) {
                       draggingPoint = checkSelectedPointTap(
                           tapPos, point, PointType.outControl);
                     }
@@ -402,8 +419,11 @@ class _PathEditorState extends State<_PathEditor> {
                             draggingPoint.draggingPoint.position);
                         break;
                       case PointType.inControl:
-                        if (widget.pathProps.points[draggingPoint.index].isStop) {
-                          widget.pathProps.finishInControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
+                        if (widget
+                            .pathProps.points[draggingPoint.index].isStop) {
+                          widget.pathProps.finishInControlDrag(
+                              draggingPoint.index,
+                              draggingPoint.draggingPoint.position);
                           break;
                         }
 
@@ -418,8 +438,11 @@ class _PathEditorState extends State<_PathEditor> {
                             previusDraggingPoint.draggingPoint.position);
                         break;
                       case PointType.outControl:
-                        if (widget.pathProps.points[draggingPoint.index].isStop) {
-                          widget.pathProps.finishOutControlDrag(draggingPoint.index, draggingPoint.draggingPoint.position);
+                        if (widget
+                            .pathProps.points[draggingPoint.index].isStop) {
+                          widget.pathProps.finishOutControlDrag(
+                              draggingPoint.index,
+                              draggingPoint.draggingPoint.position);
                           break;
                         }
 

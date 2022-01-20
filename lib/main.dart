@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/store/app/app_reducer.dart';
 import 'package:pathfinder/store/app/app_state.dart';
+import 'package:pathfinder/store/tab/tab_actions.dart';
 import 'package:pathfinder/views/home.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux_logging/redux_logging.dart';
 
+const debug = false;
 const cacheFilePath = ".temp-state";
 
 void main() => runApp(App());
@@ -30,15 +32,25 @@ class App extends StatelessWidget {
 
 final store = Store<AppState>(
   (AppState state, dynamic action) {
-    final newState = appStateReducer(state, action);
+    var newState = appStateReducer(state, action);
     saveCacheState(newState);
+
+    if (!(action is SaveFile || action is OpenFile)) {
+      newState = newState.copyWith(
+        tabState: newState.tabState.copyWith(
+          ui: newState.tabState.ui.copyWith(
+            changesSaved: false,
+          ),
+        ),
+      );
+    }
 
     return newState;
   },
   initialState: loadInitialStateFromCache(),
   middleware: [
     thunkMiddleware,
-    LoggingMiddleware.printer(),
+    if (debug) LoggingMiddleware.printer(),
   ],
 );
 

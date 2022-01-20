@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
 
@@ -27,6 +29,8 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, TrajectoryCalculated>(_trajectoryCalculated),
   TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
   TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
+  TypedReducer<TabState, OpenFile>(_openFile),
+  TypedReducer<TabState, SaveFile>(_saveFile),
 ]);
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
@@ -389,6 +393,32 @@ TabState _trajectoryFileNameChanged(
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
       trajectoryFileName: action.fileName,
+    ),
+  );
+}
+
+TabState _openFile(TabState tabState, OpenFile action) {
+  // Json decode may fail so wrap with try/catch
+  try {
+    final decodedState = jsonDecode(action.fileContent)['tabState'];
+    final fileState = TabState.fromJson(decodedState);
+
+    return fileState.copyWith(
+      ui: fileState.ui.copyWith(
+        autoFileName: action.fileName,
+        changesSaved: true,
+      ),
+    );
+  } catch (e) {}
+
+  return tabState;
+}
+
+TabState _saveFile(TabState tabState, SaveFile action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      autoFileName: action.fileName,
+      changesSaved: true,
     ),
   );
 }

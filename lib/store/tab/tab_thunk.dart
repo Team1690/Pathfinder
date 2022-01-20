@@ -1,4 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -52,21 +56,18 @@ ThunkAction endDragThunk(int index, Offset position) {
 }
 
 ThunkAction endInControlDragThunk(int index, Offset position) {
-  return editPointThunk(
-      pointIndex: index, inControlPoint: position);
+  return editPointThunk(pointIndex: index, inControlPoint: position);
 }
 
 ThunkAction endOutControlDragThunk(int index, Offset position) {
-  return editPointThunk(
-      pointIndex: index, outControlPoint: position);
+  return editPointThunk(pointIndex: index, outControlPoint: position);
 }
 
 ThunkAction endControlDrag(int index, Offset inPosition, Offset outPosition) {
   return editPointThunk(
-    pointIndex: index,
-    outControlPoint: outPosition,
-    inControlPoint: inPosition
-  );
+      pointIndex: index,
+      outControlPoint: outPosition,
+      inControlPoint: inPosition);
 }
 
 ThunkAction endHeadingDragThunk(int index, double heading) {
@@ -124,5 +125,61 @@ ThunkAction calculateTrajectoryThunk() {
     } catch (e) {
       store.dispatch(ServerError(e.toString()));
     }
+  };
+}
+
+ThunkAction openFileThunk() {
+  return (Store store) async {
+    try {
+      final file = OpenFilePicker()
+        ..defaultFilterIndex = 0
+        ..defaultExtension = "auto"
+        ..filterSpecification = {
+          "Auto files (.auto)": "*auto",
+          "All": "*",
+        }
+        ..title = 'Select an auto file';
+
+      final result = file.getFile();
+      if (result != null) {
+        final content = await result.readAsString();
+
+        store.dispatch(OpenFile(
+          fileContent: content,
+          fileName: result.path,
+        ));
+      }
+    } catch (e) {}
+  };
+}
+
+ThunkAction saveFileThunk(bool isSaveAs) {
+  return (Store store) async {
+    try {
+      var savingPath = store.state.tabState.ui.autoFileName;
+
+      if (isSaveAs) {
+        final file = SaveFilePicker()
+          ..fileName = basename(store.state.tabState.ui.autoFileName)
+          ..defaultExtension = "auto"
+          ..filterSpecification = {
+            "Auto file (.auto)": "*auto",
+            "Other": "*",
+          }
+          ..defaultFilterIndex = 0
+          ..title = 'Choose where to save the auto file';
+
+        final result = file.getFile();
+        if (result == null) return;
+
+        savingPath = result.path;
+      }
+
+      await File(savingPath).writeAsString(jsonEncode(store.state));
+
+      store.dispatch(SaveFile(
+        fileName: savingPath,
+      ));
+    } catch (e) {}
   };
 }

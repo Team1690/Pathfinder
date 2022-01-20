@@ -1,5 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
+import 'package:pathfinder/store/app/app_reducer.dart';
 import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:pathfinder/views/timeline.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
@@ -8,12 +10,20 @@ class EditorScreen extends StatefulWidget {
   final Function calculateTrajectory;
   final String trajectoryFileName;
   final Function(String) editTrajectoryFileName;
+  final Function() openFile;
+  final Function() saveFile;
+  final Function() saveFileAs;
+  final bool changesSaved;
 
   const EditorScreen({
     Key? key,
     required this.calculateTrajectory,
     required this.trajectoryFileName,
     required this.editTrajectoryFileName,
+    required this.openFile,
+    required this.saveFile,
+    required this.saveFileAs,
+    required this.changesSaved,
   }) : super(key: key);
 
   @override
@@ -50,22 +60,6 @@ class _EditorScreenState extends State<EditorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ElevatedButton.icon(
-                      //   style: ElevatedButton.styleFrom(
-                      //       primary: Color(0xff0078D7)),
-                      //   onPressed: () {},
-                      //   icon: Icon(Icons.search),
-                      //   label: Text('Path'),
-                      // ),
-                      // SizedBox(height: 10),
-                      // ElevatedButton.icon(
-                      //   style: ElevatedButton.styleFrom(
-                      //       primary: Color(0xffD45C36)),
-                      //   onPressed: () {},
-                      //   icon: Icon(Icons.trending_up_rounded),
-                      //   label: Text('Graph'),
-                      // ),
-                      SizedBox(height: 10),
                       ConstrainedBox(
                         constraints:
                             BoxConstraints.tightFor(width: 100, height: 60),
@@ -91,13 +85,58 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                            primary: Color(0xffD7AD17)),
+                          primary: Color(0xffD7AD17),
+                          textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+                        ),
                         onPressed: () {
                           widget.calculateTrajectory();
                         },
                         icon: Icon(Icons.trending_flat_rounded),
                         label: Text('Trajectory'),
                       ),
+                      SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff0078D7),
+                          textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+                        ),
+                        onPressed: widget.openFile,
+                        icon: Icon(Icons.search),
+                        label: Text('Open'),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: widget.changesSaved
+                                      ? Color.fromARGB(255, 116, 116, 116)
+                                      : Color(0xffD45C36),
+                                  padding: EdgeInsets.all(1),
+                                  textStyle:
+                                      TextStyle(overflow: TextOverflow.clip)),
+                              onPressed: widget.saveFile,
+                              child: Icon(Icons.save),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xffD45C36),
+                                textStyle:
+                                    TextStyle(overflow: TextOverflow.ellipsis),
+                              ),
+                              onPressed: widget.saveFileAs,
+                              child: Text('Save As'),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
