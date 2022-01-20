@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:pathfinder/main.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
@@ -10,7 +11,7 @@ import 'package:pathfinder/store/tab/tab_thunk.dart';
 import 'package:pathfinder/utils/math.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 import 'package:redux/redux.dart';
 import 'package:card_settings/card_settings.dart';
 
@@ -211,11 +212,24 @@ class _HomePageState extends State<HomePage> {
                       },
                       icon: Icon(Icons.adb),
                     ),
-                    Text(basename(props.autoFileName)),
+                    Text(
+                      path.dirname(props.autoFileName) + Platform.pathSeparator,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontStyle: FontStyle.italic,
+                        color:
+                            theme.textTheme.bodyText1!.color!.withOpacity(0.7),
+                      ),
+                    ),
+                    SizedBox(width: 1),
+                    Text(path.basename(props.autoFileName)),
                     if (!props.changesSaved)
                       Text(
                         " •",
-                        style: TextStyle(fontSize: 30),
+                        style: TextStyle(
+                          fontSize: 30,
+                          height: 1.1,
+                        ),
                       ),
                   ],
                 ),
