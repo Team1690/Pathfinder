@@ -273,73 +273,72 @@ TabState editPoint(TabState tabState, EditPoint action) {
 }
 
 TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
-  if (tabState.ui.selectedType == Point &&
-      tabState.ui.selectedIndex == action.index) {
-    List<Point> newPoints = [...tabState.path.points];
+  if (action.index == -1) return tabState;
 
-    var newState = tabState.copyWith();
+  if (tabState.ui.selectedType != Point ||
+      tabState.ui.selectedIndex != action.index) return tabState;
 
-    // Handle the case when the deleted point is also cutting a segment
-    if (newPoints[action.index].cutSegment) {
-      var newSegments = [...newState.path.segments];
+  var newState = tabState.copyWith();
+  var newPoints = [...tabState.path.points];
 
-      final removedSegmentIndex = tabState.path.segments
-          .indexWhere((s) => s.pointIndexes.contains(action.index));
+  // Clear the segment of the point if it its cutting a segment, add all the points to
+  // the previous segment (including the removed one, it will be handled later)
+  if (newPoints[action.index].cutSegment) {
+    var newSegments = [...newState.path.segments];
 
-      // Put the points that where removed from the segment and add them to the previous
-      // segment, the first point never starts a segement so there always should be at least one segment
-      // in case of deleting a 'cutting segment' point like here
-      final removedSegment = newSegments[removedSegmentIndex];
-      final previousSegment = newSegments[removedSegmentIndex - 1];
+    final removedSegmentIndex = tabState.path.segments
+        .indexWhere((s) => s.pointIndexes.contains(action.index));
 
-      newSegments[removedSegmentIndex - 1] = previousSegment.copyWith(
-          pointIndexes:
-              previousSegment.pointIndexes + removedSegment.pointIndexes);
-      newSegments[removedSegmentIndex] =
-          removedSegment.copyWith(pointIndexes: []);
+    // Get the points that where removed from the segment and add them to the previous
+    // segment, the first point never starts a segement so there always should be at least one segment
+    // in case of deleting a 'cutting segment' point like here
+    final removedSegment = newSegments[removedSegmentIndex];
+    final previousSegment = newSegments[removedSegmentIndex - 1];
 
-      newState = newState.copyWith(
-        path: newState.path.copyWith(
-          segments: newSegments,
-        ),
-      );
-    }
+    newSegments[removedSegmentIndex - 1] = previousSegment.copyWith(
+        pointIndexes:
+            previousSegment.pointIndexes + removedSegment.pointIndexes);
+    newSegments[removedSegmentIndex] =
+        removedSegment.copyWith(pointIndexes: []);
 
-    newPoints.removeAt(action.index);
-
-    // If the first point is deleted make sure that the new first point has correct
-    // parameters for a first point
-    if (action.index == 0) {
-      newPoints[0] = newPoints[0].copyWith(useHeading: true);
-    }
-
-    return newState.copyWith(
-      ui: newState.ui.copyWith(
-        selectedIndex: -1,
-        selectedType: Null,
-        isSidebarOpen: false,
-      ),
+    newState = newState.copyWith(
       path: newState.path.copyWith(
-        points: newPoints,
-        evaluatedPoints: newPoints.length < 2 ? [] : null,
-        segments: newState.path.segments
-            .map(
-              (segment) => segment.copyWith(
-                pointIndexes: segment.pointIndexes
-                    .where((pointIndex) => pointIndex != action.index)
-                    .map((pointIndex) =>
-                        pointIndex > action.index ? pointIndex - 1 : pointIndex)
-                    .toList(),
-              ),
-            )
-            // Make sure no empty sgements are left
-            .where((segment) => segment.pointIndexes.isNotEmpty)
-            .toList(),
+        segments: newSegments,
       ),
     );
   }
 
-  return tabState;
+  newPoints.removeAt(action.index);
+
+  // If the first point is deleted make sure that the new first point has correct
+  // parameters for a first point ('useHeading' should be true)
+  if (action.index == 0) {
+    newPoints[0] = newPoints[0].copyWith(useHeading: true);
+  }
+
+  // Select the previous point
+  newState = _objectSelected(newState, ObjectSelected(action.index - 1, Point));
+
+  return newState.copyWith(
+    path: newState.path.copyWith(
+      points: newPoints,
+      // Show no spline if only one/zero points are left
+      evaluatedPoints: newPoints.length < 2 ? [] : null,
+      segments: newState.path.segments
+          .map(
+            (segment) => segment.copyWith(
+              pointIndexes: segment.pointIndexes
+                  .where((pointIndex) => pointIndex != action.index)
+                  .map((pointIndex) =>
+                      pointIndex > action.index ? pointIndex - 1 : pointIndex)
+                  .toList(),
+            ),
+          )
+          // Make sure no empty sgements are left
+          .where((segment) => segment.pointIndexes.isNotEmpty)
+          .toList(),
+    ),
+  );
 }
 
 TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
