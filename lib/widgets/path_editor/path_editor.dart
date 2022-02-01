@@ -39,6 +39,8 @@ class PathViewModel {
   final Offset fieldSizePixels;
   final Function() saveFile;
   final Function() saveFileAs;
+  final Function() pathUndo;
+  final Function() pathRedo;
 
   PathViewModel({
     required this.points,
@@ -63,6 +65,8 @@ class PathViewModel {
     required this.fieldSizePixels,
     required this.saveFile,
     required this.saveFileAs,
+    required this.pathUndo,
+    required this.pathRedo,
   });
 
   static PathViewModel fromStore(Store<AppState> store) {
@@ -125,6 +129,8 @@ class PathViewModel {
       fieldSizePixels: store.state.tabState.ui.fieldSizePixels,
       saveFile: () => store.dispatch(saveFileThunk(false)),
       saveFileAs: () => store.dispatch(saveFileThunk(true)),
+      pathUndo: () => store.dispatch(pathUndoThunk()),
+      pathRedo: () => store.dispatch(pathRedoThunk()),
     );
   }
 }
@@ -242,6 +248,20 @@ class _PathEditorState extends State<_PathEditor> {
                 widget.pathProps.selectedPointIndex != null) {
               widget.pathProps
                   .deletePoint(widget.pathProps.selectedPointIndex!);
+            }
+
+            if (event.logicalKey == LogicalKeyboardKey.keyZ) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.pathUndo();
+              }
+            }
+
+            if (event.logicalKey == LogicalKeyboardKey.keyY) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.pathRedo();
+              }
             }
 
             if (event.logicalKey == LogicalKeyboardKey.keyS) {

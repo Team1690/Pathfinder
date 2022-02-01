@@ -12,7 +12,7 @@ import 'package:redux/redux.dart';
 import 'tab_actions.dart';
 import 'tab_state.dart';
 
-Reducer<TabState> tabStateReducer = combineReducers<TabState>([
+Reducer<TabState> applyReducers = combineReducers<TabState>([
   TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),
   TypedReducer<TabState, ObjectSelected>(_objectSelected),
   TypedReducer<TabState, ObjectUnselected>(_objectUnselected),
@@ -31,7 +31,40 @@ Reducer<TabState> tabStateReducer = combineReducers<TabState>([
   TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
   TypedReducer<TabState, OpenFile>(_openFile),
   TypedReducer<TabState, SaveFile>(_saveFile),
+  TypedReducer<TabState, PathUndo>(_pathUndo),
+  TypedReducer<TabState, PathRedo>(_pathRedo),
 ]);
+
+List<dynamic> historyAffectingActions = [
+  AddPointToPath,
+  DeletePointFromPath,
+  EditPoint,
+  EditSegment,
+];
+
+TabState tabStateReducer(TabState tabState, dynamic action) {
+  final newTabState = applyReducers(tabState, action);
+
+  // Add path to history only after the relevant actions
+  if (historyAffectingActions.contains(action.runtimeType)) {
+    return newTabState.copyWith(
+      history: newTabState.history.copyWith(
+        tabHistory: [
+          ...newTabState.history.tabHistory
+              .sublist(0, newTabState.history.currentStateIndex + 1),
+          newTabState.path.copyWith(
+            // Remove the evaluated points from the saved path, it is calculated async
+            // and isn't correct here (will be calculated anyway in the redo/undo thunk)
+            evaluatedPoints: [],
+          ),
+        ],
+        currentStateIndex: newTabState.history.currentStateIndex + 1,
+      ),
+    );
+  }
+
+  return newTabState;
+}
 
 TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
   return tabstate.copyWith(
@@ -418,6 +451,39 @@ TabState _saveFile(TabState tabState, SaveFile action) {
     ui: tabState.ui.copyWith(
       autoFileName: action.fileName,
       changesSaved: true,
+    ),
+  );
+}
+
+TabState _pathUndo(TabState tabState, PathUndo action) {
+  final newStateIndex = max(tabState.history.currentStateIndex - 1, 0);
+
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      selectedIndex: -1,
+      selectedType: Null,
+      isSidebarOpen: false,
+    ),
+    path: tabState.history.tabHistory[newStateIndex].copyWith(),
+    history: tabState.history.copyWith(
+      currentStateIndex: newStateIndex,
+    ),
+  );
+}
+
+TabState _pathRedo(TabState tabState, PathRedo action) {
+  final newStateIndex = min(tabState.history.currentStateIndex + 1,
+      tabState.history.tabHistory.length - 1);
+
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      selectedIndex: -1,
+      selectedType: Null,
+      isSidebarOpen: false,
+    ),
+    path: tabState.history.tabHistory[newStateIndex].copyWith(),
+    history: tabState.history.copyWith(
+      currentStateIndex: newStateIndex,
     ),
   );
 }

@@ -93,6 +93,20 @@ ThunkAction editSegmentThunk({
   };
 }
 
+ThunkAction pathUndoThunk() {
+  return (Store store) {
+    store.dispatch(PathUndo());
+    store.dispatch(calculateSplineThunk());
+  };
+}
+
+ThunkAction pathRedoThunk() {
+  return (Store store) {
+    store.dispatch(PathRedo());
+    store.dispatch(calculateSplineThunk());
+  };
+}
+
 ThunkAction calculateSplineThunk() {
   return (Store store) async {
     try {
