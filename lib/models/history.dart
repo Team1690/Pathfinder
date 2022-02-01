@@ -1,7 +1,9 @@
-import 'package:pathfinder/store/tab/store.dart';
+import 'package:pathfinder/models/path.dart';
+
+const maxSavedHistory = 150;
 
 class History {
-  final List<TabState> tabHistory;
+  final List<Path> tabHistory;
   final int currentStateIndex;
 
   const History({
@@ -10,11 +12,11 @@ class History {
   });
 
   factory History.initial() {
-    return History(tabHistory: [], currentStateIndex: 0);
+    return History(tabHistory: [Path.initial()], currentStateIndex: 0);
   }
 
   History copyWith({
-    List<TabState>? tabHistory,
+    List<Path>? tabHistory,
     int? currentStateIndex,
   }) {
     return History(
@@ -25,8 +27,8 @@ class History {
 
   // Json
   History.fromJson(Map<String, dynamic> json)
-      : tabHistory = List<TabState>.from(
-            json['tabHistory'].map((p) => TabState.fromJson(p))),
+      : tabHistory =
+            List<Path>.from(json['tabHistory'].map((p) => Path.fromJson(p))),
         currentStateIndex = json['currentStateIndex'];
 
   Map<String, dynamic> toJson() {

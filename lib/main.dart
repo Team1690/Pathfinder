@@ -12,7 +12,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux_logging/redux_logging.dart';
 
 const debug = false;
-const cacheFilePath = ".temp-state";
+const cacheFilePath = "./.temp-state";
 
 void main() => runApp(App());
 
@@ -56,7 +56,9 @@ final store = Store<AppState>(
 
 AppState loadInitialStateFromCache() {
   try {
-    final jsonState = jsonDecode(File(cacheFilePath).readAsStringSync());
+    final cacheFile = File(cacheFilePath);
+    final jsonState = jsonDecode(cacheFile.readAsStringSync());
+
     return AppState.fromJson(jsonState);
   } catch (e) {}
 

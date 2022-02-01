@@ -137,3 +137,7 @@ class SaveFile extends TabAction {
     required this.fileName,
   });
 }
+
+class PathRedo extends TabAction {}
+
+class PathUndo extends TabAction {}
