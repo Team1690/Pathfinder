@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/store/tab/store.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -131,23 +131,24 @@ ThunkAction calculateTrajectoryThunk() {
 ThunkAction openFileThunk() {
   return (Store store) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        dialogTitle: "Select an auto file",
-        allowedExtensions: ["auto"],
-        type: FileType.custom,
-      );
+      final file = OpenFilePicker()
+        ..defaultFilterIndex = 0
+        ..defaultExtension = "auto"
+        ..filterSpecification = {
+          "Auto files (.auto)": "*auto",
+          "All": "*",
+        }
+        ..title = 'Select an auto file';
 
-      if (result?.files.first.path == null) return;
-      File file = File(result!.files.first.path ?? "");
+      final result = file.getFile();
+      if (result != null) {
+        final content = await result.readAsString();
 
-      if (await file.exists()) return;
-
-      final content = await file.readAsString();
-
-      store.dispatch(OpenFile(
-        fileContent: content,
-        fileName: file.path,
-      ));
+        store.dispatch(OpenFile(
+          fileContent: content,
+          fileName: result.path,
+        ));
+      }
     } catch (e) {}
   };
 }
@@ -158,15 +159,20 @@ ThunkAction saveFileThunk(bool isSaveAs) {
       var savingPath = store.state.tabState.ui.autoFileName;
 
       if (isSaveAs) {
-        final result = await FilePicker.platform.saveFile(
-          dialogTitle: 'Choose where to save the auto file',
-          fileName: basename(store.state.tabState.ui.autoFileName),
-          type: FileType.custom,
-          allowedExtensions: ["auto"],
-        );
+        final file = SaveFilePicker()
+          ..fileName = basename(store.state.tabState.ui.autoFileName)
+          ..defaultExtension = "auto"
+          ..filterSpecification = {
+            "Auto file (.auto)": "*auto",
+            "Other": "*",
+          }
+          ..defaultFilterIndex = 0
+          ..title = 'Choose where to save the auto file';
 
+        final result = file.getFile();
         if (result == null) return;
-        savingPath = result;
+
+        savingPath = result.path;
       }
 
       await File(savingPath).writeAsString(jsonEncode(store.state));
