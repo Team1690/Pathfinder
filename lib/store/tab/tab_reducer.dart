@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:math';
-import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:pathfinder/models/history.dart';
 import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
@@ -35,30 +35,49 @@ Reducer<TabState> applyReducers = combineReducers<TabState>([
   TypedReducer<TabState, PathRedo>(_pathRedo),
 ]);
 
-List<dynamic> historyAffectingActions = [
+List<Type> historyAffectingActions = [
   AddPointToPath,
   DeletePointFromPath,
   EditPoint,
   EditSegment,
 ];
 
+Map<String, IconData> actionToIcon = {
+  '$AddPointToPath': Icons.add,
+  '$DeletePointFromPath': Icons.remove,
+  '$EditPoint': Icons.edit_location_outlined,
+  '$EditSegment': Icons.edit_road,
+  '$initialActionName': Icons.start,
+};
+
 TabState tabStateReducer(TabState tabState, dynamic action) {
   final newTabState = applyReducers(tabState, action);
 
   // Add path to history only after the relevant actions
   if (historyAffectingActions.contains(action.runtimeType)) {
+    final newPathHistory = [
+      ...newTabState.history.pathHistory
+          .sublist(0, newTabState.history.currentStateIndex + 1),
+      HistoryStamp.fromReducer(
+        action,
+        newTabState.path.copyWith(
+          // Remove the evaluated points from the saved path, it is calculated async
+          // and isn't correct here (will be calculated anyway in the redo/undo thunk)
+          evaluatedPoints: [],
+        ),
+      )
+    ];
+    var newCurrentIndex = newTabState.history.currentStateIndex + 1;
+
+    if (newPathHistory.length > maxSavedHistory) {
+      newPathHistory.removeAt(0);
+      newCurrentIndex--;
+    }
+
     return newTabState.copyWith(
       history: newTabState.history.copyWith(
-        tabHistory: [
-          ...newTabState.history.tabHistory
-              .sublist(0, newTabState.history.currentStateIndex + 1),
-          newTabState.path.copyWith(
-            // Remove the evaluated points from the saved path, it is calculated async
-            // and isn't correct here (will be calculated anyway in the redo/undo thunk)
-            evaluatedPoints: [],
-          ),
-        ],
-        currentStateIndex: newTabState.history.currentStateIndex + 1,
+        pathHistory: newPathHistory,
+        currentStateIndex: newCurrentIndex,
       ),
     );
   }
@@ -460,11 +479,11 @@ TabState _pathUndo(TabState tabState, PathUndo action) {
 
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
-      selectedIndex: -1,
-      selectedType: Null,
-      isSidebarOpen: false,
+      selectedIndex: 0,
+      selectedType: History,
+      isSidebarOpen: true,
     ),
-    path: tabState.history.tabHistory[newStateIndex].copyWith(),
+    path: tabState.history.pathHistory[newStateIndex].path.copyWith(),
     history: tabState.history.copyWith(
       currentStateIndex: newStateIndex,
     ),
@@ -473,15 +492,15 @@ TabState _pathUndo(TabState tabState, PathUndo action) {
 
 TabState _pathRedo(TabState tabState, PathRedo action) {
   final newStateIndex = min(tabState.history.currentStateIndex + 1,
-      tabState.history.tabHistory.length - 1);
+      tabState.history.pathHistory.length - 1);
 
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
-      selectedIndex: -1,
-      selectedType: Null,
-      isSidebarOpen: false,
+      selectedIndex: 0,
+      selectedType: History,
+      isSidebarOpen: true,
     ),
-    path: tabState.history.tabHistory[newStateIndex].copyWith(),
+    path: tabState.history.pathHistory[newStateIndex].path.copyWith(),
     history: tabState.history.copyWith(
       currentStateIndex: newStateIndex,
     ),

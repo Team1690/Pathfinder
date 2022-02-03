@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'dart:core';
 import 'dart:io';
 import 'package:pathfinder/main.dart';
+import 'package:pathfinder/models/history.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/store/app/app_state.dart';
@@ -20,6 +22,8 @@ class HomeViewModel {
   bool isSidebarOpen;
   final Function(bool) setSidebarVisibility;
   final Function selectRobot;
+  final Function selectHistory;
+  final History history;
   final Function(int, Point) setPointData;
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
@@ -29,12 +33,16 @@ class HomeViewModel {
   final Function() openFile;
   final Function() saveFile;
   final Function() saveFileAs;
+  final Function() pathUndo;
+  final Function() pathRedo;
   final bool changesSaved;
 
   HomeViewModel({
     required this.isSidebarOpen,
     required this.setSidebarVisibility,
     required this.selectRobot,
+    required this.selectHistory,
+    required this.history,
     required this.tabState,
     required this.setPointData,
     required this.setRobot,
@@ -44,6 +52,8 @@ class HomeViewModel {
     required this.editTrajectoryFileName,
     required this.openFile,
     required this.saveFile,
+    required this.pathUndo,
+    required this.pathRedo,
     required this.saveFileAs,
     required this.changesSaved,
   });
@@ -58,6 +68,10 @@ class HomeViewModel {
       selectRobot: () {
         store.dispatch(ObjectSelected(0, Robot));
       },
+      selectHistory: () {
+        store.dispatch(ObjectSelected(0, History));
+      },
+      history: store.state.tabState.history,
       setPointData: (int index, Point point) {
         store.dispatch(editPointThunk(
           pointIndex: index,
@@ -85,6 +99,8 @@ class HomeViewModel {
       },
       openFile: () => store.dispatch(openFileThunk()),
       saveFile: () => store.dispatch(saveFileThunk(false)),
+      pathUndo: () => store.dispatch(pathUndoThunk()),
+      pathRedo: () => store.dispatch(pathRedoThunk()),
       saveFileAs: () => store.dispatch(saveFileThunk(true)),
       changesSaved: store.state.tabState.ui.changesSaved,
     );
@@ -104,6 +120,9 @@ class HomeViewModel {
 
     if (ui.selectedIndex != otherUi.selectedIndex) return false;
     if (ui.selectedType != otherUi.selectedType) return false;
+
+    // When the history is open, always update
+    if (ui.selectedType == History) return false;
 
     if (ui.selectedIndex != -1) {
       if (ui.selectedType == Point &&
@@ -208,10 +227,36 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       color: theme.textTheme.bodyText1?.color,
                       onPressed: () {
+                        props.pathUndo();
+                      },
+                      tooltip: "Undo",
+                      icon: Icon(Icons.chevron_left_outlined),
+                    ),
+                    IconButton(
+                      color: theme.textTheme.bodyText1?.color,
+                      onPressed: () {
+                        props.pathRedo();
+                      },
+                      tooltip: "Redo",
+                      icon: Icon(Icons.chevron_right_outlined),
+                    ),
+                    IconButton(
+                      color: theme.textTheme.bodyText1?.color,
+                      onPressed: () {
                         props.selectRobot();
                       },
+                      tooltip: "Edit Robot",
                       icon: Icon(Icons.adb),
                     ),
+                    IconButton(
+                      color: theme.textTheme.bodyText1?.color,
+                      onPressed: () {
+                        props.selectHistory();
+                      },
+                      tooltip: "Show history",
+                      icon: Icon(Icons.history),
+                    ),
+                    SizedBox(width: 10),
                     Text(
                       path.dirname(props.autoFileName) + Platform.pathSeparator,
                       style: TextStyle(
@@ -452,6 +497,41 @@ class SettingsDetails extends StatelessWidget {
       );
     }
 
+    if (tabState.ui.selectedType == History) {
+      return Container(
+        child: Card(
+          margin: EdgeInsets.all(8),
+          child: Column(children: [
+            ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: tabState.history.pathHistory
+                  .asMap()
+                  .entries
+                  .map(
+                    (e) {
+                      return ListTile(
+                        dense: true,
+                        enabled: e.key <= tabState.history.currentStateIndex,
+                        leading: Icon(actionToIcon[e.value.action] ??
+                            Icons.device_unknown_outlined),
+
+                        // Seperate the name by capital letter (EditPoint -> Edit Point)
+                        title: Text((e.value.action
+                            .split(RegExp(r"(?=[A-Z])"))
+                            .join(" "))),
+                      );
+                    },
+                  )
+                  .toList()
+                  .reversed
+                  .toList(),
+            ),
+          ]),
+        ),
+      );
+    }
+
     if (tabState.ui.selectedType == Point) {
       if (points.length == 0) return SizedBox.shrink();
 
@@ -633,6 +713,7 @@ String getSideBarHeadline(TabState tabState) {
   if (selectedType == Robot) return "ROBOT DATA";
   if (selectedType == Point && selectedIndex > -1)
     return 'POINT $selectedIndex';
+  if (selectedType == History) return "HISTORY";
 
   return "NO SELECTION";
 }
