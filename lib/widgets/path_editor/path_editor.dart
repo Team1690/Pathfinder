@@ -407,7 +407,8 @@ class _PathEditorState extends State<_PathEditor> {
 
                       if (pressedKeys.contains(LogicalKeyboardKey.controlRight) ||
                           pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
-                        widget.pathProps.addPoint(tapPos - widget.pathProps.imageOffset);
+                        Offset realTapPosition = (tapPos / widget.pathProps.imageZoom) - widget.pathProps.imageOffset;
+                        widget.pathProps.addPoint(realTapPosition);
                         return;
                       }
 
@@ -524,7 +525,7 @@ class _PathEditorState extends State<_PathEditor> {
                         if (pressedKeys.contains(LogicalKeyboardKey.controlRight) ||
                             pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
                             setState(() {
-                              imageDragDiff = imageDragDiff + flipYAxis(details.delta);
+                              imageDragDiff = imageDragDiff + (flipYAxis(details.delta) / widget.pathProps.imageZoom);
                             });
                         }
                       }
