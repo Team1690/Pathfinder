@@ -26,6 +26,16 @@ class ObjectUnselected extends TabAction {
   ObjectUnselected();
 }
 
+class SetZoomLevel extends TabAction {
+  final double zoomLevel;
+  SetZoomLevel(this.zoomLevel);
+}
+
+class SetPan extends TabAction {
+  final Offset pan;
+  SetPan(this.pan);
+}
+
 // Server actions
 class ServerError extends TabAction {
   final String? error;
