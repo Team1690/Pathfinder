@@ -531,7 +531,7 @@ class _PathEditorState extends State<_PathEditor> {
                     },
                     onPanEnd: (DragEndDetails details) {
                       if (imageDragDiff != Offset.zero) {
-                          widget.pathProps.setImageOffset(imageDragDiff);
+                          widget.pathProps.setImageOffset(widget.pathProps.imageOffset + imageDragDiff);
                           setState(() {
                             imageDragDiff = Offset.zero;
                           });
