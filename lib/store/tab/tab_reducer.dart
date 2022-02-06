@@ -33,6 +33,8 @@ Reducer<TabState> applyReducers = combineReducers<TabState>([
   TypedReducer<TabState, SaveFile>(_saveFile),
   TypedReducer<TabState, PathUndo>(_pathUndo),
   TypedReducer<TabState, PathRedo>(_pathRedo),
+  TypedReducer<TabState, SetZoomLevel>(_setZoomLevel),
+  TypedReducer<TabState, SetPan>(_setPan),
 ]);
 
 List<dynamic> historyAffectingActions = [
@@ -484,6 +486,22 @@ TabState _pathRedo(TabState tabState, PathRedo action) {
     path: tabState.history.tabHistory[newStateIndex].copyWith(),
     history: tabState.history.copyWith(
       currentStateIndex: newStateIndex,
+    ),
+  );
+}
+
+TabState _setZoomLevel(TabState tabState, SetZoomLevel action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      zoomLevel: action.zoomLevel,
+    ),
+  );
+}
+
+TabState _setPan(TabState tabState, SetPan action) {
+  return tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      pan: action.pan,
     ),
   );
 }
