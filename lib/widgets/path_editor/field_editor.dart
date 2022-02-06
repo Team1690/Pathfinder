@@ -46,6 +46,8 @@ class FieldPainter extends CustomPainter {
   bool enableControlEditing;
   List<modelspath.SplinePoint> evaluetedPoints;
   Robot robot;
+  double imageZoom;
+  Offset imageOffset;
 
   FieldPainter(
     this.image,
@@ -57,12 +59,17 @@ class FieldPainter extends CustomPainter {
     this.enableControlEditing,
     this.evaluetedPoints,
     this.robot,
+    this.imageZoom,
+    this.imageOffset,
   );
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.scale(1, -1);
     canvas.translate(0, -size.height);
+
+    canvas.scale(imageZoom);
+    canvas.translate(imageOffset.dx, imageOffset.dy);
 
     paintImage(
         canvas: canvas,
@@ -383,6 +390,8 @@ class FieldLoader extends StatefulWidget {
   List<modelspath.SplinePoint> evaluatedPoints;
   Function(Offset) setFieldSizePixels;
   Robot robot;
+  double imageZoom;
+  Offset imageOffset;
 
   FieldLoader(
       this.points,
@@ -393,7 +402,10 @@ class FieldLoader extends StatefulWidget {
       this.enableControlEditing,
       this.evaluatedPoints,
       this.setFieldSizePixels,
-      this.robot);
+      this.robot,
+      this.imageZoom,
+      this.imageOffset,
+  );
 
   @override
   _FieldLoaderState createState() => _FieldLoaderState();
@@ -456,8 +468,12 @@ class _FieldLoaderState extends State<FieldLoader> {
                 widget.enableControlEditing,
                 widget.evaluatedPoints,
                 widget.robot,
+                widget.imageZoom,
+                widget.imageOffset,
               ),
-              size: Size(width, height)));
+              size: Size(width, height)
+            )
+          );
     } else {
       return Center(child: Text('loading'));
     }
