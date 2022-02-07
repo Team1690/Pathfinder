@@ -28,7 +28,8 @@ class ObjectUnselected extends TabAction {
 
 class SetZoomLevel extends TabAction {
   final double zoomLevel;
-  SetZoomLevel(this.zoomLevel);
+  final Offset? pan;
+  SetZoomLevel(this.zoomLevel, {this.pan});
 }
 
 class SetPan extends TabAction {

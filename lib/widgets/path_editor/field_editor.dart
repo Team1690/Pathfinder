@@ -68,8 +68,8 @@ class FieldPainter extends CustomPainter {
     canvas.scale(1, -1);
     canvas.translate(0, -size.height);
 
-    canvas.scale(imageZoom);
     canvas.translate(imageOffset.dx, imageOffset.dy);
+    canvas.scale(imageZoom);
 
     paintImage(
         canvas: canvas,
@@ -394,17 +394,17 @@ class FieldLoader extends StatefulWidget {
   Offset imageOffset;
 
   FieldLoader(
-      this.points,
-      this.segments,
-      this.selectedPoint,
-      this.dragPoints,
-      this.enableHeadingEditing,
-      this.enableControlEditing,
-      this.evaluatedPoints,
-      this.setFieldSizePixels,
-      this.robot,
-      this.imageZoom,
-      this.imageOffset,
+    this.points,
+    this.segments,
+    this.selectedPoint,
+    this.dragPoints,
+    this.enableHeadingEditing,
+    this.enableControlEditing,
+    this.evaluatedPoints,
+    this.setFieldSizePixels,
+    this.robot,
+    this.imageZoom,
+    this.imageOffset,
   );
 
   @override
@@ -471,9 +471,7 @@ class _FieldLoaderState extends State<FieldLoader> {
                 widget.imageZoom,
                 widget.imageOffset,
               ),
-              size: Size(width, height)
-            )
-          );
+              size: Size(width, height)));
     } else {
       return Center(child: Text('loading'));
     }

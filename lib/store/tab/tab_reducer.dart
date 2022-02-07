@@ -494,6 +494,7 @@ TabState _setZoomLevel(TabState tabState, SetZoomLevel action) {
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
       zoomLevel: action.zoomLevel,
+      pan: action.pan,
     ),
   );
 }
