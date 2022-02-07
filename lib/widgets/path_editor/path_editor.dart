@@ -214,8 +214,8 @@ class _PathEditorState extends State<_PathEditor> {
 
   DraggingPoint? checkSelectedPointTap(
       Offset tapPosition, Point point, PointType pointType) {
-    Offset realTapPosition = (tapPosition / widget.pathProps.imageZoom) -
-        widget.pathProps.imageOffset;
+    Offset realTapPosition = (tapPosition - widget.pathProps.imageOffset) /
+        widget.pathProps.imageZoom;
 
     if (pointType == PointType.path) {
       double radius =
