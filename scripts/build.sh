@@ -4,11 +4,11 @@ OUTPUT_DIR=dist-$COMMIT_SUFFIX
 rm -rf $OUTPUT_DIR
 
 echo "Building flutter"
-flutter build macos --no-sound-null-safety
+flutter build windows --no-sound-null-safety
 
 echo "Building go"
 cd algorithm
-go build -o "pathfinder-main" -ldflags="-H windowsgui" .
+go build -ldflags="-H windowsgui" .
 cd ../
 
 echo "Putting everything in './$OUTPUT_DIR'"
