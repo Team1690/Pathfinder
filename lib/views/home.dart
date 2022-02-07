@@ -222,6 +222,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         props.setSidebarVisibility(true);
                       },
+                      tooltip: "Show sidebar",
                       icon: Icon(Icons.menu),
                     ),
                     IconButton(
@@ -253,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         props.selectHistory();
                       },
-                      tooltip: "Show history",
+                      tooltip: "History",
                       icon: Icon(Icons.history),
                     ),
                     SizedBox(width: 10),
