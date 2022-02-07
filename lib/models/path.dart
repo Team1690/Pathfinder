@@ -66,7 +66,7 @@ class SplinePoint {
 
   SplinePoint toUiCoord(Store store) {
     return copyWith(
-      position: metersToUiCoord(store, position),
+      position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
     );
   }
 

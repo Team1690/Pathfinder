@@ -91,7 +91,7 @@ class Point {
 
   Point toUiCoord(Store store) {
     return copyWith(
-      position: metersToUiCoord(store, position),
+      position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
       inControlPoint: metersToUiCoord(store, inControlPoint),
       outControlPoint: metersToUiCoord(store, outControlPoint),
     );
