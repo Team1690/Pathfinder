@@ -677,8 +677,13 @@ class SettingsDetails extends StatelessWidget {
                   items: [
                     "None",
                     ...[
-                      "Camera",
-                      "Arm",
+                      "Allow Shoot",
+                      "Don't Shoot",
+                      "Intake",
+                      "Travel",
+                      "Wait For Shoot",
+                      "Safe Shoot",
+                      "Risky Shoot",
                     ]
                   ],
                   onChanged: (String value) {
