@@ -152,10 +152,8 @@ ThunkAction openFileThunk() {
         type: FileType.custom,
       );
 
-      if (result?.files.first.path == null) return;
+      if (result?.paths.first == null) return;
       File file = File(result!.files.first.path ?? "");
-
-      if (await file.exists()) return;
 
       final content = await file.readAsString();
 
