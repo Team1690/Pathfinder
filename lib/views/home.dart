@@ -14,6 +14,7 @@ import 'package:pathfinder/utils/math.dart';
 import 'package:pathfinder/widgets/editor_screen.dart';
 import 'package:pathfinder/constants.dart';
 import 'package:path/path.dart' as path;
+import 'package:pathfinder/widgets/save_changes_dialog.dart';
 import 'package:redux/redux.dart';
 import 'package:card_settings/card_settings.dart';
 
@@ -35,6 +36,7 @@ class HomeViewModel {
   final Function() saveFileAs;
   final Function() pathUndo;
   final Function() pathRedo;
+  final Function() newAuto;
   final bool changesSaved;
 
   HomeViewModel({
@@ -55,6 +57,7 @@ class HomeViewModel {
     required this.pathUndo,
     required this.pathRedo,
     required this.saveFileAs,
+    required this.newAuto,
     required this.changesSaved,
   });
 
@@ -98,10 +101,11 @@ class HomeViewModel {
         store.dispatch(TrajectoryFileNameChanged(fileName));
       },
       openFile: () => store.dispatch(openFileThunk()),
-      saveFile: () => store.dispatch(saveFileThunk(false)),
       pathUndo: () => store.dispatch(pathUndoThunk()),
       pathRedo: () => store.dispatch(pathRedoThunk()),
+      saveFile: () => store.dispatch(saveFileThunk(false)),
       saveFileAs: () => store.dispatch(saveFileThunk(true)),
+      newAuto: () => store.dispatch(newAutoThunk()),
       changesSaved: store.state.tabState.ui.changesSaved,
     );
   }
@@ -228,6 +232,22 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       color: theme.textTheme.bodyText1?.color,
                       onPressed: () {
+                        if (!props.changesSaved) {
+                          showAlertDialog(context, props.newAuto, () {
+                            props.saveFile();
+                            props.newAuto();
+                          }, () => {});
+                          return;
+                        }
+
+                        props.newAuto();
+                      },
+                      tooltip: "New auto",
+                      icon: Icon(Icons.new_label),
+                    ),
+                    IconButton(
+                      color: theme.textTheme.bodyText1?.color,
+                      onPressed: () {
                         props.pathUndo();
                       },
                       tooltip: "Undo",
@@ -246,7 +266,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         props.selectRobot();
                       },
-                      tooltip: "Edit Robot",
+                      tooltip: "Edit robot",
                       icon: Icon(Icons.adb),
                     ),
                     IconButton(

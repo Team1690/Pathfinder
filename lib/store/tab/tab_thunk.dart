@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:pathfinder/services/pathfinder.dart';
 import 'package:pathfinder/store/tab/store.dart';
+import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
@@ -172,9 +173,14 @@ ThunkAction saveFileThunk(bool isSaveAs) {
     try {
       var savingPath = store.state.tabState.ui.autoFileName;
 
+      // In case of an initial save always open the 'save as' dialog
+      if (savingPath == defaultAutoFileName) {
+        isSaveAs = true;
+      }
+
       if (isSaveAs) {
         final file = SaveFilePicker()
-          ..fileName = basename(store.state.tabState.ui.autoFileName)
+          ..fileName = basename(savingPath)
           ..defaultExtension = "auto"
           ..filterSpecification = {
             "Auto file (.auto)": "*auto",
@@ -195,5 +201,11 @@ ThunkAction saveFileThunk(bool isSaveAs) {
         fileName: savingPath,
       ));
     } catch (e) {}
+  };
+}
+
+ThunkAction newAutoThunk() {
+  return (Store store) async {
+    store.dispatch(NewAuto());
   };
 }
