@@ -235,7 +235,6 @@ class _HomePageState extends State<HomePage> {
                         if (!props.changesSaved) {
                           showAlertDialog(context, props.newAuto, () {
                             props.saveFile();
-                            props.newAuto();
                           }, () => {});
                           return;
                         }

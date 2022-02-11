@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pathfinder/store/app/app_reducer.dart';
 import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/store/tab/tab_actions.dart';
+import 'package:pathfinder/store/tab/store.dart';
 import 'package:pathfinder/views/home.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -35,7 +35,7 @@ final store = Store<AppState>(
     var newState = appStateReducer(state, action);
     saveCacheState(newState);
 
-    if (!(action is SaveFile || action is OpenFile)) {
+    if (historyAffectingActions.contains(action.runtimeType)) {
       newState = newState.copyWith(
         tabState: newState.tabState.copyWith(
           ui: newState.tabState.ui.copyWith(

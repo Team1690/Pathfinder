@@ -45,6 +45,7 @@ List<Type> historyAffectingActions = [
   DeletePointFromPath,
   EditPoint,
   EditSegment,
+  EditRobot,
 ];
 
 Map<String, IconData> actionToIcon = {
