@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:pathfinder/models/field.dart';
 import 'package:pathfinder/models/history.dart';
 import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';
 import 'package:pathfinder/models/segment.dart';
 import 'package:pathfinder/services/pathfinder.dart';
+import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:redux/redux.dart';
 
 import 'tab_actions.dart';
@@ -35,6 +37,7 @@ Reducer<TabState> applyReducers = combineReducers<TabState>([
   TypedReducer<TabState, PathRedo>(_pathRedo),
   TypedReducer<TabState, SetZoomLevel>(_setZoomLevel),
   TypedReducer<TabState, SetPan>(_setPan),
+  TypedReducer<TabState, NewAuto>(_newAuto),
 ]);
 
 List<Type> historyAffectingActions = [
@@ -42,6 +45,13 @@ List<Type> historyAffectingActions = [
   DeletePointFromPath,
   EditPoint,
   EditSegment,
+  EditRobot,
+];
+
+List<Type> unsavedChanegsActions = [
+  ...historyAffectingActions,
+  PathUndo,
+  PathRedo,
 ];
 
 Map<String, IconData> actionToIcon = {
@@ -523,5 +533,13 @@ TabState _setPan(TabState tabState, SetPan action) {
     ui: tabState.ui.copyWith(
       pan: action.pan,
     ),
+  );
+}
+
+TabState _newAuto(TabState tabState, NewAuto action) {
+  return tabState.copyWith(
+    path: Path.initial(),
+    history: History.initial(),
+    ui: TabUI.initial(),
   );
 }

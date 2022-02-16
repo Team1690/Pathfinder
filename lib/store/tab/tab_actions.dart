@@ -150,6 +150,10 @@ class SaveFile extends TabAction {
   });
 }
 
+class NewAuto extends TabAction {
+  NewAuto();
+}
+
 class PathRedo extends TabAction {}
 
 class PathUndo extends TabAction {}
