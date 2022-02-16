@@ -6,7 +6,7 @@ import (
 	"github.com/Team1690/Pathfinder/utils"
 )
 
-func GetFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
+func getFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
 	// * x(t) = (1/6)*j*t^3 -> t(x) = (6*x/j)^(1/3)
 	firstPointTime := math.Pow(6*distance/robot.MaxJerk, 1.0/3.0)
 
@@ -39,7 +39,7 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 	trajectoryPoints[0].Velocity = 0
 	trajectoryPoints[0].Acceleration = 0
 
-	firstPoint := GetFirstPoint(trajectoryPoints[1].Distance, robot)
+	firstPoint := getFirstPoint(trajectoryPoints[1].Distance, robot)
 	trajectoryPoints[1].Time = firstPoint.Time
 	trajectoryPoints[1].Velocity = firstPoint.Velocity
 	trajectoryPoints[1].Acceleration = firstPoint.Acceleration
@@ -50,6 +50,10 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
 
 		currentPoint.Omega = calcOmega(currentPoint, prevPoint, dt)
+
+		if reversed {
+			currentPoint.Omega *= -1
+		}
 
 		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
 
@@ -77,25 +81,20 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 	}
 }
 
-func CalculateDtAndOmega(trajectoryPoints []*TrajectoryPoint, calculateOmega bool) {
+func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 	for i := 2; i < len(trajectoryPoints)-1; i++ {
 		currentPoint := trajectoryPoints[i]
 		prevPoint := trajectoryPoints[i-1]
 
 		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
 
-		if calculateOmega {
-			currentPoint.Omega = (currentPoint.Heading - prevPoint.Heading) / dt
-		}
-
 		currentPoint.Time = prevPoint.Time + dt
 	}
 }
 
-func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
+func reverseTrajectory(trajectory []*TrajectoryPoint, isAlreadyReversed bool) []*TrajectoryPoint {
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
-	totalHeading := math.Max(trajectory[0].Heading, trajectory[len(trajectory)-1].Heading)
 
 	var reversedTrajectory []*TrajectoryPoint
 
@@ -104,7 +103,6 @@ func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 		var newPoint *TrajectoryPoint = oldPoint
 
 		newPoint.Distance = totalDistance - oldPoint.Distance
-		newPoint.Heading = totalHeading - oldPoint.Heading
 		newPoint.Time = totalTime - oldPoint.Time
 
 		reversedTrajectory = append(reversedTrajectory, newPoint)
@@ -114,8 +112,8 @@ func ReverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
 	CalculateKinematics(trajectory, robot, false)
-	trajectory = ReverseTrajectory(trajectory)
+	trajectory = reverseTrajectory(trajectory, false)
 	CalculateKinematics(trajectory, robot, true)
-	trajectory = ReverseTrajectory(trajectory)
+	trajectory = reverseTrajectory(trajectory, true)
 	return trajectory
 }

@@ -170,7 +170,7 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 	}
 
 	// * After new velocity
-	CalculateDtAndOmega(trajectoryPoints, false)
+	CalculateDt(trajectoryPoints)
 
 	for i := 1; i < len(trajectoryPoints); i++ {
 		// * Calculating heading via integration of omega
