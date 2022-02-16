@@ -233,9 +233,8 @@ class _HomePageState extends State<HomePage> {
                       color: theme.textTheme.bodyText1?.color,
                       onPressed: () {
                         if (!props.changesSaved) {
-                          showAlertDialog(context, props.newAuto, () {
-                            props.saveFile();
-                          }, () => {});
+                          showAlertDialog(
+                              context, props.newAuto, props.saveFile, () => {});
                           return;
                         }
 

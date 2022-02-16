@@ -48,6 +48,12 @@ List<Type> historyAffectingActions = [
   EditRobot,
 ];
 
+List<Type> unsavedChanegsActions = [
+  ...historyAffectingActions,
+  PathUndo,
+  PathRedo,
+];
+
 Map<String, IconData> actionToIcon = {
   '$AddPointToPath': Icons.add,
   '$DeletePointFromPath': Icons.remove,

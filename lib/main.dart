@@ -35,7 +35,7 @@ final store = Store<AppState>(
     var newState = appStateReducer(state, action);
     saveCacheState(newState);
 
-    if (historyAffectingActions.contains(action.runtimeType)) {
+    if (unsavedChanegsActions.contains(action.runtimeType)) {
       newState = newState.copyWith(
         tabState: newState.tabState.copyWith(
           ui: newState.tabState.ui.copyWith(
