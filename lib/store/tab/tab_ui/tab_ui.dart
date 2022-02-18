@@ -3,7 +3,7 @@ import 'package:pathfinder/utils/json.dart';
 
 const autoFileExtension = "auto";
 const defaultTrajectoryFileName = "output";
-const defaultAutoFileName = "new-auto.$autoFileExtension";
+const defaultAutoFileName = "untitled.$autoFileExtension";
 
 @immutable
 class TabUI {
