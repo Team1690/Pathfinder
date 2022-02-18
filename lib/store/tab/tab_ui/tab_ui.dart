@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/utils/json.dart';
 
+const autoFileExtension = "auto";
 const defaultTrajectoryFileName = "output";
-const defaultAutoFileName = "new-auto.auto";
+const defaultAutoFileName = "new-auto.$autoFileExtension";
 
 @immutable
 class TabUI {

@@ -148,7 +148,8 @@ ThunkAction openFileThunk() {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         dialogTitle: "Select an auto file",
-        allowedExtensions: ["auto"],
+        allowedExtensions: ["auto", "*"],
+        lockParentWindow: false,
         type: FileType.custom,
       );
 
@@ -176,11 +177,19 @@ ThunkAction saveFileThunk(bool isSaveAs) {
       }
 
       if (isSaveAs) {
+        var fileName = basename(savingPath);
+
+        // Make sure the suggested file extension is auto
+        if (extension(fileName) != ".$autoFileExtension") {
+          fileName += ".$autoFileExtension";
+        }
+
         final result = await FilePicker.platform.saveFile(
           dialogTitle: 'Choose where to save the auto file',
-          fileName: basename(savingPath),
+          fileName: fileName,
           type: FileType.custom,
-          allowedExtensions: ["auto"],
+          allowedExtensions: [autoFileExtension],
+          lockParentWindow: false,
         );
 
         if (result == null) return;
