@@ -20,6 +20,16 @@ Offset metersToUiCoord(Store store, Offset val) {
   return val.scale(xScaler, yScaler);
 }
 
+Offset uiToFielsOrigin(Store store, Offset val) {
+  TabState tabState = store.state.tabState;
+  return val - (tabState.field.size / 2);
+}
+
+Offset fieldToUiOrigin(Store store, Offset val) {
+  TabState tabState = store.state.tabState;
+  return val + (tabState.ui.fieldSizePixels / 2);
+}
+
 Offset flipYAxisByField(Offset val, Offset fieldSizePixels) {
   val = val.translate(0, -fieldSizePixels.dy);
   val = val.scale(1, -1);
