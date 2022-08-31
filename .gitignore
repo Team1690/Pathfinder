@@ -51,3 +51,4 @@ algorithm/out
 .temp-state
 dist-*
 dist-*/
+*build*

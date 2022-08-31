@@ -18,7 +18,7 @@
     },
     {
       "name": "Debug Flutter Frontend",
-      "program": "${workspaceFolder}/lib/main.dart",
+      "program": "${workspaceFolder}/gui/lib/main.dart",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "args": ["--no-sound-null-safety"],
@@ -27,14 +27,14 @@
     },
     {
       "name": "Pathfinder (profile mode)",
-      "program": "${workspaceFolder}/lib/main.dart",
+      "program": "${workspaceFolder}/gui/lib/main.dart",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
       "name": "Pathfinder (release mode)",
-      "program": "${workspaceFolder}/lib/main.dart",
+      "program": "${workspaceFolder}/gui/lib/main.dart",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
