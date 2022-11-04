@@ -35,7 +35,7 @@ Alternativly you can run in bash:
 Go:
 ```bash
 cd ./algorithm
-go run .
+go run . --dev
 ```
 
 Flutter:
