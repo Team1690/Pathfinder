@@ -163,44 +163,36 @@ class TimelinePoint extends StatelessWidget {
   }
 }
 
-class TimeLineSegment extends StatefulWidget {
+class TimeLineSegment extends StatelessWidget {
   final int pointAmount;
   final bool isHidden;
   final Function() onHidePressed;
   final Color color;
   final double velocity;
-  final Function(double) onChange;
+  final bool isPathFollowerHeading;
+  final Function(double) onChangeVelocity;
+  final void Function(bool) onChangeIsPathFollowerHeading;
   static double segmentWidth = 300;
   static double segmentHeight = 50;
 
-  TimeLineSegment({
-    Key? key,
-    required this.pointAmount,
-    required this.isHidden,
-    required this.onHidePressed,
-    required this.color,
-    required this.velocity,
-    required this.onChange,
-  }) : super(key: key);
+  TimeLineSegment(
+      {Key? key,
+      required this.pointAmount,
+      required this.isHidden,
+      required this.onHidePressed,
+      required this.color,
+      required this.velocity,
+      required this.isPathFollowerHeading,
+      required this.onChangeVelocity,
+      required this.onChangeIsPathFollowerHeading})
+      : super(key: key);
 
-  @override
-  _TimeLineSegmentState createState() => _TimeLineSegmentState();
-}
-
-class _TimeLineSegmentState extends State<TimeLineSegment> {
-  final TextEditingController _velocityFieldController =
-      TextEditingController(text: '');
-
-  @override
-  void initState() {
-    super.initState();
-    _velocityFieldController.text = widget.velocity.toString();
-  }
+  late final TextEditingController _velocityFieldController =
+      TextEditingController(text: velocity.toString());
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     _velocityFieldController.selection = TextSelection.fromPosition(
         TextPosition(offset: _velocityFieldController.text.length));
 
@@ -211,30 +203,41 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 40, height: 40),
-              child: TextField(
-                controller: _velocityFieldController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  hintText: 'm/s',
-                  errorText:
-                      double.tryParse(_velocityFieldController.text) == null
-                          ? 'Error'
-                          : null,
+            Tooltip(
+              message: "Max velocity",
+              child: ConstrainedBox(
+                constraints: BoxConstraints.tightFor(width: 40, height: 40),
+                child: TextField(
+                  controller: _velocityFieldController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    hintText: 'm/s',
+                    errorText:
+                        double.tryParse(_velocityFieldController.text) == null
+                            ? 'Error'
+                            : null,
+                  ),
+                  onChanged: (value) {
+                    onChangeVelocity(double.tryParse(value) ?? velocity);
+                    _velocityFieldController.text = value;
+                  },
+                  textAlign: TextAlign.center,
                 ),
-                onChanged: (value) {
-                  widget.onChange(double.tryParse(value) ?? widget.velocity);
-                  _velocityFieldController.text = value;
-                },
-                textAlign: TextAlign.center,
               ),
+            ),
+            Tooltip(
+              message: "Path follower heading",
+              child: Switch(
+                  value: isPathFollowerHeading,
+                  onChanged: (value) {
+                    onChangeIsPathFollowerHeading(value);
+                  }),
             ),
             IconButton(
               iconSize: 20,
               color: theme.textTheme.headline3?.color,
-              onPressed: widget.onHidePressed,
-              icon: Icon(widget.isHidden
+              onPressed: onHidePressed,
+              icon: Icon(isHidden
                   ? Icons.remove_red_eye_outlined
                   : Icons.remove_red_eye),
             ),
@@ -251,7 +254,7 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
               )),
           Container(
             height: 2,
-            color: widget.color,
+            color: color,
           ),
         ]),
       ],
