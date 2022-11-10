@@ -5,6 +5,7 @@ class Segment {
   final List<int> pointIndexes;
   final double maxVelocity;
   final bool isHidden;
+  final bool isPathFollowerHeading;
 
   // Data from server side calculations
   final List<SplineResponse_Point>? evaluatedPoints;
@@ -18,6 +19,7 @@ class Segment {
   Segment({
     required final this.pointIndexes,
     required final this.maxVelocity,
+    this.isPathFollowerHeading = false,
     final this.isHidden = false,
     final this.evaluatedPoints,
     final this.trajectoryPoints,
@@ -36,20 +38,22 @@ class Segment {
     List<int>? pointIndexes,
     double? maxVelocity,
     bool? isHidden,
+    bool? isPathFollowerHeading,
     List<SplineResponse_Point>? evaluatedPoints,
     List<TrajectoryResponse_SwervePoint>? trajectoryPoints,
     SplineParameters? splineParameters,
     SplineTypes? splineTypes,
   }) {
     return Segment(
-      pointIndexes: pointIndexes ?? this.pointIndexes,
-      maxVelocity: maxVelocity ?? this.maxVelocity,
-      isHidden: isHidden ?? this.isHidden,
-      evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
-      trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
-      splineParameters: splineParameters ?? this.splineParameters,
-      splineTypes: splineTypes ?? this.splineTypes,
-    );
+        pointIndexes: pointIndexes ?? this.pointIndexes,
+        maxVelocity: maxVelocity ?? this.maxVelocity,
+        isHidden: isHidden ?? this.isHidden,
+        evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
+        trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
+        splineParameters: splineParameters ?? this.splineParameters,
+        splineTypes: splineTypes ?? this.splineTypes,
+        isPathFollowerHeading:
+            isPathFollowerHeading ?? this.isPathFollowerHeading);
   }
 
   // Json
@@ -57,16 +61,17 @@ class Segment {
       : pointIndexes = json['pointIndexes'].cast<int>(),
         maxVelocity = json['maxVelocity'],
         isHidden = json['isHidden'],
+        isPathFollowerHeading = json['isPathFollowerHeading'],
         evaluatedPoints = null,
         trajectoryPoints = null,
         splineParameters = null,
         splineTypes = null;
-
   Map<String, dynamic> toJson() {
     return {
       'pointIndexes': pointIndexes,
       'maxVelocity': maxVelocity,
       'isHidden': isHidden,
+      'isPathFollowerHeading': isPathFollowerHeading
     };
   }
 }

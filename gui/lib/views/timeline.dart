@@ -15,7 +15,7 @@ class TimeLineViewModel {
   final int? selectedPointIndex;
   final double autoDuration;
   final Function(int) selectPoint;
-  final Function(int, double, bool) editSegment;
+  final Function(int, double, bool, bool) editSegment;
   final Function(int, int) addPoint;
 
   TimeLineViewModel({
@@ -38,12 +38,13 @@ class TimeLineViewModel {
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
       },
-      editSegment: (int index, double vel, bool isHidden) {
+      editSegment:
+          (int index, double vel, bool isHidden, bool isPathFollowerHeading) {
         store.dispatch(editSegmentThunk(
-          index: index,
-          velocity: vel,
-          isHidden: isHidden,
-        ));
+            index: index,
+            velocity: vel,
+            isHidden: isHidden,
+            isPathFollowerHeading: isPathFollowerHeading));
       },
       addPoint: (int segmentIndex, int insertIndex) {
         store.dispatch(addPointThunk(null, segmentIndex, insertIndex));

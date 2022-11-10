@@ -109,10 +109,12 @@ class EditSegment extends TabAction {
   final int index;
   final double? velocity;
   final bool? isHidden;
+  final bool? isPathFollowerHeading;
   EditSegment({
     required this.index,
     this.velocity,
     this.isHidden,
+    this.isPathFollowerHeading,
   });
 }
 

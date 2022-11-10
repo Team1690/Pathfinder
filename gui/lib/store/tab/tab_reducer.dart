@@ -416,9 +416,9 @@ TabState _editSegment(TabState tabState, EditSegment action) {
       segments: tabState.path.segments.asMap().entries.map((e) {
         if (action.index != e.key) return e.value;
         return e.value.copyWith(
-          isHidden: action.isHidden,
-          maxVelocity: action.velocity,
-        );
+            isHidden: action.isHidden,
+            maxVelocity: action.velocity,
+            isPathFollowerHeading: action.isPathFollowerHeading);
       }).toList(),
     ),
   );

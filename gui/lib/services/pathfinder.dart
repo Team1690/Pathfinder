@@ -69,6 +69,7 @@ List<rpc.Segment> toRpcSegments(List<Segment> segments, List<Point> points) {
 
 rpc.Segment toRpcSegment(Segment s, List<Point> points) {
   return rpc.Segment(
+    isPathFollowerHeading: s.isPathFollowerHeading,
     maxVelocity: s.maxVelocity,
     points: s.pointIndexes.map((i) => toRpcPoint(points[i])).toList(),
   );

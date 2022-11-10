@@ -83,14 +83,17 @@ ThunkAction updateSplineThunk() {
   };
 }
 
-ThunkAction editSegmentThunk({
-  required int index,
-  required double? velocity,
-  required bool? isHidden,
-}) {
+ThunkAction editSegmentThunk(
+    {required int index,
+    required double? velocity,
+    required bool? isHidden,
+    required bool isPathFollowerHeading}) {
   return (Store store) {
-    store.dispatch(
-        EditSegment(index: index, velocity: velocity, isHidden: isHidden));
+    store.dispatch(EditSegment(
+        index: index,
+        velocity: velocity,
+        isHidden: isHidden,
+        isPathFollowerHeading: isPathFollowerHeading));
   };
 }
 
