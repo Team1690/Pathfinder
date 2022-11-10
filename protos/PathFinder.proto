@@ -33,9 +33,10 @@ message Point {
 message Segment {
 	repeated Point points = 1;
 	float maxVelocity = 2;
+	bool isPathFollowerHeading = 3;
 
-	SplineTypes splineType = 3;
-	SplineParameters splineParameters = 4;
+	SplineTypes splineType = 4;
+	SplineParameters splineParameters = 5;
 }
 
 message Section {

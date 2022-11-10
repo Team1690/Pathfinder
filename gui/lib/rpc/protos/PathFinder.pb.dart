@@ -3,7 +3,7 @@
 //  source: protos/PathFinder.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -264,8 +264,9 @@ class Segment extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Segment', createEmptyInstance: create)
     ..pc<Point>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'points', $pb.PbFieldType.PM, subBuilder: Point.create)
     ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
-    ..e<SplineTypes>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
-    ..aOM<SplineParameters>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
+    ..aOB(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'isPathFollowerHeading', protoName: 'isPathFollowerHeading')
+    ..e<SplineTypes>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
+    ..aOM<SplineParameters>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
     ..hasRequiredFields = false
   ;
 
@@ -273,6 +274,7 @@ class Segment extends $pb.GeneratedMessage {
   factory Segment({
     $core.Iterable<Point>? points,
     $core.double? maxVelocity,
+    $core.bool? isPathFollowerHeading,
     SplineTypes? splineType,
     SplineParameters? splineParameters,
   }) {
@@ -282,6 +284,9 @@ class Segment extends $pb.GeneratedMessage {
     }
     if (maxVelocity != null) {
       _result.maxVelocity = maxVelocity;
+    }
+    if (isPathFollowerHeading != null) {
+      _result.isPathFollowerHeading = isPathFollowerHeading;
     }
     if (splineType != null) {
       _result.splineType = splineType;
@@ -325,24 +330,33 @@ class Segment extends $pb.GeneratedMessage {
   void clearMaxVelocity() => clearField(2);
 
   @$pb.TagNumber(3)
-  SplineTypes get splineType => $_getN(2);
+  $core.bool get isPathFollowerHeading => $_getBF(2);
   @$pb.TagNumber(3)
-  set splineType(SplineTypes v) { setField(3, v); }
+  set isPathFollowerHeading($core.bool v) { $_setBool(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasSplineType() => $_has(2);
+  $core.bool hasIsPathFollowerHeading() => $_has(2);
   @$pb.TagNumber(3)
-  void clearSplineType() => clearField(3);
+  void clearIsPathFollowerHeading() => clearField(3);
 
   @$pb.TagNumber(4)
-  SplineParameters get splineParameters => $_getN(3);
+  SplineTypes get splineType => $_getN(3);
   @$pb.TagNumber(4)
-  set splineParameters(SplineParameters v) { setField(4, v); }
+  set splineType(SplineTypes v) { setField(4, v); }
   @$pb.TagNumber(4)
-  $core.bool hasSplineParameters() => $_has(3);
+  $core.bool hasSplineType() => $_has(3);
   @$pb.TagNumber(4)
-  void clearSplineParameters() => clearField(4);
-  @$pb.TagNumber(4)
-  SplineParameters ensureSplineParameters() => $_ensure(3);
+  void clearSplineType() => clearField(4);
+
+  @$pb.TagNumber(5)
+  SplineParameters get splineParameters => $_getN(4);
+  @$pb.TagNumber(5)
+  set splineParameters(SplineParameters v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasSplineParameters() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearSplineParameters() => clearField(5);
+  @$pb.TagNumber(5)
+  SplineParameters ensureSplineParameters() => $_ensure(4);
 }
 
 class Section extends $pb.GeneratedMessage {
@@ -388,7 +402,7 @@ class Section extends $pb.GeneratedMessage {
 
 class SplineParameters extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineParameters', createEmptyInstance: create)
-    ..p<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'params', $pb.PbFieldType.PF)
+    ..p<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'params', $pb.PbFieldType.KF)
     ..hasRequiredFields = false
   ;
 

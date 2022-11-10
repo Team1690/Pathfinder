@@ -3,7 +3,7 @@
 //  source: protos/PathFinder.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
@@ -64,13 +64,14 @@ const Segment$json = const {
   '2': const [
     const {'1': 'points', '3': 1, '4': 3, '5': 11, '6': '.Point', '10': 'points'},
     const {'1': 'maxVelocity', '3': 2, '4': 1, '5': 2, '10': 'maxVelocity'},
-    const {'1': 'splineType', '3': 3, '4': 1, '5': 14, '6': '.SplineTypes', '10': 'splineType'},
-    const {'1': 'splineParameters', '3': 4, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
+    const {'1': 'isPathFollowerHeading', '3': 3, '4': 1, '5': 8, '10': 'isPathFollowerHeading'},
+    const {'1': 'splineType', '3': 4, '4': 1, '5': 14, '6': '.SplineTypes', '10': 'splineType'},
+    const {'1': 'splineParameters', '3': 5, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
   ],
 };
 
 /// Descriptor for `Segment`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List segmentDescriptor = $convert.base64Decode('CgdTZWdtZW50Eh4KBnBvaW50cxgBIAMoCzIGLlBvaW50UgZwb2ludHMSIAoLbWF4VmVsb2NpdHkYAiABKAJSC21heFZlbG9jaXR5EiwKCnNwbGluZVR5cGUYAyABKA4yDC5TcGxpbmVUeXBlc1IKc3BsaW5lVHlwZRI9ChBzcGxpbmVQYXJhbWV0ZXJzGAQgASgLMhEuU3BsaW5lUGFyYW1ldGVyc1IQc3BsaW5lUGFyYW1ldGVycw==');
+final $typed_data.Uint8List segmentDescriptor = $convert.base64Decode('CgdTZWdtZW50Eh4KBnBvaW50cxgBIAMoCzIGLlBvaW50UgZwb2ludHMSIAoLbWF4VmVsb2NpdHkYAiABKAJSC21heFZlbG9jaXR5EjQKFWlzUGF0aEZvbGxvd2VySGVhZGluZxgDIAEoCFIVaXNQYXRoRm9sbG93ZXJIZWFkaW5nEiwKCnNwbGluZVR5cGUYBCABKA4yDC5TcGxpbmVUeXBlc1IKc3BsaW5lVHlwZRI9ChBzcGxpbmVQYXJhbWV0ZXJzGAUgASgLMhEuU3BsaW5lUGFyYW1ldGVyc1IQc3BsaW5lUGFyYW1ldGVycw==');
 @$core.Deprecated('Use sectionDescriptor instead')
 const Section$json = const {
   '1': 'Section',
