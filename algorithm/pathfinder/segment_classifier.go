@@ -126,6 +126,10 @@ func (s *SegmentClassifier) GetMaxVel() float64 {
 	return float64(s.segments[s.currentSegmentIndex].MaxVelocity)
 }
 
+func (s *SegmentClassifier) GetIsPathFollowerHeading() bool {
+	return s.segments[s.currentSegmentIndex].IsPathFollowerHeading
+}
+
 func (s *SegmentClassifier) GetActionPoints() []*indexedActionPoint {
 	return s.actionPoints
 }

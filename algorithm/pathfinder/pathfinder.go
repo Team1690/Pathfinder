@@ -12,15 +12,16 @@ import (
 const deltaDistanceForEvaluation = 1e-4
 
 type TrajectoryPoint struct {
-	Time         float64
-	S            float64
-	Distance     float64
-	Position     vector.Vector
-	Velocity     float64
-	Acceleration float64
-	Heading      float64
-	Omega        float64
-	Action       string
+	Time                  float64
+	S                     float64
+	Distance              float64
+	Position              vector.Vector
+	Velocity              float64
+	Acceleration          float64
+	Heading               float64
+	Omega                 float64
+	Action                string
+	IsPathFollowerHeading bool
 }
 
 type RobotParameters struct {
@@ -39,11 +40,11 @@ type indexedHeadingPoint struct {
 }
 
 func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segments []*rpc.Segment) ([]*TrajectoryPoint, error) {
-	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Acceleration: 0, Time: 0}
+	segmentClassifier := NewSegmentClassifier(segments)
+
+	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Acceleration: 0, Time: 0, IsPathFollowerHeading: segmentClassifier.GetIsPathFollowerHeading()}
 
 	trajectory := []*TrajectoryPoint{&firstPoint}
-
-	segmentClassifier := NewSegmentClassifier(segments)
 
 	pathDerivative := path.Derivative()
 	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
@@ -60,7 +61,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		segmentClassifier.Update(&point.Position, len(trajectory))
 
 		point.Velocity = segmentClassifier.GetMaxVel()
-
+		point.IsPathFollowerHeading = segmentClassifier.GetIsPathFollowerHeading()
 		trajectory = append(trajectory, &point)
 	}
 
@@ -118,7 +119,15 @@ func calculatePointHeading(trajectory []*TrajectoryPoint, pointIndex int) {
 	averageOmega := (trajectory[pointIndex].Omega + trajectory[pointIndex-1].Omega) / 2
 	dt := trajectory[pointIndex].Time - trajectory[pointIndex-1].Time
 	// * x(t) = x0 + vt
-	trajectory[pointIndex].Heading = trajectory[pointIndex-1].Heading + averageOmega*dt
+
+	if trajectory[pointIndex].IsPathFollowerHeading {
+		trajectory[pointIndex].Heading = math.Atan2(
+			trajectory[pointIndex].Position.Y-trajectory[pointIndex-1].Position.Y,
+			trajectory[pointIndex].Position.X-trajectory[pointIndex-1].Position.X,
+		)
+	} else {
+		trajectory[pointIndex].Heading = trajectory[pointIndex-1].Heading + averageOmega*dt
+	}
 }
 
 func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, headingPoints []*indexedHeadingPoint) {
