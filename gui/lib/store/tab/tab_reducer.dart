@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pathfinder/models/field.dart';
+import 'package:collection/collection.dart';
 import 'package:pathfinder/models/history.dart';
 import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';
@@ -201,6 +201,9 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
         inControlPoint: inControlOffset, outControlPoint: outControlOFfset);
   }
 
+  if (tabState.path.segments[segmentIndex].isPathFollowerHeading) {
+    newPoint = newPoint.copyWith(useHeading: false);
+  }
   var newPoints = [...tabState.path.points];
 
   if (tabState.path.segments.length == 0) {
@@ -271,12 +274,27 @@ TabState editPoint(TabState tabState, EditPoint action) {
 
         if (e.value.isStop && removeSegment) isStop = false;
 
+        final int currentSegmentIndex = tabState.path.segments.indexWhere(
+            (element) => element.pointIndexes.contains(action.pointIndex));
+        final bool isFirstSegment = currentSegmentIndex == 0;
+        final Segment currenSegment =
+            tabState.path.segments[currentSegmentIndex];
+        final Segment? previosSegment = isFirstSegment
+            ? null
+            : tabState.path.segments[currentSegmentIndex - 1];
         return e.value.copyWith(
           position: action.position ?? e.value.position,
           inControlPoint: action.inControlPoint ?? e.value.inControlPoint,
           outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
           heading: action.heading ?? e.value.heading,
-          useHeading: useHeading,
+          useHeading: (currenSegment.isPathFollowerHeading &&
+                      (currenSegment.pointIndexes
+                          .contains(action.pointIndex)) ||
+                  (!isFirstSegment &&
+                      previosSegment!.isPathFollowerHeading &&
+                      currenSegment.pointIndexes.first == action.pointIndex))
+              ? false
+              : useHeading,
           action: action.action ?? e.value.action,
           actionTime: action.actionTime ?? e.value.actionTime,
           cutSegment: cutSegment,
@@ -413,6 +431,23 @@ TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
 TabState _editSegment(TabState tabState, EditSegment action) {
   return tabState.copyWith(
     path: tabState.path.copyWith(
+      points: () {
+        if (action.isPathFollowerHeading) {
+          return tabState.path.points
+              .mapIndexed(
+                (index, e) => tabState.path.segments[action.index].pointIndexes
+                            .contains(index) ||
+                        (!(action.index == tabState.path.segments.length - 1) &&
+                            tabState.path.segments[action.index + 1]
+                                    .pointIndexes.first ==
+                                index)
+                    ? e.copyWith(useHeading: false)
+                    : e,
+              )
+              .toList();
+        }
+        return tabState.path.points;
+      }(),
       segments: tabState.path.segments.asMap().entries.map((e) {
         if (action.index != e.key) return e.value;
         return e.value.copyWith(

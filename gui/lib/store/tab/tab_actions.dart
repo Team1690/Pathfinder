@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
-import 'package:pathfinder/store/tab/store.dart';
 
 abstract class TabAction {
   @override
@@ -109,12 +108,12 @@ class EditSegment extends TabAction {
   final int index;
   final double? velocity;
   final bool? isHidden;
-  final bool? isPathFollowerHeading;
+  final bool isPathFollowerHeading;
   EditSegment({
     required this.index,
     this.velocity,
     this.isHidden,
-    this.isPathFollowerHeading,
+    required this.isPathFollowerHeading,
   });
 }
 
