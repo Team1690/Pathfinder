@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math"
 	"testing"
 
 	"github.com/Team1690/Pathfinder/rpc"
@@ -13,13 +12,14 @@ import (
 func Test(_ *testing.T) {
 	var (
 		chester = &rpc.TrajectoryRequest_SwerveRobotParams{
-			Width:            float32(0.6),
-			Height:           float32(0.6),
-			MaxVelocity:      3.6,
-			MaxAcceleration:  7.5,
-			SkidAcceleration: 7.5,
-			MaxJerk:          50,
-			CycleTime:        0.02,
+			Width:                         float32(0.6),
+			Height:                        float32(0.6),
+			MaxVelocity:                   3.6,
+			MaxAcceleration:               7.5,
+			SkidAcceleration:              7.5,
+			MaxJerk:                       50,
+			CycleTime:                     0.02,
+			AngularAccelerationPercentage: 0.1,
 		}
 		firstSegment = &rpc.Segment{
 			SplineType:  rpc.SplineTypes_Bezier,
@@ -27,52 +27,61 @@ func Test(_ *testing.T) {
 			Points: []*rpc.Point{
 				{
 					Position:   &rpc.Vector{X: 0, Y: 0},
-					ControlOut: &rpc.Vector{X: 3, Y: 0},
+					ControlOut: &rpc.Vector{X: 2, Y: 2},
 					Heading:    0,
 					UseHeading: true,
-				},
-				{
-					Position:   &rpc.Vector{X: 2.5, Y: 2.5},
-					ControlIn:  &rpc.Vector{X: 2.5, Y: -0.5},
-					ControlOut: &rpc.Vector{X: 2.5, Y: 3},
-					Heading:    math.Pi,
-					UseHeading: true,
+					Action:     &rpc.RobotAction{ActionType: ""},
 				},
 			},
 		}
 
 		secondSegment = &rpc.Segment{
-			SplineType:  rpc.SplineTypes_Bezier,
-			MaxVelocity: 3.6,
+			SplineType:            rpc.SplineTypes_Bezier,
+			MaxVelocity:           3.6,
+			IsPathFollowerHeading: true,
 			Points: []*rpc.Point{
 				{
+					UseHeading: false,
 					Position:   &rpc.Vector{X: 2.5, Y: 2.5},
-					ControlOut: &rpc.Vector{X: 1, Y: 1},
-					Heading:    math.Pi,
-					UseHeading: true,
-				},
-				{
-					Position:   &rpc.Vector{X: 0, Y: 0},
 					ControlIn:  &rpc.Vector{X: 1, Y: 1},
-					Heading:    0,
-					UseHeading: true,
+					ControlOut: &rpc.Vector{X: 4, Y: 4},
+					Action:     &rpc.RobotAction{ActionType: ""},
 				},
 			},
 		}
 
-		firstSectionSegments = []*rpc.Segment{firstSegment}
-		firstSection         = rpc.Section{Segments: firstSectionSegments}
+		thirdSegment = &rpc.Segment{
+			SplineType:  rpc.SplineTypes_Bezier,
+			MaxVelocity: 3.6,
+			Points: []*rpc.Point{
+				{
+					UseHeading: false,
+					Position:   &rpc.Vector{X: 4, Y: 0},
+					ControlIn:  &rpc.Vector{X: 7, Y: 0},
+					ControlOut: &rpc.Vector{X: 1, Y: 0},
+					Action:     &rpc.RobotAction{ActionType: ""},
+				},
+				{
+					UseHeading: true,
+					Heading:    0,
+					Position:   &rpc.Vector{X: 0, Y: 0},
+					ControlIn:  &rpc.Vector{X: 1, Y: 0},
+					Action:     &rpc.RobotAction{ActionType: ""},
+				},
+			},
+		}
 
-		secondSectionSegments = []*rpc.Segment{secondSegment}
-		secondSection         = rpc.Section{Segments: secondSectionSegments}
+		firstSectionSegments = []*rpc.Segment{firstSegment, secondSegment, thirdSegment}
+		firstSection         = rpc.Section{Segments: firstSectionSegments}
 	)
 
 	logger := log.Default()
 	grpcServer := NewServer(logger)
 
 	res, err := grpcServer.CalculateTrajectory(context.TODO(), &rpc.TrajectoryRequest{
-		SwerveRobotParams: chester,
-		Sections:          []*rpc.Section{&firstSection, &secondSection},
+		SwerveRobotParams:  chester,
+		Sections:           []*rpc.Section{&firstSection},
+		TrajectoryFileName: "test",
 	})
 	if err != nil {
 		if err != nil {

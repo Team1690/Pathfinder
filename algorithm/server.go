@@ -46,7 +46,8 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 
 	var responsePoints []*rpc.SplineResponse_Point
 	for index, evaluatedPoint := range evaluatedPoints {
-		segmentClassifier.Update(&evaluatedPoint, index)
+		zero := vector.Zero() // doesn't care about derivatives when only calculating path
+		segmentClassifier.Update(&evaluatedPoint, &zero, index)
 		responsePoints = append(responsePoints,
 			&rpc.SplineResponse_Point{
 				Point:        evaluatedPoint.ToRpc(),

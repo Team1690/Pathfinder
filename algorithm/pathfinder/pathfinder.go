@@ -1,6 +1,7 @@
 package pathfinder
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/Team1690/Pathfinder/rpc"
@@ -50,7 +51,8 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
 
 	for s := ds; s <= 1; s += ds {
-		ds = deltaDistanceForEvaluation / (pathDerivative.Evaluate(s).Norm() * float64(path.NumberOfSplines))
+		derivative := pathDerivative.Evaluate(s)
+		ds = deltaDistanceForEvaluation / (derivative.Norm() * float64(path.NumberOfSplines))
 
 		point := TrajectoryPoint{S: s, Position: path.Evaluate(s)}
 
@@ -58,7 +60,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 		point.Distance = trajectory[len(trajectory)-1].Distance + distanceToPrevPoint
 
-		segmentClassifier.Update(&point.Position, len(trajectory))
+		segmentClassifier.Update(&point.Position, &derivative, len(trajectory))
 
 		point.Velocity = segmentClassifier.GetMaxVel()
 		point.IsPathFollowerHeading = segmentClassifier.GetIsPathFollowerHeading()
@@ -71,6 +73,9 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	trajectory = DoKinematics(trajectory, robot)
 
 	headingPoints := segmentClassifier.GetHeadingPoints()
+	for _, headingPoint := range headingPoints {
+		fmt.Println(headingPoint)
+	}
 	LimitVelocityWithCentrifugalForce(trajectory, robot, headingPoints)
 
 	trajectory = DoKinematics(trajectory, robot)
@@ -115,17 +120,18 @@ func addActions(trajectory []*TrajectoryPoint, actions []*rpc.RobotAction) {
 }
 
 func calculatePointHeading(trajectory []*TrajectoryPoint, pointIndex int) {
-	// * Taking the average omega between current and previous point
-	averageOmega := (trajectory[pointIndex].Omega + trajectory[pointIndex-1].Omega) / 2
-	dt := trajectory[pointIndex].Time - trajectory[pointIndex-1].Time
-	// * x(t) = x0 + vt
-
 	if trajectory[pointIndex].IsPathFollowerHeading {
-		trajectory[pointIndex].Heading = math.Atan2(
-			trajectory[pointIndex].Position.Y-trajectory[pointIndex-1].Position.Y,
-			trajectory[pointIndex].Position.X-trajectory[pointIndex-1].Position.X,
-		)
+		prevPosition := trajectory[pointIndex-1].Position
+		currentPosition := trajectory[pointIndex].Position
+		prevToCurrent := currentPosition.Sub(prevPosition)
+
+		trajectory[pointIndex].Heading = prevToCurrent.Angle()
 	} else {
+		// * Taking the average omega between current and previous point
+		averageOmega := (trajectory[pointIndex].Omega + trajectory[pointIndex-1].Omega) / 2
+		dt := trajectory[pointIndex].Time - trajectory[pointIndex-1].Time
+
+		// * x(t) = x0 + vt
 		trajectory[pointIndex].Heading = trajectory[pointIndex-1].Heading + averageOmega*dt
 	}
 }
@@ -163,10 +169,12 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 		}
 
 		maxVelAccordingToCentrifugalForce := math.Sqrt(driveRadius * robot.SkidAcceleration)
-		if maxVelAccordingToCentrifugalForce < trajectoryPoints[i].Velocity {
-			wantedDHeading := headingPoints[currentHeadingPointIndex+1].heading - headingPoints[currentHeadingPointIndex].heading
-			// * Transferring what's left of the velocity to omega
-			trajectoryPoints[i].Omega = float64(utils.Signum(wantedDHeading)) * (trajectoryPoints[i].Velocity - maxVelAccordingToCentrifugalForce) / robot.Radius
+		if maxVelAccordingToCentrifugalForce < currentTrajectoryPoint.Velocity {
+			if !currentTrajectoryPoint.IsPathFollowerHeading {
+				wantedDHeading := headingPoints[currentHeadingPointIndex+1].heading - headingPoints[currentHeadingPointIndex].heading
+				// * Transferring what's left of the velocity to omega
+				trajectoryPoints[i].Omega = float64(utils.Signum(wantedDHeading)) * (currentTrajectoryPoint.Velocity - maxVelAccordingToCentrifugalForce) / robot.Radius
+			}
 
 			// * Setting the max velocity at this point
 			trajectoryPoints[i].Velocity = maxVelAccordingToCentrifugalForce
@@ -189,6 +197,11 @@ func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robo
 	for headingPointIndex := 0; headingPointIndex < len(headingPoints)-1; headingPointIndex++ {
 		currentHeadingPoint := headingPoints[headingPointIndex]
 		nextHeadingPoint := headingPoints[headingPointIndex+1]
+
+		// TODO Maybe check also next heading point
+		if trajectoryPoints[currentHeadingPoint.index].IsPathFollowerHeading {
+			continue
+		}
 
 		headingEnd := trajectoryPoints[nextHeadingPoint.index].Heading
 		wantedDeltaHeading := nextHeadingPoint.heading - currentHeadingPoint.heading

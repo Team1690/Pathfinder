@@ -55,7 +55,7 @@ func NewSegmentClassifier(segments []*rpc.Segment) *SegmentClassifier {
 	}
 }
 
-func shoutestRouteToHeading(initialHeading float64, endHeading float64) float64 {
+func shortestRouteToHeading(initialHeading float64, endHeading float64) float64 {
 	return initialHeading + utils.WrapAngle(endHeading-initialHeading)
 }
 
@@ -63,7 +63,7 @@ func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex
 	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
 	s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{
 		// * Taking the shortest route to the wanted heading by wrapping angles
-		heading: shoutestRouteToHeading(prevHeading, float64(waypoint.Heading)),
+		heading: shortestRouteToHeading(prevHeading, float64(waypoint.Heading)),
 		index:   trajectoryIndex,
 	})
 }
@@ -84,25 +84,35 @@ func (s *SegmentClassifier) checkForNewSegment() {
 	}
 }
 
-func (s *SegmentClassifier) Update(position *vector.Vector, trajectoryIndex int) {
+func (s *SegmentClassifier) Update(position *vector.Vector, pathDerivative *vector.Vector, trajectoryIndex int) {
 	nextWaypointPosition := vector.NewFromRpcVector(s.wayPoints[s.currentPointIndex+1].Position)
 
+	// Check if has new waypoint
 	if position.Sub(nextWaypointPosition).Norm() < deltaDistanceForEvaluation {
 		s.currentPointIndex++
+		currentWaypoint := s.wayPoints[s.currentPointIndex]
+
+		s.currentPointIndexInsideSegment++
+		s.checkForNewSegment()
+
+		// TODO check if this needs to be before check for new segment
+		currentSegmentIndex := s.GetCurrentSegmentIndex()
+		currentSegment := s.segments[currentSegmentIndex]
+		prevSegment := s.segments[currentSegmentIndex-1]
+		if currentSegment.IsPathFollowerHeading || (prevSegment.IsPathFollowerHeading && s.currentPointIndexInsideSegment == 0) {
+			currentWaypoint.Heading = float32(pathDerivative.Angle())
+			s.addHeadingPoint(currentWaypoint, trajectoryIndex)
+		}
 
 		if s.currentPointIndex == len(s.wayPoints)-1 {
 			return // * Taking care of last heading in a separate function
 		}
 
-		currentWaypoint := s.wayPoints[s.currentPointIndex]
 		if currentWaypoint.UseHeading {
 			s.addHeadingPoint(currentWaypoint, trajectoryIndex)
 		}
 
 		s.addActionPoint(currentWaypoint, trajectoryIndex)
-
-		s.currentPointIndexInsideSegment++
-		s.checkForNewSegment()
 	}
 }
 
@@ -111,7 +121,7 @@ func (s *SegmentClassifier) AddLastHeading(trajectoryLength int) {
 	lastPoint := s.wayPoints[len(s.wayPoints)-1]
 	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
 	if lastPoint.UseHeading {
-		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: shoutestRouteToHeading(prevHeading, float64(lastPoint.Heading))})
+		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: shortestRouteToHeading(prevHeading, float64(lastPoint.Heading))})
 	} else {
 		// * If the last point doesn't use heading, the heading at the end is the previous heading
 		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: prevHeading})

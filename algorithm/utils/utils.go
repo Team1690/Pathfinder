@@ -4,14 +4,14 @@ import (
 	"math"
 )
 
-const twoPi float64 = math.Pi * 2
+const TwoPi float64 = math.Pi * 2
 
 func WrapAngle(theta float64) float64 {
-	wrapped := math.Mod(theta, twoPi)
+	wrapped := math.Mod(theta, TwoPi)
 	if wrapped > math.Pi {
-		return wrapped - twoPi
+		return wrapped - TwoPi
 	} else if wrapped < -math.Pi {
-		return wrapped + twoPi
+		return wrapped + TwoPi
 	} else {
 		return wrapped
 	}
