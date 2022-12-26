@@ -201,15 +201,16 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
         inControlPoint: inControlOffset, outControlPoint: outControlOFfset);
   }
 
-  if (tabState.path.segments[segmentIndex].isPathFollowerHeading) {
-    newPoint = newPoint.copyWith(useHeading: false);
-  }
   var newPoints = [...tabState.path.points];
 
   if (tabState.path.segments.length == 0) {
     tabState.path.segments.add(Segment.initial());
   }
 
+  if (newPoints.isNotEmpty &&
+      tabState.path.segments[segmentIndex].isPathFollowerHeading) {
+    newPoint = newPoint.copyWith(useHeading: false);
+  }
   newPoints.insert(insertIndex, newPoint);
 
   final newState = tabState.copyWith(
