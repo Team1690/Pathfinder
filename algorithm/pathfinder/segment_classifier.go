@@ -55,7 +55,7 @@ func NewSegmentClassifier(segments []*rpc.Segment) *SegmentClassifier {
 	}
 }
 
-func shoutestRouteToHeading(initialHeading float64, endHeading float64) float64 {
+func shortestRouteToHeading(initialHeading float64, endHeading float64) float64 {
 	return initialHeading + utils.WrapAngle(endHeading-initialHeading)
 }
 
@@ -63,7 +63,7 @@ func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex
 	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
 	s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{
 		// * Taking the shortest route to the wanted heading by wrapping angles
-		heading: shoutestRouteToHeading(prevHeading, float64(waypoint.Heading)),
+		heading: shortestRouteToHeading(prevHeading, float64(waypoint.Heading)),
 		index:   trajectoryIndex,
 	})
 }
@@ -111,7 +111,7 @@ func (s *SegmentClassifier) AddLastHeading(trajectoryLength int) {
 	lastPoint := s.wayPoints[len(s.wayPoints)-1]
 	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
 	if lastPoint.UseHeading {
-		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: shoutestRouteToHeading(prevHeading, float64(lastPoint.Heading))})
+		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: shortestRouteToHeading(prevHeading, float64(lastPoint.Heading))})
 	} else {
 		// * If the last point doesn't use heading, the heading at the end is the previous heading
 		s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{index: trajectoryLength - 1, heading: prevHeading})
