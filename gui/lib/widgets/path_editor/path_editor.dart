@@ -93,14 +93,16 @@ class PathViewModel {
           : null),
       robot: store.state.tabState.robot.toUiCoord(store),
       addPoint: (Offset position) {
-        store.dispatch(addPointThunk(uiToFielsOrigin(store, uiToMetersCoord(store, position)), -1, -1));
+        store.dispatch(addPointThunk(
+            uiToFieldOrigin(store, uiToMetersCoord(store, position)), -1, -1));
       },
       deletePoint: (int index) {
         store.dispatch(removePointThunk(index));
       },
       finishDrag: (int index, Offset position) {
         store.dispatch(ObjectSelected(index, Point));
-        store.dispatch(endDragThunk(index, uiToFielsOrigin(store, uiToMetersCoord(store, position))));
+        store.dispatch(endDragThunk(
+            index, uiToFieldOrigin(store, uiToMetersCoord(store, position))));
       },
       selectPoint: (int index) {
         store.dispatch(ObjectSelected(index, Point));
