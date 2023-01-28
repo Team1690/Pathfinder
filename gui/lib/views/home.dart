@@ -694,15 +694,7 @@ class SettingsDetails extends StatelessWidget {
                       pointData.action == "" ? "None" : pointData.action,
                   items: [
                     "None",
-                    ...[
-                      "Allow Shoot",
-                      "Don't Shoot",
-                      "Intake",
-                      "Travel",
-                      "Wait For Shoot",
-                      "Safe Shoot",
-                      "Risky Shoot",
-                    ]
+                    ...autoActions,
                   ],
                   onChanged: (String value) {
                     if (value == "None") value = "";
