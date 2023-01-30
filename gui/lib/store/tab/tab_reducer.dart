@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pathfinder/models/field.dart';
 import 'package:pathfinder/models/history.dart';
 import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/models/point.dart';

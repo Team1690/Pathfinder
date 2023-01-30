@@ -22,7 +22,7 @@ class CubicBezier {
     required this.end,
   });
 
-  CubicBezier.line({required final this.start, required final this.end})
+  CubicBezier.line({required this.start, required this.end})
       : startControl = (start * 2 + end) / 3,
         endControl = (start + end * 2) / 3;
 
