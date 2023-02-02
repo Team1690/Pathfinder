@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart';
 
 class Segment {
@@ -16,13 +15,13 @@ class Segment {
   final SplineTypes? splineTypes;
 
   Segment({
-    required final this.pointIndexes,
-    required final this.maxVelocity,
-    final this.isHidden = false,
-    final this.evaluatedPoints,
-    final this.trajectoryPoints,
-    final this.splineParameters,
-    final this.splineTypes,
+    required this.pointIndexes,
+    required this.maxVelocity,
+    this.isHidden = false,
+    this.evaluatedPoints,
+    this.trajectoryPoints,
+    this.splineParameters,
+    this.splineTypes,
   });
 
   factory Segment.initial({List<int>? pointIndexes}) {

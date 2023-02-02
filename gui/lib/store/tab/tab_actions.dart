@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/models/robot.dart';
 import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
-import 'package:pathfinder/store/tab/store.dart';
 
 abstract class TabAction {
   @override

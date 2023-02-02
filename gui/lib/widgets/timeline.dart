@@ -232,7 +232,7 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
             ),
             IconButton(
               iconSize: 20,
-              color: theme.textTheme.headline3?.color,
+              color: theme.textTheme.displaySmall?.color,
               onPressed: widget.onHidePressed,
               icon: Icon(widget.isHidden
                   ? Icons.remove_red_eye_outlined
