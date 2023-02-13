@@ -76,10 +76,9 @@ double convertRadiusToSigma(double radius) {
 
 const List<String> autoActions = [
   "Intake",
-  "Place High Cone",
-  "Place Mid Cone",
-  "Place Low Cone",
-  "Place High Cube",
-  "Place Mid Cube",
-  "Place Low Cube",
+  "Claw Intake",
+  "Place High",
+  "Place Mid",
+  "Place Low",
+  "Shoot",
 ];
