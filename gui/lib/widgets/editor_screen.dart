@@ -1,7 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/store/app/app_reducer.dart';
 import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
 import 'package:pathfinder/views/timeline.dart';
 import 'package:pathfinder/widgets/path_editor/path_editor.dart';
@@ -85,7 +83,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xffD7AD17),
+                          backgroundColor: Color(0xffD7AD17),
                           textStyle: TextStyle(overflow: TextOverflow.ellipsis),
                         ),
                         onPressed: () {
@@ -97,7 +95,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       SizedBox(height: 10),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff0078D7),
+                          backgroundColor: Color(0xff0078D7),
                           textStyle: TextStyle(overflow: TextOverflow.ellipsis),
                         ),
                         onPressed: widget.openFile,
@@ -112,7 +110,7 @@ class _EditorScreenState extends State<EditorScreen> {
                             flex: 1,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  primary: widget.changesSaved
+                                  backgroundColor: widget.changesSaved
                                       ? Color.fromARGB(255, 116, 116, 116)
                                       : Color(0xffD45C36),
                                   padding: EdgeInsets.all(1),
@@ -127,7 +125,7 @@ class _EditorScreenState extends State<EditorScreen> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: Color(0xffD45C36),
+                                backgroundColor: Color(0xffD45C36),
                                 textStyle:
                                     TextStyle(overflow: TextOverflow.ellipsis),
                               ),

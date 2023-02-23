@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         props.setSidebarVisibility(true);
                       },
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.menu),
                     ),
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         if (!props.changesSaved) {
                           showAlertDialog(
@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.new_label),
                     ),
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         props.pathUndo();
                       },
@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.chevron_left_outlined),
                     ),
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         props.pathRedo();
                       },
@@ -260,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.chevron_right_outlined),
                     ),
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         props.selectRobot();
                       },
@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.adb),
                     ),
                     IconButton(
-                      color: theme.textTheme.bodyText1?.color,
+                      color: theme.textTheme.bodyLarge?.color,
                       onPressed: () {
                         props.selectHistory();
                       },
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 10,
                         fontStyle: FontStyle.italic,
                         color:
-                            theme.textTheme.bodyText1!.color!.withOpacity(0.7),
+                            theme.textTheme.bodyLarge!.color!.withOpacity(0.7),
                       ),
                     ),
                     SizedBox(width: 1),
@@ -336,7 +336,7 @@ class _HomePageState extends State<HomePage> {
                             Divider(
                               indent: 15,
                               endIndent: 15,
-                              color: theme.textTheme.headline1?.color,
+                              color: theme.textTheme.displayLarge?.color,
                               thickness: 0.5,
                             ),
                             SettingsDetails(
@@ -350,7 +350,7 @@ class _HomePageState extends State<HomePage> {
                           right: 5,
                           top: 5,
                           child: IconButton(
-                            color: theme.textTheme.headline1?.color,
+                            color: theme.textTheme.displayLarge?.color,
                             onPressed: () {
                               props.setSidebarVisibility(false);
                             },
@@ -694,15 +694,7 @@ class SettingsDetails extends StatelessWidget {
                       pointData.action == "" ? "None" : pointData.action,
                   items: [
                     "None",
-                    ...[
-                      "Allow Shoot",
-                      "Don't Shoot",
-                      "Intake",
-                      "Travel",
-                      "Wait For Shoot",
-                      "Safe Shoot",
-                      "Risky Shoot",
-                    ]
+                    ...autoActions,
                   ],
                   onChanged: (String value) {
                     if (value == "None") value = "";

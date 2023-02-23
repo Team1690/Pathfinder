@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pathfinder/models/path.dart';
 import 'package:pathfinder/store/tab/store.dart';
 

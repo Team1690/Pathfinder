@@ -73,3 +73,14 @@ Color getPointColor(Color defaultColor, bool isStopPoint, isFirstPoint,
 double convertRadiusToSigma(double radius) {
   return radius * 0.57735 + 0.5;
 }
+
+const List<String> autoActions = [
+  "Cone Intake",
+  "Cube Intake",
+  "Place High",
+  "Place Mid",
+  "Place Low",
+  "Release Cone",
+  "Shoot",
+  "Climb",
+];
