@@ -203,21 +203,43 @@ class _PathEditorState extends State<_PathEditor> {
 
   _PathEditorState();
 
-  int? getTappedPoint(Offset tapPosition, List<Point> points) {
+  int? getTappedPoint(
+      Offset tapPosition, List<Point> points, List<Segment> segments) {
     for (final entery in widget.pathProps.points.asMap().entries) {
       Point point = entery.value;
       int index = entery.key;
 
-      if (checkSelectedPointTap(tapPosition, point, PointType.path) != null) {
+      if (checkSelectedPointTap(
+              tapPosition, point, index, PointType.path, segments) !=
+          null) {
         return index;
       }
     }
   }
 
   DraggingPoint? checkSelectedPointTap(
-      Offset tapPosition, Point point, PointType pointType) {
+    Offset tapPosition,
+    Point point,
+    int index,
+    PointType pointType,
+    List<Segment> segments,
+  ) {
     Offset realTapPosition = (tapPosition - widget.pathProps.imageOffset) /
         widget.pathProps.imageZoom;
+    final Segment? segment = segments
+        .where((segment) => segment.pointIndexes.contains(index))
+        .singleOrNull;
+    // if(point selection click be ignored) return null;
+    if (segment != null && // Click isn't for a new point
+            segment.isHidden // Segment is hidden
+        ) {
+      // If a segment is hidden it's first point is still shown so it should be clickable so
+      final bool isFirstPointInSegment = segment.pointIndexes.first != index;
+      final bool isFirstSegment = segments.firstOrNull == segment;
+      if (isFirstPointInSegment || isFirstSegment) {
+        return null;
+      }
+    }
 
     if (pointType == PointType.path) {
       double radius =
@@ -463,8 +485,8 @@ class _PathEditorState extends State<_PathEditor> {
                     Offset tapPos = flipYAxisByField(details.localPosition,
                         widget.pathProps.fieldSizePixels);
 
-                    int? selectedPoint =
-                        getTappedPoint(tapPos, widget.pathProps.points);
+                    int? selectedPoint = getTappedPoint(tapPos,
+                        widget.pathProps.points, widget.pathProps.segments);
 
                     if (widget.pathProps.selectedPointIndex != null &&
                         widget.pathProps.selectedPointIndex! >= 0 &&
@@ -515,25 +537,25 @@ class _PathEditorState extends State<_PathEditor> {
                         headingToggle =
                             widget.pathProps.selectedPointIndex == index;
                       }
-
+                      final segments = widget.pathProps.segments;
                       if (headingToggle) {
                         draggingPoint = checkSelectedPointTap(
-                            tapPos, point, PointType.heading);
+                            tapPos, point, index, PointType.heading, segments);
                       }
 
                       if (controlToggle && draggingPoint == null) {
-                        draggingPoint = checkSelectedPointTap(
-                            tapPos, point, PointType.inControl);
+                        draggingPoint = checkSelectedPointTap(tapPos, point,
+                            index, PointType.inControl, segments);
                       }
 
                       if (controlToggle && draggingPoint == null) {
-                        draggingPoint = checkSelectedPointTap(
-                            tapPos, point, PointType.outControl);
+                        draggingPoint = checkSelectedPointTap(tapPos, point,
+                            index, PointType.outControl, segments);
                       }
 
                       if (draggingPoint == null) {
                         draggingPoint = checkSelectedPointTap(
-                            tapPos, point, PointType.path);
+                            tapPos, point, index, PointType.path, segments);
                       }
 
                       if (draggingPoint != null) {
