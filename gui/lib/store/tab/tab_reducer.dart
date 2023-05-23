@@ -189,11 +189,15 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
   var newPoint = Point.initial(position);
 
   if (tabState.path.points.length > 0) {
-    Offset inControlOffset = Offset.fromDirection(
-        (tabState.path.points[tabState.path.points.length - 1].position -
+    final direction = action.insertIndex == -1
+        ? (tabState.path.points[tabState.path.points.length - 1].position -
                 newPoint.position)
-            .direction,
-        defaultControlLength);
+            .direction
+        : (tabState.path.points[insertIndex - 1].position -
+                tabState.path.points[insertIndex].position)
+            .direction;
+    Offset inControlOffset =
+        Offset.fromDirection(direction, defaultControlLength);
     Offset outControlOFfset = Offset.fromDirection(
         inControlOffset.direction + pi, inControlOffset.distance);
     newPoint = newPoint.copyWith(
