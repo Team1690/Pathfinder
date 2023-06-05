@@ -1,6 +1,30 @@
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart';
+import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
 
 class Segment {
+  Segment({
+    required this.pointIndexes,
+    required this.maxVelocity,
+    this.isHidden = false,
+    this.evaluatedPoints,
+    this.trajectoryPoints,
+    this.splineParameters,
+    this.splineTypes,
+  });
+
+  factory Segment.initial({final List<int>? pointIndexes}) => Segment(
+        pointIndexes: pointIndexes ?? <int>[],
+        maxVelocity: 3,
+      );
+
+  // Json
+  Segment.fromJson(final Map<String, dynamic> json)
+      : pointIndexes = (json["pointIndexes"] as List<int>),
+        maxVelocity = json["maxVelocity"] as double,
+        isHidden = json["isHidden"] as bool,
+        evaluatedPoints = null,
+        trajectoryPoints = null,
+        splineParameters = null,
+        splineTypes = null;
   final List<int> pointIndexes;
   final double maxVelocity;
   final bool isHidden;
@@ -14,58 +38,28 @@ class Segment {
   final SplineParameters? splineParameters;
   final SplineTypes? splineTypes;
 
-  Segment({
-    required this.pointIndexes,
-    required this.maxVelocity,
-    this.isHidden = false,
-    this.evaluatedPoints,
-    this.trajectoryPoints,
-    this.splineParameters,
-    this.splineTypes,
-  });
-
-  factory Segment.initial({List<int>? pointIndexes}) {
-    return Segment(
-      pointIndexes: pointIndexes ?? [],
-      maxVelocity: 3,
-    );
-  }
-
   Segment copyWith({
-    List<int>? pointIndexes,
-    double? maxVelocity,
-    bool? isHidden,
-    List<SplineResponse_Point>? evaluatedPoints,
-    List<TrajectoryResponse_SwervePoint>? trajectoryPoints,
-    SplineParameters? splineParameters,
-    SplineTypes? splineTypes,
-  }) {
-    return Segment(
-      pointIndexes: pointIndexes ?? this.pointIndexes,
-      maxVelocity: maxVelocity ?? this.maxVelocity,
-      isHidden: isHidden ?? this.isHidden,
-      evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
-      trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
-      splineParameters: splineParameters ?? this.splineParameters,
-      splineTypes: splineTypes ?? this.splineTypes,
-    );
-  }
+    final List<int>? pointIndexes,
+    final double? maxVelocity,
+    final bool? isHidden,
+    final List<SplineResponse_Point>? evaluatedPoints,
+    final List<TrajectoryResponse_SwervePoint>? trajectoryPoints,
+    final SplineParameters? splineParameters,
+    final SplineTypes? splineTypes,
+  }) =>
+      Segment(
+        pointIndexes: pointIndexes ?? this.pointIndexes,
+        maxVelocity: maxVelocity ?? this.maxVelocity,
+        isHidden: isHidden ?? this.isHidden,
+        evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
+        trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
+        splineParameters: splineParameters ?? this.splineParameters,
+        splineTypes: splineTypes ?? this.splineTypes,
+      );
 
-  // Json
-  Segment.fromJson(Map<String, dynamic> json)
-      : pointIndexes = json['pointIndexes'].cast<int>(),
-        maxVelocity = json['maxVelocity'],
-        isHidden = json['isHidden'],
-        evaluatedPoints = null,
-        trajectoryPoints = null,
-        splineParameters = null,
-        splineTypes = null;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'pointIndexes': pointIndexes,
-      'maxVelocity': maxVelocity,
-      'isHidden': isHidden,
-    };
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        "pointIndexes": pointIndexes,
+        "maxVelocity": maxVelocity,
+        "isHidden": isHidden,
+      };
 }

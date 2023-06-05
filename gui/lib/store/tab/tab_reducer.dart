@@ -1,19 +1,21 @@
-import 'dart:convert';
-import 'dart:math';
+import "dart:convert";
+import "dart:math";
 
-import 'package:flutter/material.dart';
-import 'package:pathfinder/models/history.dart';
-import 'package:pathfinder/models/path.dart';
-import 'package:pathfinder/models/point.dart';
-import 'package:pathfinder/models/segment.dart';
-import 'package:pathfinder/services/pathfinder.dart';
-import 'package:pathfinder/store/tab/tab_ui/tab_ui.dart';
-import 'package:redux/redux.dart';
+import "package:flutter/material.dart";
+import "package:pathfinder/models/history.dart";
+import "package:pathfinder/models/path.dart";
+import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
+import "package:pathfinder/services/pathfinder.dart";
+import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
+import "package:redux/redux.dart";
 
-import 'tab_actions.dart';
-import 'tab_state.dart';
+import "package:pathfinder/store/tab/tab_actions.dart";
+import "package:pathfinder/store/tab/tab_state.dart";
 
-Reducer<TabState> applyReducers = combineReducers<TabState>([
+Reducer<TabState> applyReducers =
+    combineReducers<TabState>(<TabState Function(TabState, dynamic)>[
   TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),
   TypedReducer<TabState, ObjectSelected>(_objectSelected),
   TypedReducer<TabState, ObjectUnselected>(_objectUnselected),
@@ -39,7 +41,7 @@ Reducer<TabState> applyReducers = combineReducers<TabState>([
   TypedReducer<TabState, NewAuto>(_newAuto),
 ]);
 
-List<Type> historyAffectingActions = [
+List<Type> historyAffectingActions = <Type>[
   AddPointToPath,
   DeletePointFromPath,
   EditPoint,
@@ -47,38 +49,38 @@ List<Type> historyAffectingActions = [
   EditRobot,
 ];
 
-List<Type> unsavedChanegsActions = [
+List<Type> unsavedChanegsActions = <Type>[
   ...historyAffectingActions,
   PathUndo,
   PathRedo,
 ];
 
-Map<String, IconData> actionToIcon = {
-  '$AddPointToPath': Icons.add,
-  '$DeletePointFromPath': Icons.remove,
-  '$EditPoint': Icons.edit_location_outlined,
-  '$EditSegment': Icons.edit_road,
-  '$initialActionName': Icons.start,
+Map<String, IconData> actionToIcon = <String, IconData>{
+  "$AddPointToPath": Icons.add,
+  "$DeletePointFromPath": Icons.remove,
+  "$EditPoint": Icons.edit_location_outlined,
+  "$EditSegment": Icons.edit_road,
+  "$initialActionName": Icons.start,
 };
 
-TabState tabStateReducer(TabState tabState, dynamic action) {
-  final newTabState = applyReducers(tabState, action);
+TabState tabStateReducer(final TabState tabState, final dynamic action) {
+  final TabState newTabState = applyReducers(tabState, action);
 
   // Add path to history only after the relevant actions
   if (historyAffectingActions.contains(action.runtimeType)) {
-    final newPathHistory = [
+    final List<HistoryStamp> newPathHistory = <HistoryStamp>[
       ...newTabState.history.pathHistory
           .sublist(0, newTabState.history.currentStateIndex + 1),
       HistoryStamp.fromReducer(
-        action,
+        action as TabAction,
         newTabState.path.copyWith(
           // Remove the evaluated points from the saved path, it is calculated async
           // and isn't correct here (will be calculated anyway in the redo/undo thunk)
-          evaluatedPoints: [],
+          evaluatedPoints: <SplinePoint>[],
         ),
       )
     ];
-    var newCurrentIndex = newTabState.history.currentStateIndex + 1;
+    int newCurrentIndex = newTabState.history.currentStateIndex + 1;
 
     if (newPathHistory.length > maxSavedHistory) {
       newPathHistory.removeAt(0);
@@ -96,47 +98,61 @@ TabState tabStateReducer(TabState tabState, dynamic action) {
   return newTabState;
 }
 
-TabState _setSidebarVisibility(TabState tabstate, SetSideBarVisibility action) {
-  return tabstate.copyWith(
-      ui: tabstate.ui.copyWith(isSidebarOpen: action.visibility));
-}
+TabState _setSidebarVisibility(
+  final TabState tabstate,
+  final SetSideBarVisibility action,
+) =>
+    tabstate.copyWith(
+      ui: tabstate.ui.copyWith(isSidebarOpen: action.visibility),
+    );
 
-TabState _objectSelected(TabState tabState, ObjectSelected action) {
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      isSidebarOpen: true,
-      selectedIndex: action.index,
-      selectedType: action.type,
-    ),
-  );
-}
+TabState _objectSelected(
+  final TabState tabState,
+  final ObjectSelected action,
+) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        isSidebarOpen: true,
+        selectedIndex: action.index,
+        selectedType: action.type,
+      ),
+    );
 
-TabState _objectUnselected(TabState tabState, ObjectUnselected action) {
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      isSidebarOpen: false,
-      selectedIndex: -1,
-      selectedType: Null,
-    ),
-  );
-}
+TabState _objectUnselected(
+  final TabState tabState,
+  final ObjectUnselected action,
+) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        isSidebarOpen: false,
+        selectedIndex: -1,
+        selectedType: Null,
+      ),
+    );
 
-TabState _setServerError(TabState tabState, ServerError action) {
-  return tabState.copyWith(ui: tabState.ui.copyWith(serverError: action.error));
-}
+TabState _setServerError(final TabState tabState, final ServerError action) =>
+    tabState.copyWith(ui: tabState.ui.copyWith(serverError: action.error));
 
-TabState _trajectoryInProgress(TabState tabState, TrajectoryInProgress action) {
-  return tabState.copyWith(
+TabState _trajectoryInProgress(
+  final TabState tabState,
+  final TrajectoryInProgress action,
+) =>
+    tabState.copyWith(
       path: tabState.path.copyWith(
-    autoDuration: -1,
-  ));
-}
+        autoDuration: -1,
+      ),
+    );
 
-TabState _trajectoryCalculated(TabState tabState, TrajectoryCalculated action) {
-  var autoDuartion = 0.0;
-  var firstPointTime = action.points.first.time;
+TabState _trajectoryCalculated(
+  final TabState tabState,
+  final TrajectoryCalculated action,
+) {
+  double autoDuartion = 0.0;
+  double firstPointTime = action.points.first.time;
 
-  action.points.asMap().forEach((index, p) {
+  action.points
+      .asMap()
+      .forEach((final int index, final TrajectoryResponse_SwervePoint p) {
     if (index == action.points.length - 1) {
       autoDuartion += firstPointTime;
       return;
@@ -150,74 +166,89 @@ TabState _trajectoryCalculated(TabState tabState, TrajectoryCalculated action) {
   });
 
   return tabState.copyWith(
-      ui: tabState.ui.copyWith(serverError: null),
-      path: tabState.path.copyWith(autoDuration: autoDuartion));
+    ui: tabState.ui.copyWith(serverError: null),
+    path: tabState.path.copyWith(autoDuration: autoDuartion),
+  );
 }
 
-TabState _splineCalculated(TabState tabState, SplineCalculated action) {
-  final evaluatedPoints = action.points
-      .map((p) => SplinePoint(
-            position: fromRpcVector(p.point),
-            segmentIndex: p.segmentIndex,
-          ))
+TabState _splineCalculated(
+  final TabState tabState,
+  final SplineCalculated action,
+) {
+  final List<SplinePoint> evaluatedPoints = action.points
+      .map(
+        (final SplineResponse_Point p) => SplinePoint(
+          position: fromRpcVector(p.point),
+          segmentIndex: p.segmentIndex,
+        ),
+      )
       .toList();
 
   return tabState.copyWith(
-      ui: tabState.ui.copyWith(serverError: null),
-      path: tabState.path.copyWith(evaluatedPoints: evaluatedPoints));
+    ui: tabState.ui.copyWith(serverError: null),
+    path: tabState.path.copyWith(evaluatedPoints: evaluatedPoints),
+  );
 }
 
-TabState _addPointToPath(TabState tabState, AddPointToPath action) {
+TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
   // If the segment to add is -1, treat it as if the addition is to the end
   // of the point list and to the last segment
-  var insertIndex = action.insertIndex >= 0
+  final int insertIndex = action.insertIndex >= 0
       ? action.insertIndex
       : max(tabState.path.points.length, 0);
-  var segmentIndex = action.segmentIndex >= 0
+  final int segmentIndex = action.segmentIndex >= 0
       ? action.segmentIndex
       : max(tabState.path.segments.length - 1, 0);
 
-  var position = action.position;
+  Offset? position = action.position;
 
   if (position == null) {
     // If position is null, calculate it by the previues position and current position
-    final points = tabState.path.points;
+    final List<Point> points = tabState.path.points;
     position = (points[insertIndex - 1].position + points[insertIndex].position)
         .scale(0.5, 0.5);
   }
 
-  var newPoint = Point.initial(position);
+  Point newPoint = Point.initial(position);
 
-  if (tabState.path.points.length > 0) {
-    Offset inControlOffset = Offset.fromDirection(
-        (tabState.path.points[tabState.path.points.length - 1].position -
-                newPoint.position)
-            .direction,
-        defaultControlLength);
-    Offset outControlOFfset = Offset.fromDirection(
-        inControlOffset.direction + pi, inControlOffset.distance);
+  if (tabState.path.points.isNotEmpty) {
+    final Offset inControlOffset = Offset.fromDirection(
+      (tabState.path.points[tabState.path.points.length - 1].position -
+              newPoint.position)
+          .direction,
+      defaultControlLength,
+    );
+    final Offset outControlOFfset = Offset.fromDirection(
+      inControlOffset.direction + pi,
+      inControlOffset.distance,
+    );
     newPoint = newPoint.copyWith(
-        inControlPoint: inControlOffset, outControlPoint: outControlOFfset);
+      inControlPoint: inControlOffset,
+      outControlPoint: outControlOFfset,
+    );
   }
 
-  var newPoints = [...tabState.path.points];
+  final List<Point> newPoints = <Point>[...tabState.path.points];
 
-  if (tabState.path.segments.length == 0) {
+  if (tabState.path.segments.isEmpty) {
     tabState.path.segments.add(Segment.initial());
   }
 
   newPoints.insert(insertIndex, newPoint);
 
-  final newState = tabState.copyWith(
+  final TabState newState = tabState.copyWith(
     path: tabState.path.copyWith(
       points: newPoints,
-      segments: tabState.path.segments.asMap().entries.map((e) {
-        final pointIndexes = [...e.value.pointIndexes];
+      segments: tabState.path.segments
+          .asMap()
+          .entries
+          .map((final MapEntry<int, Segment> e) {
+        final List<int> pointIndexes = <int>[...e.value.pointIndexes];
 
         // Assuming the point indexes are sorted inside the segments we can
         // add another index to the list and increment all the following indexes
         if (e.key == segmentIndex) {
-          final newPointIndexes = pointIndexes
+          final List<int> newPointIndexes = pointIndexes
             ..add(pointIndexes.isEmpty ? 0 : pointIndexes.last + 1);
           return e.value.copyWith(pointIndexes: newPointIndexes);
         }
@@ -225,7 +256,7 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
         // Increment all following indexes
         if (e.key > segmentIndex) {
           return e.value.copyWith(
-            pointIndexes: pointIndexes.map((val) => val + 1).toList(),
+            pointIndexes: pointIndexes.map((final int val) => val + 1).toList(),
           );
         }
 
@@ -237,29 +268,32 @@ TabState _addPointToPath(TabState tabState, AddPointToPath action) {
   return newState;
 }
 
-TabState editPoint(TabState tabState, EditPoint action) {
+TabState editPoint(final TabState tabState, final EditPoint action) {
   bool addSegment = false;
   bool removeSegment = false;
 
-  final newState = tabState.copyWith(
+  final TabState newState = tabState.copyWith(
     path: tabState.path.copyWith(
-      points: tabState.path.points.asMap().entries.map((e) {
+      points: tabState.path.points
+          .asMap()
+          .entries
+          .map((final MapEntry<int, Point> e) {
         if (e.key != action.pointIndex) {
           return e.value;
         }
 
         // Dont allow to cut segments in the end or start of points list
-        final cutSegmentAllowed = action.pointIndex != 0 &&
+        final bool cutSegmentAllowed = action.pointIndex != 0 &&
             action.pointIndex != tabState.path.points.length - 1;
 
         // Always set use heading true for the first point
-        var useHeading =
+        final bool useHeading =
             action.useHeading ?? e.value.useHeading || action.pointIndex == 0;
 
         // Get and validate cut & stop values
-        var cutSegment =
+        bool cutSegment =
             (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
-        var isStop = (action.isStop ?? e.value.isStop) && cutSegmentAllowed;
+        bool isStop = (action.isStop ?? e.value.isStop) && cutSegmentAllowed;
 
         // Cut or uncut the segment if stop or cut changes
         if (isStop && !e.value.isStop) cutSegment = true;
@@ -286,26 +320,29 @@ TabState editPoint(TabState tabState, EditPoint action) {
   );
 
   if (addSegment) {
-    final currentSegmentIndex = tabState.path.segments
-        .indexWhere((s) => s.pointIndexes.contains(action.pointIndex));
+    final int currentSegmentIndex = tabState.path.segments.indexWhere(
+      (final Segment s) => s.pointIndexes.contains(action.pointIndex),
+    );
 
-    final newSegments = [...tabState.path.segments];
+    final List<Segment> newSegments = <Segment>[...tabState.path.segments];
     newSegments.insert(
-        currentSegmentIndex + 1,
-        Segment.initial(
-          pointIndexes: newSegments[currentSegmentIndex]
-              .pointIndexes
-              .where((index) => index >= action.pointIndex)
-              .toList(),
-        ));
+      currentSegmentIndex + 1,
+      Segment.initial(
+        pointIndexes: newSegments[currentSegmentIndex]
+            .pointIndexes
+            .where((final int index) => index >= action.pointIndex)
+            .toList(),
+      ),
+    );
 
     return newState.copyWith(
       path: newState.path.copyWith(
-        segments: newSegments.asMap().entries.map((e) {
+        segments:
+            newSegments.asMap().entries.map((final MapEntry<int, Segment> e) {
           if (e.key != currentSegmentIndex) return e.value;
           return e.value.copyWith(
             pointIndexes: e.value.pointIndexes
-                .where((index) => index < action.pointIndex)
+                .where((final int index) => index < action.pointIndex)
                 .toList(),
           );
         }).toList(),
@@ -314,19 +351,22 @@ TabState editPoint(TabState tabState, EditPoint action) {
   }
 
   if (removeSegment) {
-    final removedSegmentIndex = tabState.path.segments
-        .indexWhere((s) => s.pointIndexes.contains(action.pointIndex));
+    final int removedSegmentIndex = tabState.path.segments.indexWhere(
+      (final Segment s) => s.pointIndexes.contains(action.pointIndex),
+    );
 
-    final newSegments = [...tabState.path.segments];
-    final removedPointIndxes =
+    final List<Segment> newSegments = <Segment>[...tabState.path.segments];
+    final List<int> removedPointIndxes =
         newSegments.removeAt(removedSegmentIndex).pointIndexes;
 
     return newState.copyWith(
       path: newState.path.copyWith(
-        segments: newSegments.asMap().entries.map((e) {
+        segments:
+            newSegments.asMap().entries.map((final MapEntry<int, Segment> e) {
           if (e.key != removedSegmentIndex - 1) return e.value;
           return e.value.copyWith(
-              pointIndexes: e.value.pointIndexes + removedPointIndxes);
+            pointIndexes: e.value.pointIndexes + removedPointIndxes,
+          );
         }).toList(),
       ),
     );
@@ -335,34 +375,37 @@ TabState editPoint(TabState tabState, EditPoint action) {
   return newState;
 }
 
-TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
+TabState _deletePointFromPath(
+  final TabState tabState,
+  final DeletePointFromPath action,
+) {
   if (action.index == -1) return tabState;
 
   if (tabState.ui.selectedType != Point ||
       tabState.ui.selectedIndex != action.index) return tabState;
 
-  var newState = tabState.copyWith();
-  var newPoints = [...tabState.path.points];
+  TabState newState = tabState.copyWith();
+  final List<Point> newPoints = <Point>[...tabState.path.points];
 
   // Clear the segment of the point if it its cutting a segment, add all the points to
   // the previous segment (including the removed one, it will be handled later)
   if (newPoints[action.index].cutSegment) {
-    var newSegments = [...newState.path.segments];
+    final List<Segment> newSegments = <Segment>[...newState.path.segments];
 
-    final removedSegmentIndex = tabState.path.segments
-        .indexWhere((s) => s.pointIndexes.contains(action.index));
+    final int removedSegmentIndex = tabState.path.segments
+        .indexWhere((final Segment s) => s.pointIndexes.contains(action.index));
 
     // Get the points that where removed from the segment and add them to the previous
     // segment, the first point never starts a segement so there always should be at least one segment
     // in case of deleting a 'cutting segment' point like here
-    final removedSegment = newSegments[removedSegmentIndex];
-    final previousSegment = newSegments[removedSegmentIndex - 1];
+    final Segment removedSegment = newSegments[removedSegmentIndex];
+    final Segment previousSegment = newSegments[removedSegmentIndex - 1];
 
     newSegments[removedSegmentIndex - 1] = previousSegment.copyWith(
-        pointIndexes:
-            previousSegment.pointIndexes + removedSegment.pointIndexes);
+      pointIndexes: previousSegment.pointIndexes + removedSegment.pointIndexes,
+    );
     newSegments[removedSegmentIndex] =
-        removedSegment.copyWith(pointIndexes: []);
+        removedSegment.copyWith(pointIndexes: <int>[]);
 
     newState = newState.copyWith(
       path: newState.path.copyWith(
@@ -386,84 +429,93 @@ TabState _deletePointFromPath(TabState tabState, DeletePointFromPath action) {
     path: newState.path.copyWith(
       points: newPoints,
       // Show no spline if only one/zero points are left
-      evaluatedPoints: newPoints.length < 2 ? [] : null,
+      evaluatedPoints: newPoints.length < 2 ? <SplinePoint>[] : null,
       segments: newState.path.segments
           .map(
-            (segment) => segment.copyWith(
+            (final Segment segment) => segment.copyWith(
               pointIndexes: segment.pointIndexes
-                  .where((pointIndex) => pointIndex != action.index)
-                  .map((pointIndex) =>
-                      pointIndex > action.index ? pointIndex - 1 : pointIndex)
+                  .where((final int pointIndex) => pointIndex != action.index)
+                  .map(
+                    (final int pointIndex) =>
+                        pointIndex > action.index ? pointIndex - 1 : pointIndex,
+                  )
                   .toList(),
             ),
           )
           // Make sure no empty sgements are left
-          .where((segment) => segment.pointIndexes.isNotEmpty)
+          .where((final Segment segment) => segment.pointIndexes.isNotEmpty)
           .toList(),
     ),
   );
 }
 
-TabState _setFieldSizePixels(TabState tabState, SetFieldSizePixels action) {
-  return tabState.copyWith(
-      ui: tabState.ui.copyWith(fieldSizePixels: action.size));
-}
+TabState _setFieldSizePixels(
+  final TabState tabState,
+  final SetFieldSizePixels action,
+) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(fieldSizePixels: action.size),
+    );
 
-TabState _editSegment(TabState tabState, EditSegment action) {
-  return tabState.copyWith(
-    path: tabState.path.copyWith(
-      segments: tabState.path.segments.asMap().entries.map((e) {
-        if (action.index != e.key) return e.value;
-        return e.value.copyWith(
-          isHidden: action.isHidden,
-          maxVelocity: action.velocity,
-        );
-      }).toList(),
-    ),
-  );
-}
+TabState _editSegment(final TabState tabState, final EditSegment action) =>
+    tabState.copyWith(
+      path: tabState.path.copyWith(
+        segments: tabState.path.segments
+            .asMap()
+            .entries
+            .map((final MapEntry<int, Segment> e) {
+          if (action.index != e.key) return e.value;
+          return e.value.copyWith(
+            isHidden: action.isHidden,
+            maxVelocity: action.velocity,
+          );
+        }).toList(),
+      ),
+    );
 
-TabState editRobot(TabState tabState, EditRobot action) {
-  return tabState.copyWith(
-    robot: tabState.robot.copyWith(
-      width: action.robot.width,
-      height: action.robot.height,
-      maxAcceleration: action.robot.maxAcceleration,
-      maxAngularAcceleration: action.robot.maxAngularAcceleration,
-      maxAngularVelocity: action.robot.maxAngularVelocity,
-      skidAcceleration: action.robot.skidAcceleration,
-      maxJerk: action.robot.maxJerk,
-      maxVelocity: action.robot.maxVelocity,
-      cycleTime: action.robot.cycleTime,
-      angularAccelerationPercentage: action.robot.angularAccelerationPercentage,
-    ),
-  );
-}
+TabState editRobot(final TabState tabState, final EditRobot action) =>
+    tabState.copyWith(
+      robot: tabState.robot.copyWith(
+        width: action.robot.width,
+        height: action.robot.height,
+        maxAcceleration: action.robot.maxAcceleration,
+        maxAngularAcceleration: action.robot.maxAngularAcceleration,
+        maxAngularVelocity: action.robot.maxAngularVelocity,
+        skidAcceleration: action.robot.skidAcceleration,
+        maxJerk: action.robot.maxJerk,
+        maxVelocity: action.robot.maxVelocity,
+        cycleTime: action.robot.cycleTime,
+        angularAccelerationPercentage:
+            action.robot.angularAccelerationPercentage,
+      ),
+    );
 
-TabState _toggleHeading(TabState tabState, ToggleHeading action) {
-  return tabState.copyWith(
-      ui: tabState.ui.copyWith(headingToggle: !tabState.ui.headingToggle));
-}
+TabState _toggleHeading(final TabState tabState, final ToggleHeading action) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(headingToggle: !tabState.ui.headingToggle),
+    );
 
-TabState _toggleControl(TabState tabState, ToggleControl action) {
-  return tabState.copyWith(
-      ui: tabState.ui.copyWith(controlToggle: !tabState.ui.controlToggle));
-}
+TabState _toggleControl(final TabState tabState, final ToggleControl action) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(controlToggle: !tabState.ui.controlToggle),
+    );
 
 TabState _trajectoryFileNameChanged(
-    TabState tabState, TrajectoryFileNameChanged action) {
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      trajectoryFileName: action.fileName,
-    ),
-  );
-}
+  final TabState tabState,
+  final TrajectoryFileNameChanged action,
+) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        trajectoryFileName: action.fileName,
+      ),
+    );
 
-TabState _openFile(TabState tabState, OpenFile action) {
+TabState _openFile(final TabState tabState, final OpenFile action) {
   // Json decode may fail so wrap with try/catch
   try {
-    final decodedState = jsonDecode(action.fileContent)['tabState'];
-    final fileState = TabState.fromJson(decodedState);
+    final Map<String, dynamic> decodedState =
+        jsonDecode(action.fileContent)["tabState"] as Map<String, dynamic>;
+    final TabState fileState = TabState.fromJson(decodedState);
 
     return fileState.copyWith(
       ui: fileState.ui.copyWith(
@@ -476,34 +528,16 @@ TabState _openFile(TabState tabState, OpenFile action) {
   return tabState;
 }
 
-TabState _saveFile(TabState tabState, SaveFile action) {
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      autoFileName: action.fileName,
-      changesSaved: true,
-    ),
-  );
-}
+TabState _saveFile(final TabState tabState, final SaveFile action) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        autoFileName: action.fileName,
+        changesSaved: true,
+      ),
+    );
 
-TabState _pathUndo(TabState tabState, PathUndo action) {
-  final newStateIndex = max(tabState.history.currentStateIndex - 1, 0);
-
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      selectedIndex: 0,
-      selectedType: History,
-      isSidebarOpen: true,
-    ),
-    path: tabState.history.pathHistory[newStateIndex].path.copyWith(),
-    history: tabState.history.copyWith(
-      currentStateIndex: newStateIndex,
-    ),
-  );
-}
-
-TabState _pathRedo(TabState tabState, PathRedo action) {
-  final newStateIndex = min(tabState.history.currentStateIndex + 1,
-      tabState.history.pathHistory.length - 1);
+TabState _pathUndo(final TabState tabState, final PathUndo action) {
+  final int newStateIndex = max(tabState.history.currentStateIndex - 1, 0);
 
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
@@ -518,27 +552,43 @@ TabState _pathRedo(TabState tabState, PathRedo action) {
   );
 }
 
-TabState _setZoomLevel(TabState tabState, SetZoomLevel action) {
+TabState _pathRedo(final TabState tabState, final PathRedo action) {
+  final int newStateIndex = min(
+    tabState.history.currentStateIndex + 1,
+    tabState.history.pathHistory.length - 1,
+  );
+
   return tabState.copyWith(
     ui: tabState.ui.copyWith(
-      zoomLevel: action.zoomLevel,
-      pan: action.pan,
+      selectedIndex: 0,
+      selectedType: History,
+      isSidebarOpen: true,
+    ),
+    path: tabState.history.pathHistory[newStateIndex].path.copyWith(),
+    history: tabState.history.copyWith(
+      currentStateIndex: newStateIndex,
     ),
   );
 }
 
-TabState _setPan(TabState tabState, SetPan action) {
-  return tabState.copyWith(
-    ui: tabState.ui.copyWith(
-      pan: action.pan,
-    ),
-  );
-}
+TabState _setZoomLevel(final TabState tabState, final SetZoomLevel action) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        zoomLevel: action.zoomLevel,
+        pan: action.pan,
+      ),
+    );
 
-TabState _newAuto(TabState tabState, NewAuto action) {
-  return tabState.copyWith(
-    path: Path.initial(),
-    history: History.initial(),
-    ui: TabUI.initial(),
-  );
-}
+TabState _setPan(final TabState tabState, final SetPan action) =>
+    tabState.copyWith(
+      ui: tabState.ui.copyWith(
+        pan: action.pan,
+      ),
+    );
+
+TabState _newAuto(final TabState tabState, final NewAuto action) =>
+    tabState.copyWith(
+      path: Path.initial(),
+      history: History.initial(),
+      ui: TabUI.initial(),
+    );

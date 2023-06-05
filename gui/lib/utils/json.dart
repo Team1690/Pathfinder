@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import "package:flutter/cupertino.dart";
 
-dynamic offsetToJson(Offset o) {
-  return {
-    'x': o.dx,
-    'y': o.dy,
-  };
-}
+Map<String, dynamic> offsetToJson(final Offset o) => <String, dynamic>{
+      "x": o.dx,
+      "y": o.dy,
+    };
 
-Offset offsetFromJson(Map j) {
-  return Offset(j['x'], j['y']);
-}
+Offset offsetFromJson(final Map<String, dynamic> j) =>
+    Offset(j["x"] as double, j["y"] as double);

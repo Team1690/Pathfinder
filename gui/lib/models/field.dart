@@ -1,36 +1,30 @@
-import 'package:flutter/cupertino.dart';
-import 'package:pathfinder/utils/json.dart';
+import "package:flutter/cupertino.dart";
+import "package:pathfinder/utils/json.dart";
 
-const officialFieldWidth = 16.4846;
-const officialFieldHeight = 8.1026;
+const double officialFieldWidth = 16.4846;
+const double officialFieldHeight = 8.1026;
 
 class Field {
-  final Offset size;
-
   const Field({
     required this.size,
   });
 
-  factory Field.initial() {
-    return Field(
-      size: Offset(officialFieldWidth, officialFieldHeight),
-    );
-  }
+  factory Field.initial() => const Field(
+        size: Offset(officialFieldWidth, officialFieldHeight),
+      );
+
+  Field.fromJson(final Map<String, dynamic> json)
+      : size = offsetFromJson(json["size"] as Map<String, dynamic>);
+  final Offset size;
 
   Field copyWith({
-    Offset? size,
-  }) {
-    return Field(
-      size: size ?? this.size,
-    );
-  }
+    final Offset? size,
+  }) =>
+      Field(
+        size: size ?? this.size,
+      );
 
-  Field.fromJson(Map<String, dynamic> json)
-      : size = offsetFromJson(json['size']);
-
-  Map<String, dynamic> toJson() {
-    return {
-      'size': offsetToJson(size),
-    };
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        "size": offsetToJson(size),
+      };
 }

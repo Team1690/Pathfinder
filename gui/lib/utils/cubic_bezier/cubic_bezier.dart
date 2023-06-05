@@ -1,7 +1,16 @@
-import 'package:flutter/material.dart';
-import 'dart:math';
+import "package:flutter/material.dart";
+import "dart:math";
 
 class CubicBezier {
+  CubicBezier.line({required this.start, required this.end})
+      : startControl = (start * 2 + end) / 3,
+        endControl = (start + end * 2) / 3;
+  CubicBezier({
+    required this.start,
+    required this.startControl,
+    required this.endControl,
+    required this.end,
+  });
   final Offset start;
   final Offset startControl;
   final Offset endControl;
@@ -10,21 +19,10 @@ class CubicBezier {
   List<Offset>? _pointsList;
 
   List<Offset> get pointsList {
-    _pointsList ??= [start, startControl, endControl, end];
+    _pointsList ??= <Offset>[start, startControl, endControl, end];
 
     return _pointsList as List<Offset>;
   }
-
-  CubicBezier({
-    required this.start,
-    required this.startControl,
-    required this.endControl,
-    required this.end,
-  });
-
-  CubicBezier.line({required this.start, required this.end})
-      : startControl = (start * 2 + end) / 3,
-        endControl = (start + end * 2) / 3;
 
   Offset evaluate(final double t) {
     final double oneMinusT = 1 - t;

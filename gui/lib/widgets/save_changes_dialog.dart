@@ -1,35 +1,36 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
-showAlertDialog(
-  BuildContext context,
-  Function() onDiscard,
-  Function() onSave,
-  Function() onCancel,
+void showAlertDialog(
+  final BuildContext context,
+  final Function() onDiscard,
+  final Function() onSave,
+  final Function() onCancel,
 ) {
-  final wrapWithPop = (Function() fn) => () {
-        Navigator.pop(context);
-        fn();
-      };
+  final void Function() Function(Function() fn) wrapWithPop =
+      (final void Function() fn) => () {
+            Navigator.pop(context);
+            fn();
+          };
 
   // set up the button
-  Widget discardButton = TextButton(
-    child: Text("Discard"),
+  final Widget discardButton = TextButton(
+    child: const Text("Discard"),
     onPressed: wrapWithPop(onDiscard),
   );
-  Widget saveButton = TextButton(
-    child: Text("Save"),
+  final Widget saveButton = TextButton(
+    child: const Text("Save"),
     onPressed: wrapWithPop(onSave),
   );
-  Widget cancelButton = TextButton(
-    child: Text("Cancel"),
+  final Widget cancelButton = TextButton(
+    child: const Text("Cancel"),
     onPressed: wrapWithPop(onCancel),
   );
 
   // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Confirm new auto"),
-    content: Text("You have made changes, do you wish to discard them?"),
-    actions: [
+  final AlertDialog alert = AlertDialog(
+    title: const Text("Confirm new auto"),
+    content: const Text("You have made changes, do you wish to discard them?"),
+    actions: <Widget>[
       cancelButton,
       discardButton,
       saveButton,
@@ -39,8 +40,6 @@ showAlertDialog(
   // show the dialog
   showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
+    builder: (final BuildContext context) => alert,
   );
 }

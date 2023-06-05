@@ -1,18 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import "package:flutter/material.dart";
+import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 
 class SplinePoint extends StatelessWidget {
+  const SplinePoint({
+    final Key? key,
+    required this.point,
+  });
   final rpc.SplineResponse_Point point;
   final Color color = const Color.fromARGB(75, 255, 255, 255);
 
-  const SplinePoint({
-    Key? key,
-    required this.point,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    double radius = 2;
+  Widget build(final BuildContext context) {
+    const double radius = 2;
 
     return Positioned(
       left: point.point.x - radius,
