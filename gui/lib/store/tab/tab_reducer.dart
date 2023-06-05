@@ -229,9 +229,9 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
   }
 
   final List<Point> newPoints = <Point>[...tabState.path.points];
-
-  if (tabState.path.segments.isEmpty) {
-    tabState.path.segments.add(Segment.initial());
+  List<Segment> segments = tabState.path.segments;
+  if (segments.isEmpty) {
+    segments = <Segment>[...segments, Segment.initial()];
   }
 
   newPoints.insert(insertIndex, newPoint);
@@ -239,10 +239,7 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
   final TabState newState = tabState.copyWith(
     path: tabState.path.copyWith(
       points: newPoints,
-      segments: tabState.path.segments
-          .asMap()
-          .entries
-          .map((final MapEntry<int, Segment> e) {
+      segments: segments.asMap().entries.map((final MapEntry<int, Segment> e) {
         final List<int> pointIndexes = <int>[...e.value.pointIndexes];
 
         // Assuming the point indexes are sorted inside the segments we can
