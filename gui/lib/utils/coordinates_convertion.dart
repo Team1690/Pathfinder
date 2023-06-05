@@ -21,12 +21,10 @@ Offset metersToUiCoord(Store store, Offset val) {
 }
 
 Offset uiToFieldOrigin(Store store, Offset val) {
-  TabState tabState = store.state.tabState;
   return val;
 }
 
 Offset fieldToUiOrigin(Store store, Offset val) {
-  TabState tabState = store.state.tabState;
   return val;
 }
 

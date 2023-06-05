@@ -212,6 +212,7 @@ class _PathEditorState extends State<_PathEditor> {
         return index;
       }
     }
+    return null;
   }
 
   DraggingPoint? checkSelectedPointTap(
@@ -259,6 +260,7 @@ class _PathEditorState extends State<_PathEditor> {
         return DraggingPoint(PointType.outControl, point.outControlPoint);
       }
     }
+    return null;
   }
 
   @override

@@ -399,6 +399,7 @@ class SettingsDetails extends StatelessWidget {
         if (value == null) return '$label is required.';
         if (double.tryParse(value) == null) return 'Not a number';
         if (!allowNegative && double.parse(value) < 0) return 'No negatives';
+        return null;
       },
       onChanged: (val) => onChanged(double.tryParse(val) ?? initialValue),
     );

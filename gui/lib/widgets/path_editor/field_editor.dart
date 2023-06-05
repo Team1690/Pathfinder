@@ -131,7 +131,6 @@ class FieldPainter extends CustomPainter {
 
     for (final entery in dragPoints.asMap().entries) {
       FullDraggingPoint draggingPoint = entery.value;
-      int index = entery.key;
 
       if (!((draggingPoint.index == 0 &&
               draggingPoint.draggingPoint.type == PointType.inControl) ||
@@ -380,17 +379,17 @@ class FieldPainter extends CustomPainter {
 }
 
 class FieldLoader extends StatefulWidget {
-  List<Point> points;
-  List<Segment> segments;
-  int? selectedPoint;
-  List<FullDraggingPoint> dragPoints;
-  bool enableHeadingEditing;
-  bool enableControlEditing;
-  List<modelspath.SplinePoint> evaluatedPoints;
-  Function(Offset) setFieldSizePixels;
-  Robot robot;
-  double imageZoom;
-  Offset imageOffset;
+  final List<Point> points;
+  final List<Segment> segments;
+  final int? selectedPoint;
+  final List<FullDraggingPoint> dragPoints;
+  final bool enableHeadingEditing;
+  final bool enableControlEditing;
+  final List<modelspath.SplinePoint> evaluatedPoints;
+  final Function(Offset) setFieldSizePixels;
+  final Robot robot;
+  final double imageZoom;
+  final Offset imageOffset;
 
   FieldLoader(
     this.points,
