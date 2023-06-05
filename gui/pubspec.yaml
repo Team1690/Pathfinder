@@ -37,6 +37,9 @@ dependencies:
   redux_logging: ^0.5.0
   file_picker: ^4.3.2
   fluttertoast: ^8.0.8
+  redux: ^5.0.0
+  flutter_webview_plugin: ^0.4.0
+  meta: ^1.9.1
 
 dev_dependencies:
   flutter_test:

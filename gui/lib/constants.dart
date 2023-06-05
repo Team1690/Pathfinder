@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 // TODO find nice colors
 final Color primaryColor = Colors.grey.shade800;
-const secondaryColor = const Color(0xFF2A2D3E);
+const Color secondaryColor = const Color(0xFF2A2D3E);
 
 const double defaultPadding = 20;
 const double defaultRadius = 10;
@@ -15,7 +15,7 @@ const Color blue = Color(0xff7D8AFF);
 const Color red = Color(0xffE58585);
 const Color green = Color(0xff7CE27A);
 
-const Map<int, Color> orbitColors = {
+const Map<int, Color> orbitColors = <int, Color>{
   50: Color.fromRGBO(0, 0, 200, .1),
   100: Color.fromRGBO(0, 0, 200, .2),
   200: Color.fromRGBO(0, 0, 200, .3),
@@ -29,52 +29,55 @@ const Map<int, Color> orbitColors = {
 };
 
 // Sement colors
-List<Color> segmentColors = [
-  Color.fromARGB(255, 86, 86, 255),
-  Color.fromARGB(255, 255, 44, 44),
-  Color.fromARGB(255, 61, 255, 43),
-  Color.fromARGB(255, 255, 217, 0),
+List<Color> segmentColors = <Color>[
+  const Color.fromARGB(255, 86, 86, 255),
+  const Color.fromARGB(255, 255, 44, 44),
+  const Color.fromARGB(255, 61, 255, 43),
+  const Color.fromARGB(255, 255, 217, 0),
 ];
 
-Color getSegmentColor(int index) {
-  final colorIndex = index % segmentColors.length;
+Color getSegmentColor(final int index) {
+  final int colorIndex = index % segmentColors.length;
   return segmentColors[colorIndex];
 }
 
 // Point
-Color selectedPointColor = Color(0xffeeeeee);
+Color selectedPointColor = const Color(0xffeeeeee);
 
-const stopPointColor = Color.fromARGB(204, 224, 68, 68);
-Color selectedStopPointColor = Color.fromARGB(255, 255, 83, 83);
+const Color stopPointColor = Color.fromARGB(204, 224, 68, 68);
+Color selectedStopPointColor = const Color.fromARGB(255, 255, 83, 83);
 
-const selectedPointHightlightColor = Color(0xffeeeeee);
+const Color selectedPointHightlightColor = Color(0xffeeeeee);
 const double selectedPointHighlightRadius = 5;
-const selectedPointHighlightOpacity = 5;
+const int selectedPointHighlightOpacity = 5;
 
-Color getPointColor(Color defaultColor, bool isStopPoint, isFirstPoint,
-    isLastPoint, isSelected) {
-  var color = defaultColor;
-  var selectedColor = selectedPointColor;
+Color getPointColor(
+  final Color defaultColor,
+  final bool isStopPoint,
+  final bool isFirstPoint,
+  final bool isLastPoint,
+  final bool isSelected,
+) {
+  Color color = defaultColor;
+  Color selectedColor = selectedPointColor;
 
   if (isStopPoint) {
     selectedColor = selectedStopPointColor;
     color = stopPointColor;
   } else if (isFirstPoint) {
-    selectedColor = Color(0xff34A853).withGreen(230);
-    color = Color(0xff34A853);
+    selectedColor = const Color(0xff34A853).withGreen(230);
+    color = const Color(0xff34A853);
   } else if (isLastPoint) {
-    selectedColor = Color(0xffAE4335).withRed(230);
-    color = Color(0xffAE4335);
+    selectedColor = const Color(0xffAE4335).withRed(230);
+    color = const Color(0xffAE4335);
   }
 
   return isSelected ? selectedColor : color;
 }
 
-double convertRadiusToSigma(double radius) {
-  return radius * 0.57735 + 0.5;
-}
+double convertRadiusToSigma(final double radius) => radius * 0.57735 + 0.5;
 
-const List<String> autoActions = [
+const List<String> autoActions = <String>[
   "Cone Intake",
   "Cube Intake",
   "Place High",
