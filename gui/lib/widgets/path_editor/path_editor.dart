@@ -218,13 +218,22 @@ class _PathEditorState extends State<_PathEditor> {
   final double imageZoomDiff = 0.1;
   final double imageOffsetDiff = 10;
 
-  int? getTappedPoint(final Offset tapPosition, final List<Point> points, final List<Segment> segments) {
+  int? getTappedPoint(
+    final Offset tapPosition,
+    final List<Point> points,
+    final List<Segment> segments,
+  ) {
     for (final MapEntry<int, Point> entery
         in widget.pathProps.points.asMap().entries) {
       final Point point = entery.value;
       final int index = entery.key;
       if (checkSelectedPointTap(
-              tapPosition, point, index, PointType.path, segments) !=
+            tapPosition,
+            point,
+            index,
+            PointType.path,
+            segments,
+          ) !=
           null) {
         return index;
       }
@@ -235,14 +244,15 @@ class _PathEditorState extends State<_PathEditor> {
   DraggingPoint? checkSelectedPointTap(
     final Offset tapPosition,
     final Point point,
+    final int index,
     final PointType pointType,
-    final List<Segment> segments
+    final List<Segment> segments,
   ) {
-
-    final Offset realTapPosition = (tapPosition - widget.pathProps.imageOffset) /
-        widget.pathProps.imageZoom;
+    final Offset realTapPosition =
+        (tapPosition - widget.pathProps.imageOffset) /
+            widget.pathProps.imageZoom;
     final Segment? segment = segments
-        .where((segment) => segment.pointIndexes.contains(index))
+        .where((final Segment segment) => segment.pointIndexes.contains(index))
         .singleOrNull;
     // if(point selection click be ignored) return null;
     if (segment != null && // Click isn't for a new point
@@ -510,9 +520,11 @@ class _PathEditorState extends State<_PathEditor> {
                       widget.pathProps.fieldSizePixels,
                     );
 
-
-                    final int? selectedPoint = getTappedPoint(tapPos,
-                        widget.pathProps.points, widget.pathProps.segments);
+                    final int? selectedPoint = getTappedPoint(
+                      tapPos,
+                      widget.pathProps.points,
+                      widget.pathProps.segments,
+                    );
 
                     if (widget.pathProps.selectedPointIndex != null &&
                         widget.pathProps.selectedPointIndex! >= 0 &&
@@ -565,13 +577,14 @@ class _PathEditorState extends State<_PathEditor> {
                         headingToggle =
                             widget.pathProps.selectedPointIndex == index;
                       }
-                      final segments = widget.pathProps.segments;
+                      final List<Segment> segments = widget.pathProps.segments;
                       if (headingToggle) {
                         draggingPoint = checkSelectedPointTap(
                           tapPos,
                           point,
+                          index,
                           PointType.heading,
-                          segments
+                          segments,
                         );
                       }
 
@@ -579,8 +592,9 @@ class _PathEditorState extends State<_PathEditor> {
                         draggingPoint = checkSelectedPointTap(
                           tapPos,
                           point,
+                          index,
                           PointType.inControl,
-                          segments
+                          segments,
                         );
                       }
 
@@ -588,18 +602,19 @@ class _PathEditorState extends State<_PathEditor> {
                         draggingPoint = checkSelectedPointTap(
                           tapPos,
                           point,
+                          index,
                           PointType.outControl,
-                          segments
+                          segments,
                         );
                       }
 
                       draggingPoint ??= checkSelectedPointTap(
                         tapPos,
                         point,
+                        index,
                         PointType.path,
-                        segments
+                        segments,
                       );
-
 
                       if (draggingPoint != null) {
                         final FullDraggingPoint fullDraggingPoint =
