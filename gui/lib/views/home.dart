@@ -735,7 +735,7 @@ class SettingsDetails extends StatelessWidget {
                     "None",
                     ...autoActions,
                   ],
-                  onChanged: (String value) {
+                  onChanged: (String? value) {
                     if (value == "None") value = "";
                     onPointEdit(index, pointData.copyWith(action: value));
                   },
