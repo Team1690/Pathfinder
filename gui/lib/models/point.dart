@@ -1,23 +1,14 @@
-import 'dart:math';
+import "dart:math";
 
-import 'package:flutter/cupertino.dart';
-import 'package:pathfinder/utils/coordinates_convertion.dart';
-import 'package:pathfinder/utils/json.dart';
-import 'package:redux/redux.dart';
+import "package:flutter/cupertino.dart";
+import "package:pathfinder/store/app/app_state.dart";
+import "package:pathfinder/utils/coordinates_convertion.dart";
+import "package:pathfinder/utils/json.dart";
+import "package:redux/redux.dart";
 
 const double defaultControlLength = 1;
 
 class Point {
-  final Offset position;
-  final Offset inControlPoint;
-  final Offset outControlPoint;
-  final double heading;
-  final bool useHeading;
-  final String action;
-  final double actionTime;
-  final bool cutSegment;
-  final bool isStop;
-
   Point({
     required this.position,
     required this.inControlPoint,
@@ -29,51 +20,80 @@ class Point {
     required this.cutSegment,
     required this.isStop,
   });
+  factory Point.initial(final Offset position) => Point(
+        position: position,
+        inControlPoint: Offset.fromDirection(pi / 4, defaultControlLength),
+        outControlPoint:
+            Offset.fromDirection((pi / 4) + pi, defaultControlLength),
+        heading: 0,
+        useHeading: true,
+        action: "",
+        actionTime: 0,
+        cutSegment: false,
+        isStop: false,
+      );
 
-  factory Point.initial(Offset position) {
-    return Point(
-      position: position,
-      inControlPoint: Offset.fromDirection(pi / 4, defaultControlLength),
-      outControlPoint:
-          Offset.fromDirection((pi / 4) + pi, defaultControlLength),
-      heading: 0,
-      useHeading: true,
-      action: "",
-      actionTime: 0,
-      cutSegment: false,
-      isStop: false,
-    );
-  }
+  // Json
+  Point.fromJson(final Map<String, dynamic> json)
+      : position = offsetFromJson(json["position"] as Map<String, dynamic>),
+        inControlPoint =
+            offsetFromJson(json["inControlPoint"] as Map<String, dynamic>),
+        outControlPoint =
+            offsetFromJson(json["outControlPoint"] as Map<String, dynamic>),
+        heading = json["heading"] as double,
+        useHeading = json["useHeading"] as bool,
+        action = (json["action"] as String?) ?? "",
+        actionTime = (json["actionTime"] as double?) ?? 0,
+        cutSegment = json["cutSegment"] as bool,
+        isStop = json["isStop"] as bool;
+  final Offset position;
+  final Offset inControlPoint;
+  final Offset outControlPoint;
+  final double heading;
+  final bool useHeading;
+  final String action;
+  final double actionTime;
+  final bool cutSegment;
+  final bool isStop;
 
   Point copyWith({
-    Offset? position,
-    Offset? inControlPoint,
-    Offset? outControlPoint,
-    double? heading,
-    bool? useHeading,
-    String? action,
-    double? actionTime,
-    bool? cutSegment,
-    bool? isStop,
-  }) {
-    return Point(
-      position: position ?? this.position,
-      inControlPoint: inControlPoint ?? this.inControlPoint,
-      outControlPoint: outControlPoint ?? this.outControlPoint,
-      heading: heading ?? this.heading,
-      useHeading: useHeading ?? this.useHeading,
-      action: action ?? this.action,
-      actionTime: actionTime ?? this.actionTime,
-      cutSegment: cutSegment ?? this.cutSegment,
-      isStop: isStop ?? this.isStop,
-    );
-  }
-
-  @override // TODO: implement hashCode
-  int get hashCode => super.hashCode;
+    final Offset? position,
+    final Offset? inControlPoint,
+    final Offset? outControlPoint,
+    final double? heading,
+    final bool? useHeading,
+    final String? action,
+    final double? actionTime,
+    final bool? cutSegment,
+    final bool? isStop,
+  }) =>
+      Point(
+        position: position ?? this.position,
+        inControlPoint: inControlPoint ?? this.inControlPoint,
+        outControlPoint: outControlPoint ?? this.outControlPoint,
+        heading: heading ?? this.heading,
+        useHeading: useHeading ?? this.useHeading,
+        action: action ?? this.action,
+        actionTime: actionTime ?? this.actionTime,
+        cutSegment: cutSegment ?? this.cutSegment,
+        isStop: isStop ?? this.isStop,
+      );
 
   @override
-  bool operator ==(Object other) {
+  int get hashCode => Object.hashAll(<dynamic>[
+        position,
+        inControlPoint,
+        outControlPoint,
+        heading,
+        useHeading,
+        action,
+        actionTime,
+        cutSegment,
+        isStop
+      ]);
+
+  @override
+  bool operator ==(final Object other) {
     if (other is Point) {
       return position == other.position &&
           inControlPoint == other.inControlPoint &&
@@ -89,37 +109,21 @@ class Point {
     return false;
   }
 
-  Point toUiCoord(Store store) {
-    return copyWith(
-      position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
-      inControlPoint: metersToUiCoord(store, inControlPoint),
-      outControlPoint: metersToUiCoord(store, outControlPoint),
-    );
-  }
+  Point toUiCoord(final Store<AppState> store) => copyWith(
+        position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
+        inControlPoint: metersToUiCoord(store, inControlPoint),
+        outControlPoint: metersToUiCoord(store, outControlPoint),
+      );
 
-  // Json
-  Point.fromJson(Map<String, dynamic> json)
-      : position = offsetFromJson(json['position']),
-        inControlPoint = offsetFromJson(json['inControlPoint']),
-        outControlPoint = offsetFromJson(json['outControlPoint']),
-        heading = json['heading'],
-        useHeading = json['useHeading'],
-        action = json['action'] ?? "",
-        actionTime = json['actionTime'] ?? 0,
-        cutSegment = json['cutSegment'],
-        isStop = json['isStop'];
-
-  Map<String, dynamic> toJson() {
-    return {
-      'position': offsetToJson(position),
-      'inControlPoint': offsetToJson(inControlPoint),
-      'outControlPoint': offsetToJson(outControlPoint),
-      'heading': heading,
-      'useHeading': useHeading,
-      'action': action,
-      'actionTime': actionTime,
-      'cutSegment': cutSegment,
-      'isStop': isStop,
-    };
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        "position": offsetToJson(position),
+        "inControlPoint": offsetToJson(inControlPoint),
+        "outControlPoint": offsetToJson(outControlPoint),
+        "heading": heading,
+        "useHeading": useHeading,
+        "action": action,
+        "actionTime": actionTime,
+        "cutSegment": cutSegment,
+        "isStop": isStop,
+      };
 }

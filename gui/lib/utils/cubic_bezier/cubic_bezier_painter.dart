@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:pathfinder/utils/cubic_bezier/cubic_bezier.dart';
+import "package:flutter/material.dart";
+import "package:pathfinder/utils/cubic_bezier/cubic_bezier.dart";
 
 class CubicBezierPainter extends CustomPainter {
-  final CubicBezier cubicBezier;
   CubicBezierPainter({required this.cubicBezier});
+  final CubicBezier cubicBezier;
 
-  static final paintColor = Paint()
+  static final Paint paintColor = Paint()
     ..style = PaintingStyle.stroke
     ..color = Colors.white
     ..strokeWidth = 10;
@@ -15,20 +15,20 @@ class CubicBezierPainter extends CustomPainter {
 
   @override
   void paint(final Canvas canvas, final Size size) {
-    final paintPath = Path();
+    final Path paintPath = Path();
 
-    paintPath.moveTo(this.cubicBezier.start.dx, this.cubicBezier.start.dy);
+    paintPath.moveTo(cubicBezier.start.dx, cubicBezier.start.dy);
 
     canvas.drawCircle(cubicBezier.start, circleRadius, paintColor);
     canvas.drawCircle(cubicBezier.end, circleRadius, paintColor);
 
     paintPath.cubicTo(
-      this.cubicBezier.startControl.dx,
-      this.cubicBezier.startControl.dy,
-      this.cubicBezier.endControl.dx,
-      this.cubicBezier.endControl.dy,
-      this.cubicBezier.end.dx,
-      this.cubicBezier.end.dy,
+      cubicBezier.startControl.dx,
+      cubicBezier.startControl.dy,
+      cubicBezier.endControl.dx,
+      cubicBezier.endControl.dy,
+      cubicBezier.end.dx,
+      cubicBezier.end.dy,
     );
 
     canvas.drawPath(paintPath, paintColor);
@@ -36,5 +36,5 @@ class CubicBezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(final CubicBezierPainter old) =>
-      old.cubicBezier != this.cubicBezier;
+      old.cubicBezier != cubicBezier;
 }

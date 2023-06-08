@@ -1,7 +1,16 @@
-import 'package:flutter/material.dart';
-import 'dart:math';
+import "package:flutter/material.dart";
+import "dart:math";
 
 class CubicBezier {
+  CubicBezier({
+    required this.start,
+    required this.startControl,
+    required this.endControl,
+    required this.end,
+  });
+  CubicBezier.line({required this.start, required this.end})
+      : startControl = (start * 2 + end) / 3,
+        endControl = (start + end * 2) / 3;
   final Offset start;
   final Offset startControl;
   final Offset endControl;
@@ -10,21 +19,10 @@ class CubicBezier {
   List<Offset>? _pointsList;
 
   List<Offset> get pointsList {
-    _pointsList ??= [start, startControl, endControl, end];
+    _pointsList ??= <Offset>[start, startControl, endControl, end];
 
     return _pointsList as List<Offset>;
   }
-
-  CubicBezier({
-    required this.start,
-    required this.startControl,
-    required this.endControl,
-    required this.end,
-  });
-
-  CubicBezier.line({required this.start, required this.end})
-      : startControl = (start * 2 + end) / 3,
-        endControl = (start + end * 2) / 3;
 
   Offset evaluate(final double t) {
     final double oneMinusT = 1 - t;
@@ -32,7 +30,7 @@ class CubicBezier {
     double oneMinusTFactor = pow(1 - t, 3).toDouble();
     double tFactor = 1;
 
-    var result = Offset.zero;
+    Offset result = Offset.zero;
 
     for (int i = 0; i < 4; i++) {
       result += pointsList[i] *
@@ -68,10 +66,10 @@ class CubicBezier {
 
   bool operator ==(final Object other) =>
       other is CubicBezier &&
-      this.start == other.start &&
-      this.startControl == other.startControl &&
-      this.endControl == other.endControl &&
-      this.end == other.end;
+      start == other.start &&
+      startControl == other.startControl &&
+      endControl == other.endControl &&
+      end == other.end;
 
   @override
   int get hashCode => throw Exception("No hash code for CubicBezier");

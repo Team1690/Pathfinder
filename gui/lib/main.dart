@@ -1,38 +1,37 @@
-import 'dart:convert';
-import 'dart:io';
+import "dart:convert";
+import "dart:io";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:pathfinder/store/app/app_reducer.dart';
-import 'package:pathfinder/store/app/app_state.dart';
-import 'package:pathfinder/store/tab/store.dart';
-import 'package:pathfinder/views/home.dart';
-import 'package:redux/redux.dart';
-import 'package:redux_thunk/redux_thunk.dart';
-import 'package:redux_logging/redux_logging.dart';
+import "package:flutter/material.dart";
+import "package:flutter_redux/flutter_redux.dart";
+import "package:pathfinder/store/app/app_reducer.dart";
+import "package:pathfinder/store/app/app_state.dart";
+import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder/views/home.dart";
+import "package:redux/redux.dart";
+import "package:redux_thunk/redux_thunk.dart";
+import "package:redux_logging/redux_logging.dart";
 
-const debug = false;
-const cacheFilePath = "./.temp-state";
+const bool debug = false;
+const String cacheFilePath = "./.temp-state";
 
 void main() => runApp(App());
 
 class App extends StatelessWidget {
   @override
-  Widget build(final BuildContext context) {
-    return StoreProvider(
+  Widget build(final BuildContext context) => StoreProvider<AppState>(
         store: store,
         child: MaterialApp(
           theme: ThemeData.dark(),
           debugShowCheckedModeBanner: false,
-          title: 'Orbit Pathfinder',
+          title: "Orbit Pathfinder",
           home: HomePage(),
-        ));
-  }
+        ),
+      );
 }
 
-final store = Store<AppState>(
-  (AppState state, dynamic action) {
-    var newState = appStateReducer(state, action);
+final Store<AppState> store = Store<AppState>(
+  (final AppState state, final dynamic action) {
+    AppState newState = appStateReducer(state, action);
     saveCacheState(newState);
 
     if (unsavedChanegsActions.contains(action.runtimeType)) {
@@ -48,16 +47,17 @@ final store = Store<AppState>(
     return newState;
   },
   initialState: loadInitialStateFromCache(),
-  middleware: [
+  middleware: <Middleware<AppState>>[
     thunkMiddleware,
-    if (debug) LoggingMiddleware.printer(),
+    if (debug) LoggingMiddleware<dynamic>.printer(),
   ],
 );
 
 AppState loadInitialStateFromCache() {
   try {
-    final cacheFile = File(cacheFilePath);
-    final jsonState = jsonDecode(cacheFile.readAsStringSync());
+    final File cacheFile = File(cacheFilePath);
+    final Map<String, dynamic> jsonState =
+        jsonDecode(cacheFile.readAsStringSync()) as Map<String, dynamic>;
 
     return AppState.fromJson(jsonState);
   } catch (e) {}
@@ -65,7 +65,7 @@ AppState loadInitialStateFromCache() {
   return AppState.initial();
 }
 
-dynamic saveCacheState(state) {
-  final stateJson = jsonEncode(state.toJson());
+void saveCacheState(final AppState state) {
+  final String stateJson = jsonEncode(state.toJson());
   File(cacheFilePath).writeAsString(stateJson);
 }

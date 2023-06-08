@@ -1,16 +1,16 @@
-import 'dart:async';
-import 'dart:math';
-import 'dart:ui' as ui;
+import "dart:async";
+import "dart:math";
+import "dart:ui" as ui;
 
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pathfinder/constants.dart';
-import 'package:pathfinder/models/path.dart' as modelspath;
-import 'package:pathfinder/models/point.dart';
-import 'package:pathfinder/models/robot.dart';
-import 'package:pathfinder/models/segment.dart';
-import 'package:pathfinder/widgets/path_editor/path_editor.dart';
+import "package:collection/collection.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:pathfinder/constants.dart";
+import "package:pathfinder/models/path.dart" as modelspath;
+import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/widgets/path_editor/path_editor.dart";
 
 enum PointType {
   path,
@@ -20,34 +20,21 @@ enum PointType {
 }
 
 class PointSettings {
+  PointSettings(this.color, this.radius);
   final Color color;
   final double radius;
-
-  PointSettings(this.color, this.radius);
 }
 
 const double headingLength = 50;
 
-Map<PointType, PointSettings> pointSettings = {
-  PointType.path: PointSettings(Color(0xbbdddddd), 8),
+Map<PointType, PointSettings> pointSettings = <PointType, PointSettings>{
+  PointType.path: PointSettings(const Color(0xbbdddddd), 8),
   PointType.inControl: PointSettings(Colors.orange, 6),
   PointType.outControl: PointSettings(Colors.yellow, 6),
-  PointType.heading: PointSettings(Color(0xffc80000), 6)
+  PointType.heading: PointSettings(const Color(0xffc80000), 6)
 };
 
 class FieldPainter extends CustomPainter {
-  ui.Image image;
-  List<Point> points;
-  List<Segment> segments;
-  int? selectedPoint;
-  List<FullDraggingPoint> dragPoints;
-  bool enableHeadingEditing;
-  bool enableControlEditing;
-  List<modelspath.SplinePoint> evaluetedPoints;
-  Robot robot;
-  double imageZoom;
-  Offset imageOffset;
-
   FieldPainter(
     this.image,
     this.points,
@@ -61,9 +48,20 @@ class FieldPainter extends CustomPainter {
     this.imageZoom,
     this.imageOffset,
   );
+  ui.Image image;
+  List<Point> points;
+  List<Segment> segments;
+  int? selectedPoint;
+  List<FullDraggingPoint> dragPoints;
+  bool enableHeadingEditing;
+  bool enableControlEditing;
+  List<modelspath.SplinePoint> evaluetedPoints;
+  Robot robot;
+  double imageZoom;
+  Offset imageOffset;
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(final Canvas canvas, final Size size) {
     canvas.scale(1, -1);
     canvas.translate(0, -size.height);
 
@@ -71,25 +69,28 @@ class FieldPainter extends CustomPainter {
     canvas.scale(imageZoom);
 
     paintImage(
-        canvas: canvas,
-        fit: BoxFit.fill,
-        rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
-        colorFilter:
-            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-        image: image);
+      canvas: canvas,
+      fit: BoxFit.fill,
+      rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
+      colorFilter:
+          ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+      image: image,
+    );
 
     // Group spline points by segment index
-    final segmentIndexToSplinePoints = groupBy(
+    final Map<int, List<modelspath.SplinePoint>> segmentIndexToSplinePoints =
+        groupBy(
       evaluetedPoints,
-      (modelspath.SplinePoint p) => p.segmentIndex,
+      (final modelspath.SplinePoint p) => p.segmentIndex,
     );
 
     // Draw the path each segment at a time
-    segmentIndexToSplinePoints.entries.forEach((e) {
+    segmentIndexToSplinePoints.entries
+        .forEach((final MapEntry<int, List<modelspath.SplinePoint>> e) {
       // Skip and don't draw hidden segments
       if (segments[e.key].isHidden) return;
 
-      final segmentColor = getSegmentColor(e.key);
+      final ui.Color segmentColor = getSegmentColor(e.key);
       drawPathShadow(canvas, e.value);
       drawPath(canvas, e.value, segmentColor);
       // drawWheelsPath(canvas, evaluetedPoints!);
@@ -97,67 +98,83 @@ class FieldPainter extends CustomPainter {
 
     // Get the 'isHidden' value for each point (large points with controls) according
     // to the segment data, keep all the points in the list to keep the point indexes
-    final segmentPointsWithIsHidden = points.asMap().entries.map((e) {
-      final pointSegments = segments.whereIndexed(
-        (index, segment) =>
+    final List<List<Object>> segmentPointsWithIsHidden =
+        points.asMap().entries.map((final MapEntry<int, Point> e) {
+      final Iterable<Segment> pointSegments = segments.whereIndexed(
+        (final int index, final Segment segment) =>
             segment.pointIndexes.contains(e.key) ||
             segment.pointIndexes.last + 1 == e.key,
       );
-      return [e.value, pointSegments.every((s) => s.isHidden)];
+      return <Object>[
+        e.value,
+        pointSegments.every((final Segment s) => s.isHidden)
+      ];
     }).toList();
 
     // Draw the path points (large points with controls)
-    segmentPointsWithIsHidden.asMap().entries.forEach((e) {
-      int index = e.key;
-      Point point = e.value[0] as Point;
-      bool isHidden = e.value[1] as bool;
+    segmentPointsWithIsHidden
+        .asMap()
+        .entries
+        .forEach((final MapEntry<int, List<Object>> e) {
+      final int index = e.key;
+      final Point point = e.value[0] as Point;
+      final bool isHidden = e.value[1] as bool;
 
       if (isHidden) return;
 
       drawPathPoint(
-          canvas,
-          point.position,
-          point.heading,
-          point.inControlPoint,
-          point.outControlPoint,
-          index == selectedPoint,
-          point.isStop,
-          enableHeadingEditing && selectedPoint == null,
-          enableControlEditing && selectedPoint == null,
-          point.useHeading,
-          index == 0,
-          index == points.length - 1);
+        canvas,
+        point.position,
+        point.heading,
+        point.inControlPoint,
+        point.outControlPoint,
+        index == selectedPoint,
+        point.isStop,
+        enableHeadingEditing && selectedPoint == null,
+        enableControlEditing && selectedPoint == null,
+        point.useHeading,
+        index == 0,
+        index == points.length - 1,
+      );
     });
 
-    for (final entery in dragPoints.asMap().entries) {
-      FullDraggingPoint draggingPoint = entery.value;
-      int index = entery.key;
+    for (final MapEntry<int, FullDraggingPoint> entery
+        in dragPoints.asMap().entries) {
+      final FullDraggingPoint draggingPoint = entery.value;
 
       if (!((draggingPoint.index == 0 &&
               draggingPoint.draggingPoint.type == PointType.inControl) ||
           (draggingPoint.index == points.length - 1 &&
               draggingPoint.draggingPoint.type == PointType.outControl))) {
         drawDragPoint(
-            canvas, points[draggingPoint.index], draggingPoint.draggingPoint);
+          canvas,
+          points[draggingPoint.index],
+          draggingPoint.draggingPoint,
+        );
       }
     }
   }
 
   void drawPointBackground(
-    Canvas canvas,
-    Offset position,
-    bool isSelected,
-    bool isStopPoint,
-    bool isFirstPoint,
-    bool isLastPoint,
+    final Canvas canvas,
+    final Offset position,
+    final bool isSelected,
+    final bool isStopPoint,
+    final bool isFirstPoint,
+    final bool isLastPoint,
   ) {
     final PointSettings currentPointSettings = pointSettings[PointType.path]!;
 
-    final color = getPointColor(currentPointSettings.color, isStopPoint,
-        isFirstPoint, isLastPoint, isSelected);
+    final ui.Color color = getPointColor(
+      currentPointSettings.color,
+      isStopPoint,
+      isFirstPoint,
+      isLastPoint,
+      isSelected,
+    );
 
     final Paint paint = Paint()..color = color;
-    final highlightPaint = Paint()
+    final ui.Paint highlightPaint = Paint()
       ..color = selectedPointHightlightColor
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, convertRadiusToSigma(5));
 
@@ -174,9 +191,9 @@ class FieldPainter extends CustomPainter {
   }
 
   void drawDragPoint(
-    Canvas canvas,
-    Point selectedPoint,
-    DraggingPoint dragPoint,
+    final Canvas canvas,
+    final Point selectedPoint,
+    final DraggingPoint dragPoint,
   ) {
     final PointSettings currentPointSettings = pointSettings[dragPoint.type]!;
     final Paint paint = Paint()..color = currentPointSettings.color;
@@ -184,38 +201,51 @@ class FieldPainter extends CustomPainter {
     switch (dragPoint.type) {
       case PointType.path:
         canvas.drawCircle(
-            dragPoint.position, currentPointSettings.radius, paint);
+          dragPoint.position,
+          currentPointSettings.radius,
+          paint,
+        );
         break;
       case PointType.inControl:
         continue control;
       control:
       case PointType.outControl:
-        Offset dragPosition = selectedPoint.position + dragPoint.position;
+        final Offset dragPosition = selectedPoint.position + dragPoint.position;
         canvas.drawCircle(dragPosition, currentPointSettings.radius, paint);
-        drawControlPoint(canvas, dragPoint.type, selectedPoint.position,
-            dragPoint.position, false, true);
+        drawControlPoint(
+          canvas,
+          dragPoint.type,
+          selectedPoint.position,
+          dragPoint.position,
+          false,
+          true,
+        );
         drawPointBackground(
-            canvas,
-            Offset(selectedPoint.position.dx + dragPoint.position.dx,
-                selectedPoint.position.dy + dragPoint.position.dy),
-            true,
-            false,
-            false,
-            false);
+          canvas,
+          Offset(
+            selectedPoint.position.dx + dragPoint.position.dx,
+            selectedPoint.position.dy + dragPoint.position.dy,
+          ),
+          true,
+          false,
+          false,
+          false,
+        );
 
         break;
       case PointType.heading:
-        Offset dragPosition = dragPoint.position;
-        double dragHeading = dragPosition.direction;
+        final Offset dragPosition = dragPoint.position;
+        final double dragHeading = dragPosition.direction;
         drawHeadingLine(canvas, selectedPoint.position, dragHeading, false);
         drawPointBackground(
-            canvas,
-            selectedPoint.position +
-                Offset.fromDirection(dragHeading, headingLength),
-            true,
-            false,
-            false,
-            false);
+          canvas,
+          selectedPoint.position +
+              Offset.fromDirection(dragHeading, headingLength),
+          true,
+          false,
+          false,
+          false,
+        );
         break;
       default:
     }
@@ -224,17 +254,17 @@ class FieldPainter extends CustomPainter {
   }
 
   void drawControlPoint(
-    Canvas canvas,
-    PointType pointType,
-    Offset position,
-    Offset control,
-    bool enableEdit,
-    bool isSelected,
+    final Canvas canvas,
+    final PointType pointType,
+    final Offset position,
+    final Offset control,
+    final bool enableEdit,
+    final bool isSelected,
   ) {
     final PointSettings settings = pointSettings[pointType]!;
     final Color color = settings.color;
 
-    final linePaint = Paint()
+    final ui.Paint linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = color
       ..strokeWidth = 1;
@@ -244,17 +274,21 @@ class FieldPainter extends CustomPainter {
     canvas.drawLine(position, edge, linePaint);
 
     if (enableEdit) {
-      final dotPaint = Paint()..color = color;
+      final ui.Paint dotPaint = Paint()..color = color;
       canvas.drawCircle(edge, settings.radius, dotPaint);
     }
   }
 
   void drawHeadingLine(
-      Canvas canvas, Offset position, double heading, enableEdit) {
+    final Canvas canvas,
+    final Offset position,
+    final double heading,
+    final bool enableEdit,
+  ) {
     final PointSettings pointSetting = pointSettings[PointType.heading]!;
     final Offset edge = position + Offset.fromDirection(heading, headingLength);
 
-    final paint = Paint()
+    final ui.Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = pointSetting.color
       ..strokeWidth = 3;
@@ -265,104 +299,144 @@ class FieldPainter extends CustomPainter {
     canvas.drawCircle(edge, circleRadius, paint);
 
     if (enableEdit) {
-      final dotPaint = Paint()..color = pointSetting.color;
+      final ui.Paint dotPaint = Paint()..color = pointSetting.color;
 
       canvas.drawCircle(edge, pointSetting.radius, dotPaint);
     }
   }
 
   void drawPathPoint(
-    Canvas canvas,
-    Offset position,
-    double heading,
-    Offset inControl,
-    Offset outControl,
-    bool isSelected,
-    bool isStopPoint,
-    bool enableHeadingEditing,
-    bool enableControlEditing,
-    bool useHeading,
-    bool isFirstPoint,
-    bool isLastPoint,
+    final Canvas canvas,
+    final Offset position,
+    final double heading,
+    final Offset inControl,
+    final Offset outControl,
+    final bool isSelected,
+    final bool isStopPoint,
+    final bool enableHeadingEditing,
+    final bool enableControlEditing,
+    final bool useHeading,
+    final bool isFirstPoint,
+    final bool isLastPoint,
   ) {
     drawPointBackground(
-        canvas, position, isSelected, isStopPoint, isFirstPoint, isLastPoint);
+      canvas,
+      position,
+      isSelected,
+      isStopPoint,
+      isFirstPoint,
+      isLastPoint,
+    );
     if (useHeading) {
       drawHeadingLine(
-          canvas, position, heading, enableHeadingEditing || isSelected);
+        canvas,
+        position,
+        heading,
+        enableHeadingEditing || isSelected,
+      );
     }
     if (!isFirstPoint) {
-      drawControlPoint(canvas, PointType.inControl, position, inControl,
-          enableControlEditing || isSelected, false);
+      drawControlPoint(
+        canvas,
+        PointType.inControl,
+        position,
+        inControl,
+        enableControlEditing || isSelected,
+        false,
+      );
     }
     if (!isLastPoint) {
-      drawControlPoint(canvas, PointType.outControl, position, outControl,
-          enableControlEditing || isSelected, false);
+      drawControlPoint(
+        canvas,
+        PointType.outControl,
+        position,
+        outControl,
+        enableControlEditing || isSelected,
+        false,
+      );
     }
   }
 
   void drawPath(
-    Canvas canvas,
-    List<modelspath.SplinePoint> evaluetedPoints,
-    Color color,
+    final Canvas canvas,
+    final List<modelspath.SplinePoint> evaluetedPoints,
+    final Color color,
   ) {
-    Paint paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
-    Path path = Path();
-    final pathPoints = evaluetedPoints.map((p) => p.position).toList();
+    final Path path = Path();
+    final List<ui.Offset> pathPoints = evaluetedPoints
+        .map((final modelspath.SplinePoint p) => p.position)
+        .toList();
 
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
   }
 
   void drawPathShadow(
-      Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
-    Paint paint = Paint()
+    final Canvas canvas,
+    final List<modelspath.SplinePoint> evaluetedPoints,
+  ) {
+    final Paint paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
 
-    final pathPoints = evaluetedPoints.map((p) => p.position).toList();
+    final List<ui.Offset> pathPoints = evaluetedPoints
+        .map((final modelspath.SplinePoint p) => p.position)
+        .toList();
 
-    Path path = Path();
+    final Path path = Path();
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
   }
 
   void drawWheelsPath(
-      Canvas canvas, List<modelspath.SplinePoint> evaluetedPoints) {
-    double robotWidth = robot.width;
+    final Canvas canvas,
+    final List<modelspath.SplinePoint> evaluetedPoints,
+  ) {
+    final double robotWidth = robot.width;
 
-    Paint paint = Paint()
+    final Paint paint = Paint()
       ..color = white.withOpacity(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
-    if (evaluetedPoints.length > 0) {
-      List<Offset> leftPoints =
-          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+    if (evaluetedPoints.isNotEmpty) {
+      final List<Offset> leftPoints = evaluetedPoints
+          .sublist(1)
+          .asMap()
+          .entries
+          .map((final MapEntry<int, modelspath.SplinePoint> e) {
         final Offset dist = evaluetedPoints[e.key + 1].position -
             evaluetedPoints[e.key].position;
         return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
-            .translate(evaluetedPoints[e.key + 1].position.dx,
-                evaluetedPoints[e.key + 1].position.dy);
+            .translate(
+          evaluetedPoints[e.key + 1].position.dx,
+          evaluetedPoints[e.key + 1].position.dy,
+        );
       }).toList();
-      List<Offset> rightPoints =
-          evaluetedPoints.sublist(1).asMap().entries.map((e) {
+      final List<Offset> rightPoints = evaluetedPoints
+          .sublist(1)
+          .asMap()
+          .entries
+          .map((final MapEntry<int, modelspath.SplinePoint> e) {
         final Offset dist = evaluetedPoints[e.key + 1].position -
             evaluetedPoints[e.key].position;
         return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
-            .translate(evaluetedPoints[e.key + 1].position.dx,
-                evaluetedPoints[e.key + 1].position.dy);
+            .translate(
+          evaluetedPoints[e.key + 1].position.dx,
+          evaluetedPoints[e.key + 1].position.dy,
+        );
       }).toList();
 
       // inspect(pathPoints);
-      Path leftPath = Path();
-      Path rightPath = Path();
+      final Path leftPath = Path();
+      final Path rightPath = Path();
 
       leftPath.addPolygon(leftPoints, false);
       canvas.drawPath(leftPath, paint);
@@ -373,25 +447,11 @@ class FieldPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return true;
-  }
+  // TODO: implement shouldRepaint
+  bool shouldRepaint(final CustomPainter oldDelegate) => true;
 }
 
 class FieldLoader extends StatefulWidget {
-  List<Point> points;
-  List<Segment> segments;
-  int? selectedPoint;
-  List<FullDraggingPoint> dragPoints;
-  bool enableHeadingEditing;
-  bool enableControlEditing;
-  List<modelspath.SplinePoint> evaluatedPoints;
-  Function(Offset) setFieldSizePixels;
-  Robot robot;
-  double imageZoom;
-  Offset imageOffset;
-
   FieldLoader(
     this.points,
     this.segments,
@@ -405,6 +465,17 @@ class FieldLoader extends StatefulWidget {
     this.imageZoom,
     this.imageOffset,
   );
+  final List<Point> points;
+  final List<Segment> segments;
+  final int? selectedPoint;
+  final List<FullDraggingPoint> dragPoints;
+  final bool enableHeadingEditing;
+  final bool enableControlEditing;
+  final List<modelspath.SplinePoint> evaluatedPoints;
+  final Function(Offset) setFieldSizePixels;
+  final Robot robot;
+  final double imageZoom;
+  final Offset imageOffset;
 
   @override
   _FieldLoaderState createState() => _FieldLoaderState();
@@ -425,13 +496,13 @@ class _FieldLoaderState extends State<FieldLoader> {
     }
 
     final ByteData data =
-        await rootBundle.load('assets/images/frc_2023_field.png');
+        await rootBundle.load("assets/images/frc_2023_field.png");
     globalImage = await loadImage(Uint8List.view(data.buffer));
   }
 
-  Future<ui.Image> loadImage(Uint8List img) async {
-    final Completer<ui.Image> completer = Completer();
-    ui.decodeImageFromList(img, (ui.Image img) {
+  Future<ui.Image> loadImage(final Uint8List img) async {
+    final Completer<ui.Image> completer = Completer<ui.Image>();
+    ui.decodeImageFromList(img, (final ui.Image img) {
       setState(() {
         isImageloaded = true;
       });
@@ -441,43 +512,45 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Widget _buildImage() {
-    double width = 0.7 * MediaQuery.of(context).size.width;
-    double height = 0.6 * MediaQuery.of(context).size.height;
+    final double width = 0.7 * MediaQuery.of(context).size.width;
+    final double height = 0.6 * MediaQuery.of(context).size.height;
     widget.setFieldSizePixels(Offset(width, height));
 
-    if (this.isImageloaded) {
+    if (isImageloaded) {
       // if (false) {
       return Container(
-          decoration: BoxDecoration(boxShadow: [
+        decoration: BoxDecoration(
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 14,
-              offset: Offset(0, 4), // changes position of shadow
+              offset: const Offset(0, 4), // changes position of shadow
             ),
-          ]),
-          child: CustomPaint(
-              painter: FieldPainter(
-                globalImage!,
-                widget.points,
-                widget.segments,
-                widget.selectedPoint,
-                widget.dragPoints,
-                widget.enableHeadingEditing,
-                widget.enableControlEditing,
-                widget.evaluatedPoints,
-                widget.robot,
-                widget.imageZoom,
-                widget.imageOffset,
-              ),
-              size: Size(width, height)));
+          ],
+        ),
+        child: CustomPaint(
+          painter: FieldPainter(
+            globalImage!,
+            widget.points,
+            widget.segments,
+            widget.selectedPoint,
+            widget.dragPoints,
+            widget.enableHeadingEditing,
+            widget.enableControlEditing,
+            widget.evaluatedPoints,
+            widget.robot,
+            widget.imageZoom,
+            widget.imageOffset,
+          ),
+          size: Size(width, height),
+        ),
+      );
     } else {
-      return Center(child: Text('loading'));
+      return const Center(child: Text("loading"));
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return _buildImage();
-  }
+  Widget build(final BuildContext context) => _buildImage();
 }

@@ -1,25 +1,23 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:pathfinder/models/robot.dart';
-import 'package:pathfinder/rpc/protos/PathFinder.pb.dart' as rpc;
+import "package:flutter/cupertino.dart";
+import "package:flutter/material.dart";
+import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 
 abstract class TabAction {
   @override
-  String toString() {
-    return '$runtimeType';
-  }
+  String toString() => "$runtimeType";
 }
 
 // UI actions
 class SetSideBarVisibility extends TabAction {
-  final bool visibility;
   SetSideBarVisibility(this.visibility);
+  final bool visibility;
 }
 
 class ObjectSelected extends TabAction {
+  ObjectSelected(this.index, this.type);
   final int index;
   final Type type;
-  ObjectSelected(this.index, this.type);
 }
 
 class ObjectUnselected extends TabAction {
@@ -27,25 +25,25 @@ class ObjectUnselected extends TabAction {
 }
 
 class SetZoomLevel extends TabAction {
+  SetZoomLevel(this.zoomLevel, {this.pan});
   final double zoomLevel;
   final Offset? pan;
-  SetZoomLevel(this.zoomLevel, {this.pan});
 }
 
 class SetPan extends TabAction {
-  final Offset pan;
   SetPan(this.pan);
+  final Offset pan;
 }
 
 // Server actions
 class ServerError extends TabAction {
-  final String? error;
   ServerError(this.error);
+  final String? error;
 }
 
 class SplineCalculated extends TabAction {
-  final List<rpc.SplineResponse_Point> points;
   SplineCalculated(this.points);
+  final List<rpc.SplineResponse_Point> points;
 }
 
 class TrajectoryInProgress extends TabAction {
@@ -53,32 +51,19 @@ class TrajectoryInProgress extends TabAction {
 }
 
 class TrajectoryCalculated extends TabAction {
-  final List<rpc.TrajectoryResponse_SwervePoint> points;
   TrajectoryCalculated(this.points);
+  final List<rpc.TrajectoryResponse_SwervePoint> points;
 }
 
 // Point actions
 class AddPointToPath extends TabAction {
+  AddPointToPath(this.position, this.segmentIndex, this.insertIndex);
   final Offset? position;
   final int segmentIndex;
   final int insertIndex;
-
-  AddPointToPath(this.position, this.segmentIndex, this.insertIndex);
 }
 
 class EditPoint extends TabAction {
-  final int pointIndex;
-  final Offset? position;
-  final Offset? inControlPoint;
-  final Offset? outControlPoint;
-  final double? heading;
-  final bool? useHeading;
-  final List<String>? actions;
-  final bool? cutSegment;
-  final bool? isStop;
-  final String? action;
-  final double? actionTime;
-
   EditPoint({
     required this.pointIndex,
     this.position,
@@ -92,34 +77,45 @@ class EditPoint extends TabAction {
     this.action,
     this.actionTime,
   });
+  final int pointIndex;
+  final Offset? position;
+  final Offset? inControlPoint;
+  final Offset? outControlPoint;
+  final double? heading;
+  final bool? useHeading;
+  final List<String>? actions;
+  final bool? cutSegment;
+  final bool? isStop;
+  final String? action;
+  final double? actionTime;
 }
 
 class DeletePointFromPath extends TabAction {
-  final int index;
   DeletePointFromPath(this.index);
+  final int index;
 }
 
 class SetFieldSizePixels extends TabAction {
-  final Offset size;
   SetFieldSizePixels(this.size);
+  final Offset size;
 }
 
 class EditSegment extends TabAction {
-  final int index;
-  final double? velocity;
-  final bool? isHidden;
   EditSegment({
     required this.index,
     this.velocity,
     this.isHidden,
   });
+  final int index;
+  final double? velocity;
+  final bool? isHidden;
 }
 
 class EditRobot extends TabAction {
-  final Robot robot;
   EditRobot({
     required this.robot,
   });
+  final Robot robot;
 }
 
 class ToggleHeading extends TabAction {}
@@ -127,26 +123,24 @@ class ToggleHeading extends TabAction {}
 class ToggleControl extends TabAction {}
 
 class TrajectoryFileNameChanged extends TabAction {
-  final String fileName;
   TrajectoryFileNameChanged(this.fileName);
+  final String fileName;
 }
 
 class OpenFile extends TabAction {
-  final String fileContent;
-  final String fileName;
-
   OpenFile({
     required this.fileContent,
     required this.fileName,
   });
+  final String fileContent;
+  final String fileName;
 }
 
 class SaveFile extends TabAction {
-  final String fileName;
-
   SaveFile({
     required this.fileName,
   });
+  final String fileName;
 }
 
 class NewAuto extends TabAction {
