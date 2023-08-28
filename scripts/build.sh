@@ -5,7 +5,7 @@ rm -rf $OUTPUT_DIR
 
 echo "Building flutter"
 cd gui
-flutter build windows --no-sound-null-safety
+flutter build windows
 cd ../
 
 echo "Building go"
