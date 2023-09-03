@@ -51,7 +51,8 @@ class History {
   // Json
   History.fromJson(final Map<String, dynamic> json)
       : pathHistory = List<HistoryStamp>.from(
-          (json["tabHistory"] as List<Map<String, dynamic>>)
+          (json["tabHistory"] as List<dynamic>)
+              .cast<Map<String, dynamic>>()
               .map(HistoryStamp.fromJson),
         ),
         currentStateIndex = json["currentStateIndex"] as int;

@@ -24,14 +24,18 @@ class Path {
   // Json
   Path.fromJson(final Map<String, dynamic> json)
       : segments = List<Segment>.from(
-          (json["segments"] as List<Map<String, dynamic>>)
+          (json["segments"] as List<dynamic>)
+              .cast<Map<String, dynamic>>()
               .map(Segment.fromJson),
         ),
         points = List<Point>.from(
-          (json["points"] as List<Map<String, dynamic>>).map(Point.fromJson),
+          (json["points"] as List<dynamic>)
+              .cast<Map<String, dynamic>>()
+              .map(Point.fromJson),
         ),
         evaluatedPoints = List<SplinePoint>.from(
-          (json["evaluatedPoints"] as List<Map<String, dynamic>>)
+          (json["evaluatedPoints"] as List<dynamic>)
+              .cast<Map<String, dynamic>>()
               .map(SplinePoint.fromJson),
         ),
         autoDuration = (json["autoDuration"] as double?) ?? 0.0;

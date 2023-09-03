@@ -18,7 +18,7 @@ class Segment {
 
   // Json
   Segment.fromJson(final Map<String, dynamic> json)
-      : pointIndexes = (json["pointIndexes"] as List<int>),
+      : pointIndexes = (json["pointIndexes"] as List<dynamic>).cast<int>(),
         maxVelocity = json["maxVelocity"] as double,
         isHidden = json["isHidden"] as bool,
         evaluatedPoints = null,
