@@ -1,6 +1,7 @@
 import "dart:async";
 import "dart:math";
 
+import "package:collection/collection.dart";
 import "package:flutter/gestures.dart";
 import "package:pathfinder/models/path.dart";
 import "package:pathfinder/models/robot.dart";
@@ -251,17 +252,25 @@ class _PathEditorState extends State<_PathEditor> {
     final Offset realTapPosition =
         (tapPosition - widget.pathProps.imageOffset) /
             widget.pathProps.imageZoom;
-    final Segment? segment = segments
-        .where((final Segment segment) => segment.pointIndexes.contains(index))
+    final (int, Segment)? segment = segments
+        .mapIndexed(
+          (final int index, final Segment element) => (index, element),
+        )
+        .where(
+          (final (int, Segment) segment) =>
+              segment.$2.pointIndexes.contains(index),
+        )
         .singleOrNull;
     // if(point selection click be ignored) return null;
     if (segment != null && // Click isn't for a new point
-            segment.isHidden // Segment is hidden
+            segment.$2.isHidden // Segment is hidden
         ) {
       // If a segment is hidden it's first point is still shown so it should be clickable so
-      final bool isFirstPointInSegment = segment.pointIndexes.first != index;
-      final bool isFirstSegment = segments.firstOrNull == segment;
-      if (isFirstPointInSegment || isFirstSegment) {
+      final bool isFirstPointInSegment = segment.$2.pointIndexes.first == index;
+      final bool isFirstSegment = segments.firstOrNull == segment.$2;
+      if (!isFirstPointInSegment ||
+          isFirstSegment ||
+          isFirstPointInSegment && segments[segment.$1 - 1].isHidden) {
         return null;
       }
     }
