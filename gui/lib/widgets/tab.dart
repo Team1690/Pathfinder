@@ -38,7 +38,7 @@ class BroswerTab extends StatelessWidget {
                 iconSize: 16,
                 onPressed: () {},
               ),
-            )
+            ),
           ],
         ),
       );

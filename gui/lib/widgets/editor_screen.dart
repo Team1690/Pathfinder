@@ -141,13 +141,13 @@ class _EditorScreenState extends State<EditorScreen> {
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(
                   width: 350,
-                )
+                ),
               ],
             ),
           ),

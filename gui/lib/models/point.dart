@@ -89,7 +89,7 @@ class Point {
         action,
         actionTime,
         cutSegment,
-        isStop
+        isStop,
       ]);
 
   @override

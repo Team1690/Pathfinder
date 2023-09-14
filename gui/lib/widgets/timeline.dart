@@ -83,7 +83,7 @@ class PathTimeline extends StatelessWidget {
                       )
                       .toList()
                     ..removeLast(),
-                )
+                ),
               ],
             ),
           ],

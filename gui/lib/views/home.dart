@@ -385,6 +385,8 @@ class SettingsDetails extends StatelessWidget {
   final TabState tabState;
   final Function(int index, Point point) onPointEdit;
   final Function(Robot robot) onRobotEdit;
+  final TextEditingController inAngleController = TextEditingController();
+  final TextEditingController outAngleController = TextEditingController();
 
   CardSettingsText _cardSettingsDouble({
     required final String label,
@@ -393,23 +395,33 @@ class SettingsDetails extends StatelessWidget {
     final bool allowNegative = true,
     final int fractionDigits = 3,
     final String unitLabel = "m",
-  }) =>
-      CardSettingsText(
-        label: label,
-        // Remove trailing zeros and set to the wanted fraction digits
-        initialValue: double.parse(initialValue.toStringAsFixed(fractionDigits))
-            .toString(),
-        hintText: label,
-        unitLabel: unitLabel,
-        validator: (final String? value) {
-          if (value == null) return "$label is required.";
-          if (double.tryParse(value) == null) return "Not a number";
-          if (!allowNegative && double.parse(value) < 0) return "No negatives";
-          return null;
-        },
-        onChanged: (final String val) =>
-            onChanged(double.tryParse(val) ?? initialValue),
-      );
+    final TextEditingController? controller,
+  }) {
+    final String text =
+        double.parse(initialValue.toStringAsFixed(fractionDigits)).toString();
+    return CardSettingsText(
+      controller: controller
+        ?..text = text
+        ..selection = TextSelection(
+          baseOffset: text.length - 1,
+          extentOffset: text.length - 1,
+        ),
+      label: label,
+      // Remove trailing zeros and set to the wanted fraction digits
+      initialValue:
+          double.parse(initialValue.toStringAsFixed(fractionDigits)).toString(),
+      hintText: label,
+      unitLabel: unitLabel,
+      validator: (final String? value) {
+        if (value == null) return "$label is required.";
+        if (double.tryParse(value) == null) return "Not a number";
+        if (!allowNegative && double.parse(value) < 0) return "No negatives";
+        return null;
+      },
+      onChanged: (final String val) =>
+          onChanged(double.tryParse(val) ?? initialValue),
+    );
+  }
 
   @override
   Widget build(final BuildContext context) {
@@ -633,11 +645,14 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
+                  controller: inAngleController,
                   label: "In Angle",
                   initialValue: degrees(pointData.inControlPoint.direction),
                   unitLabel: "°",
                   fractionDigits: 1,
                   onChanged: (final double value) {
+                    final double opposite =
+                        radians(value > 0 ? value + 180 : value - 180);
                     onPointEdit(
                       index,
                       pointData.copyWith(
@@ -645,8 +660,13 @@ class SettingsDetails extends StatelessWidget {
                           radians(value),
                           pointData.inControlPoint.distance,
                         ),
+                        outControlPoint: Offset.fromDirection(
+                          opposite,
+                          pointData.inControlPoint.distance,
+                        ),
                       ),
                     );
+                    outAngleController.text = opposite.toString();
                   },
                 ),
                 _cardSettingsDouble(
@@ -666,11 +686,14 @@ class SettingsDetails extends StatelessWidget {
                   },
                 ),
                 _cardSettingsDouble(
+                  controller: outAngleController,
                   label: "Out Angle",
                   initialValue: degrees(pointData.outControlPoint.direction),
                   fractionDigits: 1,
                   unitLabel: "°",
                   onChanged: (final double value) {
+                    final double opposite =
+                        radians(value > 0 ? value + 180 : value - 180);
                     onPointEdit(
                       index,
                       pointData.copyWith(
@@ -678,8 +701,13 @@ class SettingsDetails extends StatelessWidget {
                           radians(value),
                           pointData.outControlPoint.distance,
                         ),
+                        inControlPoint: Offset.fromDirection(
+                          opposite,
+                          pointData.inControlPoint.direction,
+                        ),
                       ),
                     );
+                    inAngleController.text = opposite.toString();
                   },
                 ),
                 CardSettingsSwitch(
@@ -748,9 +776,9 @@ class SettingsDetails extends StatelessWidget {
                     onChanged: (final double value) {
                       onPointEdit(index, pointData.copyWith(actionTime: value));
                     },
-                  )
+                  ),
               ],
-            )
+            ),
           ],
           // );
           // },

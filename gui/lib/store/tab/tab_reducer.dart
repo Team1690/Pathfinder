@@ -78,7 +78,7 @@ TabState tabStateReducer(final TabState tabState, final dynamic action) {
           // and isn't correct here (will be calculated anyway in the redo/undo thunk)
           evaluatedPoints: <SplinePoint>[],
         ),
-      )
+      ),
     ];
     int newCurrentIndex = newTabState.history.currentStateIndex + 1;
 

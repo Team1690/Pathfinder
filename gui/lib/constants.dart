@@ -88,5 +88,5 @@ const List<String> autoActions = <String>[
   // "Cube Shoot",
   // "Cone Shoot",
   "Climb",
-  "Travel"
+  "Travel",
 ];

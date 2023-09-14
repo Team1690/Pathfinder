@@ -31,7 +31,7 @@ Map<PointType, PointSettings> pointSettings = <PointType, PointSettings>{
   PointType.path: PointSettings(const Color(0xbbdddddd), 8),
   PointType.inControl: PointSettings(Colors.orange, 6),
   PointType.outControl: PointSettings(Colors.yellow, 6),
-  PointType.heading: PointSettings(const Color(0xffc80000), 6)
+  PointType.heading: PointSettings(const Color(0xffc80000), 6),
 };
 
 class FieldPainter extends CustomPainter {
@@ -107,7 +107,7 @@ class FieldPainter extends CustomPainter {
       );
       return <Object>[
         e.value,
-        pointSegments.every((final Segment s) => s.isHidden)
+        pointSegments.every((final Segment s) => s.isHidden),
       ];
     }).toList();
 

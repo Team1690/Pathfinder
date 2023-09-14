@@ -92,7 +92,7 @@ class Robot {
         maxJerk,
         maxVelocity,
         cycleTime,
-        angularAccelerationPercentage
+        angularAccelerationPercentage,
       ]);
 
   @override

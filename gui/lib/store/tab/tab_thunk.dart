@@ -92,7 +92,6 @@ ThunkAction<AppState> endHeadingDragThunk(
 ThunkAction<AppState> updateSplineThunk() =>
     (final Store<AppState> store) async {
       store.dispatch(calculateSplineThunk());
-      // TODO: throttle the trejectory request before adding them to here
       // store.dispatch(calculateTrajectoryThunk());
     };
 
