@@ -651,8 +651,7 @@ class SettingsDetails extends StatelessWidget {
                   unitLabel: "°",
                   fractionDigits: 1,
                   onChanged: (final double value) {
-                    final double opposite =
-                        radians(value > 0 ? value + 180 : value - 180);
+                    final double opposite = radians(value + 180);
                     onPointEdit(
                       index,
                       pointData.copyWith(
@@ -660,10 +659,12 @@ class SettingsDetails extends StatelessWidget {
                           radians(value),
                           pointData.inControlPoint.distance,
                         ),
-                        outControlPoint: Offset.fromDirection(
-                          opposite,
-                          pointData.inControlPoint.distance,
-                        ),
+                        outControlPoint: pointData.isStop
+                            ? pointData.outControlPoint
+                            : Offset.fromDirection(
+                                opposite,
+                                pointData.outControlPoint.distance,
+                              ),
                       ),
                     );
                     outAngleController.text = opposite.toString();
@@ -692,8 +693,8 @@ class SettingsDetails extends StatelessWidget {
                   fractionDigits: 1,
                   unitLabel: "°",
                   onChanged: (final double value) {
-                    final double opposite =
-                        radians(value > 0 ? value + 180 : value - 180);
+                    final double opposite = radians(value + 180);
+
                     onPointEdit(
                       index,
                       pointData.copyWith(
@@ -701,10 +702,12 @@ class SettingsDetails extends StatelessWidget {
                           radians(value),
                           pointData.outControlPoint.distance,
                         ),
-                        inControlPoint: Offset.fromDirection(
-                          opposite,
-                          pointData.inControlPoint.direction,
-                        ),
+                        inControlPoint: pointData.isStop
+                            ? pointData.inControlPoint
+                            : Offset.fromDirection(
+                                opposite,
+                                pointData.inControlPoint.direction,
+                              ),
                       ),
                     );
                     inAngleController.text = opposite.toString();
