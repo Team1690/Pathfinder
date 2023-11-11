@@ -20,30 +20,17 @@ func NewBezier(points []vector.Vector) *Bezier {
 }
 
 func (b *Bezier) Evaluate(s float64) vector.Vector {
-	result := vector.Zero()
-
+	var pointsPolynomials []PolynomialAndPoint
 	for index, point := range b.Points {
-		pointFactor := utils.GetBernstein(b.degree, index)(s)
-		result = result.Add(point.Scale(pointFactor))
+		polynomial := utils.GetBernstein(b.degree, index)
+		pointsPolynomials = append(pointsPolynomials, PolynomialAndPoint{point: point, polynomial: polynomial})
 	}
 
-	return result
+	return evaluateBasedOnPolynomaials(s, pointsPolynomials)
 }
 
 func (b *Bezier) Length() float64 {
-	length := 0.0
-
-	const dt float64 = 0.005
-
-	prevPosition := vector.Zero()
-
-	for t := 0.0; t <= 1; t += dt {
-		currentPosition := b.Evaluate(t)
-		length += currentPosition.Sub(prevPosition).Norm()
-		prevPosition = currentPosition
-	}
-
-	return length
+	return Length(b)
 }
 
 func (b *Bezier) Derivative() Spline {
