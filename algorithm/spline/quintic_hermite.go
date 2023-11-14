@@ -6,9 +6,13 @@ import (
 )
 
 type QuinticHermite struct {
+	DefaultSplineImpl
+
 	Points      []vector.Vector
 	Polynomials []utils.Polynomial
 }
+
+var _ Spline = (*QuinticHermite)(nil)
 
 func NewQuinticHermite(p0, p1, v0, v1, a0, a1 vector.Vector) *QuinticHermite {
 	return &QuinticHermite{
@@ -61,9 +65,6 @@ func (b *QuinticHermite) Evaluate(s float64) vector.Vector {
 	return evaluateBasedOnPolynomaials(s, pointsPolynomials)
 }
 
-func (b *QuinticHermite) Length() float64 {
-	return Length(b)
-}
 func (s *QuinticHermite) Derivative() Spline {
 	var derivativeOfPolynomials []utils.Polynomial
 

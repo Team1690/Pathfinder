@@ -6,6 +6,8 @@ import (
 )
 
 type Bezier struct {
+	DefaultSplineImpl
+
 	Points []vector.Vector
 	degree int
 }
@@ -27,10 +29,6 @@ func (b *Bezier) Evaluate(s float64) vector.Vector {
 	}
 
 	return evaluateBasedOnPolynomaials(s, pointsPolynomials)
-}
-
-func (b *Bezier) Length() float64 {
-	return Length(b)
 }
 
 func (b *Bezier) Derivative() Spline {
