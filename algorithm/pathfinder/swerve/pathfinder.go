@@ -1,4 +1,4 @@
-package pathfinder
+package swerve
 
 import (
 	"math"
@@ -46,10 +46,10 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	segmentClassifier := NewSegmentClassifier(segments)
 
 	pathDerivative := path.Derivative()
-	ds := deltaDistanceForEvaluation / (pathDerivative.Evaluate(0).Norm() * float64(path.NumberOfSplines))
+	ds := path.CalculateDsFromDd(pathDerivative, 0, deltaDistanceForEvaluation)
 
 	for s := ds; s <= 1; s += ds {
-		ds = deltaDistanceForEvaluation / (pathDerivative.Evaluate(s).Norm() * float64(path.NumberOfSplines))
+		ds = path.CalculateDsFromDd(pathDerivative, s, deltaDistanceForEvaluation)
 
 		point := TrajectoryPoint{S: s, Position: path.Evaluate(s)}
 

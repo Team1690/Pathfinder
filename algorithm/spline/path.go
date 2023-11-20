@@ -16,7 +16,10 @@ type Path struct {
 func NewPath(splines ...Spline) *Path {
 	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines)), NumberOfSplines: len(splines)}
 }
+func (p *Path) CalculateDsFromDd(pathDerivative Spline, s float64, deltaDistanceForEvaluation float64) float64 {
+	return deltaDistanceForEvaluation / (pathDerivative.Evaluate(s).Norm() * float64(p.NumberOfSplines))
 
+}
 func (p *Path) Length() float64 {
 	if p.length != nil {
 		return *p.length

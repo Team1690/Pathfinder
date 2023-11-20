@@ -1,4 +1,4 @@
-package pathfinder
+package swerve
 
 import (
 	"github.com/Team1690/Pathfinder/rpc"

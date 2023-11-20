@@ -7,7 +7,8 @@ import (
 	"net/http"
 
 	"github.com/Team1690/Pathfinder/export"
-	"github.com/Team1690/Pathfinder/pathfinder"
+	"github.com/Team1690/Pathfinder/pathfinder/swerve"
+	"github.com/Team1690/Pathfinder/pathfinder/tank"
 	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/spline"
 	"github.com/Team1690/Pathfinder/utils/plot"
@@ -42,7 +43,7 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 
 	evaluatedPoints := path.EvaluateAtInterval(float64(r.EvaluatedPointsInterval))
 
-	segmentClassifier := pathfinder.NewSegmentClassifier(r.Segments)
+	segmentClassifier := swerve.NewSegmentClassifier(r.Segments)
 
 	var responsePoints []*rpc.SplineResponse_Point
 	for index, evaluatedPoint := range evaluatedPoints {
@@ -99,18 +100,18 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.Errorf("error in init path: %w", err)
 	}
 
-	robot := toRobotParams(rpcRobot)
+	robot := toSwerveRobotParams(rpcRobot)
 
-	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, section.Segments)
+	trajectory, err := swerve.CreateTrajectoryPointArray(path, robot, section.Segments)
 	if err != nil {
 		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
 	}
 
-	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
+	trajectory2D := swerve.Get2DTrajectory(trajectory, path)
 
 	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
 	for _, point := range trajectory2D {
-		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(&point))
+		swerveTrajectory = append(swerveTrajectory, swerve.ToRpcSwervePoint(&point))
 	}
 
 	return swerveTrajectory, nil
@@ -136,8 +137,19 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 	return path, nil
 }
 
-func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {
-	return &pathfinder.RobotParameters{
+func toTankRobotParams(rpcRobot *rpc.TrajectoryRequest_TankRobotParams) *tank.RobotParameters {
+	return &tank.RobotParameters{
+		Width:           float64(rpcRobot.Width),
+		Height:          float64(rpcRobot.Height),
+		MaxVelocity:     float64(rpcRobot.MaxVelocity),
+		MaxAcceleration: float64(rpcRobot.MaxAcceleration),
+		MaxJerk:         float64(rpcRobot.MaxJerk),
+		CycleTime:       float64(rpcRobot.CycleTime),
+	}
+}
+
+func toSwerveRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *swerve.RobotParameters {
+	return &swerve.RobotParameters{
 		CycleTime:            float64(rpcRobot.CycleTime),
 		MaxVelocity:          float64(rpcRobot.MaxVelocity),
 		MaxAcceleration:      float64(rpcRobot.MaxAcceleration),
