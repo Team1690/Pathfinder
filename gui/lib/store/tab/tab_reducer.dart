@@ -14,6 +14,8 @@ import "package:redux/redux.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_state.dart";
 
+import "package:pathfinder/models/spline_point.dart";
+
 Reducer<TabState> applyReducers =
     combineReducers<TabState>(<TabState Function(TabState, dynamic)>[
   TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),
