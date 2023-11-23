@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -56,7 +57,10 @@ func startAlgorithmServer(port *int, logger *log.Logger) {
 }
 
 func startGui(logger *log.Logger, wg *sync.WaitGroup) {
-	err := exec.Command("pathfinder.exe").Run()
+	err := exec.Command("./pathfinder.exe").Run()
+	if errors.Is(err, exec.ErrDot) {
+		err = nil
+	}
 	if err != nil {
 		log.Fatalf("Failed to run GUI: %v", err)
 	}
