@@ -1,11 +1,19 @@
 module github.com/Team1690/Pathfinder
 
-go 1.16
+go 1.21
 
 require (
-	github.com/go-echarts/go-echarts/v2 v2.2.4
-	github.com/jszwec/csvutil v1.6.0
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/grpc v1.42.0
-	google.golang.org/protobuf v1.27.1
+	github.com/go-echarts/go-echarts/v2 v2.3.2
+	github.com/jszwec/csvutil v1.8.0
+	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
+	google.golang.org/grpc v1.59.0
+	google.golang.org/protobuf v1.31.0
+)
+
+require (
+	github.com/golang/protobuf v1.5.3 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 )
