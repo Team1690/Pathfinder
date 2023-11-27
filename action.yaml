@@ -1,8 +1,0 @@
-name: build for pathfinder
-description: Builds the pathfinder using the appropiate scripts
-
-runs:
-  using: "composite"
-  steps:
-    - run: $GITHUB_ACTION_PATH/scripts/run.sh
-      shell: bash
