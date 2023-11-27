@@ -177,7 +177,7 @@ class _PathEditorState extends State<PathEditor> {
 
                 pressedKeys.add(event.logicalKey);
               }
-            } else if (event is RawKeyUpEvent) {
+            } else if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.backspace &&
                   (pressedKeys.contains(LogicalKeyboardKey.shiftLeft) ||
                       pressedKeys.contains(LogicalKeyboardKey.shiftRight)) &&

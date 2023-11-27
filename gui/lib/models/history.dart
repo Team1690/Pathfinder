@@ -43,10 +43,9 @@ class History {
     required this.currentStateIndex,
   });
 
-  factory History.initial() => History(
-        pathHistory: <HistoryStamp>[HistoryStamp.initial()],
-        currentStateIndex: 0,
-      );
+  History.initial()
+      : pathHistory = <HistoryStamp>[HistoryStamp.initial()],
+        currentStateIndex = 0;
 
   // Json
   History.fromJson(final Map<String, dynamic> json)
