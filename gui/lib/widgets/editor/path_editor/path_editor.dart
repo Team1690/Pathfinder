@@ -2,6 +2,7 @@ import "dart:async";
 import "dart:math";
 import "package:collection/collection.dart";
 import "package:flutter/gestures.dart";
+import "package:pathfinder/models/shortcut.dart";
 import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
 import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:flutter/material.dart";
@@ -36,7 +37,6 @@ class PathEditor extends StatefulWidget {
 
 class _PathEditorState extends State<PathEditor> {
   _PathEditorState();
-  Set<LogicalKeyboardKey> pressedKeys = <LogicalKeyboardKey>{};
   FullDraggingPoint? dragPoint;
   List<FullDraggingPoint> dragPoints = <FullDraggingPoint>[];
 
@@ -160,475 +160,515 @@ class _PathEditorState extends State<PathEditor> {
   }
 
   @override
-  Widget build(final BuildContext context) => RawKeyboardListener(
-        autofocus: true,
-        focusNode: FocusNode(),
-        onKey: (final RawKeyEvent event) {
-          setState(() {
-            if (event is RawKeyDownEvent) {
-              if (!pressedKeys.contains(event.logicalKey)) {
-                if (event.logicalKey == LogicalKeyboardKey.keyH) {
-                  widget.pathProps.toggleHeading();
-                } else if (event.logicalKey == LogicalKeyboardKey.keyG) {
-                  widget.pathProps.toggleControl();
-                } else if (event.logicalKey == LogicalKeyboardKey.escape) {
-                  widget.pathProps.unSelectPoint();
-                }
-
-                pressedKeys.add(event.logicalKey);
-              }
-            } else if (event is RawKeyDownEvent) {
-              if (event.logicalKey == LogicalKeyboardKey.backspace &&
-                  (pressedKeys.contains(LogicalKeyboardKey.shiftLeft) ||
-                      pressedKeys.contains(LogicalKeyboardKey.shiftRight)) &&
-                  widget.pathProps.selectedPointIndex != null) {
-                widget.pathProps
-                    .deletePoint(widget.pathProps.selectedPointIndex!);
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.keyZ) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.pathUndo();
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.keyY) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.pathRedo();
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.keyS) {
-                // Handle ctrl press
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  // Handle ctrl+shift
-                  if (pressedKeys.contains(LogicalKeyboardKey.shiftLeft) ||
-                      pressedKeys.contains(LogicalKeyboardKey.shiftRight)) {
-                    widget.pathProps.saveFileAs();
-                  } else {
-                    widget.pathProps.saveFile();
-                  }
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.equal) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps
-                      .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.minus) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps
-                      .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.setImageOffset(
-                    widget.pathProps.imageOffset + Offset(imageOffsetDiff, 0),
-                  );
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.setImageOffset(
-                    widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
-                  );
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.setImageOffset(
-                    widget.pathProps.imageOffset + Offset(0, imageOffsetDiff),
-                  );
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.setImageOffset(
-                    widget.pathProps.imageOffset - Offset(0, imageOffsetDiff),
-                  );
-                }
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.digit0) {
-                if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                    pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                  widget.pathProps.setImageZoom(1);
-                  widget.pathProps.setImageOffset(Offset.zero);
-                }
-              }
-
-              pressedKeys.remove(event.logicalKey);
+  Widget build(final BuildContext context) => CallbackShortcuts(
+        bindings: <ShortcutActivator, VoidCallback>{
+          noZoomShortcut.activator: () {
+            widget.pathProps.setImageZoom(1);
+            widget.pathProps.setImageOffset(Offset.zero);
+          },
+          toggleHeading.activator: () {
+            widget.pathProps.toggleHeading();
+          },
+          toggleControl.activator: () {
+            widget.pathProps.toggleControl();
+          },
+          unSelectPoint.activator: () {
+            widget.pathProps.unSelectPoint();
+          },
+          deletePoint.activator: () {
+            if (widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps
+                  .deletePoint(widget.pathProps.selectedPointIndex!);
             }
-          });
+          },
+          undo.activator: () {
+            widget.pathProps.pathUndo();
+          },
+          redo.activator: () {
+            widget.pathProps.pathRedo();
+          },
+          save.activator: () {
+            widget.pathProps.saveFile();
+          },
+          saveAs.activator: () {
+            widget.pathProps.saveFileAs();
+          },
+          zoomIn.activator: () {
+            widget.pathProps
+                .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
+          },
+          zoomOut.activator: () {
+            widget.pathProps
+                .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
+          },
         },
-        child: Center(
-          child: Stack(
-            children: <Widget>[
-              Listener(
-                onPointerSignal: (final PointerSignalEvent pointerSignal) {
-                  if (pointerSignal is PointerScrollEvent) {
-                    if (scrollTimer != null) {
-                      scrollTimer!.cancel();
-                    }
+        /*
+        : (final RawKeyEvent event) {
+          if (event is RawKeyDownEvent) {
 
-                    // Set a timer that will sync the local state with the global state
-                    scrollTimer =
-                        new Timer(const Duration(milliseconds: 100), () {
-                      if (isScrolling) {
-                        if (localImageOffsetAddition != Offset.zero ||
-                            localImageZoomAddition != 0) {
-                          widget.pathProps.setZoomAndOffset(
-                            widget.pathProps.imageZoom + localImageZoomAddition,
-                            widget.pathProps.imageOffset +
-                                localImageOffsetAddition,
-                          );
+            if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.setImageOffset(
+                  widget.pathProps.imageOffset + Offset(imageOffsetDiff, 0),
+                );
+              }
+            }
 
-                          setState(() {
-                            localImageOffsetAddition = Offset.zero;
-                            localImageZoomAddition = 0;
-                            isScrolling = false;
-                          });
-                        }
-                      }
-                    });
+            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.setImageOffset(
+                  widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
+                );
+              }
+            }
 
-                    final double currentZoom =
-                        widget.pathProps.imageZoom + localImageZoomAddition;
-                    final Offset currentOffset =
-                        widget.pathProps.imageOffset + localImageOffsetAddition;
+            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.setImageOffset(
+                  widget.pathProps.imageOffset + Offset(0, imageOffsetDiff),
+                );
+              }
+            }
 
-                    final double delta = pointerSignal.scrollDelta.dy * 0.01;
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
+                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
+                widget.pathProps.setImageOffset(
+                  widget.pathProps.imageOffset - Offset(0, imageOffsetDiff),
+                );
+              }
+            }
 
-                    final double newZoom = currentZoom + delta;
-                    final Offset mousePosition =
-                        flipYAxis(pointerSignal.localPosition) +
-                            Offset(0, widget.pathProps.fieldSizePixels.dy);
-
-                    final Offset finalOffset = currentOffset +
-                        (mousePosition - currentOffset) *
-                            (1 - newZoom / currentZoom);
-
-                    if (newZoom < 0.4) return;
-                    if (newZoom > 8) return;
-
-                    setState(() {
-                      isScrolling = true;
-                      localImageOffsetAddition =
-                          finalOffset - widget.pathProps.imageOffset;
-                      localImageZoomAddition =
-                          newZoom - widget.pathProps.imageZoom;
-                    });
-                  }
-                },
-                child: GestureDetector(
-                  child: ClipRect(
-                    clipBehavior: Clip.hardEdge,
-                    child: FieldLoader(
-                      widget.pathProps.points,
-                      widget.pathProps.segments,
-                      widget.pathProps.selectedPointIndex,
-                      dragPoints,
-                      widget.pathProps.headingToggle,
-                      widget.pathProps.controlToggle,
-                      widget.pathProps.evaulatedPoints,
-                      widget.pathProps.setFieldSizePixels,
-                      widget.pathProps.robot,
-                      widget.pathProps.imageZoom + localImageZoomAddition,
-                      widget.pathProps.imageOffset + localImageOffsetAddition,
-                    ),
-                  ),
-                  onTapUp: (final TapUpDetails details) {
-                    final Offset tapPos = flipYAxisByField(
-                      details.localPosition,
-                      widget.pathProps.fieldSizePixels,
-                    );
-
-                    final int? selectedPoint = getTappedPoint(
-                      tapPos,
-                      widget.pathProps.points,
-                      widget.pathProps.segments,
-                    );
-
-                    if (widget.pathProps.selectedPointIndex != null &&
-                        widget.pathProps.selectedPointIndex! >= 0 &&
-                        selectedPoint == widget.pathProps.selectedPointIndex) {
-                      widget.pathProps.unSelectPoint();
-                      return;
-                    }
-
-                    if (selectedPoint != null) {
-                      widget.pathProps.selectPoint(selectedPoint);
-                      return;
-                    }
-
-                    if (pressedKeys.contains(LogicalKeyboardKey.controlRight) ||
-                        pressedKeys.contains(LogicalKeyboardKey.controlLeft)) {
-                      final Offset realTapPosition =
-                          (tapPos - widget.pathProps.imageOffset) /
-                              widget.pathProps.imageZoom;
-                      widget.pathProps.addPoint(realTapPosition);
-                      return;
-                    }
-
-                    widget.pathProps.unSelectPoint();
-                  },
-                  onPanStart: (final DragStartDetails details) {
-                    setState(() {
-                      localImageOffsetAddition = Offset.zero;
-                      localImageZoomAddition = 0;
-                    });
-
-                    final Offset tapPos = flipYAxisByField(
-                      details.localPosition,
-                      widget.pathProps.fieldSizePixels,
-                    );
-
-                    for (final MapEntry<int, Point> entery
-                        in widget.pathProps.points.asMap().entries) {
-                      final Point point = entery.value;
-                      final int index = entery.key;
-
-                      DraggingPoint? draggingPoint;
-
-                      bool controlToggle = widget.pathProps.controlToggle;
-                      bool headingToggle = widget.pathProps.headingToggle;
-
-                      if (widget.pathProps.selectedPointIndex != null &&
-                          widget.pathProps.selectedPointIndex! >= 0) {
-                        controlToggle =
-                            widget.pathProps.selectedPointIndex == index;
-                        headingToggle =
-                            widget.pathProps.selectedPointIndex == index;
-                      }
-                      final List<Segment> segments = widget.pathProps.segments;
-                      if (headingToggle) {
-                        draggingPoint = checkSelectedPointTap(
-                          tapPos,
-                          point,
-                          index,
-                          PointType.heading,
-                          segments,
-                        );
+          }
+        },*/
+        child: Focus(
+          autofocus: true,
+          child: Center(
+            child: Stack(
+              children: <Widget>[
+                Listener(
+                  onPointerSignal: (final PointerSignalEvent pointerSignal) {
+                    if (pointerSignal is PointerScrollEvent) {
+                      if (scrollTimer != null) {
+                        scrollTimer!.cancel();
                       }
 
-                      if (controlToggle && draggingPoint == null) {
-                        draggingPoint = checkSelectedPointTap(
-                          tapPos,
-                          point,
-                          index,
-                          PointType.inControl,
-                          segments,
-                        );
-                      }
-
-                      if (controlToggle && draggingPoint == null) {
-                        draggingPoint = checkSelectedPointTap(
-                          tapPos,
-                          point,
-                          index,
-                          PointType.outControl,
-                          segments,
-                        );
-                      }
-
-                      draggingPoint ??= checkSelectedPointTap(
-                        tapPos,
-                        point,
-                        index,
-                        PointType.path,
-                        segments,
-                      );
-
-                      if (draggingPoint != null) {
-                        final FullDraggingPoint fullDraggingPoint =
-                            FullDraggingPoint(index, draggingPoint);
-
-                        setState(() {
-                          dragPoint = fullDraggingPoint;
-                        });
-
-                        break;
-                      }
-                    }
-                  },
-                  onPanUpdate: (final DragUpdateDetails details) {
-                    if (dragPoint != null) {
-                      FullDraggingPoint currentDragPoint = dragPoint!;
-                      setState(() {
-                        currentDragPoint = FullDraggingPoint(
-                          currentDragPoint.index,
-                          DraggingPoint(
-                            currentDragPoint.draggingPoint.type,
-                            currentDragPoint.draggingPoint.position +
-                                (flipYAxis(details.delta) /
-                                    widget.pathProps.imageZoom),
-                          ),
-                        );
-                        dragPoint = currentDragPoint;
-                        dragPoints = <FullDraggingPoint>[currentDragPoint];
-
-                        if (!widget.pathProps.points[currentDragPoint.index]
-                                .isStop ||
-                            pressedKeys.contains(LogicalKeyboardKey.keyF)) {
-                          if (currentDragPoint.draggingPoint.type ==
-                              PointType.inControl) {
-                            dragPoints.add(
-                              FullDraggingPoint(
-                                currentDragPoint.index,
-                                DraggingPoint(
-                                  PointType.outControl,
-                                  Offset.fromDirection(
-                                    currentDragPoint
-                                            .draggingPoint.position.direction +
-                                        pi,
-                                    widget
-                                        .pathProps
-                                        .points[currentDragPoint.index]
-                                        .outControlPoint
-                                        .distance,
-                                  ),
-                                ),
-                              ),
+                      // Set a timer that will sync the local state with the global state
+                      scrollTimer =
+                          new Timer(const Duration(milliseconds: 100), () {
+                        if (isScrolling) {
+                          if (localImageOffsetAddition != Offset.zero ||
+                              localImageZoomAddition != 0) {
+                            widget.pathProps.setZoomAndOffset(
+                              widget.pathProps.imageZoom +
+                                  localImageZoomAddition,
+                              widget.pathProps.imageOffset +
+                                  localImageOffsetAddition,
                             );
-                          } else if (currentDragPoint.draggingPoint.type ==
-                              PointType.outControl) {
-                            dragPoints.add(
-                              FullDraggingPoint(
-                                currentDragPoint.index,
-                                DraggingPoint(
-                                  PointType.inControl,
-                                  Offset.fromDirection(
-                                    currentDragPoint
-                                            .draggingPoint.position.direction +
-                                        pi,
-                                    widget
-                                        .pathProps
-                                        .points[currentDragPoint.index]
-                                        .inControlPoint
-                                        .distance,
-                                  ),
-                                ),
-                              ),
-                            );
+
+                            setState(() {
+                              localImageOffsetAddition = Offset.zero;
+                              localImageZoomAddition = 0;
+                              isScrolling = false;
+                            });
                           }
                         }
                       });
-                    } else {
-                      if (pressedKeys
-                              .contains(LogicalKeyboardKey.controlRight) ||
-                          pressedKeys
-                              .contains(LogicalKeyboardKey.controlLeft)) {
-                        setState(() {
-                          localImageOffsetAddition = localImageOffsetAddition +
-                              flipYAxis(details.delta);
-                        });
-                      }
+
+                      final double currentZoom =
+                          widget.pathProps.imageZoom + localImageZoomAddition;
+                      final Offset currentOffset =
+                          widget.pathProps.imageOffset +
+                              localImageOffsetAddition;
+
+                      final double delta = pointerSignal.scrollDelta.dy * 0.01;
+
+                      final double newZoom = currentZoom + delta;
+                      final Offset mousePosition =
+                          flipYAxis(pointerSignal.localPosition) +
+                              Offset(0, widget.pathProps.fieldSizePixels.dy);
+
+                      final Offset finalOffset = currentOffset +
+                          (mousePosition - currentOffset) *
+                              (1 - newZoom / currentZoom);
+
+                      if (newZoom < 0.4) return;
+                      if (newZoom > 8) return;
+
+                      setState(() {
+                        isScrolling = true;
+                        localImageOffsetAddition =
+                            finalOffset - widget.pathProps.imageOffset;
+                        localImageZoomAddition =
+                            newZoom - widget.pathProps.imageZoom;
+                      });
                     }
                   },
-                  onPanEnd: (final DragEndDetails details) {
-                    if (localImageOffsetAddition != Offset.zero ||
-                        localImageZoomAddition != 0) {
-                      widget.pathProps.setZoomAndOffset(
+                  child: GestureDetector(
+                    child: ClipRect(
+                      clipBehavior: Clip.hardEdge,
+                      child: FieldLoader(
+                        widget.pathProps.points,
+                        widget.pathProps.segments,
+                        widget.pathProps.selectedPointIndex,
+                        dragPoints,
+                        widget.pathProps.headingToggle,
+                        widget.pathProps.controlToggle,
+                        widget.pathProps.evaulatedPoints,
+                        widget.pathProps.setFieldSizePixels,
+                        widget.pathProps.robot,
                         widget.pathProps.imageZoom + localImageZoomAddition,
                         widget.pathProps.imageOffset + localImageOffsetAddition,
+                      ),
+                    ),
+                    onTapUp: (final TapUpDetails details) {
+                      print(RawKeyboard.instance.keysPressed);
+                      final Offset tapPos = flipYAxisByField(
+                        details.localPosition,
+                        widget.pathProps.fieldSizePixels,
                       );
+
+                      final int? selectedPoint = getTappedPoint(
+                        tapPos,
+                        widget.pathProps.points,
+                        widget.pathProps.segments,
+                      );
+
+                      if (widget.pathProps.selectedPointIndex != null &&
+                          widget.pathProps.selectedPointIndex! >= 0 &&
+                          selectedPoint ==
+                              widget.pathProps.selectedPointIndex) {
+                        widget.pathProps.unSelectPoint();
+                        return;
+                      }
+
+                      if (selectedPoint != null) {
+                        widget.pathProps.selectPoint(selectedPoint);
+                        return;
+                      }
+
+                      if (RawKeyboard.instance.keysPressed.contains(
+                            LogicalKeyboardKey.controlLeft,
+                          ) ||
+                          RawKeyboard.instance.keysPressed.contains(
+                            LogicalKeyboardKey.controlRight,
+                          )) {
+                        final Offset realTapPosition =
+                            (tapPos - widget.pathProps.imageOffset) /
+                                widget.pathProps.imageZoom;
+                        widget.pathProps.addPoint(realTapPosition);
+                        return;
+                      }
+
+                      widget.pathProps.unSelectPoint();
+                    },
+                    onPanStart: (final DragStartDetails details) {
                       setState(() {
                         localImageOffsetAddition = Offset.zero;
                         localImageZoomAddition = 0;
                       });
-                    }
-                    FullDraggingPoint? previusDraggingPoint;
 
-                    for (final FullDraggingPoint draggingPoint in dragPoints) {
-                      switch (draggingPoint.draggingPoint.type) {
-                        case PointType.path:
-                          widget.pathProps.finishDrag(
-                            draggingPoint.index,
-                            draggingPoint.draggingPoint.position,
+                      final Offset tapPos = flipYAxisByField(
+                        details.localPosition,
+                        widget.pathProps.fieldSizePixels,
+                      );
+
+                      for (final MapEntry<int, Point> entery
+                          in widget.pathProps.points.asMap().entries) {
+                        final Point point = entery.value;
+                        final int index = entery.key;
+
+                        DraggingPoint? draggingPoint;
+
+                        bool controlToggle = widget.pathProps.controlToggle;
+                        bool headingToggle = widget.pathProps.headingToggle;
+
+                        if (widget.pathProps.selectedPointIndex != null &&
+                            widget.pathProps.selectedPointIndex! >= 0) {
+                          controlToggle =
+                              widget.pathProps.selectedPointIndex == index;
+                          headingToggle =
+                              widget.pathProps.selectedPointIndex == index;
+                        }
+                        final List<Segment> segments =
+                            widget.pathProps.segments;
+                        if (headingToggle) {
+                          draggingPoint = checkSelectedPointTap(
+                            tapPos,
+                            point,
+                            index,
+                            PointType.heading,
+                            segments,
                           );
-                          break;
-                        case PointType.inControl:
-                          if (widget
-                              .pathProps.points[draggingPoint.index].isStop) {
-                            widget.pathProps.finishInControlDrag(
-                              draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
-                            );
-                            break;
-                          }
+                        }
 
-                          if (previusDraggingPoint == null) {
-                            previusDraggingPoint = draggingPoint;
-                            break;
-                          }
-
-                          widget.pathProps.finishControlDrag(
-                            draggingPoint.index,
-                            draggingPoint.draggingPoint.position,
-                            previusDraggingPoint.draggingPoint.position,
+                        if (controlToggle && draggingPoint == null) {
+                          draggingPoint = checkSelectedPointTap(
+                            tapPos,
+                            point,
+                            index,
+                            PointType.inControl,
+                            segments,
                           );
-                          break;
-                        case PointType.outControl:
-                          if (widget
-                              .pathProps.points[draggingPoint.index].isStop) {
-                            widget.pathProps.finishOutControlDrag(
-                              draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
-                            );
-                            break;
-                          }
+                        }
 
-                          if (previusDraggingPoint == null) {
-                            previusDraggingPoint = draggingPoint;
-                            break;
-                          }
+                        if (controlToggle && draggingPoint == null) {
+                          draggingPoint = checkSelectedPointTap(
+                            tapPos,
+                            point,
+                            index,
+                            PointType.outControl,
+                            segments,
+                          );
+                        }
 
-                          widget.pathProps.finishControlDrag(
-                            draggingPoint.index,
-                            previusDraggingPoint.draggingPoint.position,
-                            draggingPoint.draggingPoint.position,
-                          );
+                        draggingPoint ??= checkSelectedPointTap(
+                          tapPos,
+                          point,
+                          index,
+                          PointType.path,
+                          segments,
+                        );
+
+                        if (draggingPoint != null) {
+                          final FullDraggingPoint fullDraggingPoint =
+                              FullDraggingPoint(index, draggingPoint);
+
+                          setState(() {
+                            dragPoint = fullDraggingPoint;
+                          });
+
                           break;
-                        case PointType.heading:
-                          final Offset dragPosition =
-                              draggingPoint.draggingPoint.position;
-                          final double dragHeading = dragPosition.direction;
-                          widget.pathProps.finishHeadingDrag(
-                            draggingPoint.index,
-                            dragHeading,
-                          );
-                          break;
-                        default:
-                          break;
+                        }
                       }
-                    }
+                    },
+                    onPanUpdate: (final DragUpdateDetails details) {
+                      if (dragPoint != null) {
+                        FullDraggingPoint currentDragPoint = dragPoint!;
+                        setState(() {
+                          currentDragPoint = FullDraggingPoint(
+                            currentDragPoint.index,
+                            DraggingPoint(
+                              currentDragPoint.draggingPoint.type,
+                              currentDragPoint.draggingPoint.position +
+                                  (flipYAxis(details.delta) /
+                                      widget.pathProps.imageZoom),
+                            ),
+                          );
+                          dragPoint = currentDragPoint;
+                          dragPoints = <FullDraggingPoint>[currentDragPoint];
 
-                    setState(() {
-                      dragPoints = <FullDraggingPoint>[];
-                      dragPoint = null;
-                    });
-                  },
+                          if (!widget.pathProps.points[currentDragPoint.index]
+                                  .isStop ||
+                              RawKeyboard.instance.keysPressed
+                                  .contains(LogicalKeyboardKey.keyF)) {
+                            if (currentDragPoint.draggingPoint.type ==
+                                PointType.inControl) {
+                              dragPoints.add(
+                                FullDraggingPoint(
+                                  currentDragPoint.index,
+                                  DraggingPoint(
+                                    PointType.outControl,
+                                    Offset.fromDirection(
+                                      currentDragPoint.draggingPoint.position
+                                              .direction +
+                                          pi,
+                                      widget
+                                          .pathProps
+                                          .points[currentDragPoint.index]
+                                          .outControlPoint
+                                          .distance,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            } else if (currentDragPoint.draggingPoint.type ==
+                                PointType.outControl) {
+                              dragPoints.add(
+                                FullDraggingPoint(
+                                  currentDragPoint.index,
+                                  DraggingPoint(
+                                    PointType.inControl,
+                                    Offset.fromDirection(
+                                      currentDragPoint.draggingPoint.position
+                                              .direction +
+                                          pi,
+                                      widget
+                                          .pathProps
+                                          .points[currentDragPoint.index]
+                                          .inControlPoint
+                                          .distance,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        });
+                      } else {
+                        if (RawKeyboard.instance.keysPressed.contains(
+                              LogicalKeyboardKey.controlLeft,
+                            ) ||
+                            RawKeyboard.instance.keysPressed.contains(
+                              LogicalKeyboardKey.controlRight,
+                            )) {
+                          setState(() {
+                            localImageOffsetAddition =
+                                localImageOffsetAddition +
+                                    flipYAxis(details.delta);
+                          });
+                        }
+                      }
+                    },
+                    onPanEnd: (final DragEndDetails details) {
+                      if (localImageOffsetAddition != Offset.zero ||
+                          localImageZoomAddition != 0) {
+                        widget.pathProps.setZoomAndOffset(
+                          widget.pathProps.imageZoom + localImageZoomAddition,
+                          widget.pathProps.imageOffset +
+                              localImageOffsetAddition,
+                        );
+                        setState(() {
+                          localImageOffsetAddition = Offset.zero;
+                          localImageZoomAddition = 0;
+                        });
+                      }
+                      FullDraggingPoint? previusDraggingPoint;
+
+                      for (final FullDraggingPoint draggingPoint
+                          in dragPoints) {
+                        switch (draggingPoint.draggingPoint.type) {
+                          case PointType.path:
+                            widget.pathProps.finishDrag(
+                              draggingPoint.index,
+                              draggingPoint.draggingPoint.position,
+                            );
+                            break;
+                          case PointType.inControl:
+                            if (widget
+                                .pathProps.points[draggingPoint.index].isStop) {
+                              widget.pathProps.finishInControlDrag(
+                                draggingPoint.index,
+                                draggingPoint.draggingPoint.position,
+                              );
+                              break;
+                            }
+
+                            if (previusDraggingPoint == null) {
+                              previusDraggingPoint = draggingPoint;
+                              break;
+                            }
+
+                            widget.pathProps.finishControlDrag(
+                              draggingPoint.index,
+                              draggingPoint.draggingPoint.position,
+                              previusDraggingPoint.draggingPoint.position,
+                            );
+                            break;
+                          case PointType.outControl:
+                            if (widget
+                                .pathProps.points[draggingPoint.index].isStop) {
+                              widget.pathProps.finishOutControlDrag(
+                                draggingPoint.index,
+                                draggingPoint.draggingPoint.position,
+                              );
+                              break;
+                            }
+
+                            if (previusDraggingPoint == null) {
+                              previusDraggingPoint = draggingPoint;
+                              break;
+                            }
+
+                            widget.pathProps.finishControlDrag(
+                              draggingPoint.index,
+                              previusDraggingPoint.draggingPoint.position,
+                              draggingPoint.draggingPoint.position,
+                            );
+                            break;
+                          case PointType.heading:
+                            final Offset dragPosition =
+                                draggingPoint.draggingPoint.position;
+                            final double dragHeading = dragPosition.direction;
+                            widget.pathProps.finishHeadingDrag(
+                              draggingPoint.index,
+                              dragHeading,
+                            );
+                            break;
+                          default:
+                            break;
+                        }
+                      }
+
+                      setState(() {
+                        dragPoints = <FullDraggingPoint>[];
+                        dragPoint = null;
+                      });
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
 }
+
+const Shortcut noZoomShortcut = Shortcut(
+  description: "Reset zoom",
+  activator: SingleActivator(LogicalKeyboardKey.digit0, control: true),
+);
+const Shortcut toggleHeading = Shortcut(
+  description: "Toggles the use of heading on a point",
+  activator: SingleActivator(LogicalKeyboardKey.keyH),
+);
+const Shortcut toggleControl = Shortcut(
+  description: "Toggles control",
+  activator: SingleActivator(LogicalKeyboardKey.keyG),
+);
+const Shortcut unSelectPoint = Shortcut(
+  description: "Unselect the current selected point",
+  activator: SingleActivator(LogicalKeyboardKey.escape),
+);
+const Shortcut deletePoint = Shortcut(
+  description: "Delete the current selected point",
+  activator: SingleActivator(LogicalKeyboardKey.backspace, shift: true),
+);
+const Shortcut undo = Shortcut(
+  description: "Undo the last action",
+  activator: SingleActivator(LogicalKeyboardKey.keyZ, control: true),
+);
+const Shortcut redo = Shortcut(
+  description: "Redo the last action",
+  shortcut: "ctrl + y",
+  activator: SingleActivator(LogicalKeyboardKey.keyY, control: true),
+);
+const Shortcut save = Shortcut(
+  description: "Save file",
+  shortcut: "ctrl + s",
+  activator: SingleActivator(LogicalKeyboardKey.keyS, control: true),
+);
+const Shortcut saveAs = Shortcut(
+  description: "Save file as",
+  shortcut: "ctrl + shift + s",
+  activator:
+      SingleActivator(LogicalKeyboardKey.escape, control: true, shift: true),
+);
+const Shortcut zoomIn = Shortcut(
+  description: "Zoom in",
+  shortcut: "ctrl + =",
+  activator: SingleActivator(LogicalKeyboardKey.equal, control: true),
+);
+const Shortcut zoomOut = Shortcut(
+  description: "Zoom out",
+  shortcut: "Ctrl + -",
+  activator: SingleActivator(LogicalKeyboardKey.minus, control: true),
+);
+
+const Shortcut addPoint =
+    Shortcut(description: "Add point", shortcut: "Ctrl + Mouse press");
+
+const List<Shortcut> shortcuts = <Shortcut>[noZoomShortcut];

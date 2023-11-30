@@ -1,6 +1,7 @@
 import "package:card_settings/card_settings.dart";
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
+import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
@@ -420,6 +421,8 @@ class SettingsDetails extends StatelessWidget {
         ),
       );
     }
+
+    if (tabState.ui.selectedType == Help) {}
     return const SizedBox.shrink();
   }
 }

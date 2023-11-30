@@ -1,6 +1,13 @@
-import "package:flutter/services.dart";
+import "package:flutter/cupertino.dart";
 
 class Shortcut {
-  List<LogicalKeyboardKey> keysPressed;
-  RawKeyEvent event;
+  const Shortcut({
+    required this.description,
+    this.activator,
+    required this.shortcut,
+  });
+
+  final ShortcutActivator? activator;
+  final String shortcut;
+  final String description;
 }
