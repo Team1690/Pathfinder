@@ -595,54 +595,54 @@ class _PathEditorState extends State<PathEditor> {
 }
 
 const Shortcut noZoomShortcut = Shortcut(
-  shortcut: "ctrl + 0",
+  shortcut: "Ctrl + 0",
   description: "Reset zoom",
   activator: SingleActivator(LogicalKeyboardKey.digit0, control: true),
 );
 const Shortcut toggleHeading = Shortcut(
   shortcut: "On Point + H",
-  description: "Toggles the use of heading on a point",
+  description: "Toggles heading points",
   activator: SingleActivator(LogicalKeyboardKey.keyH),
 );
 const Shortcut toggleControl = Shortcut(
   shortcut: "On Point + G",
-  description: "Toggles control",
+  description: "Toggles control points",
   activator: SingleActivator(LogicalKeyboardKey.keyG),
 );
 const Shortcut unSelectPoint = Shortcut(
-  shortcut: "On Point + esc",
+  shortcut: "On Point + ESC",
   description: "Unselect the current selected point",
   activator: SingleActivator(LogicalKeyboardKey.escape),
 );
 const Shortcut deletePoint = Shortcut(
-  shortcut: "On Point + shift + backspace",
+  shortcut: "On Point + Shift + Backspace",
   description: "Delete the current selected point",
   activator: SingleActivator(LogicalKeyboardKey.backspace, shift: true),
 );
 const Shortcut undo = Shortcut(
-  shortcut: "ctrl + z",
+  shortcut: "Ctrl + Z",
   description: "Undo the last action",
   activator: SingleActivator(LogicalKeyboardKey.keyZ, control: true),
 );
 const Shortcut redo = Shortcut(
   description: "Redo the last action",
-  shortcut: "ctrl + y",
+  shortcut: "Ctrl + Y",
   activator: SingleActivator(LogicalKeyboardKey.keyY, control: true),
 );
 const Shortcut save = Shortcut(
   description: "Save file",
-  shortcut: "ctrl + s",
+  shortcut: "Ctrl + S",
   activator: SingleActivator(LogicalKeyboardKey.keyS, control: true),
 );
 const Shortcut saveAs = Shortcut(
   description: "Save file as",
-  shortcut: "ctrl + shift + s",
+  shortcut: "Ctrl + Shift + S",
   activator:
       SingleActivator(LogicalKeyboardKey.escape, control: true, shift: true),
 );
 const Shortcut zoomIn = Shortcut(
   description: "Zoom in",
-  shortcut: "ctrl + =",
+  shortcut: "Ctrl + =",
   activator: SingleActivator(LogicalKeyboardKey.equal, control: true),
 );
 const Shortcut zoomOut = Shortcut(
@@ -675,10 +675,16 @@ const Shortcut addPoint = Shortcut(
   shortcut: "Ctrl + Mouse press",
 );
 const Shortcut stopPointToggle = Shortcut(
-  description: "Makes the stop point behave like regular point",
-  shortcut: "On Stop Point + F",
+  description:
+      "On stop point, the control points will behave like on a regular point",
+  shortcut: "On Stop Point + Control Point Pressed + F",
+);
+const Shortcut mouseDragPan = Shortcut(
+  shortcut: "Ctrl + Mouse Drag",
+  description: "Pan with mouse",
 );
 const List<Shortcut> shortcuts = <Shortcut>[
+  stopPointToggle,
   panUp,
   panDown,
   panLeft,
@@ -691,7 +697,6 @@ const List<Shortcut> shortcuts = <Shortcut>[
   unSelectPoint,
   deletePoint,
   addPoint,
-  stopPointToggle,
   undo,
   redo,
   save,

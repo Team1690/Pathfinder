@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "dart:core";
 import "dart:io";
 import "package:pathfinder/main.dart";
+import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
@@ -152,6 +153,14 @@ class _HomePageState extends State<HomePage> {
                         tooltip: "History",
                         icon: const Icon(Icons.history),
                       ),
+                      IconButton(
+                        color: theme.textTheme.bodyLarge?.color,
+                        onPressed: () {
+                          props.selectHelp();
+                        },
+                        tooltip: "Help",
+                        icon: const Icon(Icons.question_mark_sharp),
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         path.dirname(props.autoFileName) +
@@ -256,6 +265,6 @@ String getSideBarHeadline(final TabState tabState) {
   if (selectedType == Point && selectedIndex > -1)
     return "POINT $selectedIndex";
   if (selectedType == History) return "HISTORY";
-
+  if (selectedType == Help) return "HELP";
   return "NO SELECTION";
 }

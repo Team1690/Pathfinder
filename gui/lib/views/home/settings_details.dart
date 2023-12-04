@@ -1,10 +1,12 @@
 import "package:card_settings/card_settings.dart";
+import "package:card_settings/helpers/platform_functions.dart";
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/models/shortcut.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
 import "package:pathfinder/views/home/home.dart";
@@ -210,6 +212,44 @@ class SettingsDetails extends StatelessWidget {
                           (e.value.action
                               .split(RegExp(r"(?=[A-Z])"))
                               .join(" ")),
+                          style: labelStyle(context, true),
+                        ),
+                      ),
+                    )
+                    .toList()
+                    .reversed
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (tabState.ui.selectedType == Help) {
+      return Container(
+        child: Card(
+          margin: const EdgeInsets.all(8),
+          child: Column(
+            children: <Widget>[
+              ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: tabState.help.shortcuts
+                    .map(
+                      (final Shortcut e) => ListTile(
+                        dense: true,
+
+                        leading: e.icon ??
+                            const Icon(
+                              Icons.circle_rounded,
+                              size: 10,
+                            ),
+
+                        // Seperate the name by capital letter (EditPoint -> Edit Point)
+                        title: Text(
+                          "${e.shortcut} : \n${e.description}",
+                          style: labelStyle(context, true),
                         ),
                       ),
                     )

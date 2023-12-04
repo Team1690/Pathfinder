@@ -46,6 +46,11 @@ class FieldPainter extends CustomPainter {
     canvas.translate(0, -size.height);
 
     canvas.translate(imageOffset.dx, imageOffset.dy);
+
+    canvas.translate(
+      -size.width * (imageZoom - 1) / 2,
+      -size.height * (imageZoom - 1) / 2,
+    );
     canvas.scale(imageZoom);
 
     paintImage(

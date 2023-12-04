@@ -1,3 +1,4 @@
+import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
@@ -5,6 +6,7 @@ import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
+import "package:pathfinder/widgets/editor/path_editor/path_editor.dart";
 import "package:redux/redux.dart";
 
 class HomeViewModel {
@@ -28,6 +30,8 @@ class HomeViewModel {
     required this.saveFileAs,
     required this.newAuto,
     required this.changesSaved,
+    required this.help,
+    required this.selectHelp,
   });
   TabState tabState;
   bool isSidebarOpen;
@@ -35,6 +39,8 @@ class HomeViewModel {
   final Function selectRobot;
   final Function selectHistory;
   final History history;
+  final Help help;
+  final Function() selectHelp;
   final Function(int, Point) setPointData;
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
@@ -62,6 +68,10 @@ class HomeViewModel {
           store.dispatch(ObjectSelected(0, History));
         },
         history: store.state.tabState.history,
+        help: const Help(shortcuts: shortcuts),
+        selectHelp: () {
+          store.dispatch(ObjectSelected(0, Help));
+        },
         setPointData: (final int index, final Point point) {
           store.dispatch(
             editPointThunk(
