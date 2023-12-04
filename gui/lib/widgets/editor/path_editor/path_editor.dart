@@ -162,88 +162,66 @@ class _PathEditorState extends State<PathEditor> {
   @override
   Widget build(final BuildContext context) => CallbackShortcuts(
         bindings: <ShortcutActivator, VoidCallback>{
-          noZoomShortcut.activator: () {
+          noZoomShortcut.activator!: () {
             widget.pathProps.setImageZoom(1);
             widget.pathProps.setImageOffset(Offset.zero);
           },
-          toggleHeading.activator: () {
+          toggleHeading.activator!: () {
             widget.pathProps.toggleHeading();
           },
-          toggleControl.activator: () {
+          toggleControl.activator!: () {
             widget.pathProps.toggleControl();
           },
-          unSelectPoint.activator: () {
+          unSelectPoint.activator!: () {
             widget.pathProps.unSelectPoint();
           },
-          deletePoint.activator: () {
+          deletePoint.activator!: () {
             if (widget.pathProps.selectedPointIndex != null) {
               widget.pathProps
                   .deletePoint(widget.pathProps.selectedPointIndex!);
             }
           },
-          undo.activator: () {
+          undo.activator!: () {
             widget.pathProps.pathUndo();
           },
-          redo.activator: () {
+          redo.activator!: () {
             widget.pathProps.pathRedo();
           },
-          save.activator: () {
+          save.activator!: () {
             widget.pathProps.saveFile();
           },
-          saveAs.activator: () {
+          saveAs.activator!: () {
             widget.pathProps.saveFileAs();
           },
-          zoomIn.activator: () {
+          zoomIn.activator!: () {
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
           },
-          zoomOut.activator: () {
+          zoomOut.activator!: () {
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
           },
+          panUp.activator!: () {
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset - Offset(0, imageOffsetDiff),
+            );
+          },
+          panDown.activator!: () {
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset + Offset(0, imageOffsetDiff),
+            );
+          },
+          panLeft.activator!: () {
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset + Offset(imageOffsetDiff, 0),
+            );
+          },
+          panRight.activator!: () {
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
+            );
+          },
         },
-        /*
-        : (final RawKeyEvent event) {
-          if (event is RawKeyDownEvent) {
-
-            if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                widget.pathProps.setImageOffset(
-                  widget.pathProps.imageOffset + Offset(imageOffsetDiff, 0),
-                );
-              }
-            }
-
-            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                widget.pathProps.setImageOffset(
-                  widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
-                );
-              }
-            }
-
-            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                widget.pathProps.setImageOffset(
-                  widget.pathProps.imageOffset + Offset(0, imageOffsetDiff),
-                );
-              }
-            }
-
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              if (pressedKeys.contains(LogicalKeyboardKey.controlLeft) ||
-                  pressedKeys.contains(LogicalKeyboardKey.controlRight)) {
-                widget.pathProps.setImageOffset(
-                  widget.pathProps.imageOffset - Offset(0, imageOffsetDiff),
-                );
-              }
-            }
-
-          }
-        },*/
         child: Focus(
           autofocus: true,
           child: Center(
@@ -325,7 +303,6 @@ class _PathEditorState extends State<PathEditor> {
                       ),
                     ),
                     onTapUp: (final TapUpDetails details) {
-                      print(RawKeyboard.instance.keysPressed);
                       final Offset tapPos = flipYAxisByField(
                         details.localPosition,
                         widget.pathProps.fieldSizePixels,
@@ -618,26 +595,32 @@ class _PathEditorState extends State<PathEditor> {
 }
 
 const Shortcut noZoomShortcut = Shortcut(
+  shortcut: "ctrl + 0",
   description: "Reset zoom",
   activator: SingleActivator(LogicalKeyboardKey.digit0, control: true),
 );
 const Shortcut toggleHeading = Shortcut(
+  shortcut: "On Point + H",
   description: "Toggles the use of heading on a point",
   activator: SingleActivator(LogicalKeyboardKey.keyH),
 );
 const Shortcut toggleControl = Shortcut(
+  shortcut: "On Point + G",
   description: "Toggles control",
   activator: SingleActivator(LogicalKeyboardKey.keyG),
 );
 const Shortcut unSelectPoint = Shortcut(
+  shortcut: "On Point + esc",
   description: "Unselect the current selected point",
   activator: SingleActivator(LogicalKeyboardKey.escape),
 );
 const Shortcut deletePoint = Shortcut(
+  shortcut: "On Point + shift + backspace",
   description: "Delete the current selected point",
   activator: SingleActivator(LogicalKeyboardKey.backspace, shift: true),
 );
 const Shortcut undo = Shortcut(
+  shortcut: "ctrl + z",
   description: "Undo the last action",
   activator: SingleActivator(LogicalKeyboardKey.keyZ, control: true),
 );
@@ -667,8 +650,50 @@ const Shortcut zoomOut = Shortcut(
   shortcut: "Ctrl + -",
   activator: SingleActivator(LogicalKeyboardKey.minus, control: true),
 );
-
-const Shortcut addPoint =
-    Shortcut(description: "Add point", shortcut: "Ctrl + Mouse press");
-
-const List<Shortcut> shortcuts = <Shortcut>[noZoomShortcut];
+const Shortcut panUp = Shortcut(
+  description: "Pan up",
+  shortcut: "Ctrl + Up_Arrow",
+  activator: SingleActivator(LogicalKeyboardKey.arrowUp, control: true),
+);
+const Shortcut panDown = Shortcut(
+  description: "Pan down",
+  shortcut: "Ctrl + Down_Arrow",
+  activator: SingleActivator(LogicalKeyboardKey.arrowDown, control: true),
+);
+const Shortcut panLeft = Shortcut(
+  description: "Pan left",
+  shortcut: "Ctrl + Left_Arrow",
+  activator: SingleActivator(LogicalKeyboardKey.arrowLeft, control: true),
+);
+const Shortcut panRight = Shortcut(
+  description: "Pan right",
+  shortcut: "Ctrl + Right_Arrow",
+  activator: SingleActivator(LogicalKeyboardKey.arrowRight, control: true),
+);
+const Shortcut addPoint = Shortcut(
+  description: "Add point",
+  shortcut: "Ctrl + Mouse press",
+);
+const Shortcut stopPointToggle = Shortcut(
+  description: "Makes the stop point behave like regular point",
+  shortcut: "On Stop Point + F",
+);
+const List<Shortcut> shortcuts = <Shortcut>[
+  panUp,
+  panDown,
+  panLeft,
+  panRight,
+  noZoomShortcut,
+  zoomIn,
+  zoomOut,
+  toggleHeading,
+  toggleControl,
+  unSelectPoint,
+  deletePoint,
+  addPoint,
+  stopPointToggle,
+  undo,
+  redo,
+  save,
+  saveAs,
+];
