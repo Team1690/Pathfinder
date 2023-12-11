@@ -1,8 +1,10 @@
 import "dart:convert";
 import "dart:io";
 import "package:flutter/material.dart";
+import "package:grpc/grpc.dart";
 import "package:path/path.dart";
 import "package:file_picker/file_picker.dart";
+import "package:pathfinder/main.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_state.dart";
@@ -116,6 +118,17 @@ ThunkAction<AppState> pathRedoThunk() => (final Store<AppState> store) {
       store.dispatch(calculateSplineThunk());
     };
 
+void reconnect(
+  final dynamic Function(Store<AppState>) thunk,
+  final Object error,
+) {
+  if (error is GrpcError && error.code == StatusCode.unavailable && !isDev) {
+    runAlgorithm();
+    store.dispatch(thunk);
+    return;
+  }
+}
+
 ThunkAction<AppState> calculateSplineThunk() =>
     (final Store<AppState> store) async {
       try {
@@ -127,6 +140,7 @@ ThunkAction<AppState> calculateSplineThunk() =>
 
         store.dispatch(SplineCalculated(res.evaluatedPoints));
       } catch (e) {
+        reconnect(calculateSplineThunk(), e);
         store.dispatch(ServerError(e.toString()));
       }
     };
@@ -146,6 +160,7 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
 
         store.dispatch(TrajectoryCalculated(res.swervePoints));
       } catch (e) {
+        reconnect(calculateTrajectoryThunk(), e);
         store.dispatch(ServerError(e.toString()));
       }
     };
