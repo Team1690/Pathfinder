@@ -1,12 +1,10 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
-	"os/exec"
 	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
@@ -14,8 +12,7 @@ import (
 )
 
 var (
-	port  = flag.Int("port", 3000, "The server port")
-	isDev = flag.Bool("dev", false, "Don't run GUI")
+	port = flag.Int("port", 3000, "The server port")
 )
 
 func main() {
@@ -28,12 +25,6 @@ func main() {
 
 	wg.Add(1)
 	go startAlgorithmServer(port, logger)
-
-	// Run GUI if not in debug
-	if !*isDev {
-		wg.Add(1)
-		go startGui(logger, &wg)
-	}
 
 	wg.Wait()
 }
@@ -54,18 +45,4 @@ func startAlgorithmServer(port *int, logger *log.Logger) {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
-}
-
-func startGui(logger *log.Logger, wg *sync.WaitGroup) {
-	err := exec.Command("./pathfinder.exe").Run()
-	if errors.Is(err, exec.ErrDot) {
-		err = nil
-	}
-	if err != nil {
-		log.Fatalf("Failed to run GUI: %v", err)
-	}
-	wg.Done()
-
-	// Run 'wg.Done' again to kill the server too
-	wg.Done()
 }
