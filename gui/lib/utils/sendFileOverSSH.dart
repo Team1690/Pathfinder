@@ -9,7 +9,8 @@ void sendToRobot(final BuildContext context) => showDialog(
       builder: (final BuildContext context) {
         String ip = "10.16.90.2";
         bool changeToCable = true;
-        String filePath = store.state.tabState.ui.autoFileName;
+        String filePath =
+            "./out/${store.state.tabState.ui.trajectoryFileName}.csv";
         String errorMessage = "";
         bool overwriteFile = true;
         final TextEditingController ipController =
@@ -23,7 +24,7 @@ void sendToRobot(final BuildContext context) => showDialog(
             final void Function(void Function()) setState,
           ) =>
               AlertDialog(
-            title: const Text("Send Auto File To Robot"),
+            title: const Text("Send Trajectory File To Robot"),
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
@@ -35,7 +36,7 @@ void sendToRobot(final BuildContext context) => showDialog(
                   });
                   if (!await File(filePath).exists()) {
                     setState(() {
-                      errorMessage = "Please save an auto file";
+                      errorMessage = "Please save a trajectory file";
                       loading = false;
                     });
                     return;
@@ -60,9 +61,9 @@ void sendToRobot(final BuildContext context) => showDialog(
                     return;
                   }
 
-                  if (!filePath.endsWith(".auto")) {
+                  if (!filePath.endsWith(".csv")) {
                     setState(() {
-                      filePath = "$filePath.auto";
+                      filePath = "$filePath.csv";
                     });
                   }
                   final Directory directoryOfFile =
