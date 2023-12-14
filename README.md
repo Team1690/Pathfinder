@@ -13,10 +13,10 @@ To build the project and create a runnable file run:
 sh scripts/build.sh
 ```
 This should create a dist-\<commit-sha> folder with the files:
- - `Pathfinder.exe`
- - `pathfinder-algorithm.exe`
+ - `pathfinder.exe`
+ - `Pathfinder-algorithm.exe`
 
-Confusingly the `pathfinder-alogirthm.exe` is the file you want to run to execute the app.
+To run the app run `pathfinder.exe` the app with the icon
 
 ---
 ### Run & Debug
@@ -35,13 +35,13 @@ Alternativly you can run in bash:
 Go:
 ```bash
 cd ./algorithm
-go run . --dev
+go run .
 ```
 
 Flutter:
 ```bash
 cd ./gui
-flutter run -d windows
+flutter run -d windows --dart-define=dev=true
 ```
 
 ---
@@ -67,6 +67,7 @@ Directory structure -
 ├── ./scripts      # some bash scripts used for common tasks
 ├── ./protos       # definition of grpc protobuf protocol
 ├── ./algorithm    # Go code for the trajectory generation algorithm
+├── ./gui          # Flutter code of GUI application
 ├── ./.vscode      # vscode files
 └── README.md
 ```
@@ -89,8 +90,8 @@ Follow [flutter official docs](https://docs.flutter.dev/development/tools/vs-cod
 Make sure to attach a windows device to run it as a flutter windows desktop app. (google that if needed)
 
 #### Go
-Install go 1.17.x ([download link](https://go.dev/dl/go1.17.11.windows-amd64.msi))
-> Make sure to not update to any version greater than 1.17 because it will cause the hack of running the flutter GUI from the Go application (read in TBD) not to work.
+Install go ([download link](https://go.dev/doc/install))
+
 
 #### Protobuf code gen tools
 cd into the root of the project using `git bash` and run:

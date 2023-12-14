@@ -21,4 +21,4 @@ mv algorithm/Pathfinder.exe $OUTPUT_DIR/Pathfinder-algorithm.exe
 
 echo "Running..."
 cd ./$OUTPUT_DIR
-"./pathfinder"
+"./pathfinder.exe"

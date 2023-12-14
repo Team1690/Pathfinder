@@ -10,8 +10,7 @@
       "request": "launch",
       "args": [
         "--port",
-        "3000",
-        "dev"
+        "3000"
       ],
       "mode": "auto",
       "program": "${workspaceFolder}/algorithm"
@@ -21,7 +20,7 @@
       "program": "${workspaceFolder}/gui/lib/main.dart",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "args": ["--no-sound-null-safety"],
+      "args": ["--no-sound-null-safety","--dart-define=dev=true"],
       "type": "dart",
       "flutterMode": "debug"
     },
