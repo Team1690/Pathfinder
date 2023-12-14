@@ -1,6 +1,7 @@
 import "dart:io";
 
 import "package:flutter/material.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:path/path.dart";
 import "package:pathfinder/main.dart";
 
@@ -8,7 +9,6 @@ void sendToRobot(final BuildContext context) => showDialog(
       context: context,
       builder: (final BuildContext context) {
         String ip = "10.16.90.2";
-        bool changeToCable = true;
         String filePath =
             "./out/${store.state.tabState.ui.trajectoryFileName}.csv";
         String errorMessage = "";
@@ -98,29 +98,11 @@ void sendToRobot(final BuildContext context) => showDialog(
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            controller: ipController,
-                            onChanged: (final String newIp) {
-                              setState(() {
-                                ip = newIp;
-                              });
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              changeToCable = !changeToCable;
-                              ip = changeToCable ? "10.16.90.2" : "127.22.11.2";
-                            });
-                            ipController.text = ip;
-                          },
-                          icon: Icon(changeToCable ? Icons.cable : Icons.wifi),
-                        ),
-                      ],
+                    IPTextbox(
+                      controller: ipController,
+                      onChanged: () {
+                        ip = ipController.text;
+                      },
                     ),
                     TextField(
                       controller: filePathController,

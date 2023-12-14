@@ -77,4 +77,4 @@ void saveCacheState(final AppState state) {
   File(cacheFilePath).writeAsString(stateJson);
 }
 
-void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", []);
+void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);

@@ -24,6 +24,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  
   card_settings: ^3.0.0
   collection: ^1.17.1
   cupertino_icons: ^1.0.2
@@ -36,6 +37,7 @@ dependencies:
   fluttertoast: ^8.0.8
   grpc: ^3.0.2
   meta: ^1.9.1
+  orbit_standard_library: ^0.0.6
   path: ^1.8.3
   protobuf: ^3.1.0
   redux: ^5.0.0
