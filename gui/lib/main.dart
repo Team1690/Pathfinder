@@ -6,7 +6,7 @@ import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/store/app/app_reducer.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/views/home.dart";
+import "package:pathfinder/views/home/home.dart";
 import "package:redux/redux.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux_logging/redux_logging.dart";
