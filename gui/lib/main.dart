@@ -14,7 +14,14 @@ import "package:redux_logging/redux_logging.dart";
 const bool debug = false;
 const String cacheFilePath = "./.temp-state";
 
-void main() => runApp(App());
+const bool isDev = bool.fromEnvironment("dev");
+
+void main() {
+  if (!isDev) {
+    runAlgorithm();
+  }
+  runApp(App());
+}
 
 class App extends StatelessWidget {
   @override
@@ -69,3 +76,5 @@ void saveCacheState(final AppState state) {
   final String stateJson = jsonEncode(state.toJson());
   File(cacheFilePath).writeAsString(stateJson);
 }
+
+void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", []);
