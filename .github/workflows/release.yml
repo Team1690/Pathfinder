@@ -1,0 +1,33 @@
+name: "Build & Release"
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - uses: subosito/flutter-action@v2
+              with:
+                flutter-version: "3.16.0"
+                channel: 'stable'
+                cache: true
+
+            - name: Build
+              run: sh ./scripts/auto.sh
+              shell: bash
+            
+            - name: Release
+              uses: ncipollo/release-action@v1
+              with: 
+                artifacts: "dist-Release/*"
+                tag: v1.0.${{ github.run_number }}
+                token: ${{ secrets.GITHUB_TOKEN }}
