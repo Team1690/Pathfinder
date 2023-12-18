@@ -25,9 +25,12 @@ jobs:
               run: sh ./scripts/auto.sh
               shell: bash
             
+            - name: Compress
+              run: zip release.zip ./dist-Release
+
             - name: Release
               uses: ncipollo/release-action@v1
               with: 
-                artifacts: "dist-Release/"
+                artifacts: "release.zip"
                 tag: v1.0.${{ github.run_number }}
                 token: ${{ secrets.GITHUB_TOKEN }}
