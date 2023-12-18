@@ -26,8 +26,11 @@ jobs:
               shell: bash
             
             - name: Compress
-              run: zip release.zip ./dist-Release
-
+              uses: vimtor/action-zip@v1.1
+              with:
+                files: dist-Release/
+                dest: release.zip
+    
             - name: Release
               uses: ncipollo/release-action@v1
               with: 
