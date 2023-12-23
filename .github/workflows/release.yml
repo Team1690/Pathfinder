@@ -4,9 +4,13 @@ on:
     push:
         branches:
             - main
+        tags:
+            - 'release'
     pull_request:
         branches:
             - main
+        tags:
+            - 'release'
     workflow_dispatch:
 
 jobs:
@@ -28,7 +32,7 @@ jobs:
             - name: Compress
               uses: vimtor/action-zip@v1.1
               with:
-                files: dist-Release/
+                files: dist-Release
                 dest: release.zip
     
             - name: Release
