@@ -379,7 +379,7 @@ class SettingsDetails extends StatelessWidget {
                             ? pointData.inControlPoint
                             : Offset.fromDirection(
                                 opposite,
-                                pointData.inControlPoint.direction,
+                                pointData.inControlPoint.distance,
                               ),
                       ),
                     );
