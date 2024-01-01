@@ -11,6 +11,7 @@ import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
+import "package:pathfinder/widgets/editor/field_editor/field_painter.dart";
 import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
@@ -80,9 +81,17 @@ class _PathEditorState extends State<PathEditor> {
     final PointType pointType,
     final List<Segment> segments,
   ) {
-    final Offset realTapPosition =
-        (tapPosition - widget.pathProps.imageOffset) /
-            widget.pathProps.imageZoom;
+    final Offset realTapPosition = (tapPosition -
+            widget.pathProps.imageOffset -
+            getZoomOffset(
+              Size(
+                widget.pathProps.fieldSizePixels.dx,
+                widget.pathProps.fieldSizePixels.dy,
+              ),
+              widget.pathProps.imageZoom,
+            )) /
+        widget.pathProps.imageZoom;
+
     final (int, Segment)? segment = segments
         .mapIndexed(
           (final int index, final Segment element) => (index, element),
@@ -615,9 +624,9 @@ const Shortcut unSelectPoint = Shortcut(
   activator: SingleActivator(LogicalKeyboardKey.escape),
 );
 const Shortcut deletePoint = Shortcut(
-  shortcut: "On Point + Shift + Backspace",
+  shortcut: "On Point + Ctrl + Backspace",
   description: "Delete the current selected point",
-  activator: SingleActivator(LogicalKeyboardKey.backspace, shift: true),
+  activator: SingleActivator(LogicalKeyboardKey.backspace, control: true),
 );
 const Shortcut undo = Shortcut(
   shortcut: "Ctrl + Z",
