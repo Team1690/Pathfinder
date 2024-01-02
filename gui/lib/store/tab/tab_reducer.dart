@@ -310,7 +310,12 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
         return e.value.copyWith(
           position: action.position ?? e.value.position,
           inControlPoint: action.inControlPoint ?? e.value.inControlPoint,
-          outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
+          outControlPoint: action.isStop != null && !action.isStop!
+              ? Offset.fromDirection(
+                  e.value.inControlPoint.direction + pi,
+                  e.value.outControlPoint.distance,
+                )
+              : action.outControlPoint ?? e.value.outControlPoint,
           heading: action.heading ?? e.value.heading,
           useHeading: useHeading,
           action: action.action ?? e.value.action,
