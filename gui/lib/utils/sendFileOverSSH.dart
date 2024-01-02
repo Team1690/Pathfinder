@@ -2,7 +2,6 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:path/path.dart";
 import "package:pathfinder/main.dart";
 
 void sendToRobot(final BuildContext context) => showDialog(
