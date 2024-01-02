@@ -12,7 +12,6 @@ void sendToRobot(final BuildContext context) => showDialog(
         String filePath =
             "./out/${store.state.tabState.ui.trajectoryFileName}.csv";
         String errorMessage = "";
-        bool overwriteFile = true;
         final TextEditingController ipController =
             TextEditingController(text: ip);
         final TextEditingController filePathController =
@@ -41,13 +40,6 @@ void sendToRobot(final BuildContext context) => showDialog(
                     });
                     return;
                   }
-                  if (!overwriteFile && await File(filePath).exists()) {
-                    setState(() {
-                      errorMessage = "That file already exists";
-                      loading = false;
-                    });
-                    return;
-                  }
                   try {
                     Uri.parseIPv4Address(ip);
                     setState(() {
@@ -65,11 +57,6 @@ void sendToRobot(final BuildContext context) => showDialog(
                     setState(() {
                       filePath = "$filePath.csv";
                     });
-                  }
-                  final Directory directoryOfFile =
-                      Directory(dirname(filePath));
-                  if (!(await directoryOfFile.exists())) {
-                    await directoryOfFile.create(recursive: true);
                   }
                   final ProcessResult res = await Process.run(
                     "scp",
@@ -132,19 +119,6 @@ void sendToRobot(final BuildContext context) => showDialog(
                           ),
                         ],
                       ),
-                    Row(
-                      children: <Widget>[
-                        const Text("Overwrite file:"),
-                        Switch(
-                          value: overwriteFile,
-                          onChanged: (final bool value) {
-                            setState(() {
-                              overwriteFile = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
                   ],
                 ),
                 if (loading) const CircularProgressIndicator(),
