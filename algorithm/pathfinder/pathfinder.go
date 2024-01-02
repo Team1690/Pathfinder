@@ -78,22 +78,18 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 	actionPoints := segmentClassifier.GetActionPoints()
 
-	var absoluteTimedActionPoints []*rpc.RobotAction
 	for _, indexedActionPoint := range actionPoints {
-		absoluteTimedActionPoints = append(absoluteTimedActionPoints, &rpc.RobotAction{
-			ActionType: indexedActionPoint.action.ActionType,
-			Time:       float32(trajectory[indexedActionPoint.index].Time) + indexedActionPoint.action.Time,
-		})
+		indexedActionPoint.absoluteTime = float32(trajectory[indexedActionPoint.index].Time) + indexedActionPoint.action.Time
 	}
 
-	if len(absoluteTimedActionPoints) > 0 {
+	if len(actionPoints) > 0 {
 		// * Limiting time of last action to the time of the quantized profile
-		lastActionTime := absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time
-		absoluteTimedActionPoints[len(absoluteTimedActionPoints)-1].Time =
+		lastActionTime := actionPoints[len(actionPoints)-1].absoluteTime
+		actionPoints[len(actionPoints)-1].absoluteTime =
 			float32(math.Min(float64(lastActionTime), float64(len(quantizedTrajectory)-2)*robot.CycleTime))
 
 		// * Placing the actions in the trajectory
-		addActions(quantizedTrajectory, absoluteTimedActionPoints)
+		addActions(quantizedTrajectory, actionPoints, segmentClassifier)
 	}
 
 	ReverseTime(quantizedTrajectory) // * In the output file, the time goes backwards
@@ -101,14 +97,17 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	return quantizedTrajectory, nil
 }
 
-func addActions(trajectory []*TrajectoryPoint, actions []*rpc.RobotAction) {
+func addActions(trajectory []*TrajectoryPoint, actions []*indexedActionPoint, s *SegmentClassifier) {
 	prevTimeSearchIndex := 0
 	for _, action := range actions {
-		timeSearchIndex := SearchForTime(trajectory, float64(action.Time), prevTimeSearchIndex)
+		timeSearchIndex := SearchForTime(trajectory, float64(action.absoluteTime), prevTimeSearchIndex)
 		if timeSearchIndex == -1 {
 			continue // * Ignoring actions out of the profile
 		}
-		trajectory[timeSearchIndex].Action = action.ActionType
+		if !(action.wayPointIndex == 0 && action.action.Time < 0) && !(action.wayPointIndex == len(s.wayPoints)-1 && action.action.Time >= 0) {
+			trajectory[timeSearchIndex].Action = action.action.ActionType
+		}
+
 		prevTimeSearchIndex = timeSearchIndex
 	}
 }

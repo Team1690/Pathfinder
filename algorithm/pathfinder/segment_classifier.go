@@ -7,8 +7,10 @@ import (
 )
 
 type indexedActionPoint struct {
-	action *rpc.RobotAction
-	index  int
+	action        *rpc.RobotAction
+	index         int
+	absoluteTime  float32
+	wayPointIndex int
 }
 
 type SegmentClassifier struct {
@@ -72,7 +74,11 @@ func (s *SegmentClassifier) addActionPoint(waypoint *rpc.Point, trajectoryIndex 
 	if waypoint.Action.ActionType != "" { // * Checking if action exists
 		s.actionPoints = append(
 			s.actionPoints,
-			&indexedActionPoint{index: trajectoryIndex, action: waypoint.Action},
+			&indexedActionPoint{
+				index:         trajectoryIndex,
+				action:        waypoint.Action,
+				wayPointIndex: s.currentPointIndex,
+			},
 		)
 	}
 }
