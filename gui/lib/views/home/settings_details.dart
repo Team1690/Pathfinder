@@ -257,6 +257,10 @@ class SettingsDetails extends StatelessWidget {
                         ),
                       ),
                     )
+                    .expand(
+                      (final ListTile element) =>
+                          <Widget>[element, const Divider()],
+                    )
                     .toList()
                     .reversed
                     .toList(),

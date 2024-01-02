@@ -609,13 +609,15 @@ const Shortcut noZoomShortcut = Shortcut(
   activator: SingleActivator(LogicalKeyboardKey.digit0, control: true),
 );
 const Shortcut toggleHeading = Shortcut(
-  shortcut: "On Point + H",
-  description: "Toggles heading points",
+  shortcut: "h",
+  description:
+      "Toggles ability to move heading points without selecting specific point",
   activator: SingleActivator(LogicalKeyboardKey.keyH),
 );
 const Shortcut toggleControl = Shortcut(
-  shortcut: "On Point + G",
-  description: "Toggles control points",
+  shortcut: "g",
+  description:
+      "Toggles ability to move control points without selecting specific point",
   activator: SingleActivator(LogicalKeyboardKey.keyG),
 );
 const Shortcut unSelectPoint = Shortcut(
@@ -629,23 +631,23 @@ const Shortcut deletePoint = Shortcut(
   activator: SingleActivator(LogicalKeyboardKey.backspace, control: true),
 );
 const Shortcut undo = Shortcut(
-  shortcut: "Ctrl + Z",
+  shortcut: "Ctrl + z",
   description: "Undo the last action",
   activator: SingleActivator(LogicalKeyboardKey.keyZ, control: true),
 );
 const Shortcut redo = Shortcut(
   description: "Redo the last action",
-  shortcut: "Ctrl + Y",
+  shortcut: "Ctrl + y",
   activator: SingleActivator(LogicalKeyboardKey.keyY, control: true),
 );
 const Shortcut save = Shortcut(
   description: "Save file",
-  shortcut: "Ctrl + S",
+  shortcut: "Ctrl + s",
   activator: SingleActivator(LogicalKeyboardKey.keyS, control: true),
 );
 const Shortcut saveAs = Shortcut(
   description: "Save file as",
-  shortcut: "Ctrl + Shift + S",
+  shortcut: "Ctrl + Shift + s",
   activator:
       SingleActivator(LogicalKeyboardKey.escape, control: true, shift: true),
 );
@@ -684,9 +686,8 @@ const Shortcut addPoint = Shortcut(
   shortcut: "Ctrl + Mouse press",
 );
 const Shortcut stopPointToggle = Shortcut(
-  description:
-      "On stop point, the control points will behave like on a regular point",
-  shortcut: "On Stop Point + Control Point Pressed + F",
+  description: "On stop point, the control points become collinear",
+  shortcut: "On Stop Point + Control Point Pressed + f",
 );
 const Shortcut mouseDragPan = Shortcut(
   shortcut: "Ctrl + Mouse Drag",
