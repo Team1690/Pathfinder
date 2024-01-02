@@ -31,6 +31,7 @@ class SettingsDetails extends StatelessWidget {
     final int fractionDigits = 3,
     final String unitLabel = "m",
     final TextEditingController? controller,
+    final bool allowZero = true,
   }) {
     final String text =
         double.parse(initialValue.toStringAsFixed(fractionDigits)).toString();
@@ -51,10 +52,13 @@ class SettingsDetails extends StatelessWidget {
         if (value == null) return "$label is required.";
         if (double.tryParse(value) == null) return "Not a number";
         if (!allowNegative && double.parse(value) < 0) return "No negatives";
+        if (!allowZero && double.parse(value) == 0) return "No zero";
         return null;
       },
-      onChanged: (final String val) =>
-          onChanged(double.tryParse(val) ?? initialValue),
+      onChanged: (final String val) {
+        final double value = double.tryParse(val) ?? initialValue;
+        onChanged(!allowZero && value == 0 ? initialValue : value);
+      },
     );
   }
 
@@ -304,6 +308,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: "In Mag",
                   initialValue: pointData.inControlPoint.distance,
+                  allowZero: false,
                   allowNegative: false,
                   onChanged: (final double value) {
                     onPointEdit(
@@ -346,6 +351,7 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   label: "Out Mag",
                   allowNegative: false,
+                  allowZero: false,
                   initialValue: pointData.outControlPoint.distance,
                   onChanged: (final double value) {
                     onPointEdit(
