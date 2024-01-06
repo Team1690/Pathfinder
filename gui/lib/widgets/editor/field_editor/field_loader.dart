@@ -69,7 +69,7 @@ class _FieldLoaderState extends State<FieldLoader> {
     }
 
     final ByteData data =
-        await rootBundle.load("assets/images/frc_2023_field.png");
+        await rootBundle.load("assets/images/frc_2024_field.png");
     globalImage = await loadImage(Uint8List.view(data.buffer));
   }
 
