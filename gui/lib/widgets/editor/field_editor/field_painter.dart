@@ -14,9 +14,6 @@ import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
-Offset getZoomOffset(final Size size, final double zoom) =>
-    Offset(size.width * (1 - zoom) / 2, size.height * (1 - zoom) / 2);
-
 class FieldPainter extends CustomPainter {
   FieldPainter(
     this.image,
@@ -49,8 +46,7 @@ class FieldPainter extends CustomPainter {
     canvas.translate(0, -size.height);
 
     canvas.translate(imageOffset.dx, imageOffset.dy);
-    final Offset zoomOffset = getZoomOffset(size, imageZoom);
-    canvas.translate(zoomOffset.dx, zoomOffset.dy);
+
     canvas.scale(imageZoom);
 
     paintImage(

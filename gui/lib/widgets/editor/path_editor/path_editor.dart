@@ -11,7 +11,6 @@ import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/widgets/editor/field_editor/field_painter.dart";
 import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
@@ -51,6 +50,19 @@ class _PathEditorState extends State<PathEditor> {
   final double imageZoomDiff = 0.1;
   final double imageOffsetDiff = 10;
 
+  Offset getZoomOffset(final Offset size, final double zoom) =>
+      Offset(size.dx * (1 - zoom) / 2, size.dy * (1 - zoom) / 2);
+
+  Offset moveZoomByDiff(final double diff) =>
+      -getZoomOffset(
+        widget.pathProps.fieldSizePixels,
+        widget.pathProps.imageZoom,
+      ) +
+      getZoomOffset(
+        widget.pathProps.fieldSizePixels,
+        widget.pathProps.imageZoom + imageZoomDiff,
+      );
+
   int? getTappedPoint(
     final Offset tapPosition,
     final List<Point> points,
@@ -81,16 +93,9 @@ class _PathEditorState extends State<PathEditor> {
     final PointType pointType,
     final List<Segment> segments,
   ) {
-    final Offset realTapPosition = (tapPosition -
-            widget.pathProps.imageOffset -
-            getZoomOffset(
-              Size(
-                widget.pathProps.fieldSizePixels.dx,
-                widget.pathProps.fieldSizePixels.dy,
-              ),
-              widget.pathProps.imageZoom,
-            )) /
-        widget.pathProps.imageZoom;
+    final Offset realTapPosition =
+        (tapPosition - widget.pathProps.imageOffset) /
+            widget.pathProps.imageZoom;
 
     final (int, Segment)? segment = segments
         .mapIndexed(
@@ -205,10 +210,16 @@ class _PathEditorState extends State<PathEditor> {
           zoomIn.activator!: () {
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset + moveZoomByDiff(imageZoomDiff),
+            );
           },
           zoomOut.activator!: () {
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
+            widget.pathProps.setImageOffset(
+              widget.pathProps.imageOffset - moveZoomByDiff(-imageZoomDiff),
+            );
           },
           panUp.activator!: () {
             widget.pathProps.setImageOffset(
@@ -271,7 +282,7 @@ class _PathEditorState extends State<PathEditor> {
                           widget.pathProps.imageOffset +
                               localImageOffsetAddition;
 
-                      final double delta = pointerSignal.scrollDelta.dy * 0.01;
+                      final double delta = pointerSignal.scrollDelta.dy * -0.01;
 
                       final double newZoom = currentZoom + delta;
                       final Offset mousePosition =
