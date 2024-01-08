@@ -25,6 +25,9 @@ StoreConnector<AppState, PathViewModel> pathEditor() =>
 
 const int DraggingTollerance = 2;
 
+const double minZoom = 0.4;
+const double maxZoom = 8.0;
+
 class PathEditor extends StatefulWidget {
   PathEditor({
     required this.pathProps,
@@ -208,6 +211,7 @@ class _PathEditorState extends State<PathEditor> {
             widget.pathProps.saveFileAs();
           },
           zoomIn.activator!: () {
+            if (widget.pathProps.imageZoom + imageZoomDiff > maxZoom) return;
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
             widget.pathProps.setImageOffset(
@@ -215,6 +219,7 @@ class _PathEditorState extends State<PathEditor> {
             );
           },
           zoomOut.activator!: () {
+            if (widget.pathProps.imageZoom - imageZoomDiff < minZoom) return;
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
             widget.pathProps.setImageOffset(
@@ -293,8 +298,8 @@ class _PathEditorState extends State<PathEditor> {
                           (mousePosition - currentOffset) *
                               (1 - newZoom / currentZoom);
 
-                      if (newZoom < 0.4) return;
-                      if (newZoom > 8) return;
+                      if (newZoom < minZoom) return;
+                      if (newZoom > maxZoom) return;
 
                       setState(() {
                         isScrolling = true;
