@@ -1,6 +1,5 @@
 import "dart:convert";
 import "dart:math";
-
 import "package:flutter/material.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path.dart";
@@ -10,10 +9,8 @@ import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:redux/redux.dart";
-
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_state.dart";
-
 import "package:pathfinder/models/spline_point.dart";
 
 Reducer<TabState> applyReducers =
@@ -310,12 +307,15 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
         return e.value.copyWith(
           position: action.position ?? e.value.position,
           inControlPoint: action.inControlPoint ?? e.value.inControlPoint,
-          outControlPoint: action.isStop != null && !action.isStop!
-              ? Offset.fromDirection(
-                  e.value.inControlPoint.direction + pi,
-                  e.value.outControlPoint.distance,
-                )
-              : action.outControlPoint ?? e.value.outControlPoint,
+          //outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
+          outControlPoint: action.outControlPoint != e.value.outControlPoint
+              ? action.outControlPoint
+              : (action.isStop != null && !action.isStop!)
+                  ? Offset.fromDirection(
+                      e.value.inControlPoint.direction + pi,
+                      e.value.outControlPoint.distance,
+                    )
+                  : e.value.outControlPoint,
           heading: action.heading ?? e.value.heading,
           useHeading: useHeading,
           action: action.action ?? e.value.action,
