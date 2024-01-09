@@ -404,7 +404,7 @@ TabState _deletePointFromPath(
         .indexWhere((final Segment s) => s.pointIndexes.contains(action.index));
 
     // Get the points that where removed from the segment and add them to the previous
-    // segment, the first point never starts a segement so there always should be at least one segment
+    // segment, the first point never starts a segment so there always should be at least one segment
     // in case of deleting a 'cutting segment' point like here
     final Segment removedSegment = newSegments[removedSegmentIndex];
     final Segment previousSegment = newSegments[removedSegmentIndex - 1];
@@ -426,7 +426,7 @@ TabState _deletePointFromPath(
 
   // If the first point is deleted make sure that the new first point has correct
   // parameters for a first point ('useHeading' should be true)
-  if (action.index == 0) {
+  if (newPoints.isNotEmpty && action.index == 0) {
     newPoints[0] = newPoints[0].copyWith(useHeading: true);
   }
 
