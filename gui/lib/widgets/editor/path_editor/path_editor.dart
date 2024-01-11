@@ -43,6 +43,9 @@ class _PathEditorState extends State<PathEditor> {
   FullDraggingPoint? dragPoint;
   List<FullDraggingPoint> dragPoints = <FullDraggingPoint>[];
 
+  Offset imageZoomOffset = const Offset(0, 0);
+  Offset lastImageZoomOffset = const Offset(0, 0);
+
   bool isScrolling = false;
 
   Timer? scrollTimer;
@@ -53,18 +56,59 @@ class _PathEditorState extends State<PathEditor> {
   final double imageZoomDiff = 0.1;
   final double imageOffsetDiff = 10;
 
-  Offset getZoomOffset(final Offset size, final double zoom) =>
-      Offset(size.dx * (1 - zoom) / 2, size.dy * (1 - zoom) / 2);
+  Offset scale(final double scaler, final Offset offset) =>
+      offset.scale(scaler, scaler);
 
-  Offset moveZoomByDiff(final double diff) =>
-      -getZoomOffset(
-        widget.pathProps.fieldSizePixels,
-        widget.pathProps.imageZoom,
-      ) +
-      getZoomOffset(
-        widget.pathProps.fieldSizePixels,
-        widget.pathProps.imageZoom + imageZoomDiff,
-      );
+  Offset getZoomOffset(
+    final Offset size,
+    final double zoom,
+    final Offset imageOffset,
+  ) =>
+      Offset((1 - zoom) * (size.dx / 2 - imageOffset.dx),
+          (1 - zoom) * (size.dy / 2 - imageOffset.dy));
+
+  void moveZoomByDiff(
+    final double diff,
+  ) {
+    if (lastImageZoomOffset != widget.pathProps.imageOffset) {
+      // Got this equation by solving this equation:
+      // imageOffetWithoutZoomOffset - getZoomOffset(fieldSizePixels,imageZoomBeforeDiff, imageOffetWithoutZoomOffset) = imageOffset
+      // imageOffetWithoutZoomOffset - (1 - zoom) * (size / 2 - imageOffetWithoutZoomOffset)                           = imageOffset
+      // The variable is imageOffetWithoutZoomOffset and you know:
+      // imageZoomBeforeDiff (widget.pathProps.imageZoom), imageOffset (widget.pathProps.imageOffset) and fieldSizePixels (widget.pathProps.fieldSizePixels)
+      imageZoomOffset = widget.pathProps.imageOffset -
+          scale(
+            1 / widget.pathProps.imageZoom,
+            widget.pathProps.imageOffset -
+                scale(
+                  1 - widget.pathProps.imageZoom,
+                  scale(
+                    0.5,
+                    widget.pathProps.fieldSizePixels,
+                  ),
+                ),
+          );
+    }
+    final Offset oldZoomOffset = getZoomOffset(
+      widget.pathProps.fieldSizePixels,
+      widget.pathProps.imageZoom,
+      widget.pathProps.imageOffset - imageZoomOffset,
+    );
+
+    imageZoomOffset = getZoomOffset(
+      widget.pathProps.fieldSizePixels,
+      widget.pathProps.imageZoom + diff,
+      widget.pathProps.imageOffset - oldZoomOffset,
+    );
+
+    final Offset newImageOffset =
+        widget.pathProps.imageOffset - oldZoomOffset + imageZoomOffset;
+    lastImageZoomOffset = newImageOffset;
+
+    widget.pathProps.setImageOffset(
+      newImageOffset,
+    );
+  }
 
   int? getTappedPoint(
     final Offset tapPosition,
@@ -214,17 +258,13 @@ class _PathEditorState extends State<PathEditor> {
             if (widget.pathProps.imageZoom + imageZoomDiff > maxZoom) return;
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset + moveZoomByDiff(imageZoomDiff),
-            );
+            moveZoomByDiff(imageZoomDiff);
           },
           zoomOut.activator!: () {
             if (widget.pathProps.imageZoom - imageZoomDiff < minZoom) return;
             widget.pathProps
                 .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset - moveZoomByDiff(-imageZoomDiff),
-            );
+            moveZoomByDiff(-imageZoomDiff);
           },
           panUp.activator!: () {
             widget.pathProps.setImageOffset(
