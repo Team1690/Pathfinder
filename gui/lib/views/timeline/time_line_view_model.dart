@@ -25,10 +25,13 @@ class TimeLineViewModel {
 
   static TimeLineViewModel fromStore(final Store<AppState> store) =>
       TimeLineViewModel(
-        points: store.state.tabState.path.points,
-        segments: store.state.tabState.path.segments,
-        selectedPointIndex: (store.state.tabState.ui.selectedType == Point
-            ? store.state.tabState.ui.selectedIndex
+        points: store.state.tabState[store.state.currentTabIndex].path.points,
+        segments:
+            store.state.tabState[store.state.currentTabIndex].path.segments,
+        selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]
+                    .ui.selectedType ==
+                Point
+            ? store.state.tabState[store.state.currentTabIndex].ui.selectedIndex
             : null),
         selectPoint: (final int index) {
           store.dispatch(ObjectSelected(index, Point));
@@ -45,6 +48,7 @@ class TimeLineViewModel {
         addPoint: (final int segmentIndex, final int insertIndex) {
           store.dispatch(addPointThunk(null, segmentIndex, insertIndex));
         },
-        autoDuration: store.state.tabState.path.autoDuration,
+        autoDuration:
+            store.state.tabState[store.state.currentTabIndex].path.autoDuration,
       );
 }

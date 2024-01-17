@@ -72,17 +72,22 @@ class PathViewModel {
   final Function(double, Offset) setZoomAndOffset;
 
   static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
-        points: store.state.tabState.path.points
+        points: store.state.tabState[store.state.currentTabIndex].path.points
             .map((final Point p) => p.toUiCoord(store))
             .toList(),
-        segments: store.state.tabState.path.segments,
-        evaulatedPoints: store.state.tabState.path.evaluatedPoints
+        segments:
+            store.state.tabState[store.state.currentTabIndex].path.segments,
+        evaulatedPoints: store
+            .state.tabState[store.state.currentTabIndex].path.evaluatedPoints
             .map((final SplinePoint p) => p.toUiCoord(store))
             .toList(),
-        selectedPointIndex: (store.state.tabState.ui.selectedType == Point
-            ? store.state.tabState.ui.selectedIndex
+        selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]
+                    .ui.selectedType ==
+                Point
+            ? store.state.tabState[store.state.currentTabIndex].ui.selectedIndex
             : null),
-        robot: store.state.tabState.robot.toUiCoord(store),
+        robot: store.state.tabState[store.state.currentTabIndex].robot
+            .toUiCoord(store),
         addPoint: (final Offset position) {
           store.dispatch(
             addPointThunk(
@@ -137,25 +142,31 @@ class PathViewModel {
           store.dispatch(endHeadingDragThunk(index, heading));
         },
         setFieldSizePixels: (final Offset size) {
-          if (store.state.tabState.ui.fieldSizePixels != size) {
+          if (store.state.tabState[store.state.currentTabIndex].ui
+                  .fieldSizePixels !=
+              size) {
             store.dispatch(SetFieldSizePixels(size));
           }
         },
-        headingToggle: store.state.tabState.ui.headingToggle,
+        headingToggle:
+            store.state.tabState[store.state.currentTabIndex].ui.headingToggle,
         toggleHeading: () {
           store.dispatch(ToggleHeading());
         },
-        controlToggle: store.state.tabState.ui.controlToggle,
+        controlToggle:
+            store.state.tabState[store.state.currentTabIndex].ui.controlToggle,
         toggleControl: () {
           store.dispatch(ToggleControl());
         },
-        fieldSizePixels: store.state.tabState.ui.fieldSizePixels,
+        fieldSizePixels: store
+            .state.tabState[store.state.currentTabIndex].ui.fieldSizePixels,
         saveFile: () => store.dispatch(saveFileThunk(false)),
         saveFileAs: () => store.dispatch(saveFileThunk(true)),
         pathUndo: () => store.dispatch(pathUndoThunk()),
         pathRedo: () => store.dispatch(pathRedoThunk()),
-        imageZoom: store.state.tabState.ui.zoomLevel,
-        imageOffset: store.state.tabState.ui.pan,
+        imageZoom:
+            store.state.tabState[store.state.currentTabIndex].ui.zoomLevel,
+        imageOffset: store.state.tabState[store.state.currentTabIndex].ui.pan,
         setImageZoom: (final double zoom) =>
             store.dispatch((SetZoomLevel(zoom))),
         setImageOffset: (final Offset pan) => store.dispatch((SetPan(pan))),

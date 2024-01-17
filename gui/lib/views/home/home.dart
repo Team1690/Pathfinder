@@ -182,6 +182,52 @@ class _HomePageState extends State<HomePage> {
                             height: 1.1,
                           ),
                         ),
+                      const SizedBox(width: 10),
+                      ...List<Widget>.generate(
+                        props.tabAmount,
+                        (final int index) => ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              const Color(0),
+                            ),
+                            shadowColor: MaterialStateProperty.all(
+                              const Color(0),
+                            ),
+                            surfaceTintColor: MaterialStateProperty.all(
+                              const Color(0),
+                            ),
+                          ),
+                          onLongPress: () {
+                            if (index == props.currentTabIndex) {
+                              if (props.changesSaved) {
+                                props.removeTab(props.currentTabIndex);
+                              } else {
+                                showAlertDialog(
+                                  context,
+                                  () => props.removeTab(props.currentTabIndex),
+                                  props.saveFile,
+                                  () {},
+                                );
+                              }
+                            }
+                          },
+                          onPressed: () {
+                            props.changeTab(index);
+                          },
+                          child: Text(
+                            "$index",
+                            style: TextStyle(
+                              color: index == props.currentTabIndex
+                                  ? Colors.lightGreen
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: props.addTab,
+                        icon: const Icon(Icons.add),
+                      ),
                     ],
                   ),
                 ),

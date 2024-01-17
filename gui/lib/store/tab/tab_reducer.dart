@@ -63,8 +63,15 @@ Map<String, IconData> actionToIcon = <String, IconData>{
 };
 
 TabState tabStateReducer(final TabState tabState, final dynamic action) {
-  final TabState newTabState = applyReducers(tabState, action);
+  TabState newTabState = applyReducers(tabState, action);
 
+  if (unsavedChanegsActions.contains(action.runtimeType)) {
+    newTabState = newTabState.copyWith(
+      ui: newTabState.ui.copyWith(
+        changesSaved: false,
+      ),
+    );
+  }
   // Add path to history only after the relevant actions
   if (historyAffectingActions.contains(action.runtimeType)) {
     final List<HistoryStamp> newPathHistory = <HistoryStamp>[

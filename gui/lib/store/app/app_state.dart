@@ -6,18 +6,31 @@ import "package:pathfinder/store/tab/tab_state.dart";
 class AppState {
   const AppState({
     required this.tabState,
+    required this.currentTabIndex,
   });
   factory AppState.initial() => AppState(
-        tabState: TabState.initial(),
+        tabState: <TabState>[TabState.initial()],
+        currentTabIndex: 0,
       );
 
   // Json
   AppState.fromJson(final Map<String, dynamic> json)
-      : tabState = TabState.fromJson(json["tabState"] as Map<String, dynamic>);
-  final TabState tabState;
+      : tabState = (json["tabState"] as List<dynamic>)
+            .map(
+              (final dynamic e) => TabState.fromJson(e as Map<String, dynamic>),
+            )
+            .toList(),
+        currentTabIndex = json["currentTabIndex"] as int;
+  final List<TabState> tabState;
+  final int currentTabIndex;
 
-  AppState copyWith({final TabState? tabState}) => AppState(
+  AppState copyWith({
+    final List<TabState>? tabState,
+    final int? currentTabIndex,
+  }) =>
+      AppState(
         tabState: tabState ?? this.tabState,
+        currentTabIndex: currentTabIndex ?? this.currentTabIndex,
       );
 
   @override
@@ -25,9 +38,13 @@ class AppState {
 
   @override
   bool operator ==(final Object other) =>
-      identical(this, other) || other is AppState && tabState == other.tabState;
+      identical(this, other) ||
+      other is AppState &&
+          tabState == other.tabState &&
+          currentTabIndex == other.currentTabIndex;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        "tabState": tabState.toJson(),
+        "tabState": tabState.map((final TabState e) => e.toJson()).toList(),
+        "currentTabIndex": currentTabIndex,
       };
 }

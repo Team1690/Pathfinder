@@ -2,6 +2,7 @@ import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
@@ -11,6 +12,9 @@ import "package:redux/redux.dart";
 
 class HomeViewModel {
   HomeViewModel({
+    required this.tabAmount,
+    required this.addTab,
+    required this.changeTab,
     required this.isSidebarOpen,
     required this.setSidebarVisibility,
     required this.selectRobot,
@@ -27,11 +31,13 @@ class HomeViewModel {
     required this.saveFile,
     required this.pathUndo,
     required this.pathRedo,
+    required this.removeTab,
     required this.saveFileAs,
     required this.newAuto,
     required this.changesSaved,
     required this.help,
     required this.selectHelp,
+    required this.currentTabIndex,
   });
   TabState tabState;
   bool isSidebarOpen;
@@ -53,11 +59,23 @@ class HomeViewModel {
   final Function() pathUndo;
   final Function() pathRedo;
   final Function() newAuto;
+  final void Function(int) changeTab;
+  final void Function(int) removeTab;
+  final void Function() addTab;
   final bool changesSaved;
+  final int tabAmount;
+  final int currentTabIndex;
 
   static HomeViewModel fromStore(final Store<AppState> store) => HomeViewModel(
-        tabState: store.state.tabState,
-        isSidebarOpen: store.state.tabState.ui.isSidebarOpen,
+        currentTabIndex: store.state.currentTabIndex,
+        tabAmount: store.state.tabState.length,
+        addTab: () => store.dispatch(const AddTab()),
+        removeTab: (final int index) => store.dispatch(RemoveTab(index: index)),
+        changeTab: (final int tab) =>
+            store.dispatch(ChangeCurrentTab(index: tab)),
+        tabState: store.state.tabState[store.state.currentTabIndex],
+        isSidebarOpen:
+            store.state.tabState[store.state.currentTabIndex].ui.isSidebarOpen,
         setSidebarVisibility: (final bool visibility) {
           store.dispatch(SetSideBarVisibility(visibility));
         },
@@ -67,7 +85,7 @@ class HomeViewModel {
         selectHistory: () {
           store.dispatch(ObjectSelected(0, History));
         },
-        history: store.state.tabState.history,
+        history: store.state.tabState[store.state.currentTabIndex].history,
         help: const Help(shortcuts: shortcuts),
         selectHelp: () {
           store.dispatch(ObjectSelected(0, Help));
@@ -94,8 +112,10 @@ class HomeViewModel {
         calculateTrajectory: () => store.dispatch(
           calculateTrajectoryThunk(),
         ),
-        trajectoryFileName: store.state.tabState.ui.trajectoryFileName,
-        autoFileName: store.state.tabState.ui.autoFileName,
+        trajectoryFileName: store
+            .state.tabState[store.state.currentTabIndex].ui.trajectoryFileName,
+        autoFileName:
+            store.state.tabState[store.state.currentTabIndex].ui.autoFileName,
         editTrajectoryFileName: (final String fileName) {
           store.dispatch(TrajectoryFileNameChanged(fileName));
         },
@@ -105,7 +125,8 @@ class HomeViewModel {
         saveFile: () => store.dispatch(saveFileThunk(false)),
         saveFileAs: () => store.dispatch(saveFileThunk(true)),
         newAuto: () => store.dispatch(newAutoThunk()),
-        changesSaved: store.state.tabState.ui.changesSaved,
+        changesSaved:
+            store.state.tabState[store.state.currentTabIndex].ui.changesSaved,
       );
 
   @override
@@ -137,6 +158,8 @@ class HomeViewModel {
     if (ui.autoFileName != otherUi.autoFileName) return false;
 
     if (ui.changesSaved != otherUi.changesSaved) return false;
+    if (tabAmount != other.tabAmount) return false;
+    if (currentTabIndex != other.currentTabIndex) return false;
 
     return true;
   }

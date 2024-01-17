@@ -133,8 +133,8 @@ ThunkAction<AppState> calculateSplineThunk() =>
     (final Store<AppState> store) async {
       try {
         final SplineResponse res = await PathFinderService.calculateSpline(
-          store.state.tabState.path.segments,
-          store.state.tabState.path.points,
+          store.state.tabState[store.state.currentTabIndex].path.segments,
+          store.state.tabState[store.state.currentTabIndex].path.points,
           0.1,
         );
 
@@ -152,10 +152,11 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
       try {
         final TrajectoryResponse res =
             await PathFinderService.calculateTrjactory(
-          store.state.tabState.path.points,
-          store.state.tabState.path.segments,
-          store.state.tabState.robot,
-          store.state.tabState.ui.trajectoryFileName,
+          store.state.tabState[store.state.currentTabIndex].path.points,
+          store.state.tabState[store.state.currentTabIndex].path.segments,
+          store.state.tabState[store.state.currentTabIndex].robot,
+          store.state.tabState[store.state.currentTabIndex].ui
+              .trajectoryFileName,
         );
 
         store.dispatch(TrajectoryCalculated(res.swervePoints));
@@ -191,7 +192,8 @@ ThunkAction<AppState> openFileThunk() => (final Store<AppState> store) async {
 ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
     (final Store<AppState> store) async {
       try {
-        String savingPath = store.state.tabState.ui.autoFileName;
+        String savingPath =
+            store.state.tabState[store.state.currentTabIndex].ui.autoFileName;
 
         // In case of an initial save always open the 'save as' dialog
         if (savingPath == defaultAutoFileName) {

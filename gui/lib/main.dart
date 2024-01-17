@@ -5,7 +5,6 @@ import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/store/app/app_reducer.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/views/home/home.dart";
 import "package:redux/redux.dart";
 import "package:redux_thunk/redux_thunk.dart";
@@ -38,18 +37,8 @@ class App extends StatelessWidget {
 
 final Store<AppState> store = Store<AppState>(
   (final AppState state, final dynamic action) {
-    AppState newState = appStateReducer(state, action);
+    final AppState newState = appStateReducer(state, action);
     saveCacheState(newState);
-
-    if (unsavedChanegsActions.contains(action.runtimeType)) {
-      newState = newState.copyWith(
-        tabState: newState.tabState.copyWith(
-          ui: newState.tabState.ui.copyWith(
-            changesSaved: false,
-          ),
-        ),
-      );
-    }
 
     return newState;
   },
@@ -65,9 +54,10 @@ AppState loadInitialStateFromCache() {
     final File cacheFile = File(cacheFilePath);
     final Map<String, dynamic> jsonState =
         jsonDecode(cacheFile.readAsStringSync()) as Map<String, dynamic>;
-
     return AppState.fromJson(jsonState);
-  } catch (e) {}
+  } catch (e) {
+    print(e);
+  }
 
   return AppState.initial();
 }
