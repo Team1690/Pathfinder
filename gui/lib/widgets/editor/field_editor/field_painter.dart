@@ -69,7 +69,9 @@ class FieldPainter extends CustomPainter {
     segmentIndexToSplinePoints.entries
         .forEach((final MapEntry<int, List<modelspath.SplinePoint>> e) {
       // Skip and don't draw hidden segments
-      if (segments[e.key].isHidden) return;
+      if (segments.length - 1 <
+              e.key /* <- Happens when cut segment changes but before new spline is calculated */ ||
+          segments[e.key].isHidden) return;
 
       final ui.Color segmentColor = getSegmentColor(e.key);
       drawPathShadow(canvas, e.value);

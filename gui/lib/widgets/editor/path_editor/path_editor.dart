@@ -43,9 +43,6 @@ class _PathEditorState extends State<PathEditor> {
   FullDraggingPoint? dragPoint;
   List<FullDraggingPoint> dragPoints = <FullDraggingPoint>[];
 
-  Offset imageZoomOffset = const Offset(0, 0);
-  Offset lastImageZoomOffset = const Offset(0, 0);
-
   bool isScrolling = false;
 
   Timer? scrollTimer;
@@ -64,46 +61,46 @@ class _PathEditorState extends State<PathEditor> {
     final double zoom,
     final Offset imageOffset,
   ) =>
-      Offset((1 - zoom) * (size.dx / 2 - imageOffset.dx),
-          (1 - zoom) * (size.dy / 2 - imageOffset.dy));
+      Offset(
+        (1 - zoom) * (size.dx / 2 - imageOffset.dx),
+        (1 - zoom) * (size.dy / 2 - imageOffset.dy),
+      );
 
   void moveZoomByDiff(
     final double diff,
   ) {
-    if (lastImageZoomOffset != widget.pathProps.imageOffset) {
-      // Got this equation by solving this equation:
-      // imageOffetWithoutZoomOffset - getZoomOffset(fieldSizePixels,imageZoomBeforeDiff, imageOffetWithoutZoomOffset) = imageOffset
-      // imageOffetWithoutZoomOffset - (1 - zoom) * (size / 2 - imageOffetWithoutZoomOffset)                           = imageOffset
-      // The variable is imageOffetWithoutZoomOffset and you know:
-      // imageZoomBeforeDiff (widget.pathProps.imageZoom), imageOffset (widget.pathProps.imageOffset) and fieldSizePixels (widget.pathProps.fieldSizePixels)
-      imageZoomOffset = widget.pathProps.imageOffset -
-          scale(
-            1 / widget.pathProps.imageZoom,
-            widget.pathProps.imageOffset -
+    // This is just an equation for receiving zoom offset accorind to actualOffset
+    // imageOffetWithoutZoomOffset - getZoomOffset(fieldSizePixels,imageZoomBeforeDiff, imageOffetWithoutZoomOffset) = imageOffset
+    // imageOffetWithoutZoomOffset - (1 - zoom) * (size / 2 - imageOffetWithoutZoomOffset)                           = imageOffset
+    // The variable is imageOffetWithoutZoomOffset and you know:
+    // imageZoomBeforeDiff (widget.pathProps.imageZoom), imageOffset (widget.pathProps.imageOffset) and fieldSizePixels (widget.pathProps.fieldSizePixels)
+    final Offset offsetWithoutZoomOffset = widget.pathProps.imageOffset -
+        scale(
+          1 / widget.pathProps.imageZoom,
+          widget.pathProps.imageOffset -
+              scale(
+                1 - widget.pathProps.imageZoom,
                 scale(
-                  1 - widget.pathProps.imageZoom,
-                  scale(
-                    0.5,
-                    widget.pathProps.fieldSizePixels,
-                  ),
+                  0.5,
+                  widget.pathProps.fieldSizePixels,
                 ),
-          );
-    }
+              ),
+        );
+
     final Offset oldZoomOffset = getZoomOffset(
       widget.pathProps.fieldSizePixels,
       widget.pathProps.imageZoom,
-      widget.pathProps.imageOffset - imageZoomOffset,
+      widget.pathProps.imageOffset - offsetWithoutZoomOffset,
     );
 
-    imageZoomOffset = getZoomOffset(
+    final Offset newImageZoomOffset = getZoomOffset(
       widget.pathProps.fieldSizePixels,
       widget.pathProps.imageZoom + diff,
       widget.pathProps.imageOffset - oldZoomOffset,
     );
 
     final Offset newImageOffset =
-        widget.pathProps.imageOffset - oldZoomOffset + imageZoomOffset;
-    lastImageZoomOffset = newImageOffset;
+        widget.pathProps.imageOffset - oldZoomOffset + newImageZoomOffset;
 
     widget.pathProps.setImageOffset(
       newImageOffset,

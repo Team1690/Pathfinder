@@ -425,6 +425,7 @@ class SettingsDetails extends StatelessWidget {
                     label: "Cut segments",
                     onChanged: (final bool value) {
                       onPointEdit(index, pointData.copyWith(cutSegment: value));
+
                       triggerSidebarRender();
                     },
                   ),
