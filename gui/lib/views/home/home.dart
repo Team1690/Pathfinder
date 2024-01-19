@@ -187,8 +187,11 @@ class _HomePageState extends State<HomePage> {
                         props.tabAmount,
                         (final int index) => ElevatedButton(
                           style: ButtonStyle(
+                            splashFactory: InkRipple.splashFactory,
                             backgroundColor: MaterialStateProperty.all(
-                              const Color(0),
+                              index == props.currentTabIndex
+                                  ? Colors.white
+                                  : const Color(0),
                             ),
                             shadowColor: MaterialStateProperty.all(
                               const Color(0),
