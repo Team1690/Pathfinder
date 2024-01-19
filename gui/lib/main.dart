@@ -55,9 +55,7 @@ AppState loadInitialStateFromCache() {
     final Map<String, dynamic> jsonState =
         jsonDecode(cacheFile.readAsStringSync()) as Map<String, dynamic>;
     return AppState.fromJson(jsonState);
-  } catch (e) {
-    print(e);
-  }
+  } catch (e) {}
 
   return AppState.initial();
 }

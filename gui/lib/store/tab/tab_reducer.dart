@@ -1,14 +1,11 @@
-import "dart:convert";
 import "dart:math";
 import "package:flutter/material.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:redux/redux.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_state.dart";

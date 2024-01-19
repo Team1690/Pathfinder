@@ -10,7 +10,6 @@ import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux/redux.dart";
 
