@@ -7,6 +7,7 @@ import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
 import "package:pathfinder/services/pathfinder.dart";
+import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
@@ -192,8 +193,7 @@ ThunkAction<AppState> openFileThunk() => (final Store<AppState> store) async {
 ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
     (final Store<AppState> store) async {
       try {
-        String savingPath =
-            store.state.tabState[store.state.currentTabIndex].ui.autoFileName;
+        String savingPath = store.state.autoFileName;
 
         // In case of an initial save always open the 'save as' dialog
         if (savingPath == defaultAutoFileName) {

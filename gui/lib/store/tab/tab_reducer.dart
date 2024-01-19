@@ -7,6 +7,7 @@ import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
 import "package:pathfinder/services/pathfinder.dart";
+import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:redux/redux.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
@@ -31,13 +32,10 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, TrajectoryCalculated>(_trajectoryCalculated),
   TypedReducer<TabState, TrajectoryInProgress>(_trajectoryInProgress),
   TypedReducer<TabState, TrajectoryFileNameChanged>(_trajectoryFileNameChanged),
-  TypedReducer<TabState, OpenFile>(_openFile),
-  TypedReducer<TabState, SaveFile>(_saveFile),
   TypedReducer<TabState, PathUndo>(_pathUndo),
   TypedReducer<TabState, PathRedo>(_pathRedo),
   TypedReducer<TabState, SetZoomLevel>(_setZoomLevel),
   TypedReducer<TabState, SetPan>(_setPan),
-  TypedReducer<TabState, NewAuto>(_newAuto),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -52,6 +50,8 @@ List<Type> unsavedChanegsActions = <Type>[
   ...historyAffectingActions,
   PathUndo,
   PathRedo,
+  AddTab,
+  RemoveTab,
 ];
 
 Map<String, IconData> actionToIcon = <String, IconData>{
@@ -63,15 +63,8 @@ Map<String, IconData> actionToIcon = <String, IconData>{
 };
 
 TabState tabStateReducer(final TabState tabState, final dynamic action) {
-  TabState newTabState = applyReducers(tabState, action);
+  final TabState newTabState = applyReducers(tabState, action);
 
-  if (unsavedChanegsActions.contains(action.runtimeType)) {
-    newTabState = newTabState.copyWith(
-      ui: newTabState.ui.copyWith(
-        changesSaved: false,
-      ),
-    );
-  }
   // Add path to history only after the relevant actions
   if (historyAffectingActions.contains(action.runtimeType)) {
     final List<HistoryStamp> newPathHistory = <HistoryStamp>[
@@ -525,32 +518,6 @@ TabState _trajectoryFileNameChanged(
       ),
     );
 
-TabState _openFile(final TabState tabState, final OpenFile action) {
-  // Json decode may fail so wrap with try/catch
-  try {
-    final Map<String, dynamic> decodedState =
-        jsonDecode(action.fileContent)["tabState"] as Map<String, dynamic>;
-    final TabState fileState = TabState.fromJson(decodedState);
-
-    return fileState.copyWith(
-      ui: fileState.ui.copyWith(
-        autoFileName: action.fileName,
-        changesSaved: true,
-      ),
-    );
-  } catch (e) {}
-
-  return tabState;
-}
-
-TabState _saveFile(final TabState tabState, final SaveFile action) =>
-    tabState.copyWith(
-      ui: tabState.ui.copyWith(
-        autoFileName: action.fileName,
-        changesSaved: true,
-      ),
-    );
-
 TabState _pathUndo(final TabState tabState, final PathUndo action) {
   final int newStateIndex = max(tabState.history.currentStateIndex - 1, 0);
 
@@ -599,11 +566,4 @@ TabState _setPan(final TabState tabState, final SetPan action) =>
       ui: tabState.ui.copyWith(
         pan: action.pan,
       ),
-    );
-
-TabState _newAuto(final TabState tabState, final NewAuto action) =>
-    tabState.copyWith(
-      path: Path.initial(),
-      history: History.initial(),
-      ui: TabUI.initial(),
     );

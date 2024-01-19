@@ -54,6 +54,7 @@ class HomeViewModel {
   final String autoFileName;
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
+
   final Function() saveFile;
   final Function() saveFileAs;
   final Function() pathUndo;
@@ -114,8 +115,7 @@ class HomeViewModel {
         ),
         trajectoryFileName: store
             .state.tabState[store.state.currentTabIndex].ui.trajectoryFileName,
-        autoFileName:
-            store.state.tabState[store.state.currentTabIndex].ui.autoFileName,
+        autoFileName: store.state.autoFileName,
         editTrajectoryFileName: (final String fileName) {
           store.dispatch(TrajectoryFileNameChanged(fileName));
         },
@@ -125,8 +125,7 @@ class HomeViewModel {
         saveFile: () => store.dispatch(saveFileThunk(false)),
         saveFileAs: () => store.dispatch(saveFileThunk(true)),
         newAuto: () => store.dispatch(newAutoThunk()),
-        changesSaved:
-            store.state.tabState[store.state.currentTabIndex].ui.changesSaved,
+        changesSaved: store.state.changesSaved,
       );
 
   @override
@@ -155,11 +154,10 @@ class HomeViewModel {
         return false;
     }
 
-    if (ui.autoFileName != otherUi.autoFileName) return false;
-
-    if (ui.changesSaved != otherUi.changesSaved) return false;
     if (tabAmount != other.tabAmount) return false;
     if (currentTabIndex != other.currentTabIndex) return false;
+    if (changesSaved != other.changesSaved) return false;
+    if (autoFileName != other.autoFileName) return false;
 
     return true;
   }
