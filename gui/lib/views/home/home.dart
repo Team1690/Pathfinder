@@ -199,15 +199,15 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onLongPress: () {
                             if (index == props.currentTabIndex) {
-                              if (props.changesSaved) {
-                                props.removeTab(props.currentTabIndex);
-                              } else {
+                              if (!props.changesSaved) {
                                 showAlertDialog(
                                   context,
                                   () => props.removeTab(props.currentTabIndex),
                                   props.saveFile,
                                   () {},
                                 );
+                              } else if (props.tabAmount > 1) {
+                                props.removeTab(props.currentTabIndex);
                               }
                             }
                           },
