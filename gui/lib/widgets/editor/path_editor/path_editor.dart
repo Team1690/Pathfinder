@@ -746,6 +746,11 @@ const Shortcut mouseDragPan = Shortcut(
   shortcut: "Ctrl + Mouse Drag",
   description: "Pan with mouse",
 );
+
+const Shortcut deleteTab = Shortcut(
+  shortcut: "Long Press a tab",
+  description: "Deletes the pressed tab",
+);
 const List<Shortcut> shortcuts = <Shortcut>[
   stopPointToggle,
   panUp,
@@ -764,4 +769,5 @@ const List<Shortcut> shortcuts = <Shortcut>[
   redo,
   save,
   saveAs,
+  deleteTab,
 ];
