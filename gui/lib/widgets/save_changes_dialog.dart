@@ -5,6 +5,8 @@ void showAlertDialog(
   final Function() onDiscard,
   final Function() onSave,
   final Function() onCancel,
+  final String title,
+  final String content,
 ) {
   final void Function() Function(Function() fn) wrapWithPop =
       (final void Function() fn) => () {
@@ -28,8 +30,8 @@ void showAlertDialog(
 
   // set up the AlertDialog
   final AlertDialog alert = AlertDialog(
-    title: const Text("Confirm new auto"),
-    content: const Text("You have made changes, do you wish to discard them?"),
+    title: Text(title),
+    content: Text(content),
     actions: <Widget>[
       cancelButton,
       discardButton,

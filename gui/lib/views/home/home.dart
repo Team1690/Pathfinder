@@ -112,6 +112,8 @@ class _HomePageState extends State<HomePage> {
                               props.newAuto,
                               props.saveFile,
                               () {},
+                              "Confirm new auto",
+                              "You have made change, are you sure you want to discard them?",
                             );
                             return;
                           }
@@ -201,14 +203,18 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           onLongPress: () {
+                            if (props.tabAmount == 1) return;
+
                             if (!props.changesSaved) {
                               showAlertDialog(
                                 context,
                                 () => props.removeTab(props.currentTabIndex),
                                 props.saveFile,
                                 () {},
+                                "Confirm tab delete",
+                                "Are you sure you want to discard this tab? Please save to back this up",
                               );
-                            } else if (props.tabAmount > 1) {
+                            } else {
                               props.removeTab(props.currentTabIndex);
                             }
                           },
