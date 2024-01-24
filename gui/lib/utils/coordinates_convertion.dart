@@ -4,7 +4,7 @@ import "package:pathfinder/store/tab/store.dart";
 import "package:redux/redux.dart";
 
 Offset uiToMetersCoord(final Store<AppState> store, final Offset val) {
-  final TabState tabState = store.state.tabState;
+  final TabState tabState = store.state.tabState[store.state.currentTabIndex];
 
   final double xScaler =
       tabState.field.size.dx / tabState.ui.fieldSizePixels.dx;
@@ -15,7 +15,7 @@ Offset uiToMetersCoord(final Store<AppState> store, final Offset val) {
 }
 
 Offset metersToUiCoord(final Store<AppState> store, final Offset val) {
-  final TabState tabState = store.state.tabState;
+  final TabState tabState = store.state.tabState[store.state.currentTabIndex];
 
   final double xScaler =
       tabState.ui.fieldSizePixels.dx / tabState.field.size.dx;

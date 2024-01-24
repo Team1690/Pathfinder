@@ -1,9 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/utils/json.dart";
 
-const String autoFileExtension = "auto";
 const String defaultTrajectoryFileName = "output";
-const String defaultAutoFileName = "untitled.$autoFileExtension";
 
 @immutable
 class TabUI {
@@ -18,8 +16,6 @@ class TabUI {
     required this.headingToggle,
     required this.controlToggle,
     required this.trajectoryFileName,
-    required this.autoFileName,
-    required this.changesSaved,
     this.serverError,
   });
   // Json
@@ -36,9 +32,7 @@ class TabUI {
         controlToggle = json["controlToggle"] as bool,
         serverError = null,
         trajectoryFileName = (json["trajectoryFileName"] as String?) ??
-            defaultTrajectoryFileName,
-        autoFileName = (json["autoFileName"] as String?) ?? defaultAutoFileName,
-        changesSaved = (json["changesSaved"] as bool?) ?? true;
+            defaultTrajectoryFileName;
   factory TabUI.initial() => const TabUI(
         selectedIndex: -1,
         selectedType: Null,
@@ -50,8 +44,6 @@ class TabUI {
         controlToggle: false,
         pan: Offset.zero,
         trajectoryFileName: defaultTrajectoryFileName,
-        autoFileName: defaultAutoFileName,
-        changesSaved: true,
       );
   final int selectedIndex;
   final Type selectedType;
@@ -64,8 +56,6 @@ class TabUI {
   final bool controlToggle;
   final String? serverError;
   final String trajectoryFileName;
-  final String autoFileName;
-  final bool changesSaved;
 
   TabUI copyWith({
     final int? selectedIndex,
@@ -79,8 +69,6 @@ class TabUI {
     final bool? controlToggle,
     final String? serverError,
     final String? trajectoryFileName,
-    final String? autoFileName,
-    final bool? changesSaved,
   }) =>
       TabUI(
         selectedIndex: selectedIndex ?? this.selectedIndex,
@@ -94,8 +82,6 @@ class TabUI {
         controlToggle: controlToggle ?? this.controlToggle,
         serverError: serverError ?? this.serverError,
         trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
-        autoFileName: autoFileName ?? this.autoFileName,
-        changesSaved: changesSaved ?? this.changesSaved,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -110,7 +96,5 @@ class TabUI {
         "headingToggle": headingToggle,
         "controlToggle": controlToggle,
         "trajectoryFileName": trajectoryFileName,
-        "autoFileName": autoFileName,
-        "changesSaved": changesSaved,
       };
 }

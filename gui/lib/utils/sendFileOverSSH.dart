@@ -9,7 +9,7 @@ void sendToRobot(final BuildContext context) => showDialog(
       builder: (final BuildContext context) {
         String ip = "10.16.90.2";
         String filePath =
-            "./out/${store.state.tabState.ui.trajectoryFileName}.csv";
+            "./out/${store.state.tabState[store.state.currentTabIndex].ui.trajectoryFileName}.csv";
         String errorMessage = "";
         final TextEditingController ipController =
             TextEditingController(text: ip);

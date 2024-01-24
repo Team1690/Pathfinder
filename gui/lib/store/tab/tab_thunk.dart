@@ -7,9 +7,9 @@ import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
 import "package:pathfinder/services/pathfinder.dart";
+import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux/redux.dart";
 
@@ -133,8 +133,8 @@ ThunkAction<AppState> calculateSplineThunk() =>
     (final Store<AppState> store) async {
       try {
         final SplineResponse res = await PathFinderService.calculateSpline(
-          store.state.tabState.path.segments,
-          store.state.tabState.path.points,
+          store.state.tabState[store.state.currentTabIndex].path.segments,
+          store.state.tabState[store.state.currentTabIndex].path.points,
           0.1,
         );
 
@@ -152,10 +152,11 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
       try {
         final TrajectoryResponse res =
             await PathFinderService.calculateTrjactory(
-          store.state.tabState.path.points,
-          store.state.tabState.path.segments,
-          store.state.tabState.robot,
-          store.state.tabState.ui.trajectoryFileName,
+          store.state.tabState[store.state.currentTabIndex].path.points,
+          store.state.tabState[store.state.currentTabIndex].path.segments,
+          store.state.tabState[store.state.currentTabIndex].robot,
+          store.state.tabState[store.state.currentTabIndex].ui
+              .trajectoryFileName,
         );
 
         store.dispatch(TrajectoryCalculated(res.swervePoints));
@@ -191,7 +192,7 @@ ThunkAction<AppState> openFileThunk() => (final Store<AppState> store) async {
 ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
     (final Store<AppState> store) async {
       try {
-        String savingPath = store.state.tabState.ui.autoFileName;
+        String savingPath = store.state.autoFileName;
 
         // In case of an initial save always open the 'save as' dialog
         if (savingPath == defaultAutoFileName) {

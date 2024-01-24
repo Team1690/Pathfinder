@@ -112,6 +112,8 @@ class _HomePageState extends State<HomePage> {
                               props.newAuto,
                               props.saveFile,
                               () {},
+                              "Confirm new auto",
+                              "You have made change, are you sure you want to discard them?",
                             );
                             return;
                           }
@@ -182,6 +184,57 @@ class _HomePageState extends State<HomePage> {
                             height: 1.1,
                           ),
                         ),
+                      const SizedBox(width: 10),
+                      ...List<Widget>.generate(
+                        props.tabAmount,
+                        (final int index) => ElevatedButton(
+                          style: ButtonStyle(
+                            splashFactory: InkRipple.splashFactory,
+                            backgroundColor: MaterialStateProperty.all(
+                              index == props.currentTabIndex
+                                  ? Colors.white
+                                  : const Color(0),
+                            ),
+                            shadowColor: MaterialStateProperty.all(
+                              const Color(0),
+                            ),
+                            surfaceTintColor: MaterialStateProperty.all(
+                              const Color(0),
+                            ),
+                          ),
+                          onLongPress: () {
+                            if (props.tabAmount == 1) return;
+
+                            if (!props.changesSaved) {
+                              showAlertDialog(
+                                context,
+                                () => props.removeTab(props.currentTabIndex),
+                                props.saveFile,
+                                () {},
+                                "Confirm tab delete",
+                                "Are you sure you want to discard this tab? Please save to back this up",
+                              );
+                            } else {
+                              props.removeTab(props.currentTabIndex);
+                            }
+                          },
+                          onPressed: () {
+                            props.changeTab(index);
+                          },
+                          child: Text(
+                            "$index",
+                            style: TextStyle(
+                              color: index == props.currentTabIndex
+                                  ? Colors.lightGreen
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: props.addTab,
+                        icon: const Icon(Icons.add),
+                      ),
                     ],
                   ),
                 ),
