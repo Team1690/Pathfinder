@@ -78,15 +78,8 @@ Color getPointColor(
 double convertRadiusToSigma(final double radius) => radius * 0.57735 + 0.5;
 
 const List<String> autoActions = <String>[
-  "Cone Intake",
-  "Cone Yoshi",
-  "Cube Intake",
-  "Cube Yoshi",
-  "Place High",
-  "Place Mid",
-  "Place Low",
-  // "Cube Shoot",
-  // "Cone Shoot",
-  "Climb",
-  "Travel",
+  "Stop To Shoot",
+  "Force Shoot",
+  "Intake autoDrive",
+  "Deflect",
 ];
