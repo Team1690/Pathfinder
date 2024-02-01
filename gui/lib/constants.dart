@@ -89,4 +89,8 @@ const List<String> autoActions = <String>[
   // "Cone Shoot",
   "Climb",
   "Travel",
+  "Stop To Shoot"
+      "Force Shoot"
+      "Intake autoDrive"
+      "Deflect"
 ];
