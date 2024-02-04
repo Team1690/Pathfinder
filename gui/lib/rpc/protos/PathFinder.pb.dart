@@ -1,9 +1,13 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: protos/PathFinder.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:core' as $core;
 
@@ -14,28 +18,29 @@ import 'PathFinder.pbenum.dart';
 export 'PathFinder.pbenum.dart';
 
 class RobotAction extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RobotAction', createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'actionType', protoName: 'actionType')
-    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time', $pb.PbFieldType.OF)
-    ..hasRequiredFields = false
-  ;
-
-  RobotAction._() : super();
   factory RobotAction({
     $core.String? actionType,
     $core.double? time,
   }) {
-    final _result = create();
+    final $result = create();
     if (actionType != null) {
-      _result.actionType = actionType;
+      $result.actionType = actionType;
     }
     if (time != null) {
-      _result.time = time;
+      $result.time = time;
     }
-    return _result;
+    return $result;
   }
+  RobotAction._() : super();
   factory RobotAction.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory RobotAction.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RobotAction', createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'actionType', protoName: 'actionType')
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'time', $pb.PbFieldType.OF)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -45,8 +50,10 @@ class RobotAction extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  RobotAction copyWith(void Function(RobotAction) updates) => super.copyWith((message) => updates(message as RobotAction)) as RobotAction; // ignore: deprecated_member_use
+  RobotAction copyWith(void Function(RobotAction) updates) => super.copyWith((message) => updates(message as RobotAction)) as RobotAction;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static RobotAction create() => RobotAction._();
   RobotAction createEmptyInstance() => create();
@@ -75,28 +82,29 @@ class RobotAction extends $pb.GeneratedMessage {
 }
 
 class Vector extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Vector', createEmptyInstance: create)
-    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'x', $pb.PbFieldType.OF)
-    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'y', $pb.PbFieldType.OF)
-    ..hasRequiredFields = false
-  ;
-
-  Vector._() : super();
   factory Vector({
     $core.double? x,
     $core.double? y,
   }) {
-    final _result = create();
+    final $result = create();
     if (x != null) {
-      _result.x = x;
+      $result.x = x;
     }
     if (y != null) {
-      _result.y = y;
+      $result.y = y;
     }
-    return _result;
+    return $result;
   }
+  Vector._() : super();
   factory Vector.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Vector.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Vector', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'x', $pb.PbFieldType.OF)
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'y', $pb.PbFieldType.OF)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -106,8 +114,10 @@ class Vector extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Vector copyWith(void Function(Vector) updates) => super.copyWith((message) => updates(message as Vector)) as Vector; // ignore: deprecated_member_use
+  Vector copyWith(void Function(Vector) updates) => super.copyWith((message) => updates(message as Vector)) as Vector;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static Vector create() => Vector._();
   Vector createEmptyInstance() => create();
@@ -136,17 +146,6 @@ class Vector extends $pb.GeneratedMessage {
 }
 
 class Point extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Point', createEmptyInstance: create)
-    ..aOM<Vector>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'position', subBuilder: Vector.create)
-    ..aOM<Vector>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'controlIn', protoName: 'controlIn', subBuilder: Vector.create)
-    ..aOM<Vector>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'controlOut', protoName: 'controlOut', subBuilder: Vector.create)
-    ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'useHeading', protoName: 'useHeading')
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
-    ..aOM<RobotAction>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action', subBuilder: RobotAction.create)
-    ..hasRequiredFields = false
-  ;
-
-  Point._() : super();
   factory Point({
     Vector? position,
     Vector? controlIn,
@@ -155,29 +154,41 @@ class Point extends $pb.GeneratedMessage {
     $core.double? heading,
     RobotAction? action,
   }) {
-    final _result = create();
+    final $result = create();
     if (position != null) {
-      _result.position = position;
+      $result.position = position;
     }
     if (controlIn != null) {
-      _result.controlIn = controlIn;
+      $result.controlIn = controlIn;
     }
     if (controlOut != null) {
-      _result.controlOut = controlOut;
+      $result.controlOut = controlOut;
     }
     if (useHeading != null) {
-      _result.useHeading = useHeading;
+      $result.useHeading = useHeading;
     }
     if (heading != null) {
-      _result.heading = heading;
+      $result.heading = heading;
     }
     if (action != null) {
-      _result.action = action;
+      $result.action = action;
     }
-    return _result;
+    return $result;
   }
+  Point._() : super();
   factory Point.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Point.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Point', createEmptyInstance: create)
+    ..aOM<Vector>(1, _omitFieldNames ? '' : 'position', subBuilder: Vector.create)
+    ..aOM<Vector>(2, _omitFieldNames ? '' : 'controlIn', protoName: 'controlIn', subBuilder: Vector.create)
+    ..aOM<Vector>(3, _omitFieldNames ? '' : 'controlOut', protoName: 'controlOut', subBuilder: Vector.create)
+    ..aOB(4, _omitFieldNames ? '' : 'useHeading', protoName: 'useHeading')
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'heading', $pb.PbFieldType.OF)
+    ..aOM<RobotAction>(6, _omitFieldNames ? '' : 'action', subBuilder: RobotAction.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -187,8 +198,10 @@ class Point extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Point copyWith(void Function(Point) updates) => super.copyWith((message) => updates(message as Point)) as Point; // ignore: deprecated_member_use
+  Point copyWith(void Function(Point) updates) => super.copyWith((message) => updates(message as Point)) as Point;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static Point create() => Point._();
   Point createEmptyInstance() => create();
@@ -261,38 +274,39 @@ class Point extends $pb.GeneratedMessage {
 }
 
 class Segment extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Segment', createEmptyInstance: create)
-    ..pc<Point>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'points', $pb.PbFieldType.PM, subBuilder: Point.create)
-    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
-    ..e<SplineTypes>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
-    ..aOM<SplineParameters>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
-    ..hasRequiredFields = false
-  ;
-
-  Segment._() : super();
   factory Segment({
     $core.Iterable<Point>? points,
     $core.double? maxVelocity,
     SplineTypes? splineType,
     SplineParameters? splineParameters,
   }) {
-    final _result = create();
+    final $result = create();
     if (points != null) {
-      _result.points.addAll(points);
+      $result.points.addAll(points);
     }
     if (maxVelocity != null) {
-      _result.maxVelocity = maxVelocity;
+      $result.maxVelocity = maxVelocity;
     }
     if (splineType != null) {
-      _result.splineType = splineType;
+      $result.splineType = splineType;
     }
     if (splineParameters != null) {
-      _result.splineParameters = splineParameters;
+      $result.splineParameters = splineParameters;
     }
-    return _result;
+    return $result;
   }
+  Segment._() : super();
   factory Segment.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Segment.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Segment', createEmptyInstance: create)
+    ..pc<Point>(1, _omitFieldNames ? '' : 'points', $pb.PbFieldType.PM, subBuilder: Point.create)
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
+    ..e<SplineTypes>(3, _omitFieldNames ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
+    ..aOM<SplineParameters>(4, _omitFieldNames ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -302,8 +316,10 @@ class Segment extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Segment copyWith(void Function(Segment) updates) => super.copyWith((message) => updates(message as Segment)) as Segment; // ignore: deprecated_member_use
+  Segment copyWith(void Function(Segment) updates) => super.copyWith((message) => updates(message as Segment)) as Segment;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static Segment create() => Segment._();
   Segment createEmptyInstance() => create();
@@ -346,23 +362,24 @@ class Segment extends $pb.GeneratedMessage {
 }
 
 class Section extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Section', createEmptyInstance: create)
-    ..pc<Segment>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: Segment.create)
-    ..hasRequiredFields = false
-  ;
-
-  Section._() : super();
   factory Section({
     $core.Iterable<Segment>? segments,
   }) {
-    final _result = create();
+    final $result = create();
     if (segments != null) {
-      _result.segments.addAll(segments);
+      $result.segments.addAll(segments);
     }
-    return _result;
+    return $result;
   }
+  Section._() : super();
   factory Section.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Section.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Section', createEmptyInstance: create)
+    ..pc<Segment>(1, _omitFieldNames ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: Segment.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -372,8 +389,10 @@ class Section extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Section copyWith(void Function(Section) updates) => super.copyWith((message) => updates(message as Section)) as Section; // ignore: deprecated_member_use
+  Section copyWith(void Function(Section) updates) => super.copyWith((message) => updates(message as Section)) as Section;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static Section create() => Section._();
   Section createEmptyInstance() => create();
@@ -387,23 +406,24 @@ class Section extends $pb.GeneratedMessage {
 }
 
 class SplineParameters extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineParameters', createEmptyInstance: create)
-    ..p<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'params', $pb.PbFieldType.PF)
-    ..hasRequiredFields = false
-  ;
-
-  SplineParameters._() : super();
   factory SplineParameters({
     $core.Iterable<$core.double>? params,
   }) {
-    final _result = create();
+    final $result = create();
     if (params != null) {
-      _result.params.addAll(params);
+      $result.params.addAll(params);
     }
-    return _result;
+    return $result;
   }
+  SplineParameters._() : super();
   factory SplineParameters.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory SplineParameters.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineParameters', createEmptyInstance: create)
+    ..p<$core.double>(1, _omitFieldNames ? '' : 'params', $pb.PbFieldType.KF)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -413,8 +433,10 @@ class SplineParameters extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineParameters copyWith(void Function(SplineParameters) updates) => super.copyWith((message) => updates(message as SplineParameters)) as SplineParameters; // ignore: deprecated_member_use
+  SplineParameters copyWith(void Function(SplineParameters) updates) => super.copyWith((message) => updates(message as SplineParameters)) as SplineParameters;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineParameters create() => SplineParameters._();
   SplineParameters createEmptyInstance() => create();
@@ -428,14 +450,15 @@ class SplineParameters extends $pb.GeneratedMessage {
 }
 
 class SplineRequest_OptimizationParams_Hermite extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest.OptimizationParams.Hermite', createEmptyInstance: create)
+  factory SplineRequest_OptimizationParams_Hermite() => create();
+  SplineRequest_OptimizationParams_Hermite._() : super();
+  factory SplineRequest_OptimizationParams_Hermite.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SplineRequest_OptimizationParams_Hermite.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineRequest.OptimizationParams.Hermite', createEmptyInstance: create)
     ..hasRequiredFields = false
   ;
 
-  SplineRequest_OptimizationParams_Hermite._() : super();
-  factory SplineRequest_OptimizationParams_Hermite() => create();
-  factory SplineRequest_OptimizationParams_Hermite.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SplineRequest_OptimizationParams_Hermite.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -445,8 +468,10 @@ class SplineRequest_OptimizationParams_Hermite extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineRequest_OptimizationParams_Hermite copyWith(void Function(SplineRequest_OptimizationParams_Hermite) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Hermite)) as SplineRequest_OptimizationParams_Hermite; // ignore: deprecated_member_use
+  SplineRequest_OptimizationParams_Hermite copyWith(void Function(SplineRequest_OptimizationParams_Hermite) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Hermite)) as SplineRequest_OptimizationParams_Hermite;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineRequest_OptimizationParams_Hermite create() => SplineRequest_OptimizationParams_Hermite._();
   SplineRequest_OptimizationParams_Hermite createEmptyInstance() => create();
@@ -457,14 +482,15 @@ class SplineRequest_OptimizationParams_Hermite extends $pb.GeneratedMessage {
 }
 
 class SplineRequest_OptimizationParams_Bezier extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest.OptimizationParams.Bezier', createEmptyInstance: create)
+  factory SplineRequest_OptimizationParams_Bezier() => create();
+  SplineRequest_OptimizationParams_Bezier._() : super();
+  factory SplineRequest_OptimizationParams_Bezier.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SplineRequest_OptimizationParams_Bezier.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineRequest.OptimizationParams.Bezier', createEmptyInstance: create)
     ..hasRequiredFields = false
   ;
 
-  SplineRequest_OptimizationParams_Bezier._() : super();
-  factory SplineRequest_OptimizationParams_Bezier() => create();
-  factory SplineRequest_OptimizationParams_Bezier.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SplineRequest_OptimizationParams_Bezier.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -474,8 +500,10 @@ class SplineRequest_OptimizationParams_Bezier extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineRequest_OptimizationParams_Bezier copyWith(void Function(SplineRequest_OptimizationParams_Bezier) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Bezier)) as SplineRequest_OptimizationParams_Bezier; // ignore: deprecated_member_use
+  SplineRequest_OptimizationParams_Bezier copyWith(void Function(SplineRequest_OptimizationParams_Bezier) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Bezier)) as SplineRequest_OptimizationParams_Bezier;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineRequest_OptimizationParams_Bezier create() => SplineRequest_OptimizationParams_Bezier._();
   SplineRequest_OptimizationParams_Bezier createEmptyInstance() => create();
@@ -486,14 +514,15 @@ class SplineRequest_OptimizationParams_Bezier extends $pb.GeneratedMessage {
 }
 
 class SplineRequest_OptimizationParams_Polynomial extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest.OptimizationParams.Polynomial', createEmptyInstance: create)
+  factory SplineRequest_OptimizationParams_Polynomial() => create();
+  SplineRequest_OptimizationParams_Polynomial._() : super();
+  factory SplineRequest_OptimizationParams_Polynomial.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SplineRequest_OptimizationParams_Polynomial.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineRequest.OptimizationParams.Polynomial', createEmptyInstance: create)
     ..hasRequiredFields = false
   ;
 
-  SplineRequest_OptimizationParams_Polynomial._() : super();
-  factory SplineRequest_OptimizationParams_Polynomial() => create();
-  factory SplineRequest_OptimizationParams_Polynomial.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SplineRequest_OptimizationParams_Polynomial.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -503,8 +532,10 @@ class SplineRequest_OptimizationParams_Polynomial extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineRequest_OptimizationParams_Polynomial copyWith(void Function(SplineRequest_OptimizationParams_Polynomial) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Polynomial)) as SplineRequest_OptimizationParams_Polynomial; // ignore: deprecated_member_use
+  SplineRequest_OptimizationParams_Polynomial copyWith(void Function(SplineRequest_OptimizationParams_Polynomial) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams_Polynomial)) as SplineRequest_OptimizationParams_Polynomial;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineRequest_OptimizationParams_Polynomial create() => SplineRequest_OptimizationParams_Polynomial._();
   SplineRequest_OptimizationParams_Polynomial createEmptyInstance() => create();
@@ -515,33 +546,34 @@ class SplineRequest_OptimizationParams_Polynomial extends $pb.GeneratedMessage {
 }
 
 class SplineRequest_OptimizationParams extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest.OptimizationParams', createEmptyInstance: create)
-    ..aOM<SplineRequest_OptimizationParams_Hermite>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'hermite', subBuilder: SplineRequest_OptimizationParams_Hermite.create)
-    ..aOM<SplineRequest_OptimizationParams_Bezier>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'bezier', subBuilder: SplineRequest_OptimizationParams_Bezier.create)
-    ..aOM<SplineRequest_OptimizationParams_Polynomial>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'polynomial', subBuilder: SplineRequest_OptimizationParams_Polynomial.create)
-    ..hasRequiredFields = false
-  ;
-
-  SplineRequest_OptimizationParams._() : super();
   factory SplineRequest_OptimizationParams({
     SplineRequest_OptimizationParams_Hermite? hermite,
     SplineRequest_OptimizationParams_Bezier? bezier,
     SplineRequest_OptimizationParams_Polynomial? polynomial,
   }) {
-    final _result = create();
+    final $result = create();
     if (hermite != null) {
-      _result.hermite = hermite;
+      $result.hermite = hermite;
     }
     if (bezier != null) {
-      _result.bezier = bezier;
+      $result.bezier = bezier;
     }
     if (polynomial != null) {
-      _result.polynomial = polynomial;
+      $result.polynomial = polynomial;
     }
-    return _result;
+    return $result;
   }
+  SplineRequest_OptimizationParams._() : super();
   factory SplineRequest_OptimizationParams.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory SplineRequest_OptimizationParams.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineRequest.OptimizationParams', createEmptyInstance: create)
+    ..aOM<SplineRequest_OptimizationParams_Hermite>(5, _omitFieldNames ? '' : 'hermite', subBuilder: SplineRequest_OptimizationParams_Hermite.create)
+    ..aOM<SplineRequest_OptimizationParams_Bezier>(6, _omitFieldNames ? '' : 'bezier', subBuilder: SplineRequest_OptimizationParams_Bezier.create)
+    ..aOM<SplineRequest_OptimizationParams_Polynomial>(7, _omitFieldNames ? '' : 'polynomial', subBuilder: SplineRequest_OptimizationParams_Polynomial.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -551,8 +583,10 @@ class SplineRequest_OptimizationParams extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineRequest_OptimizationParams copyWith(void Function(SplineRequest_OptimizationParams) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams)) as SplineRequest_OptimizationParams; // ignore: deprecated_member_use
+  SplineRequest_OptimizationParams copyWith(void Function(SplineRequest_OptimizationParams) updates) => super.copyWith((message) => updates(message as SplineRequest_OptimizationParams)) as SplineRequest_OptimizationParams;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineRequest_OptimizationParams create() => SplineRequest_OptimizationParams._();
   SplineRequest_OptimizationParams createEmptyInstance() => create();
@@ -596,38 +630,39 @@ class SplineRequest_OptimizationParams extends $pb.GeneratedMessage {
 }
 
 class SplineRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineRequest', createEmptyInstance: create)
-    ..pc<Segment>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: Segment.create)
-    ..aOM<SplineParameters>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
-    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'evaluatedPointsInterval', $pb.PbFieldType.OF, protoName: 'evaluatedPointsInterval')
-    ..aOM<SplineRequest_OptimizationParams>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
-    ..hasRequiredFields = false
-  ;
-
-  SplineRequest._() : super();
   factory SplineRequest({
     $core.Iterable<Segment>? segments,
     SplineParameters? splineParameters,
     $core.double? evaluatedPointsInterval,
     SplineRequest_OptimizationParams? optimizationParams,
   }) {
-    final _result = create();
+    final $result = create();
     if (segments != null) {
-      _result.segments.addAll(segments);
+      $result.segments.addAll(segments);
     }
     if (splineParameters != null) {
-      _result.splineParameters = splineParameters;
+      $result.splineParameters = splineParameters;
     }
     if (evaluatedPointsInterval != null) {
-      _result.evaluatedPointsInterval = evaluatedPointsInterval;
+      $result.evaluatedPointsInterval = evaluatedPointsInterval;
     }
     if (optimizationParams != null) {
-      _result.optimizationParams = optimizationParams;
+      $result.optimizationParams = optimizationParams;
     }
-    return _result;
+    return $result;
   }
+  SplineRequest._() : super();
   factory SplineRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory SplineRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineRequest', createEmptyInstance: create)
+    ..pc<Segment>(1, _omitFieldNames ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: Segment.create)
+    ..aOM<SplineParameters>(2, _omitFieldNames ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
+    ..a<$core.double>(3, _omitFieldNames ? '' : 'evaluatedPointsInterval', $pb.PbFieldType.OF, protoName: 'evaluatedPointsInterval')
+    ..aOM<SplineRequest_OptimizationParams>(4, _omitFieldNames ? '' : 'optimizationParams', protoName: 'optimizationParams', subBuilder: SplineRequest_OptimizationParams.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -637,8 +672,10 @@ class SplineRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineRequest copyWith(void Function(SplineRequest) updates) => super.copyWith((message) => updates(message as SplineRequest)) as SplineRequest; // ignore: deprecated_member_use
+  SplineRequest copyWith(void Function(SplineRequest) updates) => super.copyWith((message) => updates(message as SplineRequest)) as SplineRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineRequest create() => SplineRequest._();
   SplineRequest createEmptyInstance() => create();
@@ -683,28 +720,29 @@ class SplineRequest extends $pb.GeneratedMessage {
 }
 
 class SplineResponse_Point extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineResponse.Point', createEmptyInstance: create)
-    ..aOM<Vector>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'point', subBuilder: Vector.create)
-    ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'segmentIndex', $pb.PbFieldType.O3, protoName: 'segmentIndex')
-    ..hasRequiredFields = false
-  ;
-
-  SplineResponse_Point._() : super();
   factory SplineResponse_Point({
     Vector? point,
     $core.int? segmentIndex,
   }) {
-    final _result = create();
+    final $result = create();
     if (point != null) {
-      _result.point = point;
+      $result.point = point;
     }
     if (segmentIndex != null) {
-      _result.segmentIndex = segmentIndex;
+      $result.segmentIndex = segmentIndex;
     }
-    return _result;
+    return $result;
   }
+  SplineResponse_Point._() : super();
   factory SplineResponse_Point.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory SplineResponse_Point.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineResponse.Point', createEmptyInstance: create)
+    ..aOM<Vector>(1, _omitFieldNames ? '' : 'point', subBuilder: Vector.create)
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'segmentIndex', $pb.PbFieldType.O3, protoName: 'segmentIndex')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -714,8 +752,10 @@ class SplineResponse_Point extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineResponse_Point copyWith(void Function(SplineResponse_Point) updates) => super.copyWith((message) => updates(message as SplineResponse_Point)) as SplineResponse_Point; // ignore: deprecated_member_use
+  SplineResponse_Point copyWith(void Function(SplineResponse_Point) updates) => super.copyWith((message) => updates(message as SplineResponse_Point)) as SplineResponse_Point;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineResponse_Point create() => SplineResponse_Point._();
   SplineResponse_Point createEmptyInstance() => create();
@@ -746,33 +786,34 @@ class SplineResponse_Point extends $pb.GeneratedMessage {
 }
 
 class SplineResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SplineResponse', createEmptyInstance: create)
-    ..aOM<SplineParameters>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
-    ..e<SplineTypes>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
-    ..pc<SplineResponse_Point>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'evaluatedPoints', $pb.PbFieldType.PM, protoName: 'evaluatedPoints', subBuilder: SplineResponse_Point.create)
-    ..hasRequiredFields = false
-  ;
-
-  SplineResponse._() : super();
   factory SplineResponse({
     SplineParameters? splineParameters,
     SplineTypes? splineType,
     $core.Iterable<SplineResponse_Point>? evaluatedPoints,
   }) {
-    final _result = create();
+    final $result = create();
     if (splineParameters != null) {
-      _result.splineParameters = splineParameters;
+      $result.splineParameters = splineParameters;
     }
     if (splineType != null) {
-      _result.splineType = splineType;
+      $result.splineType = splineType;
     }
     if (evaluatedPoints != null) {
-      _result.evaluatedPoints.addAll(evaluatedPoints);
+      $result.evaluatedPoints.addAll(evaluatedPoints);
     }
-    return _result;
+    return $result;
   }
+  SplineResponse._() : super();
   factory SplineResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory SplineResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SplineResponse', createEmptyInstance: create)
+    ..aOM<SplineParameters>(1, _omitFieldNames ? '' : 'splineParameters', protoName: 'splineParameters', subBuilder: SplineParameters.create)
+    ..e<SplineTypes>(2, _omitFieldNames ? '' : 'splineType', $pb.PbFieldType.OE, protoName: 'splineType', defaultOrMaker: SplineTypes.None, valueOf: SplineTypes.valueOf, enumValues: SplineTypes.values)
+    ..pc<SplineResponse_Point>(3, _omitFieldNames ? '' : 'evaluatedPoints', $pb.PbFieldType.PM, protoName: 'evaluatedPoints', subBuilder: SplineResponse_Point.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -782,8 +823,10 @@ class SplineResponse extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  SplineResponse copyWith(void Function(SplineResponse) updates) => super.copyWith((message) => updates(message as SplineResponse)) as SplineResponse; // ignore: deprecated_member_use
+  SplineResponse copyWith(void Function(SplineResponse) updates) => super.copyWith((message) => updates(message as SplineResponse)) as SplineResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SplineResponse create() => SplineResponse._();
   SplineResponse createEmptyInstance() => create();
@@ -817,21 +860,6 @@ class SplineResponse extends $pb.GeneratedMessage {
 }
 
 class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryRequest.SwerveRobotParams', createEmptyInstance: create)
-    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'width', $pb.PbFieldType.OF)
-    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'height', $pb.PbFieldType.OF)
-    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
-    ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'skidAcceleration', $pb.PbFieldType.OF, protoName: 'skidAcceleration')
-    ..a<$core.double>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
-    ..a<$core.double>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularVelocity', $pb.PbFieldType.OF, protoName: 'maxAngularVelocity')
-    ..a<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAngularAcceleration', $pb.PbFieldType.OF, protoName: 'maxAngularAcceleration')
-    ..a<$core.double>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
-    ..a<$core.double>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'angularAccelerationPercentage', $pb.PbFieldType.OF, protoName: 'angularAccelerationPercentage')
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryRequest_SwerveRobotParams._() : super();
   factory TrajectoryRequest_SwerveRobotParams({
     $core.double? width,
     $core.double? height,
@@ -839,46 +867,52 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
     $core.double? maxAcceleration,
     $core.double? skidAcceleration,
     $core.double? maxJerk,
-    $core.double? maxAngularVelocity,
-    $core.double? maxAngularAcceleration,
     $core.double? cycleTime,
     $core.double? angularAccelerationPercentage,
   }) {
-    final _result = create();
+    final $result = create();
     if (width != null) {
-      _result.width = width;
+      $result.width = width;
     }
     if (height != null) {
-      _result.height = height;
+      $result.height = height;
     }
     if (maxVelocity != null) {
-      _result.maxVelocity = maxVelocity;
+      $result.maxVelocity = maxVelocity;
     }
     if (maxAcceleration != null) {
-      _result.maxAcceleration = maxAcceleration;
+      $result.maxAcceleration = maxAcceleration;
     }
     if (skidAcceleration != null) {
-      _result.skidAcceleration = skidAcceleration;
+      $result.skidAcceleration = skidAcceleration;
     }
     if (maxJerk != null) {
-      _result.maxJerk = maxJerk;
-    }
-    if (maxAngularVelocity != null) {
-      _result.maxAngularVelocity = maxAngularVelocity;
-    }
-    if (maxAngularAcceleration != null) {
-      _result.maxAngularAcceleration = maxAngularAcceleration;
+      $result.maxJerk = maxJerk;
     }
     if (cycleTime != null) {
-      _result.cycleTime = cycleTime;
+      $result.cycleTime = cycleTime;
     }
     if (angularAccelerationPercentage != null) {
-      _result.angularAccelerationPercentage = angularAccelerationPercentage;
+      $result.angularAccelerationPercentage = angularAccelerationPercentage;
     }
-    return _result;
+    return $result;
   }
+  TrajectoryRequest_SwerveRobotParams._() : super();
   factory TrajectoryRequest_SwerveRobotParams.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryRequest_SwerveRobotParams.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryRequest.SwerveRobotParams', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OF)
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OF)
+    ..a<$core.double>(3, _omitFieldNames ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
+    ..a<$core.double>(4, _omitFieldNames ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'skidAcceleration', $pb.PbFieldType.OF, protoName: 'skidAcceleration')
+    ..a<$core.double>(6, _omitFieldNames ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
+    ..a<$core.double>(7, _omitFieldNames ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
+    ..a<$core.double>(8, _omitFieldNames ? '' : 'angularAccelerationPercentage', $pb.PbFieldType.OF, protoName: 'angularAccelerationPercentage')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -888,8 +922,10 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryRequest_SwerveRobotParams copyWith(void Function(TrajectoryRequest_SwerveRobotParams) updates) => super.copyWith((message) => updates(message as TrajectoryRequest_SwerveRobotParams)) as TrajectoryRequest_SwerveRobotParams; // ignore: deprecated_member_use
+  TrajectoryRequest_SwerveRobotParams copyWith(void Function(TrajectoryRequest_SwerveRobotParams) updates) => super.copyWith((message) => updates(message as TrajectoryRequest_SwerveRobotParams)) as TrajectoryRequest_SwerveRobotParams;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryRequest_SwerveRobotParams create() => TrajectoryRequest_SwerveRobotParams._();
   TrajectoryRequest_SwerveRobotParams createEmptyInstance() => create();
@@ -953,54 +989,25 @@ class TrajectoryRequest_SwerveRobotParams extends $pb.GeneratedMessage {
   void clearMaxJerk() => clearField(6);
 
   @$pb.TagNumber(7)
-  $core.double get maxAngularVelocity => $_getN(6);
+  $core.double get cycleTime => $_getN(6);
   @$pb.TagNumber(7)
-  set maxAngularVelocity($core.double v) { $_setFloat(6, v); }
+  set cycleTime($core.double v) { $_setFloat(6, v); }
   @$pb.TagNumber(7)
-  $core.bool hasMaxAngularVelocity() => $_has(6);
+  $core.bool hasCycleTime() => $_has(6);
   @$pb.TagNumber(7)
-  void clearMaxAngularVelocity() => clearField(7);
+  void clearCycleTime() => clearField(7);
 
   @$pb.TagNumber(8)
-  $core.double get maxAngularAcceleration => $_getN(7);
+  $core.double get angularAccelerationPercentage => $_getN(7);
   @$pb.TagNumber(8)
-  set maxAngularAcceleration($core.double v) { $_setFloat(7, v); }
+  set angularAccelerationPercentage($core.double v) { $_setFloat(7, v); }
   @$pb.TagNumber(8)
-  $core.bool hasMaxAngularAcceleration() => $_has(7);
+  $core.bool hasAngularAccelerationPercentage() => $_has(7);
   @$pb.TagNumber(8)
-  void clearMaxAngularAcceleration() => clearField(8);
-
-  @$pb.TagNumber(9)
-  $core.double get cycleTime => $_getN(8);
-  @$pb.TagNumber(9)
-  set cycleTime($core.double v) { $_setFloat(8, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasCycleTime() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearCycleTime() => clearField(9);
-
-  @$pb.TagNumber(10)
-  $core.double get angularAccelerationPercentage => $_getN(9);
-  @$pb.TagNumber(10)
-  set angularAccelerationPercentage($core.double v) { $_setFloat(9, v); }
-  @$pb.TagNumber(10)
-  $core.bool hasAngularAccelerationPercentage() => $_has(9);
-  @$pb.TagNumber(10)
-  void clearAngularAccelerationPercentage() => clearField(10);
+  void clearAngularAccelerationPercentage() => clearField(8);
 }
 
 class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryRequest.TankRobotParams', createEmptyInstance: create)
-    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'width', $pb.PbFieldType.OF)
-    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'height', $pb.PbFieldType.OF)
-    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
-    ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
-    ..a<$core.double>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryRequest_TankRobotParams._() : super();
   factory TrajectoryRequest_TankRobotParams({
     $core.double? width,
     $core.double? height,
@@ -1009,29 +1016,41 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
     $core.double? maxJerk,
     $core.double? cycleTime,
   }) {
-    final _result = create();
+    final $result = create();
     if (width != null) {
-      _result.width = width;
+      $result.width = width;
     }
     if (height != null) {
-      _result.height = height;
+      $result.height = height;
     }
     if (maxVelocity != null) {
-      _result.maxVelocity = maxVelocity;
+      $result.maxVelocity = maxVelocity;
     }
     if (maxAcceleration != null) {
-      _result.maxAcceleration = maxAcceleration;
+      $result.maxAcceleration = maxAcceleration;
     }
     if (maxJerk != null) {
-      _result.maxJerk = maxJerk;
+      $result.maxJerk = maxJerk;
     }
     if (cycleTime != null) {
-      _result.cycleTime = cycleTime;
+      $result.cycleTime = cycleTime;
     }
-    return _result;
+    return $result;
   }
+  TrajectoryRequest_TankRobotParams._() : super();
   factory TrajectoryRequest_TankRobotParams.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryRequest_TankRobotParams.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryRequest.TankRobotParams', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'width', $pb.PbFieldType.OF)
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'height', $pb.PbFieldType.OF)
+    ..a<$core.double>(3, _omitFieldNames ? '' : 'maxVelocity', $pb.PbFieldType.OF, protoName: 'maxVelocity')
+    ..a<$core.double>(4, _omitFieldNames ? '' : 'maxAcceleration', $pb.PbFieldType.OF, protoName: 'maxAcceleration')
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'maxJerk', $pb.PbFieldType.OF, protoName: 'maxJerk')
+    ..a<$core.double>(6, _omitFieldNames ? '' : 'cycleTime', $pb.PbFieldType.OF, protoName: 'cycleTime')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -1041,8 +1060,10 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryRequest_TankRobotParams copyWith(void Function(TrajectoryRequest_TankRobotParams) updates) => super.copyWith((message) => updates(message as TrajectoryRequest_TankRobotParams)) as TrajectoryRequest_TankRobotParams; // ignore: deprecated_member_use
+  TrajectoryRequest_TankRobotParams copyWith(void Function(TrajectoryRequest_TankRobotParams) updates) => super.copyWith((message) => updates(message as TrajectoryRequest_TankRobotParams)) as TrajectoryRequest_TankRobotParams;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryRequest_TankRobotParams create() => TrajectoryRequest_TankRobotParams._();
   TrajectoryRequest_TankRobotParams createEmptyInstance() => create();
@@ -1107,16 +1128,6 @@ class TrajectoryRequest_TankRobotParams extends $pb.GeneratedMessage {
 }
 
 class TrajectoryRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryRequest', createEmptyInstance: create)
-    ..pc<Section>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sections', $pb.PbFieldType.PM, subBuilder: Section.create)
-    ..e<TrajectoryRequest_DriveTrain>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'driveTrain', $pb.PbFieldType.OE, protoName: 'driveTrain', defaultOrMaker: TrajectoryRequest_DriveTrain.Swerve, valueOf: TrajectoryRequest_DriveTrain.valueOf, enumValues: TrajectoryRequest_DriveTrain.values)
-    ..aOM<TrajectoryRequest_SwerveRobotParams>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'swerveRobotParams', protoName: 'swerveRobotParams', subBuilder: TrajectoryRequest_SwerveRobotParams.create)
-    ..aOM<TrajectoryRequest_TankRobotParams>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tankRobotParams', protoName: 'tankRobotParams', subBuilder: TrajectoryRequest_TankRobotParams.create)
-    ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'trajectoryFileName', protoName: 'trajectoryFileName')
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryRequest._() : super();
   factory TrajectoryRequest({
     $core.Iterable<Section>? sections,
     TrajectoryRequest_DriveTrain? driveTrain,
@@ -1124,26 +1135,37 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
     TrajectoryRequest_TankRobotParams? tankRobotParams,
     $core.String? trajectoryFileName,
   }) {
-    final _result = create();
+    final $result = create();
     if (sections != null) {
-      _result.sections.addAll(sections);
+      $result.sections.addAll(sections);
     }
     if (driveTrain != null) {
-      _result.driveTrain = driveTrain;
+      $result.driveTrain = driveTrain;
     }
     if (swerveRobotParams != null) {
-      _result.swerveRobotParams = swerveRobotParams;
+      $result.swerveRobotParams = swerveRobotParams;
     }
     if (tankRobotParams != null) {
-      _result.tankRobotParams = tankRobotParams;
+      $result.tankRobotParams = tankRobotParams;
     }
     if (trajectoryFileName != null) {
-      _result.trajectoryFileName = trajectoryFileName;
+      $result.trajectoryFileName = trajectoryFileName;
     }
-    return _result;
+    return $result;
   }
+  TrajectoryRequest._() : super();
   factory TrajectoryRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryRequest', createEmptyInstance: create)
+    ..pc<Section>(1, _omitFieldNames ? '' : 'sections', $pb.PbFieldType.PM, subBuilder: Section.create)
+    ..e<TrajectoryRequest_DriveTrain>(4, _omitFieldNames ? '' : 'driveTrain', $pb.PbFieldType.OE, protoName: 'driveTrain', defaultOrMaker: TrajectoryRequest_DriveTrain.Swerve, valueOf: TrajectoryRequest_DriveTrain.valueOf, enumValues: TrajectoryRequest_DriveTrain.values)
+    ..aOM<TrajectoryRequest_SwerveRobotParams>(5, _omitFieldNames ? '' : 'swerveRobotParams', protoName: 'swerveRobotParams', subBuilder: TrajectoryRequest_SwerveRobotParams.create)
+    ..aOM<TrajectoryRequest_TankRobotParams>(6, _omitFieldNames ? '' : 'tankRobotParams', protoName: 'tankRobotParams', subBuilder: TrajectoryRequest_TankRobotParams.create)
+    ..aOS(7, _omitFieldNames ? '' : 'trajectoryFileName', protoName: 'trajectoryFileName')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -1153,8 +1175,10 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryRequest copyWith(void Function(TrajectoryRequest) updates) => super.copyWith((message) => updates(message as TrajectoryRequest)) as TrajectoryRequest; // ignore: deprecated_member_use
+  TrajectoryRequest copyWith(void Function(TrajectoryRequest) updates) => super.copyWith((message) => updates(message as TrajectoryRequest)) as TrajectoryRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryRequest create() => TrajectoryRequest._();
   TrajectoryRequest createEmptyInstance() => create();
@@ -1208,17 +1232,6 @@ class TrajectoryRequest extends $pb.GeneratedMessage {
 }
 
 class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryResponse.SwervePoint', createEmptyInstance: create)
-    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time', $pb.PbFieldType.OF)
-    ..aOM<Vector>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'position', subBuilder: Vector.create)
-    ..aOM<Vector>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'velocity', subBuilder: Vector.create)
-    ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'angularVelocity', $pb.PbFieldType.OF, protoName: 'angularVelocity')
-    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action')
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryResponse_SwervePoint._() : super();
   factory TrajectoryResponse_SwervePoint({
     $core.double? time,
     Vector? position,
@@ -1227,29 +1240,41 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
     $core.double? angularVelocity,
     $core.String? action,
   }) {
-    final _result = create();
+    final $result = create();
     if (time != null) {
-      _result.time = time;
+      $result.time = time;
     }
     if (position != null) {
-      _result.position = position;
+      $result.position = position;
     }
     if (velocity != null) {
-      _result.velocity = velocity;
+      $result.velocity = velocity;
     }
     if (heading != null) {
-      _result.heading = heading;
+      $result.heading = heading;
     }
     if (angularVelocity != null) {
-      _result.angularVelocity = angularVelocity;
+      $result.angularVelocity = angularVelocity;
     }
     if (action != null) {
-      _result.action = action;
+      $result.action = action;
     }
-    return _result;
+    return $result;
   }
+  TrajectoryResponse_SwervePoint._() : super();
   factory TrajectoryResponse_SwervePoint.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryResponse_SwervePoint.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryResponse.SwervePoint', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'time', $pb.PbFieldType.OF)
+    ..aOM<Vector>(2, _omitFieldNames ? '' : 'position', subBuilder: Vector.create)
+    ..aOM<Vector>(3, _omitFieldNames ? '' : 'velocity', subBuilder: Vector.create)
+    ..a<$core.double>(4, _omitFieldNames ? '' : 'heading', $pb.PbFieldType.OF)
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'angularVelocity', $pb.PbFieldType.OF, protoName: 'angularVelocity')
+    ..aOS(6, _omitFieldNames ? '' : 'action')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -1259,8 +1284,10 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryResponse_SwervePoint copyWith(void Function(TrajectoryResponse_SwervePoint) updates) => super.copyWith((message) => updates(message as TrajectoryResponse_SwervePoint)) as TrajectoryResponse_SwervePoint; // ignore: deprecated_member_use
+  TrajectoryResponse_SwervePoint copyWith(void Function(TrajectoryResponse_SwervePoint) updates) => super.copyWith((message) => updates(message as TrajectoryResponse_SwervePoint)) as TrajectoryResponse_SwervePoint;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryResponse_SwervePoint create() => TrajectoryResponse_SwervePoint._();
   TrajectoryResponse_SwervePoint createEmptyInstance() => create();
@@ -1329,17 +1356,6 @@ class TrajectoryResponse_SwervePoint extends $pb.GeneratedMessage {
 }
 
 class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryResponse.TankPoint', createEmptyInstance: create)
-    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time', $pb.PbFieldType.OF)
-    ..aOM<Vector>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'position', subBuilder: Vector.create)
-    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'rightVelocity', $pb.PbFieldType.OF, protoName: 'rightVelocity')
-    ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'leftVelocity', $pb.PbFieldType.OF, protoName: 'leftVelocity')
-    ..a<$core.double>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heading', $pb.PbFieldType.OF)
-    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'action')
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryResponse_TankPoint._() : super();
   factory TrajectoryResponse_TankPoint({
     $core.double? time,
     Vector? position,
@@ -1348,29 +1364,41 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
     $core.double? heading,
     $core.String? action,
   }) {
-    final _result = create();
+    final $result = create();
     if (time != null) {
-      _result.time = time;
+      $result.time = time;
     }
     if (position != null) {
-      _result.position = position;
+      $result.position = position;
     }
     if (rightVelocity != null) {
-      _result.rightVelocity = rightVelocity;
+      $result.rightVelocity = rightVelocity;
     }
     if (leftVelocity != null) {
-      _result.leftVelocity = leftVelocity;
+      $result.leftVelocity = leftVelocity;
     }
     if (heading != null) {
-      _result.heading = heading;
+      $result.heading = heading;
     }
     if (action != null) {
-      _result.action = action;
+      $result.action = action;
     }
-    return _result;
+    return $result;
   }
+  TrajectoryResponse_TankPoint._() : super();
   factory TrajectoryResponse_TankPoint.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryResponse_TankPoint.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryResponse.TankPoint', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'time', $pb.PbFieldType.OF)
+    ..aOM<Vector>(2, _omitFieldNames ? '' : 'position', subBuilder: Vector.create)
+    ..a<$core.double>(3, _omitFieldNames ? '' : 'rightVelocity', $pb.PbFieldType.OF, protoName: 'rightVelocity')
+    ..a<$core.double>(4, _omitFieldNames ? '' : 'leftVelocity', $pb.PbFieldType.OF, protoName: 'leftVelocity')
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'heading', $pb.PbFieldType.OF)
+    ..aOS(6, _omitFieldNames ? '' : 'action')
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -1380,8 +1408,10 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryResponse_TankPoint copyWith(void Function(TrajectoryResponse_TankPoint) updates) => super.copyWith((message) => updates(message as TrajectoryResponse_TankPoint)) as TrajectoryResponse_TankPoint; // ignore: deprecated_member_use
+  TrajectoryResponse_TankPoint copyWith(void Function(TrajectoryResponse_TankPoint) updates) => super.copyWith((message) => updates(message as TrajectoryResponse_TankPoint)) as TrajectoryResponse_TankPoint;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryResponse_TankPoint create() => TrajectoryResponse_TankPoint._();
   TrajectoryResponse_TankPoint createEmptyInstance() => create();
@@ -1448,28 +1478,29 @@ class TrajectoryResponse_TankPoint extends $pb.GeneratedMessage {
 }
 
 class TrajectoryResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TrajectoryResponse', createEmptyInstance: create)
-    ..pc<TrajectoryResponse_SwervePoint>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'swervePoints', $pb.PbFieldType.PM, protoName: 'swervePoints', subBuilder: TrajectoryResponse_SwervePoint.create)
-    ..pc<TrajectoryResponse_TankPoint>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tankPoints', $pb.PbFieldType.PM, protoName: 'tankPoints', subBuilder: TrajectoryResponse_TankPoint.create)
-    ..hasRequiredFields = false
-  ;
-
-  TrajectoryResponse._() : super();
   factory TrajectoryResponse({
     $core.Iterable<TrajectoryResponse_SwervePoint>? swervePoints,
     $core.Iterable<TrajectoryResponse_TankPoint>? tankPoints,
   }) {
-    final _result = create();
+    final $result = create();
     if (swervePoints != null) {
-      _result.swervePoints.addAll(swervePoints);
+      $result.swervePoints.addAll(swervePoints);
     }
     if (tankPoints != null) {
-      _result.tankPoints.addAll(tankPoints);
+      $result.tankPoints.addAll(tankPoints);
     }
-    return _result;
+    return $result;
   }
+  TrajectoryResponse._() : super();
   factory TrajectoryResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TrajectoryResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TrajectoryResponse', createEmptyInstance: create)
+    ..pc<TrajectoryResponse_SwervePoint>(1, _omitFieldNames ? '' : 'swervePoints', $pb.PbFieldType.PM, protoName: 'swervePoints', subBuilder: TrajectoryResponse_SwervePoint.create)
+    ..pc<TrajectoryResponse_TankPoint>(2, _omitFieldNames ? '' : 'tankPoints', $pb.PbFieldType.PM, protoName: 'tankPoints', subBuilder: TrajectoryResponse_TankPoint.create)
+    ..hasRequiredFields = false
+  ;
+
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
@@ -1479,8 +1510,10 @@ class TrajectoryResponse extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TrajectoryResponse copyWith(void Function(TrajectoryResponse) updates) => super.copyWith((message) => updates(message as TrajectoryResponse)) as TrajectoryResponse; // ignore: deprecated_member_use
+  TrajectoryResponse copyWith(void Function(TrajectoryResponse) updates) => super.copyWith((message) => updates(message as TrajectoryResponse)) as TrajectoryResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static TrajectoryResponse create() => TrajectoryResponse._();
   TrajectoryResponse createEmptyInstance() => create();
@@ -1496,3 +1529,6 @@ class TrajectoryResponse extends $pb.GeneratedMessage {
   $core.List<TrajectoryResponse_TankPoint> get tankPoints => $_getList(1);
 }
 
+
+const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
+const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

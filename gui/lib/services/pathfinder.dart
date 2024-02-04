@@ -129,8 +129,6 @@ rpc.TrajectoryRequest_SwerveRobotParams toRpcSwerveRobotParams(final Robot r) =>
       width: r.width,
       height: r.height,
       maxAcceleration: r.maxAcceleration,
-      maxAngularAcceleration: r.maxAngularAcceleration,
-      maxAngularVelocity: r.maxAngularVelocity,
       skidAcceleration: r.skidAcceleration,
       maxJerk: r.maxJerk,
       maxVelocity: r.maxVelocity,

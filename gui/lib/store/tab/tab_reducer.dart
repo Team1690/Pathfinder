@@ -484,8 +484,6 @@ TabState editRobot(final TabState tabState, final EditRobot action) =>
         width: action.robot.width,
         height: action.robot.height,
         maxAcceleration: action.robot.maxAcceleration,
-        maxAngularAcceleration: action.robot.maxAngularAcceleration,
-        maxAngularVelocity: action.robot.maxAngularVelocity,
         skidAcceleration: action.robot.skidAcceleration,
         maxJerk: action.robot.maxJerk,
         maxVelocity: action.robot.maxVelocity,

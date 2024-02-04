@@ -1,19 +1,23 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: protos/PathFinder.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-// ignore_for_file: UNDEFINED_SHOWN_NAME
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+
 import 'dart:core' as $core;
+
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class SplineTypes extends $pb.ProtobufEnum {
-  static const SplineTypes None = SplineTypes._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'None');
-  static const SplineTypes Hermite = SplineTypes._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'Hermite');
-  static const SplineTypes Bezier = SplineTypes._(2, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'Bezier');
-  static const SplineTypes Polynomial = SplineTypes._(3, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'Polynomial');
+  static const SplineTypes None = SplineTypes._(0, _omitEnumNames ? '' : 'None');
+  static const SplineTypes Hermite = SplineTypes._(1, _omitEnumNames ? '' : 'Hermite');
+  static const SplineTypes Bezier = SplineTypes._(2, _omitEnumNames ? '' : 'Bezier');
+  static const SplineTypes Polynomial = SplineTypes._(3, _omitEnumNames ? '' : 'Polynomial');
 
   static const $core.List<SplineTypes> values = <SplineTypes> [
     None,
@@ -29,8 +33,8 @@ class SplineTypes extends $pb.ProtobufEnum {
 }
 
 class TrajectoryRequest_DriveTrain extends $pb.ProtobufEnum {
-  static const TrajectoryRequest_DriveTrain Swerve = TrajectoryRequest_DriveTrain._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'Swerve');
-  static const TrajectoryRequest_DriveTrain Tank = TrajectoryRequest_DriveTrain._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'Tank');
+  static const TrajectoryRequest_DriveTrain Swerve = TrajectoryRequest_DriveTrain._(0, _omitEnumNames ? '' : 'Swerve');
+  static const TrajectoryRequest_DriveTrain Tank = TrajectoryRequest_DriveTrain._(1, _omitEnumNames ? '' : 'Tank');
 
   static const $core.List<TrajectoryRequest_DriveTrain> values = <TrajectoryRequest_DriveTrain> [
     Swerve,
@@ -43,3 +47,5 @@ class TrajectoryRequest_DriveTrain extends $pb.ProtobufEnum {
   const TrajectoryRequest_DriveTrain._($core.int v, $core.String n) : super(v, n);
 }
 
+
+const _omitEnumNames = $core.bool.fromEnvironment('protobuf.omit_enum_names');
