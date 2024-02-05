@@ -449,7 +449,7 @@ class SettingsDetails extends StatelessWidget {
                       index,
                       pointData.copyWith(
                         useHeading: true,
-                        heading: atan2(diff.dy, diff.dx),
+                        heading: atan2(diff.dy, diff.dx) + pi,
                       ),
                     );
                     triggerSidebarRender();
