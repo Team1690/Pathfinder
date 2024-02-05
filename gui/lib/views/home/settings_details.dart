@@ -1,3 +1,5 @@
+import "dart:math";
+
 import "package:card_settings/card_settings.dart";
 import "package:card_settings/helpers/platform_functions.dart";
 import "package:flutter/material.dart";
@@ -10,6 +12,8 @@ import "package:pathfinder/models/shortcut.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
 import "package:pathfinder/views/home/home.dart";
+
+const Offset blueSpeakerPos = const Offset(-0.0381, 5.547);
 
 class SettingsDetails extends StatelessWidget {
   SettingsDetails({
@@ -438,6 +442,20 @@ class SettingsDetails extends StatelessWidget {
                       triggerSidebarRender();
                     },
                   ),
+                CardSettingsButton(
+                  onPressed: () {
+                    final Offset diff = blueSpeakerPos - pointData.position;
+                    onPointEdit(
+                      index,
+                      pointData.copyWith(
+                        useHeading: true,
+                        heading: atan2(diff.dy, diff.dx),
+                      ),
+                    );
+                    triggerSidebarRender();
+                  },
+                  label: "Shooting point heading",
+                ),
               ],
             ),
             CardSettingsSection(
