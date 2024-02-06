@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"sync"
 
 	"github.com/Team1690/Pathfinder/export"
 	"github.com/Team1690/Pathfinder/pathfinder"
@@ -61,15 +62,38 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 	}, nil
 }
 
-func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
-	res := &rpc.TrajectoryResponse{}
-	for _, section := range r.Sections {
-		points, err := calculateSectionTrajectory(section, r.SwerveRobotParams)
-		if err != nil {
-			return nil, xerrors.Errorf("error in calculateSectionTrajectory: %w", err)
-		}
+type TrajectoryResult = struct {
+	points []*rpc.TrajectoryResponse_SwervePoint
+	err    error
+}
 
-		res.SwervePoints = append(res.SwervePoints, points...)
+func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
+
+	res := &rpc.TrajectoryResponse{}
+	wg := sync.WaitGroup{}
+
+	results := make([]TrajectoryResult, len(r.Sections))
+
+	for i, section := range r.Sections {
+		wg.Add(1)
+		go func(section *rpc.Section, index int) {
+			defer wg.Done()
+
+			points, err := calculateSectionTrajectory(section, r.SwerveRobotParams)
+			results[index] = TrajectoryResult{
+				err:    err,
+				points: points,
+			}
+		}(section, i)
+	}
+
+	wg.Wait()
+
+	for _, trajectoryRes := range results {
+		if trajectoryRes.err != nil {
+			return nil, trajectoryRes.err
+		}
+		res.SwervePoints = append(res.SwervePoints, trajectoryRes.points...)
 	}
 
 	// * Write results to a csv file
