@@ -85,8 +85,11 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 	if len(actionPoints) > 0 {
 		// * Limiting time of last action to the time of the quantized profile
 		lastActionTime := actionPoints[len(actionPoints)-1].absoluteTime
+
+		// * Subtract Cycletime/2 because floating point inaccurasies cause the last cycle to be ignored
+		lastRowTime := float64(len(quantizedTrajectory)-1)*robot.CycleTime - robot.CycleTime*0.5
 		actionPoints[len(actionPoints)-1].absoluteTime =
-			float32(math.Min(float64(lastActionTime), float64(len(quantizedTrajectory)-2)*robot.CycleTime))
+			float32(math.Min(float64(lastActionTime), lastRowTime))
 
 		// * Placing the actions in the trajectory
 		addActions(quantizedTrajectory, actionPoints, segmentClassifier)
@@ -104,7 +107,15 @@ func addActions(trajectory []*TrajectoryPoint, actions []*indexedActionPoint, s 
 		if timeSearchIndex == -1 {
 			continue // * Ignoring actions out of the profile
 		}
-		if !(action.wayPointIndex == 0 && action.action.Time < 0) && !(action.wayPointIndex == len(s.wayPoints)-1 && action.action.Time >= 0) {
+
+		isNotEdgePoint := (action.wayPointIndex > 0 && action.wayPointIndex < len(s.wayPoints)-1)
+
+		isFirstAndInAfterPoint := (action.wayPointIndex == 0 && action.action.Time > 0)
+
+		isLastAndBeforeOrAtPoint := action.wayPointIndex == len(s.wayPoints)-1 && action.action.Time <= 0
+
+		// * Place action on the correct section when they are on an edge stop
+		if isNotEdgePoint || isFirstAndInAfterPoint || isLastAndBeforeOrAtPoint {
 			trajectory[timeSearchIndex].Action = action.action.ActionType
 		}
 
@@ -257,7 +268,7 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingSt
 
 func SearchForTime(trajectoryPoints []*TrajectoryPoint, time float64, lastSearchIndex int) int {
 	for index, point := range trajectoryPoints[lastSearchIndex:] {
-		if point.Time >= time {
+		if point.Time > time {
 			return index + lastSearchIndex
 		}
 	}
