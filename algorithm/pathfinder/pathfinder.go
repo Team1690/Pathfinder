@@ -110,12 +110,12 @@ func addActions(trajectory []*TrajectoryPoint, actions []*indexedActionPoint, s 
 
 		isNotEdgePoint := (action.wayPointIndex > 0 && action.wayPointIndex < len(s.wayPoints)-1)
 
-		isFirstAndInAfterPoint := (action.wayPointIndex == 0 && action.action.Time > 0)
+		isFirstAndAfterPoint := (action.wayPointIndex == 0 && action.action.Time > 0)
 
 		isLastAndBeforeOrAtPoint := action.wayPointIndex == len(s.wayPoints)-1 && action.action.Time <= 0
 
 		// * Place action on the correct section when they are on an edge stop
-		if isNotEdgePoint || isFirstAndInAfterPoint || isLastAndBeforeOrAtPoint {
+		if isNotEdgePoint || isFirstAndAfterPoint || isLastAndBeforeOrAtPoint {
 			trajectory[timeSearchIndex].Action = action.action.ActionType
 		}
 
