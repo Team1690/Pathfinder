@@ -394,6 +394,7 @@ TabState _deletePointFromPath(
 
   // Clear the segment of the point if it its cutting a segment, add all the points to
   // the previous segment (including the removed one, it will be handled later)
+
   if (newPoints[action.index].cutSegment) {
     final List<Segment> newSegments = <Segment>[...newState.path.segments];
 
@@ -411,6 +412,32 @@ TabState _deletePointFromPath(
     );
     newSegments[removedSegmentIndex] =
         removedSegment.copyWith(pointIndexes: <int>[]);
+
+    newState = newState.copyWith(
+      path: newState.path.copyWith(
+        segments: newSegments,
+      ),
+    );
+  }
+
+  if (action.index == newPoints.length - 1 &&
+      newPoints[action.index - 1].cutSegment) {
+    final List<Segment> newSegments = <Segment>[...newState.path.segments];
+
+    final int invalidSegmentIndex = tabState.path.segments.indexWhere(
+      (final Segment s) => s.pointIndexes.contains(action.index - 1),
+    );
+
+    newSegments[invalidSegmentIndex] =
+        newSegments[invalidSegmentIndex].copyWith(pointIndexes: <int>[]);
+
+    final Segment newLastSegment = newSegments[invalidSegmentIndex - 1];
+
+    newSegments[invalidSegmentIndex - 1] = newLastSegment.copyWith(
+      pointIndexes: <int>[...newLastSegment.pointIndexes, (action.index - 1)],
+    );
+    newPoints[action.index - 1] =
+        newPoints[action.index - 1].copyWith(cutSegment: false, isStop: false);
 
     newState = newState.copyWith(
       path: newState.path.copyWith(

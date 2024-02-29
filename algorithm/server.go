@@ -70,7 +70,6 @@ type TrajectoryResult = struct {
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
 
 	resultChan := make(chan TrajectoryResult)
-	defer close(resultChan)
 
 	for i, section := range r.Sections {
 		go func(section *rpc.Section, index int) {
@@ -92,6 +91,7 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 		results[result.index] = result.points
 	}
 
+	close(resultChan)
 	res := &rpc.TrajectoryResponse{}
 	for _, trajectoryRes := range results {
 		res.SwervePoints = append(res.SwervePoints, trajectoryRes...)
