@@ -456,6 +456,60 @@ class SettingsDetails extends StatelessWidget {
                   },
                   label: "Shooting point heading",
                 ),
+                CardSettingsButton(
+                  onPressed: () {
+                    if (index < tabState.path.points.length - 1) {
+                      final Offset diff =
+                          tabState.path.points[index + 1].position -
+                              pointData.position;
+
+                      final double angle = atan2(diff.dy, diff.dx);
+                      onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          useHeading: true,
+                          heading: angle,
+                          inControlPoint: Offset.fromDirection(
+                            angle + pi,
+                            pointData.inControlPoint.distance,
+                          ),
+                          outControlPoint: Offset.fromDirection(
+                            angle,
+                            pointData.outControlPoint.distance,
+                          ),
+                        ),
+                      );
+                      triggerSidebarRender();
+                    }
+                  },
+                  label: "Aim to next",
+                ),
+                CardSettingsButton(
+                  onPressed: () {
+                    if (index > 0) {
+                      final Offset diff =
+                          tabState.path.points[index - 1].position -
+                              pointData.position;
+
+                      final double angle = atan2(diff.dy, diff.dx);
+                      onPointEdit(
+                        index,
+                        pointData.copyWith(
+                          inControlPoint: Offset.fromDirection(
+                            angle,
+                            pointData.inControlPoint.distance,
+                          ),
+                          outControlPoint: Offset.fromDirection(
+                            angle + pi,
+                            pointData.outControlPoint.distance,
+                          ),
+                        ),
+                      );
+                      triggerSidebarRender();
+                    }
+                  },
+                  label: "Aim to prev",
+                ),
               ],
             ),
             CardSettingsSection(
@@ -485,8 +539,6 @@ class SettingsDetails extends StatelessWidget {
               ],
             ),
           ],
-          // );
-          // },
         ),
       );
     }
