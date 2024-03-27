@@ -8,7 +8,7 @@ class RobotOnField {
   final double heading;
 }
 
-Map<String, dynamic> robotToJson(final Optional<RobotOnField> robot) =>
+Map<String, dynamic> robotOnFieldToJson(final Optional<RobotOnField> robot) =>
     switch (robot) {
       Some<RobotOnField>(some: final RobotOnField roobt) => <String, dynamic>{
           "robot": <String, dynamic>{

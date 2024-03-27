@@ -75,5 +75,6 @@ class Path {
         "evaluatedPoints":
             evaluatedPoints.map((final SplinePoint p) => p.toJson()).toList(),
         "autoDuration": autoDuration,
+        ...robotOnFieldToJson(robotOnField),
       };
 }
