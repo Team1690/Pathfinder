@@ -362,8 +362,17 @@ class _PathEditorState extends State<PathEditor> {
                         widget.pathProps.robot,
                         widget.pathProps.imageZoom + localImageZoomAddition,
                         widget.pathProps.imageOffset + localImageOffsetAddition,
+                        widget.pathProps.robotOnField,
                       ),
                     ),
+                    onSecondaryTapDown: (details) {
+                      final Offset tapPos = flipYAxisByField(
+                        details.localPosition,
+                        widget.pathProps.fieldSizePixels,
+                      );
+
+                      widget.pathProps.selectRobotOnField(tapPos);
+                    },
                     onTapUp: (final TapUpDetails details) {
                       final Offset tapPos = flipYAxisByField(
                         details.localPosition,

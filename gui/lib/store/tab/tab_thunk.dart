@@ -232,3 +232,11 @@ ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
 ThunkAction<AppState> newAutoThunk() => (final Store<AppState> store) async {
       store.dispatch(NewAuto());
     };
+
+ThunkAction<AppState> setRobotOnFieldThunk(
+  final SetRobotOnField action,
+) =>
+    (final Store<AppState> store) async {
+      await calculateTrajectoryThunk()(store);
+      store.dispatch(action);
+    };

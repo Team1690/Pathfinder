@@ -130,3 +130,8 @@ class TrajectoryFileNameChanged extends TabAction {
 class PathRedo extends TabAction {}
 
 class PathUndo extends TabAction {}
+
+class SetRobotOnField extends TabAction {
+  SetRobotOnField(this.clickPos);
+  final Offset clickPos;
+}
