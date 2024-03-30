@@ -283,6 +283,9 @@ class _PathEditorState extends State<PathEditor> {
               widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
             );
           },
+          animateRobot.activator!: () {
+            widget.pathProps.animateRobot();
+          },
         },
         child: Focus(
           autofocus: true,
@@ -365,7 +368,7 @@ class _PathEditorState extends State<PathEditor> {
                         widget.pathProps.robotOnField,
                       ),
                     ),
-                    onSecondaryTapDown: (details) {
+                    onSecondaryTapDown: (final TapDownDetails details) {
                       final Offset tapPos = flipYAxisByField(
                         details.localPosition,
                         widget.pathProps.fieldSizePixels,
@@ -760,6 +763,12 @@ const Shortcut deleteTab = Shortcut(
   shortcut: "Long Press a tab",
   description: "Deletes the pressed tab",
 );
+
+const Shortcut animateRobot = Shortcut(
+  shortcut: "Ctrl + A",
+  description: "Animates robot in field",
+  activator: SingleActivator(LogicalKeyboardKey.keyA, control: true),
+);
 const List<Shortcut> shortcuts = <Shortcut>[
   stopPointToggle,
   panUp,
@@ -779,4 +788,5 @@ const List<Shortcut> shortcuts = <Shortcut>[
   save,
   saveAs,
   deleteTab,
+  animateRobot,
 ];

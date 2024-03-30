@@ -36,6 +36,7 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, SetZoomLevel>(_setZoomLevel),
   TypedReducer<TabState, SetPan>(_setPan),
   TypedReducer<TabState, SetRobotOnField>(_setRobotOnField),
+  TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -596,6 +597,17 @@ TabState _setPan(final TabState tabState, final SetPan action) =>
     tabState.copyWith(
       ui: tabState.ui.copyWith(
         pan: action.pan,
+      ),
+    );
+
+TabState _setRobotOnFieldRaw(
+  final TabState tabState,
+  final SetRobotOnFieldRaw action,
+) =>
+    tabState.copyWith(
+      path: tabState.path.copyWith(
+        robotOnField:
+            Some<RobotOnField>(RobotOnField(action.position, action.heading)),
       ),
     );
 

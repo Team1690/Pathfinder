@@ -10,6 +10,7 @@ import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux/redux.dart";
 
@@ -239,4 +240,25 @@ ThunkAction<AppState> setRobotOnFieldThunk(
     (final Store<AppState> store) async {
       await calculateTrajectoryThunk()(store);
       store.dispatch(action);
+    };
+
+ThunkAction<AppState> animateRobotOnFieldThunk() =>
+    (final Store<AppState> store) async {
+      await calculateTrajectoryThunk()(store);
+      for (final TrajectoryResponse_SwervePoint point in store
+          .state.tabState[store.state.currentTabIndex].path.trajectoryPoints) {
+        store.dispatch(
+          SetRobotOnFieldRaw(fromRpcVector(point.position), point.heading),
+        );
+        await Future<void>.delayed(
+          Duration(
+            milliseconds: (store.state.tabState[store.state.currentTabIndex]
+                        .robot.cycleTime *
+                    1000)
+                .toInt(),
+          ),
+        );
+      }
+
+      ;
     };

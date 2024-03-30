@@ -44,6 +44,7 @@ class PathViewModel {
     required this.setZoomAndOffset,
     required this.robotOnField,
     required this.selectRobotOnField,
+    required this.animateRobot,
   });
   final List<Point> points;
   final List<Segment> segments;
@@ -76,6 +77,7 @@ class PathViewModel {
   final Function(double, Offset) setZoomAndOffset;
   final Optional<RobotOnField> robotOnField;
   final void Function(Offset) selectRobotOnField;
+  final void Function() animateRobot;
 
   static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
@@ -183,5 +185,6 @@ class PathViewModel {
         selectRobotOnField: (final Offset position) {
           store.dispatch(setRobotOnFieldThunk(SetRobotOnField(position)));
         },
+        animateRobot: () => store.dispatch(animateRobotOnFieldThunk()),
       );
 }
