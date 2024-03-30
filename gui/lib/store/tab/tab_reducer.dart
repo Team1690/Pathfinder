@@ -1,14 +1,16 @@
 import "dart:math";
 import "package:flutter/material.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
+import "package:pathfinder/models/field.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
+import "package:pathfinder/store/tab/store.dart";
 import "package:redux/redux.dart";
-import "package:pathfinder/store/tab/tab_actions.dart";
-import "package:pathfinder/store/tab/tab_state.dart";
 import "package:pathfinder/models/spline_point.dart";
 
 Reducer<TabState> applyReducers =
@@ -33,6 +35,8 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, PathRedo>(_pathRedo),
   TypedReducer<TabState, SetZoomLevel>(_setZoomLevel),
   TypedReducer<TabState, SetPan>(_setPan),
+  TypedReducer<TabState, SetRobotOnField>(_setRobotOnField),
+  TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -163,7 +167,10 @@ TabState _trajectoryCalculated(
 
   return tabState.copyWith(
     ui: tabState.ui.copyWith(serverError: null),
-    path: tabState.path.copyWith(autoDuration: autoDuartion),
+    path: tabState.path.copyWith(
+      autoDuration: autoDuartion,
+      trajectoryPoints: action.points,
+    ),
   );
 }
 
@@ -182,7 +189,10 @@ TabState _splineCalculated(
 
   return tabState.copyWith(
     ui: tabState.ui.copyWith(serverError: null),
-    path: tabState.path.copyWith(evaluatedPoints: evaluatedPoints),
+    path: tabState.path.copyWith(
+      evaluatedPoints: evaluatedPoints,
+      robotOnField: None<RobotOnField>(),
+    ),
   );
 }
 
@@ -589,3 +599,60 @@ TabState _setPan(final TabState tabState, final SetPan action) =>
         pan: action.pan,
       ),
     );
+
+TabState _setRobotOnFieldRaw(
+  final TabState tabState,
+  final SetRobotOnFieldRaw action,
+) =>
+    tabState.copyWith(
+      path: tabState.path.copyWith(
+        robotOnField:
+            Some<RobotOnField>(RobotOnField(action.position, action.heading)),
+      ),
+    );
+
+TabState _setRobotOnField(
+  final TabState tabState,
+  final SetRobotOnField action,
+) {
+  if (tabState.path.trajectoryPoints.isEmpty) {
+    return tabState;
+  }
+  final Offset actualClickPos = action.clickPos.scale(
+    officialFieldWidth / tabState.ui.fieldSizePixels.dx,
+    officialFieldHeight / tabState.ui.fieldSizePixels.dy,
+  );
+  final (TrajectoryResponse_SwervePoint, double) closestPoint =
+      findClosestPoint(actualClickPos, tabState.path.trajectoryPoints);
+  return tabState.copyWith(
+    path: tabState.path.copyWith(
+      robotOnField: closestPoint.$2 < 0.3
+          ? Some<RobotOnField>(
+              RobotOnField(
+                fromRpcVector(closestPoint.$1.position),
+                closestPoint.$1.heading,
+              ),
+            )
+          : None<RobotOnField>(),
+    ),
+  );
+}
+
+(TrajectoryResponse_SwervePoint, double) findClosestPoint(
+  final Offset target,
+  final List<TrajectoryResponse_SwervePoint> points,
+) {
+  double distFromTarget(final TrajectoryResponse_SwervePoint point) =>
+      (target - fromRpcVector(point.position)).distanceSquared;
+
+  return points.fold(
+    (points.first, distFromTarget(points.first)),
+    (
+      final (TrajectoryResponse_SwervePoint, double) closest,
+      final TrajectoryResponse_SwervePoint point,
+    ) {
+      final double pointDist = distFromTarget(point);
+      return pointDist < closest.$2 ? (point, pointDist) : closest;
+    },
+  );
+}

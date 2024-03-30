@@ -2,9 +2,12 @@ import "dart:math";
 import "dart:ui" as ui;
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/constants.dart";
+import "package:pathfinder/models/field.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart" as modelspath;
 import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
@@ -16,7 +19,8 @@ import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
 class FieldPainter extends CustomPainter {
   FieldPainter(
-    this.image,
+    this.robotImage,
+    this.fieldImage,
     this.points,
     this.segments,
     this.selectedPoint,
@@ -27,8 +31,10 @@ class FieldPainter extends CustomPainter {
     this.robot,
     this.imageZoom,
     this.imageOffset,
+    this.robotOnField,
   );
-  ui.Image image;
+  ui.Image robotImage;
+  ui.Image fieldImage;
   List<Point> points;
   List<Segment> segments;
   int? selectedPoint;
@@ -39,6 +45,7 @@ class FieldPainter extends CustomPainter {
   Robot robot;
   double imageZoom;
   Offset imageOffset;
+  Optional<RobotOnField> robotOnField;
 
   @override
   void paint(final Canvas canvas, final Size size) {
@@ -55,7 +62,7 @@ class FieldPainter extends CustomPainter {
       rect: Rect.fromPoints(Offset.zero, size.bottomRight(Offset.zero)),
       colorFilter:
           ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-      image: image,
+      image: fieldImage,
     );
 
     // Group spline points by segment index
@@ -135,6 +142,11 @@ class FieldPainter extends CustomPainter {
           draggingPoint.draggingPoint,
         );
       }
+    }
+    switch (robotOnField) {
+      case Some<RobotOnField>(some: final RobotOnField robot):
+        drawRobot(canvas, size, robot);
+      default:
     }
   }
 
@@ -338,6 +350,37 @@ class FieldPainter extends CustomPainter {
         false,
       );
     }
+  }
+
+  void drawRobot(
+    final Canvas canvas,
+    final Size size,
+    final RobotOnField robot,
+  ) {
+    final ui.Paint paint = Paint()..isAntiAlias = true;
+    const double robotWidth = 0.8;
+    const double robotHeight = 0.8;
+
+    final Offset actualPos = robot.pos.scale(
+      size.width / officialFieldWidth,
+      size.height / officialFieldHeight,
+    );
+
+    canvas.translate(actualPos.dx, actualPos.dy);
+    final double scaleX =
+        (1 / robotImage.width) * (robotWidth / officialFieldWidth) * size.width;
+
+    final double scaleY = (1 / robotImage.height) *
+        (robotHeight / officialFieldHeight) *
+        size.height;
+
+    canvas.scale(scaleX, scaleY);
+    canvas.rotate(robot.heading);
+    canvas.drawImage(robotImage,
+        Offset(-robotImage.width / 2, -robotImage.height / 2), paint);
+    canvas.rotate(-robot.heading);
+    canvas.scale(1 / scaleX, 1 / scaleY);
+    canvas.translate(-robot.pos.dx, -robot.pos.dy);
   }
 
   void drawPath(

@@ -2,8 +2,10 @@ import "dart:async";
 import "dart:ui" as ui;
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 
 import "package:pathfinder/models/spline_point.dart" as modelspath;
@@ -37,6 +39,7 @@ class FieldLoader extends StatefulWidget {
     this.robot,
     this.imageZoom,
     this.imageOffset,
+    this.robotOnField,
   );
   final List<Point> points;
   final List<Segment> segments;
@@ -47,6 +50,7 @@ class FieldLoader extends StatefulWidget {
   final List<modelspath.SplinePoint> evaluatedPoints;
   final Function(Offset) setFieldSizePixels;
   final Robot robot;
+  final Optional<RobotOnField> robotOnField;
   final double imageZoom;
   final Offset imageOffset;
 
@@ -54,33 +58,33 @@ class FieldLoader extends StatefulWidget {
   _FieldLoaderState createState() => _FieldLoaderState();
 }
 
-ui.Image? globalImage;
+({ui.Image field, ui.Image robot})? globalImages;
 
 class _FieldLoaderState extends State<FieldLoader> {
-  bool isImageloaded = globalImage != null;
   void initState() {
     super.initState();
     init();
   }
 
   Future<Null> init() async {
-    if (globalImage != null) {
+    if (globalImages != null) {
       return;
     }
 
-    final ByteData data =
+    final ByteData fieldData =
         await rootBundle.load("assets/images/frc_2024_field.png");
-    globalImage = await loadImage(Uint8List.view(data.buffer));
+    final ByteData robotData =
+        await rootBundle.load("assets/images/doppler.png");
+    final ui.Image field = await loadImage(Uint8List.view(fieldData.buffer));
+    final ui.Image robot = await loadImage(Uint8List.view(robotData.buffer));
+
+    globalImages = (field: field, robot: robot);
+    setState(() {});
   }
 
   Future<ui.Image> loadImage(final Uint8List img) async {
     final Completer<ui.Image> completer = Completer<ui.Image>();
-    ui.decodeImageFromList(img, (final ui.Image img) {
-      setState(() {
-        isImageloaded = true;
-      });
-      return completer.complete(img);
-    });
+    ui.decodeImageFromList(img, completer.complete);
     return completer.future;
   }
 
@@ -89,7 +93,7 @@ class _FieldLoaderState extends State<FieldLoader> {
     final double height = 0.6 * MediaQuery.of(context).size.height;
     widget.setFieldSizePixels(Offset(width, height));
 
-    if (isImageloaded) {
+    if (globalImages != null) {
       // if (false) {
       return Container(
         decoration: BoxDecoration(
@@ -104,7 +108,8 @@ class _FieldLoaderState extends State<FieldLoader> {
         ),
         child: CustomPaint(
           painter: FieldPainter(
-            globalImage!,
+            globalImages!.robot,
+            globalImages!.field,
             widget.points,
             widget.segments,
             widget.selectedPoint,
@@ -115,6 +120,7 @@ class _FieldLoaderState extends State<FieldLoader> {
             widget.robot,
             widget.imageZoom,
             widget.imageOffset,
+            widget.robotOnField,
           ),
           size: Size(width, height),
         ),

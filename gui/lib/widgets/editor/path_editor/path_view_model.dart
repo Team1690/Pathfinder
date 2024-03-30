@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/store/app/app_state.dart";
@@ -40,6 +42,9 @@ class PathViewModel {
     required this.setImageZoom,
     required this.setImageOffset,
     required this.setZoomAndOffset,
+    required this.robotOnField,
+    required this.selectRobotOnField,
+    required this.animateRobot,
   });
   final List<Point> points;
   final List<Segment> segments;
@@ -70,6 +75,9 @@ class PathViewModel {
   final Function(double) setImageZoom;
   final Function(Offset) setImageOffset;
   final Function(double, Offset) setZoomAndOffset;
+  final Optional<RobotOnField> robotOnField;
+  final void Function(Offset) selectRobotOnField;
+  final void Function() animateRobot;
 
   static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
@@ -172,5 +180,11 @@ class PathViewModel {
         setImageOffset: (final Offset pan) => store.dispatch((SetPan(pan))),
         setZoomAndOffset: (final double zoom, final Offset pan) =>
             store.dispatch((SetZoomLevel(zoom, pan: pan))),
+        robotOnField:
+            store.state.tabState[store.state.currentTabIndex].path.robotOnField,
+        selectRobotOnField: (final Offset position) {
+          store.dispatch(setRobotOnFieldThunk(SetRobotOnField(position)));
+        },
+        animateRobot: () => store.dispatch(animateRobotOnFieldThunk()),
       );
 }
