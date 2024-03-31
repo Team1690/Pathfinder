@@ -469,10 +469,12 @@ class SettingsDetails extends StatelessWidget {
                         pointData.copyWith(
                           useHeading: true,
                           heading: angle,
-                          inControlPoint: Offset.fromDirection(
-                            angle + pi,
-                            pointData.inControlPoint.distance,
-                          ),
+                          inControlPoint: pointData.isStop
+                              ? pointData.inControlPoint
+                              : Offset.fromDirection(
+                                  angle + pi,
+                                  pointData.inControlPoint.distance,
+                                ),
                           outControlPoint: Offset.fromDirection(
                             angle,
                             pointData.outControlPoint.distance,
@@ -499,10 +501,12 @@ class SettingsDetails extends StatelessWidget {
                             angle,
                             pointData.inControlPoint.distance,
                           ),
-                          outControlPoint: Offset.fromDirection(
-                            angle + pi,
-                            pointData.outControlPoint.distance,
-                          ),
+                          outControlPoint: pointData.isStop
+                              ? pointData.outControlPoint
+                              : Offset.fromDirection(
+                                  angle + pi,
+                                  pointData.outControlPoint.distance,
+                                ),
                         ),
                       );
                       triggerSidebarRender();
