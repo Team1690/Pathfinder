@@ -3,9 +3,10 @@ import "dart:ui";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 
 class RobotOnField {
-  const RobotOnField(this.pos, this.heading);
+  const RobotOnField(this.pos, this.heading, this.action);
   final Offset pos;
   final double heading;
+  final String action;
 }
 
 Map<String, dynamic> robotOnFieldToJson(final Optional<RobotOnField> robot) =>
@@ -30,6 +31,6 @@ Optional<RobotOnField> robotOnFieldFromJson(final dynamic json) =>
         "y": final double y,
         "heading": final double heading,
       } =>
-        Some<RobotOnField>(RobotOnField(Offset(x, y), heading)),
+        Some<RobotOnField>(RobotOnField(Offset(x, y), heading, "")),
       _ => throw Exception("Invalid robot json")
     };

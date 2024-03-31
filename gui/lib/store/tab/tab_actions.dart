@@ -137,7 +137,8 @@ class SetRobotOnField extends TabAction {
 }
 
 class SetRobotOnFieldRaw extends TabAction {
-  SetRobotOnFieldRaw(this.position, this.heading);
+  SetRobotOnFieldRaw(this.position, this.heading, this.action);
   final Offset position;
   final double heading;
+  final String action;
 }

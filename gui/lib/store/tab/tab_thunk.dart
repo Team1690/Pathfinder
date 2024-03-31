@@ -245,19 +245,36 @@ ThunkAction<AppState> setRobotOnFieldThunk(
 ThunkAction<AppState> animateRobotOnFieldThunk() =>
     (final Store<AppState> store) async {
       await calculateTrajectoryThunk()(store);
+      final int cycleTime =
+          (store.state.tabState[store.state.currentTabIndex].robot.cycleTime *
+                  1000)
+              .toInt();
+
+      const double amountOfTimeActionIsDisplayed = 500.0;
+      double timeLeftForAction = 0.0;
+      String action = "";
       for (final TrajectoryResponse_SwervePoint point in store
           .state.tabState[store.state.currentTabIndex].path.trajectoryPoints) {
+        if (point.action.isNotEmpty) {
+          action = point.action;
+          timeLeftForAction = amountOfTimeActionIsDisplayed;
+        }
+
+        if (point.action.isEmpty && timeLeftForAction < 0.0) {
+          action = "";
+        }
+
+        timeLeftForAction -= cycleTime;
+
         store.dispatch(
-          SetRobotOnFieldRaw(fromRpcVector(point.position), point.heading),
-        );
-        await Future<void>.delayed(
-          Duration(
-            milliseconds: (store.state.tabState[store.state.currentTabIndex]
-                        .robot.cycleTime *
-                    1000)
-                .toInt(),
+          SetRobotOnFieldRaw(
+            fromRpcVector(point.position),
+            point.heading,
+            action,
           ),
         );
+
+        await Future<void>.delayed(Duration(milliseconds: cycleTime));
       }
 
       ;

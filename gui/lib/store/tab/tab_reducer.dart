@@ -606,8 +606,9 @@ TabState _setRobotOnFieldRaw(
 ) =>
     tabState.copyWith(
       path: tabState.path.copyWith(
-        robotOnField:
-            Some<RobotOnField>(RobotOnField(action.position, action.heading)),
+        robotOnField: Some<RobotOnField>(
+          RobotOnField(action.position, action.heading, action.action),
+        ),
       ),
     );
 
@@ -631,6 +632,7 @@ TabState _setRobotOnField(
               RobotOnField(
                 fromRpcVector(closestPoint.$1.position),
                 closestPoint.$1.heading,
+                "",
               ),
             )
           : None<RobotOnField>(),
