@@ -374,10 +374,31 @@ class FieldPainter extends CustomPainter {
         (robotHeight / officialFieldHeight) *
         size.height;
 
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: robot.action,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 600,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
     canvas.scale(scaleX, scaleY);
+
+    textPainter.layout();
+    canvas.scale(1, -1);
+    textPainter.paint(canvas, Offset(0, -robotImage.height.toDouble()));
+    canvas.scale(1, -1);
+
     canvas.rotate(robot.heading);
-    canvas.drawImage(robotImage,
-        Offset(-robotImage.width / 2, -robotImage.height / 2), paint);
+
+    canvas.drawImage(
+      robotImage,
+      Offset(-robotImage.width / 2, -robotImage.height / 2),
+      paint,
+    );
     canvas.rotate(-robot.heading);
     canvas.scale(1 / scaleX, 1 / scaleY);
     canvas.translate(-robot.pos.dx, -robot.pos.dy);
