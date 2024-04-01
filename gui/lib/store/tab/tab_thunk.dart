@@ -253,8 +253,16 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
       const double amountOfTimeActionIsDisplayed = 500.0;
       double timeLeftForAction = 0.0;
       String action = "";
-      for (final TrajectoryResponse_SwervePoint point in store
-          .state.tabState[store.state.currentTabIndex].path.trajectoryPoints) {
+      final List<TrajectoryResponse_SwervePoint> trajectoryPoints = store
+          .state.tabState[store.state.currentTabIndex].path.trajectoryPoints;
+
+      Stream<int>.periodic(
+        Duration(milliseconds: cycleTime),
+        (final int i) => i,
+      )
+          .takeWhile((final int i) => i < trajectoryPoints.length)
+          .listen((final int i) {
+        final TrajectoryResponse_SwervePoint point = trajectoryPoints[i];
         if (point.action.isNotEmpty) {
           action = point.action;
           timeLeftForAction = amountOfTimeActionIsDisplayed;
@@ -273,9 +281,5 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
             action,
           ),
         );
-
-        await Future<void>.delayed(Duration(milliseconds: cycleTime));
-      }
-
-      ;
+      });
     };
