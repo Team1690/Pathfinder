@@ -286,6 +286,19 @@ class _PathEditorState extends State<PathEditor> {
           animateRobot.activator!: () {
             widget.pathProps.animateRobot();
           },
+          copyPoint.activator!: () {
+            if (widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps.copyPoint(widget.pathProps.selectedPointIndex!);
+            }
+          },
+          pastePoint.activator!: () {
+            if (widget.pathProps.selectedPointIndex != null) {
+              widget.pathProps
+                  .pastePoint(widget.pathProps.selectedPointIndex! + 1);
+            } else {
+              widget.pathProps.pastePoint(widget.pathProps.points.length);
+            }
+          },
         },
         child: Focus(
           autofocus: true,
@@ -401,10 +414,10 @@ class _PathEditorState extends State<PathEditor> {
                         return;
                       }
 
-                      if (RawKeyboard.instance.keysPressed.contains(
+                      if (HardwareKeyboard.instance.isLogicalKeyPressed(
                             LogicalKeyboardKey.controlLeft,
                           ) ||
-                          RawKeyboard.instance.keysPressed.contains(
+                          HardwareKeyboard.instance.isLogicalKeyPressed(
                             LogicalKeyboardKey.controlRight,
                           )) {
                         final Offset realTapPosition =
@@ -514,8 +527,9 @@ class _PathEditorState extends State<PathEditor> {
 
                           if (!widget.pathProps.points[currentDragPoint.index]
                                   .isStop ||
-                              RawKeyboard.instance.keysPressed
-                                  .contains(LogicalKeyboardKey.keyF)) {
+                              HardwareKeyboard.instance.isLogicalKeyPressed(
+                                LogicalKeyboardKey.keyF,
+                              )) {
                             if (currentDragPoint.draggingPoint.type ==
                                 PointType.inControl) {
                               dragPoints.add(
@@ -560,10 +574,10 @@ class _PathEditorState extends State<PathEditor> {
                           }
                         });
                       } else {
-                        if (RawKeyboard.instance.keysPressed.contains(
+                        if (HardwareKeyboard.instance.isLogicalKeyPressed(
                               LogicalKeyboardKey.controlLeft,
                             ) ||
-                            RawKeyboard.instance.keysPressed.contains(
+                            HardwareKeyboard.instance.isLogicalKeyPressed(
                               LogicalKeyboardKey.controlRight,
                             )) {
                           setState(() {
@@ -769,6 +783,18 @@ const Shortcut animateRobot = Shortcut(
   description: "Animates robot in field",
   activator: SingleActivator(LogicalKeyboardKey.keyA, control: true),
 );
+const Shortcut copyPoint = Shortcut(
+  shortcut: "On Point + Ctrl + C",
+  description: "Copies the current selected point",
+  activator: SingleActivator(LogicalKeyboardKey.keyC, control: true),
+);
+
+const Shortcut pastePoint = Shortcut(
+  shortcut: "On Point + Ctrl + V",
+  description: "Pastes the current selected point",
+  activator: SingleActivator(LogicalKeyboardKey.keyV, control: true),
+);
+
 const List<Shortcut> shortcuts = <Shortcut>[
   stopPointToggle,
   panUp,
@@ -789,4 +815,6 @@ const List<Shortcut> shortcuts = <Shortcut>[
   saveAs,
   deleteTab,
   animateRobot,
+  copyPoint,
+  pastePoint,
 ];

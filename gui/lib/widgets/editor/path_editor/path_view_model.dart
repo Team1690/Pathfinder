@@ -45,6 +45,8 @@ class PathViewModel {
     required this.robotOnField,
     required this.selectRobotOnField,
     required this.animateRobot,
+    required this.copyPoint,
+    required this.pastePoint,
   });
   final List<Point> points;
   final List<Segment> segments;
@@ -78,6 +80,8 @@ class PathViewModel {
   final Optional<RobotOnField> robotOnField;
   final void Function(Offset) selectRobotOnField;
   final void Function() animateRobot;
+  final void Function(int) copyPoint;
+  final void Function(int) pastePoint;
 
   static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
@@ -186,5 +190,9 @@ class PathViewModel {
           store.dispatch(setRobotOnFieldThunk(SetRobotOnField(position)));
         },
         animateRobot: () => store.dispatch(animateRobotOnFieldThunk()),
+        copyPoint: (final int copyIndex) =>
+            store.dispatch(CopyPoint(copyIndex)),
+        pastePoint: (final int pasteIndex) =>
+            store.dispatch(pastePointThunk(pasteIndex)),
       );
 }

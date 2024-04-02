@@ -1,5 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 
@@ -57,10 +58,17 @@ class TrajectoryCalculated extends TabAction {
 
 // Point actions
 class AddPointToPath extends TabAction {
-  AddPointToPath(this.position, this.segmentIndex, this.insertIndex);
+  AddPointToPath(
+    this.position,
+    this.segmentIndex,
+    this.insertIndex, [
+    this.point,
+  ]);
   final Offset? position;
   final int segmentIndex;
   final int insertIndex;
+
+  final Point? point;
 }
 
 class EditPoint extends TabAction {
@@ -141,4 +149,14 @@ class SetRobotOnFieldRaw extends TabAction {
   final Offset position;
   final double heading;
   final String action;
+}
+
+class CopyPoint extends TabAction {
+  CopyPoint(this.index);
+  final int index;
+}
+
+class PastePoint extends TabAction {
+  PastePoint(this.index);
+  final int index;
 }

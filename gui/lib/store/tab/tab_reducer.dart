@@ -37,6 +37,7 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, SetPan>(_setPan),
   TypedReducer<TabState, SetRobotOnField>(_setRobotOnField),
   TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
+  TypedReducer<TabState, CopyPoint>(_copyPoint),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -215,7 +216,8 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
         .scale(0.5, 0.5);
   }
 
-  Point newPoint = Point.initial(position);
+  Point newPoint =
+      action.point == null ? Point.initial(position) : action.point!;
 
   if (tabState.path.points.isNotEmpty) {
     final double direction = action.insertIndex == -1
@@ -658,3 +660,10 @@ TabState _setRobotOnField(
     },
   );
 }
+
+TabState _copyPoint(final TabState tabState, final CopyPoint action) =>
+    tabState.copyWith(
+      path: tabState.path.copyWith(
+        copiedPoint: Some<Point>(tabState.path.points[action.index]),
+      ),
+    );

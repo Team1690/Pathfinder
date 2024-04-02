@@ -14,6 +14,7 @@ class Path {
     required this.evaluatedPoints,
     required this.robotOnField,
     required this.trajectoryPoints,
+    required this.copiedPoint,
   });
 
   factory Path.initial() => Path(
@@ -23,6 +24,7 @@ class Path {
         evaluatedPoints: <SplinePoint>[],
         autoDuration: 0,
         robotOnField: None<RobotOnField>(),
+        copiedPoint: None<Point>(),
       );
 
   // Json
@@ -44,6 +46,7 @@ class Path {
               .cast<Map<String, dynamic>>()
               .map(SplinePoint.fromJson),
         ),
+        copiedPoint = None<Point>(),
         autoDuration = (json["autoDuration"] as double?) ?? 0.0;
   final List<Segment> segments;
   final List<Point> points;
@@ -51,6 +54,7 @@ class Path {
   final Optional<RobotOnField> robotOnField;
   final double autoDuration;
   final List<rpc.TrajectoryResponse_SwervePoint> trajectoryPoints;
+  final Optional<Point> copiedPoint;
 
   Path copyWith({
     final List<Segment>? segments,
@@ -59,8 +63,10 @@ class Path {
     final double? autoDuration,
     final Optional<RobotOnField>? robotOnField,
     final List<rpc.TrajectoryResponse_SwervePoint>? trajectoryPoints,
+    final Optional<Point>? copiedPoint,
   }) =>
       Path(
+        copiedPoint: copiedPoint ?? this.copiedPoint,
         trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
         robotOnField: robotOnField ?? this.robotOnField,
         segments: segments ?? this.segments,

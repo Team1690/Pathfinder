@@ -2,10 +2,13 @@ import "dart:convert";
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:grpc/grpc.dart";
+import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:path/path.dart";
 import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
+import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
@@ -13,6 +16,38 @@ import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux/redux.dart";
+
+ThunkAction<AppState> pastePointThunk(final int pointIndex) =>
+    (final Store<AppState> store) async {
+      if (store.state.tabState[store.state.currentTabIndex].path.copiedPoint
+              .runtimeType ==
+          None<Point>) {
+        return;
+      }
+      final int newPointIndex = pointIndex ==
+              store.state.tabState[store.state.currentTabIndex].path.points
+                  .length
+          ? -1
+          : pointIndex;
+      final int segmentIndex = store
+          .state.tabState[store.state.currentTabIndex].path.segments
+          .indexWhere(
+        (final Segment element) => element.pointIndexes.contains(newPointIndex),
+      );
+
+      final Point point = store
+          .state.tabState[store.state.currentTabIndex].path.copiedPoint
+          .orElseDo(() => throw Exception("No copied point"));
+      store.dispatch(
+        AddPointToPath(
+          point.position,
+          segmentIndex, // -1 if its the last point because it isn't contained in any segment
+          newPointIndex,
+          point,
+        ),
+      );
+      store.dispatch(updateSplineThunk());
+    };
 
 ThunkAction<AppState> addPointThunk(
   final Offset? position,
@@ -133,7 +168,7 @@ void reconnect(
 ThunkAction<AppState> calculateSplineThunk() =>
     (final Store<AppState> store) async {
       try {
-        final SplineResponse res = await PathFinderService.calculateSpline(
+        final rpc.SplineResponse res = await PathFinderService.calculateSpline(
           store.state.tabState[store.state.currentTabIndex].path.segments,
           store.state.tabState[store.state.currentTabIndex].path.points,
           0.1,
@@ -151,7 +186,7 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
       store.dispatch(TrajectoryInProgress());
 
       try {
-        final TrajectoryResponse res =
+        final rpc.TrajectoryResponse res =
             await PathFinderService.calculateTrjactory(
           store.state.tabState[store.state.currentTabIndex].path.points,
           store.state.tabState[store.state.currentTabIndex].path.segments,
@@ -253,7 +288,7 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
       const double amountOfTimeActionIsDisplayed = 500.0;
       double timeLeftForAction = 0.0;
       String action = "";
-      final List<TrajectoryResponse_SwervePoint> trajectoryPoints = store
+      final List<rpc.TrajectoryResponse_SwervePoint> trajectoryPoints = store
           .state.tabState[store.state.currentTabIndex].path.trajectoryPoints;
 
       Stream<int>.periodic(
@@ -262,7 +297,7 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
       )
           .takeWhile((final int i) => i < trajectoryPoints.length)
           .listen((final int i) {
-        final TrajectoryResponse_SwervePoint point = trajectoryPoints[i];
+        final rpc.TrajectoryResponse_SwervePoint point = trajectoryPoints[i];
         if (point.action.isNotEmpty) {
           action = point.action;
           timeLeftForAction = amountOfTimeActionIsDisplayed;
