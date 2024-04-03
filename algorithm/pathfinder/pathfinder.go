@@ -74,6 +74,8 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 
 	trajectory = DoKinematics(trajectory, robot)
 
+	CalculateHeadingTrapezoid(trajectory, headingPoints, robot)
+
 	quantizedTrajectory := QuantizeTrajectory(trajectory, robot.CycleTime)
 
 	actionPoints := segmentClassifier.GetActionPoints()
@@ -303,6 +305,68 @@ func QuantizeTrajectory(trajectoryPoints []*TrajectoryPoint, cycleTime float64) 
 	}
 
 	return quantizedTrajectory
+}
+
+func CalculateHeadingTrapezoid(trajectoryPoints []*TrajectoryPoint, headingPoints []*indexedHeadingPoint, robot *RobotParameters) {
+	for headingPointIndex := 0; headingPointIndex < len(headingPoints)-1; headingPointIndex++ {
+		headingPoint := headingPoints[headingPointIndex]
+		nextHeadingPoint := headingPoints[headingPointIndex+1]
+
+		headingTrajectoryPoint := trajectoryPoints[headingPoint.index]
+		nextHeadingTrajectoryPoint := trajectoryPoints[nextHeadingPoint.index]
+
+		deltaHeading := utils.WrapAngle(nextHeadingTrajectoryPoint.Heading - headingTrajectoryPoint.Heading)
+
+		deltaTime := nextHeadingTrajectoryPoint.Time - headingTrajectoryPoint.Time
+
+		t0 := 0.08 // TODO Add to robot parameters
+		t1 := deltaTime * robot.AngularAccPercentage
+
+		// Checkpoints in the trapezoid:
+		t1Time := t0 + t1              // End of increase
+		tMiddle := deltaTime - t0 - t1 // Start of decrease
+		t1AftertMiddle := tMiddle + t1 // End of decrease
+
+		maxOmega := deltaHeading / (deltaTime - 2*t0 - t1)
+		angleAcc := maxOmega / t1
+
+		for i := headingPoint.index; i <= nextHeadingPoint.index; i++ {
+
+			t := trajectoryPoints[i].Time - headingTrajectoryPoint.Time
+
+			if t < t0 {
+				trajectoryPoints[i].Omega = 0 // Before trapezoid (To Start driving before turning so that modules don't start diagonaly)
+			}
+
+			if t > t0 && t < t1Time {
+				trajectoryPoints[i].Omega = angleAcc * (t - t0) // Increase of trapezoid
+			}
+			if t > t1Time && t < tMiddle {
+				trajectoryPoints[i].Omega = maxOmega // Max of trapezoid
+			}
+
+			if t > tMiddle && t < t1AftertMiddle {
+				trajectoryPoints[i].Omega = maxOmega - (t-tMiddle)*angleAcc // Decrease of trapezoid
+			}
+
+			if t > t1AftertMiddle {
+				trajectoryPoints[i].Omega = 0 // After trapezoid
+			}
+
+			var prevPointTime float64
+			var prevHeading float64
+			if i == 0 {
+				prevPointTime = trajectoryPoints[0].Time
+				prevHeading = trajectoryPoints[0].Heading
+			} else {
+				prevPointTime = trajectoryPoints[i-1].Time
+				prevHeading = trajectoryPoints[i-1].Heading
+			}
+
+			dt := trajectoryPoints[i].Time - prevPointTime
+			trajectoryPoints[i].Heading = utils.WrapAngle(prevHeading + trajectoryPoints[i].Omega*dt)
+		}
+	}
 }
 
 type SwerveTrajectoryPoint struct {

@@ -92,7 +92,7 @@ func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 	}
 }
 
-func reverseTrajectory(trajectory []*TrajectoryPoint, isAlreadyReversed bool) []*TrajectoryPoint {
+func reverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
 
@@ -112,8 +112,8 @@ func reverseTrajectory(trajectory []*TrajectoryPoint, isAlreadyReversed bool) []
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
 	CalculateKinematics(trajectory, robot, false)
-	trajectory = reverseTrajectory(trajectory, false)
+	trajectory = reverseTrajectory(trajectory)
 	CalculateKinematics(trajectory, robot, true)
-	trajectory = reverseTrajectory(trajectory, true)
+	trajectory = reverseTrajectory(trajectory)
 	return trajectory
 }
