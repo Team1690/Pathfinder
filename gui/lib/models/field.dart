@@ -1,8 +1,8 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/utils/json.dart";
 
-const double officialFieldWidth = 16.4846;
-const double officialFieldHeight = 8.1026;
+const double officialFieldWidth = 16.54;
+const double officialFieldHeight = 8.21;
 
 class Field {
   const Field({
