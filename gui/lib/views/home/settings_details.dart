@@ -12,7 +12,7 @@ import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
 import "package:pathfinder/views/home/home.dart";
 
-const Offset blueSpeakerPos = const Offset(0.235, 5.419);
+const Offset blueSpeakerPos = const Offset(0.24, 5.589);
 
 class SettingsDetails extends StatelessWidget {
   SettingsDetails({
