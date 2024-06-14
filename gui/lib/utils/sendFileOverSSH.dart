@@ -86,7 +86,7 @@ void sendToRobot(final BuildContext context) => showDialog(
                   children: <Widget>[
                     IPTextbox(
                       controller: ipController,
-                      onChanged: () {
+                      onChanged: ([final String? string]) {
                         ip = ipController.text;
                       },
                     ),

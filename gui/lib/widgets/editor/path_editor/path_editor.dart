@@ -414,10 +414,10 @@ class _PathEditorState extends State<PathEditor> {
                         return;
                       }
 
-                      if (RawKeyboard.instance.keysPressed.contains(
+                      if (HardwareKeyboard.instance.logicalKeysPressed.contains(
                             LogicalKeyboardKey.controlLeft,
                           ) ||
-                          RawKeyboard.instance.keysPressed.contains(
+                          HardwareKeyboard.instance.logicalKeysPressed.contains(
                             LogicalKeyboardKey.controlRight,
                           )) {
                         final Offset realTapPosition =
@@ -527,7 +527,8 @@ class _PathEditorState extends State<PathEditor> {
 
                           if (!widget.pathProps.points[currentDragPoint.index]
                                   .isStop ||
-                              RawKeyboard.instance.keysPressed.contains(
+                              HardwareKeyboard.instance.logicalKeysPressed
+                                  .contains(
                                 LogicalKeyboardKey.keyF,
                               )) {
                             if (currentDragPoint.draggingPoint.type ==
@@ -574,10 +575,12 @@ class _PathEditorState extends State<PathEditor> {
                           }
                         });
                       } else {
-                        if (RawKeyboard.instance.keysPressed.contains(
+                        if (HardwareKeyboard.instance.logicalKeysPressed
+                                .contains(
                               LogicalKeyboardKey.controlLeft,
                             ) ||
-                            RawKeyboard.instance.keysPressed.contains(
+                            HardwareKeyboard.instance.logicalKeysPressed
+                                .contains(
                               LogicalKeyboardKey.controlRight,
                             )) {
                           setState(() {
