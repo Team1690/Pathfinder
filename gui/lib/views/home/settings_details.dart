@@ -77,6 +77,7 @@ class SettingsDetails extends StatelessWidget {
     if (tabState.ui.selectedType == Robot) {
       return Form(
         child: CardSettings(
+          scrollable: true,
           contentAlign: TextAlign.right,
           labelAlign: TextAlign.left,
           shrinkWrap: true,
@@ -240,6 +241,7 @@ class SettingsDetails extends StatelessWidget {
           child: Column(
             children: <Widget>[
               ListView(
+                controller: ScrollController(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 children: tabState.help.shortcuts
