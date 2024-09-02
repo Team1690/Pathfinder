@@ -18,7 +18,7 @@ import "package:pathfinder/widgets/editor/field_editor/point_settings.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
 const double headingLength = 50;
-
+//TODO: merge pointtype with colorpoint type
 Map<PointType, PointSettings> pointSettings = <PointType, PointSettings>{
   PointType.path: PointSettings(const Color(0xbbdddddd), 8),
   PointType.inControl: PointSettings(Colors.orange, 6),

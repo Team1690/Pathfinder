@@ -171,7 +171,8 @@ class FieldPainter extends CustomPainter {
     final Paint paint = Paint()..color = color;
     final ui.Paint highlightPaint = Paint()
       ..color = selectedPointHightlightColor
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, convertRadiusToSigma(5));
+      ..maskFilter =
+          MaskFilter.blur(BlurStyle.normal, Shadow.convertRadiusToSigma(5));
 
     // Highlight selected point
     if (isSelected) {

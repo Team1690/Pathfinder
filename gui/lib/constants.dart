@@ -28,29 +28,30 @@ const Map<int, Color> orbitColors = <int, Color>{
   900: Color.fromRGBO(0, 0, 200, 1),
 };
 
-// Sement colors
+// Segment colors
 List<Color> segmentColors = <Color>[
   const Color.fromARGB(255, 86, 86, 255),
   const Color.fromARGB(255, 255, 44, 44),
   const Color.fromARGB(255, 61, 255, 43),
   const Color.fromARGB(255, 255, 217, 0),
+  const Color.fromARGB(255, 0, 247, 255),
+  const Color.fromARGB(255, 255, 0, 255),
 ];
 
-Color getSegmentColor(final int index) {
-  final int colorIndex = index % segmentColors.length;
-  return segmentColors[colorIndex];
-}
+/// Gets the segment color from [segmentColors] depending on [index]
+Color getSegmentColor(final int index) =>
+    segmentColors[index % segmentColors.length];
 
 // Point
-Color selectedPointColor = const Color(0xffeeeeee);
+const Color selectedPointColor = const Color(0xffeeeeee);
 
 const Color stopPointColor = Color.fromARGB(204, 224, 68, 68);
-Color selectedStopPointColor = const Color.fromARGB(255, 255, 83, 83);
+const Color selectedStopPointColor = const Color.fromARGB(255, 255, 83, 83);
 
 const Color selectedPointHightlightColor = Color(0xffeeeeee);
 const double selectedPointHighlightRadius = 5;
 const int selectedPointHighlightOpacity = 5;
-
+//TODO: introduce Point type enum
 Color getPointColor(
   final Color defaultColor,
   final bool isStopPoint,
@@ -75,8 +76,7 @@ Color getPointColor(
   return isSelected ? selectedColor : color;
 }
 
-double convertRadiusToSigma(final double radius) => radius * 0.57735 + 0.5;
-
+//TODO: some how make this more nice enum?
 const List<String> autoActions = <String>[
   "Stop To Shoot",
   "Force Shoot",
