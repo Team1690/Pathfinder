@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/point_type.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/constants.dart";
 
@@ -42,10 +43,13 @@ class _TimeLineView extends StatelessWidget {
                 (final MapEntry<int, Point> e) => TimelinePoint(
                   onTap: () => props.selectPoint(e.key),
                   isSelected: e.key == props.selectedPointIndex,
-                  isStop: e.value.isStop,
-                  isFirstPoint: e.key == 0,
-                  isLastPoint: e.key == props.points.length - 1,
-                  color: const Color(0xffE1E1E1CC),
+                  //TODO: get rid of this lambda function
+                  pointType: () {
+                    if (e.value.isStop) return PointType.stop;
+                    if (e.key == 0) return PointType.first;
+                    if (e.key == props.points.length - 1) return PointType.last;
+                    return PointType.regular;
+                  }(),
                 ),
               )
               .toList(),

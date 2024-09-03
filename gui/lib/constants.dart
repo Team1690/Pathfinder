@@ -42,39 +42,10 @@ List<Color> segmentColors = <Color>[
 Color getSegmentColor(final int index) =>
     segmentColors[index % segmentColors.length];
 
-// Point
-const Color selectedPointColor = const Color(0xffeeeeee);
-
-const Color stopPointColor = Color.fromARGB(204, 224, 68, 68);
-const Color selectedStopPointColor = const Color.fromARGB(255, 255, 83, 83);
-
+//TODO: remove these as you use these only once
 const Color selectedPointHightlightColor = Color(0xffeeeeee);
 const double selectedPointHighlightRadius = 5;
 const int selectedPointHighlightOpacity = 5;
-//TODO: introduce Point type enum
-Color getPointColor(
-  final Color defaultColor,
-  final bool isStopPoint,
-  final bool isFirstPoint,
-  final bool isLastPoint,
-  final bool isSelected,
-) {
-  Color color = defaultColor;
-  Color selectedColor = selectedPointColor;
-
-  if (isStopPoint) {
-    selectedColor = selectedStopPointColor;
-    color = stopPointColor;
-  } else if (isFirstPoint) {
-    selectedColor = const Color(0xff34A853).withGreen(230);
-    color = const Color(0xff34A853);
-  } else if (isLastPoint) {
-    selectedColor = const Color(0xffAE4335).withRed(230);
-    color = const Color(0xffAE4335);
-  }
-
-  return isSelected ? selectedColor : color;
-}
 
 //TODO: some how make this more nice enum?
 const List<String> autoActions = <String>[

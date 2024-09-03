@@ -1,5 +1,5 @@
 import "package:flutter/gestures.dart";
-import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
+import "package:pathfinder/point_type.dart";
 
 class DraggingPoint {
   DraggingPoint(this.type, this.position);

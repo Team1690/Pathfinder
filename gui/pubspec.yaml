@@ -35,9 +35,9 @@ dependencies:
   flutter_redux: ^0.10.0
   flutter_webview_plugin: ^0.4.0
   fluttertoast: ^8.0.8
-  grpc: ^3.0.2
+  grpc: ^4.0.1
   meta: ^1.9.1
-  orbit_standard_library: ^0.1.9
+  orbit_standard_library: ^0.2.0
   path: ^1.8.3
   protobuf: ^3.1.0
   redux: ^5.0.0

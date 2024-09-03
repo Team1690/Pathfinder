@@ -1,5 +1,6 @@
 import "dart:math";
 import "dart:ui" as ui;
+
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
@@ -10,10 +11,8 @@ import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart" as modelspath;
+import "package:pathfinder/point_type.dart";
 import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
-import "package:pathfinder/widgets/editor/field_editor/point_settings.dart";
-import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
-
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
@@ -119,12 +118,16 @@ class FieldPainter extends CustomPainter {
         point.inControlPoint,
         point.outControlPoint,
         index == selectedPoint,
-        point.isStop,
         enableHeadingEditing && selectedPoint == null,
         enableControlEditing && selectedPoint == null,
         point.useHeading,
-        index == 0,
-        index == points.length - 1,
+        //TODO: get rid of this lambda function
+        () {
+          if (point.isStop) return PointType.stop;
+          if (index == 0) return PointType.first;
+          if (index == points.length - 1) return PointType.last;
+          return PointType.regular;
+        }(),
       );
     });
 
@@ -133,9 +136,9 @@ class FieldPainter extends CustomPainter {
       final FullDraggingPoint draggingPoint = entery.value;
 
       if (!((draggingPoint.index == 0 &&
-              draggingPoint.draggingPoint.type == PointType.inControl) ||
+              draggingPoint.draggingPoint.type == PointType.controlIn) ||
           (draggingPoint.index == points.length - 1 &&
-              draggingPoint.draggingPoint.type == PointType.outControl))) {
+              draggingPoint.draggingPoint.type == PointType.controlOut))) {
         drawDragPoint(
           canvas,
           points[draggingPoint.index],
@@ -154,19 +157,9 @@ class FieldPainter extends CustomPainter {
     final Canvas canvas,
     final Offset position,
     final bool isSelected,
-    final bool isStopPoint,
-    final bool isFirstPoint,
-    final bool isLastPoint,
+    final PointType pointType,
   ) {
-    final PointSettings currentPointSettings = pointSettings[PointType.path]!;
-
-    final ui.Color color = getPointColor(
-      currentPointSettings.color,
-      isStopPoint,
-      isFirstPoint,
-      isLastPoint,
-      isSelected,
-    );
+    final ui.Color color = pointType.color;
 
     final Paint paint = Paint()..color = color;
     final ui.Paint highlightPaint = Paint()
@@ -178,12 +171,12 @@ class FieldPainter extends CustomPainter {
     if (isSelected) {
       canvas.drawCircle(
         position,
-        currentPointSettings.radius,
+        pointType.radius,
         highlightPaint,
       );
     }
 
-    canvas.drawCircle(position, currentPointSettings.radius, paint);
+    canvas.drawCircle(position, pointType.radius, paint);
   }
 
   void drawDragPoint(
@@ -191,23 +184,24 @@ class FieldPainter extends CustomPainter {
     final Point selectedPoint,
     final DraggingPoint dragPoint,
   ) {
-    final PointSettings currentPointSettings = pointSettings[dragPoint.type]!;
-    final Paint paint = Paint()..color = currentPointSettings.color;
+    final PointType pointType = dragPoint.type;
+    final Paint paint = Paint()..color = pointType.color;
 
     switch (dragPoint.type) {
-      case PointType.path:
+      case PointType.first:
+      case PointType.stop:
+      case PointType.last:
+      case PointType.regular:
         canvas.drawCircle(
           dragPoint.position,
-          currentPointSettings.radius,
+          pointType.radius,
           paint,
         );
         break;
-      case PointType.inControl:
-        continue control;
-      control:
-      case PointType.outControl:
+      case PointType.controlIn:
+      case PointType.controlOut:
         final Offset dragPosition = selectedPoint.position + dragPoint.position;
-        canvas.drawCircle(dragPosition, currentPointSettings.radius, paint);
+        canvas.drawCircle(dragPosition, pointType.radius, paint);
         drawControlPoint(
           canvas,
           dragPoint.type,
@@ -217,16 +211,13 @@ class FieldPainter extends CustomPainter {
           true,
         );
         drawPointBackground(
-          canvas,
-          Offset(
-            selectedPoint.position.dx + dragPoint.position.dx,
-            selectedPoint.position.dy + dragPoint.position.dy,
-          ),
-          true,
-          false,
-          false,
-          false,
-        );
+            canvas,
+            Offset(
+              selectedPoint.position.dx + dragPoint.position.dx,
+              selectedPoint.position.dy + dragPoint.position.dy,
+            ),
+            true,
+            pointType);
 
         break;
       case PointType.heading:
@@ -238,15 +229,11 @@ class FieldPainter extends CustomPainter {
           selectedPoint.position +
               Offset.fromDirection(dragHeading, headingLength),
           true,
-          false,
-          false,
-          false,
+          pointType,
         );
         break;
       default:
     }
-    if (dragPoint.type == PointType.path) {
-    } else {}
   }
 
   void drawControlPoint(
@@ -257,8 +244,7 @@ class FieldPainter extends CustomPainter {
     final bool enableEdit,
     final bool isSelected,
   ) {
-    final PointSettings settings = pointSettings[pointType]!;
-    final Color color = settings.color;
+    final Color color = pointType.color;
 
     final ui.Paint linePaint = Paint()
       ..style = PaintingStyle.stroke
@@ -271,7 +257,7 @@ class FieldPainter extends CustomPainter {
 
     if (enableEdit) {
       final ui.Paint dotPaint = Paint()..color = color;
-      canvas.drawCircle(edge, settings.radius, dotPaint);
+      canvas.drawCircle(edge, pointType.radius, dotPaint);
     }
   }
 
@@ -281,12 +267,12 @@ class FieldPainter extends CustomPainter {
     final double heading,
     final bool enableEdit,
   ) {
-    final PointSettings pointSetting = pointSettings[PointType.heading]!;
+    const PointType pointType = PointType.heading;
     final Offset edge = position + Offset.fromDirection(heading, headingLength);
 
     final ui.Paint paint = Paint()
       ..style = PaintingStyle.stroke
-      ..color = pointSetting.color
+      ..color = pointType.color
       ..strokeWidth = 3;
     final double circleRadius = 1 / (paint.strokeWidth * paint.strokeWidth);
 
@@ -295,9 +281,9 @@ class FieldPainter extends CustomPainter {
     canvas.drawCircle(edge, circleRadius, paint);
 
     if (enableEdit) {
-      final ui.Paint dotPaint = Paint()..color = pointSetting.color;
+      final ui.Paint dotPaint = Paint()..color = pointType.color;
 
-      canvas.drawCircle(edge, pointSetting.radius, dotPaint);
+      canvas.drawCircle(edge, pointType.radius, dotPaint);
     }
   }
 
@@ -308,20 +294,16 @@ class FieldPainter extends CustomPainter {
     final Offset inControl,
     final Offset outControl,
     final bool isSelected,
-    final bool isStopPoint,
     final bool enableHeadingEditing,
     final bool enableControlEditing,
     final bool useHeading,
-    final bool isFirstPoint,
-    final bool isLastPoint,
+    final PointType pointType,
   ) {
     drawPointBackground(
       canvas,
       position,
       isSelected,
-      isStopPoint,
-      isFirstPoint,
-      isLastPoint,
+      pointType,
     );
     if (useHeading) {
       drawHeadingLine(
@@ -331,20 +313,20 @@ class FieldPainter extends CustomPainter {
         enableHeadingEditing || isSelected,
       );
     }
-    if (!isFirstPoint) {
+    if (pointType != PointType.first) {
       drawControlPoint(
         canvas,
-        PointType.inControl,
+        PointType.controlIn,
         position,
         inControl,
         enableControlEditing || isSelected,
         false,
       );
     }
-    if (!isLastPoint) {
+    if (pointType != PointType.last) {
       drawControlPoint(
         canvas,
-        PointType.outControl,
+        PointType.controlOut,
         position,
         outControl,
         enableControlEditing || isSelected,

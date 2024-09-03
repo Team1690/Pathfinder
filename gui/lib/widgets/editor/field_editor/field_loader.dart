@@ -1,5 +1,6 @@
 import "dart:async";
 import "dart:ui" as ui;
+
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
@@ -7,24 +8,12 @@ import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
-
 import "package:pathfinder/models/spline_point.dart" as modelspath;
-
-import "package:pathfinder/widgets/editor/field_editor/point_type.dart";
-
 import "package:pathfinder/widgets/editor/field_editor/field_painter.dart";
-import "package:pathfinder/widgets/editor/field_editor/point_settings.dart";
-
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
+//TODO: move this to constants
 const double headingLength = 50;
-//TODO: merge pointtype with colorpoint type
-Map<PointType, PointSettings> pointSettings = <PointType, PointSettings>{
-  PointType.path: PointSettings(const Color(0xbbdddddd), 8),
-  PointType.inControl: PointSettings(Colors.orange, 6),
-  PointType.outControl: PointSettings(Colors.yellow, 6),
-  PointType.heading: PointSettings(const Color(0xffc80000), 6),
-};
 
 class FieldLoader extends StatefulWidget {
   FieldLoader(
