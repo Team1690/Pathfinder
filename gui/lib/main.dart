@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:io";
 
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/store/app/app_reducer.dart";
@@ -13,10 +14,8 @@ import "package:redux_logging/redux_logging.dart";
 const bool debug = false;
 const String cacheFilePath = "./.temp-state";
 
-const bool isDev = bool.fromEnvironment("dev");
-
 void main() {
-  if (!isDev) {
+  if (kReleaseMode) {
     runAlgorithm();
   }
   runApp(App());

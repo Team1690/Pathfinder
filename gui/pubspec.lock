@@ -174,14 +174,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  flutter_cupertino_settings:
-    dependency: transitive
-    description:
-      name: flutter_cupertino_settings
-      sha256: e313dab20b8a655a41186deaeb8b73a70dfb12faf2dcf8a06e4361c2a8bb84f8
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.0"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -420,10 +412,10 @@ packages:
     dependency: "direct main"
     description:
       name: orbit_card_settings
-      sha256: "49cabe9c4c1a2975c46833c4e313f72befc7f258be6bfb19a38e926cf011f136"
+      sha256: "197b39190261a12ec9f4de996e9b3f30fa2116b2bd021c9037db6d40ac912116"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "4.0.1"
   orbit_standard_library:
     dependency: "direct main"
     description:

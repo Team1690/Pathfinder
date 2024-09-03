@@ -1,5 +1,6 @@
 import "dart:convert";
 import "dart:io";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:grpc/grpc.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
@@ -158,7 +159,9 @@ void reconnect(
   final dynamic Function(Store<AppState>) thunk,
   final Object error,
 ) {
-  if (error is GrpcError && error.code == StatusCode.unavailable && !isDev) {
+  if (error is GrpcError &&
+      error.code == StatusCode.unavailable &&
+      kReleaseMode) {
     runAlgorithm();
     store.dispatch(thunk);
     return;
