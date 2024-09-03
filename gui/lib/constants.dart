@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 // TODO find nice colors
-final Color primaryColor = Colors.grey.shade800;
+const Color primaryColor = Color.fromRGBO(66, 66, 66, 1);
 const Color secondaryColor = const Color(0xFF2A2D3E);
 
 const double defaultPadding = 20;
@@ -41,11 +41,6 @@ List<Color> segmentColors = <Color>[
 /// Gets the segment color from [segmentColors] depending on [index]
 Color getSegmentColor(final int index) =>
     segmentColors[index % segmentColors.length];
-
-//TODO: remove these as you use these only once
-const Color selectedPointHightlightColor = Color(0xffeeeeee);
-const double selectedPointHighlightRadius = 5;
-const int selectedPointHighlightOpacity = 5;
 
 //TODO: some how make this more nice enum?
 const List<String> autoActions = <String>[

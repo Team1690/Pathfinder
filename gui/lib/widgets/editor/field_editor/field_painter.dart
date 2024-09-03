@@ -16,6 +16,8 @@ import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
+const Color _selectedPointHightlightColor = Color(0xffeeeeee);
+
 class FieldPainter extends CustomPainter {
   FieldPainter(
     this.robotImage,
@@ -163,7 +165,7 @@ class FieldPainter extends CustomPainter {
 
     final Paint paint = Paint()..color = color;
     final ui.Paint highlightPaint = Paint()
-      ..color = selectedPointHightlightColor
+      ..color = _selectedPointHightlightColor
       ..maskFilter =
           MaskFilter.blur(BlurStyle.normal, Shadow.convertRadiusToSigma(5));
 

@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/constants.dart";
 import "package:pathfinder/point_type.dart";
 
 //TODO: i don't like consts for single files see if you can merge this with other const
 const double _timelinePointRadius = 10;
+const double _selectedPointHighlightRadius = 5;
 
 class TimelinePoint extends StatelessWidget {
   TimelinePoint({
@@ -28,7 +28,7 @@ class TimelinePoint extends StatelessWidget {
                 ? <BoxShadow>[]
                 : <BoxShadow>[
                     BoxShadow(
-                      blurRadius: selectedPointHighlightRadius,
+                      blurRadius: _selectedPointHighlightRadius,
                       color: pointType.color,
                     ),
                   ],
