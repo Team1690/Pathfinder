@@ -15,6 +15,7 @@ const Color blue = Color(0xff7D8AFF);
 const Color red = Color(0xffE58585);
 const Color green = Color(0xff7CE27A);
 
+/// Orbit blue in different degrees of opacity
 const Map<int, Color> orbitColors = <int, Color>{
   50: Color.fromRGBO(0, 0, 200, .1),
   100: Color.fromRGBO(0, 0, 200, .2),
@@ -28,7 +29,7 @@ const Map<int, Color> orbitColors = <int, Color>{
   900: Color.fromRGBO(0, 0, 200, 1),
 };
 
-// Segment colors
+/// Segment colors for path and timeline
 List<Color> segmentColors = <Color>[
   const Color.fromARGB(255, 86, 86, 255),
   const Color.fromARGB(255, 255, 44, 44),

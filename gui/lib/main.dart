@@ -11,6 +11,7 @@ import "package:redux/redux.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux_logging/redux_logging.dart";
 
+//TODO: use redux persist for saving temp-state
 const bool debug = false;
 const String cacheFilePath = "./.temp-state";
 
