@@ -5,4 +5,4 @@ double degToRad(final double deg) => pi * deg / 180;
 
 double radToDeg(final double deg) => 180 * deg / pi;
 
-int signum(final double number) => number.compareTo(0);
+int signum(final num number) => number.compareTo(0);

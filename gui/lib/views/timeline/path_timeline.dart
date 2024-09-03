@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/widgets/timeline/add_point_inside_timeline.dart";
-import "package:pathfinder/widgets/timeline/timeline_point.dart";
-import "package:pathfinder/widgets/timeline/time_line_segment.dart";
+import "package:pathfinder/views/timeline/add_point_inside_timeline.dart";
+import "package:pathfinder/views/timeline/timeline_point.dart";
+import "package:pathfinder/views/timeline/time_line_segment.dart";
 
 //TODO: concise
 class PathTimeline extends StatelessWidget {
@@ -55,8 +55,7 @@ class PathTimeline extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 40),
-                const SizedBox(height: 5),
+                const SizedBox(height: 45),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: points,

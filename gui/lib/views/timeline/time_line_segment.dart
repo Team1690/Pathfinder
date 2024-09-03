@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
 
+const double _segmentHeight = 50;
+
 //TODO: concise
 class TimeLineSegment extends StatefulWidget {
   TimeLineSegment({
@@ -18,8 +20,6 @@ class TimeLineSegment extends StatefulWidget {
   final Color color;
   final double velocity;
   final Function(double) onChange;
-  static double segmentWidth = 300;
-  static double segmentHeight = 50;
 
   @override
   _TimeLineSegmentState createState() => _TimeLineSegmentState();
@@ -86,7 +86,7 @@ class _TimeLineSegmentState extends State<TimeLineSegment> {
           alignment: Alignment.center,
           children: <Widget>[
             Container(
-              height: TimeLineSegment.segmentHeight,
+              height: _segmentHeight,
               decoration: BoxDecoration(
                 color: gray,
                 border: Border.all(color: primary, width: 4),

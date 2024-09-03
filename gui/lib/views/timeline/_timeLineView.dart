@@ -8,11 +8,11 @@ import "package:pathfinder/constants.dart";
 
 import "package:pathfinder/views/timeline/time_line_view_model.dart";
 
-import "package:pathfinder/widgets/timeline/path_timeline.dart";
+import "package:pathfinder/views/timeline/path_timeline.dart";
 
-import "package:pathfinder/widgets/timeline/timeline_point.dart";
+import "package:pathfinder/views/timeline/timeline_point.dart";
 
-import "package:pathfinder/widgets/timeline/time_line_segment.dart";
+import "package:pathfinder/views/timeline/time_line_segment.dart";
 
 //TODO: all store connectors should be like this generalize this to all other models
 StoreConnector<AppState, TimeLineViewModel> timeLineView() =>
