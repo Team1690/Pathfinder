@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  card_settings:
-    dependency: "direct main"
-    description:
-      name: card_settings
-      sha256: ca7b245cece9cecc193712c42f7ec2db25fb2eaab1e07bec5c09df37207af5f9
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.5.0"
   carousel_slider:
     dependency: transitive
     description:
@@ -97,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4+2"
   crypto:
     dependency: transitive
     description:
@@ -117,10 +117,10 @@ packages:
     dependency: transitive
     description:
       name: extended_masked_text
-      sha256: b7f1ccaa1f68c87d6c7ca879a952031c6ae90f5feaf00968ab335a0c751d0127
+      sha256: "1599e6c2cea0b24214114c92679cf2c56cd9c8c1cac5dfc65c292bf3373b4b33"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "3.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -141,10 +141,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: be325344c1f3070354a1d84a231a1ba75ea85d413774ec4bdf444c023342e030
+      sha256: "167bb619cdddaa10ef2907609feb8a79c16dfa479d3afaf960f8e223f754bf12"
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.0"
+    version: "8.1.2"
   fixnum:
     dependency: transitive
     description:
@@ -234,10 +234,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_material_pickers
-      sha256: "1100bfd9a296a6680578aba8c51a0db114fb8ef94708fe320fe6da92b1f8c0e1"
+      sha256: "1f0977df9d3977c6621fff602f6956107cf5ff0df58d3441459e5b2e37256131"
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.0"
+    version: "3.7.0"
   flutter_multi_formatter:
     dependency: transitive
     description:
@@ -348,10 +348,10 @@ packages:
     dependency: transitive
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -416,6 +416,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  orbit_card_settings:
+    dependency: "direct main"
+    description:
+      name: orbit_card_settings
+      sha256: "49cabe9c4c1a2975c46833c4e313f72befc7f258be6bfb19a38e926cf011f136"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   orbit_standard_library:
     dependency: "direct main"
     description:
@@ -436,10 +444,10 @@ packages:
     dependency: transitive
     description:
       name: pattern_formatter
-      sha256: "987d24df31179325897f58258132492e86de577c6ae50c8102b9a1342f607688"
+      sha256: e870e12352f4d5537b8822826a0b1e3912ba91c504d79450dcaed4db79c211d3
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "4.0.0"
   plugin_platform_interface:
     dependency: transitive
     description:

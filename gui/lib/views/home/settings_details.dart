@@ -1,7 +1,7 @@
 import "dart:math";
-import "package:card_settings/card_settings.dart";
-import "package:card_settings/helpers/platform_functions.dart";
 import "package:flutter/material.dart";
+import "package:orbit_card_settings/card_settings.dart";
+import "package:orbit_card_settings/helpers/platform_functions.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/models/help.dart";
 import "package:pathfinder/models/history.dart";
