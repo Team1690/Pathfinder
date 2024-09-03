@@ -1,5 +1,5 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/utils/json.dart";
+import "package:pathfinder/utils/offset_extensions.dart";
 
 const double officialFieldWidth = 16.54;
 const double officialFieldHeight = 8.21;
@@ -14,7 +14,7 @@ class Field {
       );
 
   Field.fromJson(final Map<String, dynamic> json)
-      : size = offsetFromJson(json["size"] as Map<String, dynamic>);
+      : size = OffsetJson.fromJson(json["size"] as Map<String, dynamic>);
   final Offset size;
 
   Field copyWith({
@@ -25,6 +25,6 @@ class Field {
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        "size": offsetToJson(size),
+        "size": size.toJson(),
       };
 }

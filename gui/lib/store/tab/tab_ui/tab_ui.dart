@@ -1,5 +1,5 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/utils/json.dart";
+import "package:pathfinder/utils/offset_extensions.dart";
 
 const String defaultTrajectoryFileName = "output";
 
@@ -23,11 +23,11 @@ class TabUI {
       : selectedIndex = -1,
         selectedType = Null,
         isSidebarOpen = json["isSidebarOpen"] as bool,
-        fieldSizePixels =
-            offsetFromJson(json["fieldSizePixels"] as Map<String, dynamic>),
+        fieldSizePixels = OffsetJson.fromJson(
+            json["fieldSizePixels"] as Map<String, dynamic>),
         isGraphPageOpen = json["isGraphPageOpen"] as bool,
         zoomLevel = json["zoomLevel"] as double,
-        pan = offsetFromJson(json["pan"] as Map<String, dynamic>),
+        pan = OffsetJson.fromJson(json["pan"] as Map<String, dynamic>),
         headingToggle = json["headingToggle"] as bool,
         controlToggle = json["controlToggle"] as bool,
         serverError = null,
@@ -89,10 +89,10 @@ class TabUI {
         // 'selectedIndex': selectedIndex,
         // 'selectedType': selectedType,
         "isSidebarOpen": isSidebarOpen,
-        "fieldSizePixels": offsetToJson(fieldSizePixels),
+        "fieldSizePixels": fieldSizePixels.toJson(),
         "isGraphPageOpen": isGraphPageOpen,
         "zoomLevel": zoomLevel,
-        "pan": offsetToJson(pan),
+        "pan": pan.toJson(),
         "headingToggle": headingToggle,
         "controlToggle": controlToggle,
         "trajectoryFileName": trajectoryFileName,

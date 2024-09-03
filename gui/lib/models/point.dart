@@ -3,7 +3,7 @@ import "dart:math";
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/utils/coordinates_convertion.dart";
-import "package:pathfinder/utils/json.dart";
+import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
 const double defaultControlLength = 1;
@@ -35,11 +35,12 @@ class Point {
 
   // Json
   Point.fromJson(final Map<String, dynamic> json)
-      : position = offsetFromJson(json["position"] as Map<String, dynamic>),
+      : position =
+            OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         inControlPoint =
-            offsetFromJson(json["inControlPoint"] as Map<String, dynamic>),
-        outControlPoint =
-            offsetFromJson(json["outControlPoint"] as Map<String, dynamic>),
+            OffsetJson.fromJson(json["inControlPoint"] as Map<String, dynamic>),
+        outControlPoint = OffsetJson.fromJson(
+            json["outControlPoint"] as Map<String, dynamic>),
         heading = json["heading"] as double,
         useHeading = json["useHeading"] as bool,
         action = (json["action"] as String?) ?? "",
@@ -116,9 +117,9 @@ class Point {
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        "position": offsetToJson(position),
-        "inControlPoint": offsetToJson(inControlPoint),
-        "outControlPoint": offsetToJson(outControlPoint),
+        "position": position.toJson(),
+        "inControlPoint": inControlPoint.toJson(),
+        "outControlPoint": outControlPoint.toJson(),
         "heading": heading,
         "useHeading": useHeading,
         "action": action,

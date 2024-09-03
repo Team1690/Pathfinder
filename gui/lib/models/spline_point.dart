@@ -1,7 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/utils/coordinates_convertion.dart";
-import "package:pathfinder/utils/json.dart";
+import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
 class SplinePoint {
@@ -11,7 +11,8 @@ class SplinePoint {
   });
 
   SplinePoint.fromJson(final Map<String, dynamic> json)
-      : position = offsetFromJson(json["position"] as Map<String, dynamic>),
+      : position =
+            OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         segmentIndex = json["segmentIndex"] as int;
   final Offset position;
   final int segmentIndex;
@@ -27,7 +28,7 @@ class SplinePoint {
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        "position": offsetToJson(position),
+        "position": position.toJson(),
         "segmentIndex": segmentIndex,
       };
 }
