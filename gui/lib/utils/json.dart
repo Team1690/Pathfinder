@@ -1,5 +1,6 @@
 import "package:flutter/cupertino.dart";
 
+//TODO: this should be a class extension
 Map<String, dynamic> offsetToJson(final Offset o) => <String, dynamic>{
       "x": o.dx,
       "y": o.dy,

@@ -3,6 +3,7 @@ import "package:pathfinder/widgets/timeline/add_point_inside_timeline.dart";
 import "package:pathfinder/widgets/timeline/timeline_point.dart";
 import "package:pathfinder/widgets/timeline/time_line_segment.dart";
 
+//TODO: concise
 class PathTimeline extends StatelessWidget {
   const PathTimeline({
     final Key? key,

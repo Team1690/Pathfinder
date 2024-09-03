@@ -8,6 +8,7 @@ import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:pathfinder/widgets/editor/path_editor/path_editor.dart";
 
+//TODO: state classes should only have states as their init params, decide on a format for these
 @immutable
 class TabState {
   const TabState({

@@ -5,6 +5,7 @@ import "package:pathfinder/point_type.dart";
 const double _timelinePointRadius = 10;
 const double _selectedPointHighlightRadius = 5;
 
+//TODO: concise
 class TimelinePoint extends StatelessWidget {
   TimelinePoint({
     required this.onTap,

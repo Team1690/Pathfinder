@@ -28,6 +28,7 @@ const int DraggingTollerance = 2;
 const double minZoom = 0.4;
 const double maxZoom = 8.0;
 
+//TODO: this file is going to be the most work, but try to concise all the logic here, probably a lot of dup code
 class PathEditor extends StatefulWidget {
   PathEditor({
     required this.pathProps,
@@ -684,6 +685,7 @@ class _PathEditorState extends State<PathEditor> {
       );
 }
 
+//TODO: try to move all the logic for the shortcuts to a different file
 const Shortcut noZoomShortcut = Shortcut(
   shortcut: "Ctrl + 0",
   description: "Reset zoom",

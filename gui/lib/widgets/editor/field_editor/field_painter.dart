@@ -18,6 +18,7 @@ import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
 const Color _selectedPointHightlightColor = Color(0xffeeeeee);
 
+//TODO: shorten this code, there is a lot of duplicate code
 class FieldPainter extends CustomPainter {
   FieldPainter(
     this.robotImage,

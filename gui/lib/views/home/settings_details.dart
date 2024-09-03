@@ -334,16 +334,16 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   controller: inAngleController,
                   label: "In Angle",
-                  initialValue: degrees(pointData.inControlPoint.direction),
+                  initialValue: radToDeg(pointData.inControlPoint.direction),
                   unitLabel: "°",
                   fractionDigits: 1,
                   onChanged: (final double value) {
-                    final double opposite = radians(value + 180);
+                    final double opposite = degToRad(value + 180);
                     onPointEdit(
                       index,
                       pointData.copyWith(
                         inControlPoint: Offset.fromDirection(
-                          radians(value),
+                          degToRad(value),
                           pointData.inControlPoint.distance,
                         ),
                         outControlPoint: pointData.isStop
@@ -377,17 +377,17 @@ class SettingsDetails extends StatelessWidget {
                 _cardSettingsDouble(
                   controller: outAngleController,
                   label: "Out Angle",
-                  initialValue: degrees(pointData.outControlPoint.direction),
+                  initialValue: radToDeg(pointData.outControlPoint.direction),
                   fractionDigits: 1,
                   unitLabel: "°",
                   onChanged: (final double value) {
-                    final double opposite = radians(value + 180);
+                    final double opposite = degToRad(value + 180);
 
                     onPointEdit(
                       index,
                       pointData.copyWith(
                         outControlPoint: Offset.fromDirection(
-                          radians(value),
+                          degToRad(value),
                           pointData.outControlPoint.distance,
                         ),
                         inControlPoint: pointData.isStop
@@ -413,13 +413,13 @@ class SettingsDetails extends StatelessWidget {
                 if (pointData.useHeading)
                   _cardSettingsDouble(
                     label: "Heading",
-                    initialValue: degrees(pointData.heading),
+                    initialValue: radToDeg(pointData.heading),
                     fractionDigits: 1,
                     unitLabel: "°",
                     onChanged: (final double value) {
                       onPointEdit(
                         index,
-                        pointData.copyWith(heading: radians(value)),
+                        pointData.copyWith(heading: degToRad(value)),
                       );
                     },
                   ),

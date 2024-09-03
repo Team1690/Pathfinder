@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/main.dart";
 
+//TODO: simplify this function considerably if you want to have any chance at debugging it when problems arise
 void sendToRobot(final BuildContext context) => showDialog(
       context: context,
       builder: (final BuildContext context) {

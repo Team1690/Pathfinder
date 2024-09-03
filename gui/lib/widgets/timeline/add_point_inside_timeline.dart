@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/src/gestures/events.dart";
 
+//TODO: concise this(easy) + docs
 class AddPointInsideTimeline extends StatefulWidget {
   const AddPointInsideTimeline({
     final Key? key,

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
 
+//TODO: concise
 class TimeLineSegment extends StatefulWidget {
   TimeLineSegment({
     final Key? key,

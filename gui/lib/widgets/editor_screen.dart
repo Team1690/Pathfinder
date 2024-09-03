@@ -5,6 +5,7 @@ import "package:pathfinder/views/timeline/_timeLineView.dart";
 import "package:pathfinder/utils/sendFileOverSSH.dart";
 import "package:pathfinder/widgets/editor/path_editor/path_editor.dart";
 
+//TODO: concise + instead of long column make into grid square
 class EditorScreen extends StatefulWidget {
   const EditorScreen({
     final Key? key,

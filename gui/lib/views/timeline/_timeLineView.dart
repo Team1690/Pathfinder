@@ -14,6 +14,7 @@ import "package:pathfinder/widgets/timeline/timeline_point.dart";
 
 import "package:pathfinder/widgets/timeline/time_line_segment.dart";
 
+//TODO: all store connectors should be like this generalize this to all other models
 StoreConnector<AppState, TimeLineViewModel> timeLineView() =>
     new StoreConnector<AppState, TimeLineViewModel>(
       converter: TimeLineViewModel.fromStore,

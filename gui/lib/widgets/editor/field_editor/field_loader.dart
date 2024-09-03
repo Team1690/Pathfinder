@@ -15,6 +15,7 @@ import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 //TODO: move this to constants
 const double headingLength = 50;
 
+//TODO: see if you can shorten this code a bit and make it more concise
 class FieldLoader extends StatefulWidget {
   FieldLoader(
     this.points,

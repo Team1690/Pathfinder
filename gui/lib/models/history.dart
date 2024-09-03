@@ -4,6 +4,7 @@ import "package:pathfinder/store/tab/store.dart";
 const String initialActionName = "Initial";
 const int maxSavedHistory = 50;
 
+//TODO: regard these model classes as actual models and not like it is now
 class HistoryStamp {
   const HistoryStamp({
     required this.action,

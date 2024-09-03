@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "dart:math";
 
+//TODO: i don't think we need this cubic bezier painter
 class CubicBezier {
   CubicBezier({
     required this.start,

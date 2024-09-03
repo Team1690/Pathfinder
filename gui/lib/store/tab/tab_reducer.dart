@@ -13,6 +13,7 @@ import "package:pathfinder/store/tab/store.dart";
 import "package:redux/redux.dart";
 import "package:pathfinder/models/spline_point.dart";
 
+//TODO: clean this files code, probably a nightmare (700 lines of reducers)
 Reducer<TabState> applyReducers =
     combineReducers<TabState>(<TabState Function(TabState, dynamic)>[
   TypedReducer<TabState, SetSideBarVisibility>(_setSidebarVisibility),

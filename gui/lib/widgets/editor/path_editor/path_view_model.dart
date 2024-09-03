@@ -11,6 +11,7 @@ import "package:pathfinder/store/tab/tab_thunk.dart";
 import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:redux/redux.dart";
 
+//TODO: again dispatchees shoudn't be part of the model
 class PathViewModel {
   PathViewModel({
     required this.points,

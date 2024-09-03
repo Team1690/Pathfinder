@@ -10,6 +10,7 @@ import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
 import "package:pathfinder/widgets/editor/path_editor/path_editor.dart";
 import "package:redux/redux.dart";
 
+//TODO: it isn't exactly reduxy to have the dispatchee functions be in the model
 class HomeViewModel {
   HomeViewModel({
     required this.tabAmount,

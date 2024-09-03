@@ -3,6 +3,7 @@ import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:redux/redux.dart";
 
+//TODO: i don't like the fact that these functions have the store as a parameter it is better i think if maybe they just accept an offset
 Offset uiToMetersCoord(final Store<AppState> store, final Offset val) {
   final TabState tabState = store.state.tabState[store.state.currentTabIndex];
 
