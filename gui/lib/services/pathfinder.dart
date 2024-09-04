@@ -1,15 +1,15 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart" as rpc;
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
+import "package:pathfinder/models/tab_ui/tab_ui.dart";
 import "package:pathfinder/utils/grpc.dart";
 
 class PathFinderService {
   static Future<rpc.SplineResponse> calculateSpline(
     final List<Segment> segments,
-    final List<Point> points,
+    final List<PathPoint> points,
     final double interval,
   ) async {
     final rpc.PathFinderClient client =
@@ -24,7 +24,7 @@ class PathFinderService {
   }
 
   static Future<rpc.TrajectoryResponse> calculateTrjactory(
-    final List<Point> points,
+    final List<PathPoint> points,
     final List<Segment> segments,
     final Robot robot,
     String fileName,
@@ -49,7 +49,7 @@ rpc.Vector toRpcVector(final Offset p) => rpc.Vector(
       y: p.dy,
     );
 
-rpc.Point toRpcPoint(final Point p) => rpc.Point(
+rpc.Point toRpcPoint(final PathPoint p) => rpc.Point(
       position: toRpcVector(p.position),
       controlIn: toRpcVector(p.position + p.inControlPoint),
       controlOut: toRpcVector(p.position + p.outControlPoint),
@@ -63,11 +63,11 @@ rpc.Point toRpcPoint(final Point p) => rpc.Point(
 
 List<rpc.Segment> toRpcSegments(
   final List<Segment> segments,
-  final List<Point> points,
+  final List<PathPoint> points,
 ) =>
     segments.map((final Segment s) => toRpcSegment(s, points)).toList();
 
-rpc.Segment toRpcSegment(final Segment s, final List<Point> points) =>
+rpc.Segment toRpcSegment(final Segment s, final List<PathPoint> points) =>
     rpc.Segment(
       maxVelocity: s.maxVelocity,
       points:
@@ -75,14 +75,14 @@ rpc.Segment toRpcSegment(final Segment s, final List<Point> points) =>
     );
 
 List<rpc.Section> toRpcSections(
-  final List<Point> points,
+  final List<PathPoint> points,
   final List<Segment> segments,
 ) {
   final List<int> stopPointIndexes = points
       .asMap()
       .entries
-      .where((final MapEntry<int, Point> e) => e.value.isStop)
-      .map((final MapEntry<int, Point> e) => e.key)
+      .where((final MapEntry<int, PathPoint> e) => e.value.isStop)
+      .map((final MapEntry<int, PathPoint> e) => e.key)
       .toList();
 
   // Build a list of the indexes of the segments that define the sections

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
+import "package:pathfinder/models/tab_ui/tab_ui.dart";
 import "package:pathfinder/views/editor/timeline/_timeLineView.dart";
 import "package:pathfinder/utils/sendFileOverSSH.dart";
 import "package:pathfinder/views/editor/path_editor/path_editor.dart";

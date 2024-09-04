@@ -13,7 +13,7 @@ class HistoryStamp {
 
   factory HistoryStamp.fromReducer(
     final TabAction action,
-    final Path path,
+    final PathModel path,
   ) =>
       HistoryStamp(
         action: action.toString(),
@@ -22,15 +22,15 @@ class HistoryStamp {
 
   factory HistoryStamp.initial() => HistoryStamp(
         action: initialActionName,
-        path: Path.initial(),
+        path: PathModel.initial(),
       );
 
   // Json
   HistoryStamp.fromJson(final Map<String, dynamic> json)
       : action = json["action"] as String,
-        path = Path.fromJson(json["path"] as Map<String, dynamic>);
+        path = PathModel.fromJson(json["path"] as Map<String, dynamic>);
   final String action;
-  final Path path;
+  final PathModel path;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         "action": action,

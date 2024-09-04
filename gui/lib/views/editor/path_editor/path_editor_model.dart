@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
@@ -49,7 +49,7 @@ class PathEditorModel {
     required this.copyPoint,
     required this.pastePoint,
   });
-  final List<Point> points;
+  final List<PathPoint> points;
   final List<Segment> segments;
   final int? selectedPointIndex;
   final Robot robot;
@@ -87,7 +87,7 @@ class PathEditorModel {
   static PathEditorModel fromStore(final Store<AppState> store) =>
       PathEditorModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
-            .map((final Point p) => p.toUiCoord(store))
+            .map((final PathPoint p) => p.toUiCoord(store))
             .toList(),
         segments:
             store.state.tabState[store.state.currentTabIndex].path.segments,
@@ -97,7 +97,7 @@ class PathEditorModel {
             .toList(),
         selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]
                     .ui.selectedType ==
-                Point
+                PathPoint
             ? store.state.tabState[store.state.currentTabIndex].ui.selectedIndex
             : null),
         robot: store.state.tabState[store.state.currentTabIndex].robot
@@ -115,7 +115,7 @@ class PathEditorModel {
           store.dispatch(removePointThunk(index));
         },
         finishDrag: (final int index, final Offset position) {
-          store.dispatch(ObjectSelected(index, Point));
+          store.dispatch(ObjectSelected(index, PathPoint));
           store.dispatch(
             endDragThunk(
               index,
@@ -124,7 +124,7 @@ class PathEditorModel {
           );
         },
         selectPoint: (final int index) {
-          store.dispatch(ObjectSelected(index, Point));
+          store.dispatch(ObjectSelected(index, PathPoint));
         },
         unSelectPoint: () {
           store.dispatch(ObjectUnselected());

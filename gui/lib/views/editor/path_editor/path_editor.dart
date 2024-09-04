@@ -9,7 +9,7 @@ import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_redux/flutter_redux.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
@@ -109,12 +109,12 @@ class _PathEditorState extends State<PathEditor> {
 
   int? getTappedPoint(
     final Offset tapPosition,
-    final List<Point> points,
+    final List<PathPoint> points,
     final List<Segment> segments,
   ) {
-    for (final MapEntry<int, Point> entery
+    for (final MapEntry<int, PathPoint> entery
         in widget.pathProps.points.asMap().entries) {
-      final Point point = entery.value;
+      final PathPoint point = entery.value;
       final int index = entery.key;
       if (checkSelectedPointTap(
             tapPosition,
@@ -132,7 +132,7 @@ class _PathEditorState extends State<PathEditor> {
 
   DraggingPoint? checkSelectedPointTap(
     final Offset tapPosition,
-    final Point point,
+    final PathPoint point,
     final int index,
     final PointType pointType,
     final List<Segment> segments,
@@ -436,9 +436,9 @@ class _PathEditorState extends State<PathEditor> {
                         widget.pathProps.fieldSizePixels,
                       );
 
-                      for (final MapEntry<int, Point> entery
+                      for (final MapEntry<int, PathPoint> entery
                           in widget.pathProps.points.asMap().entries) {
-                        final Point point = entery.value;
+                        final PathPoint point = entery.value;
                         final int index = entery.key;
 
                         DraggingPoint? draggingPoint;

@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   _HomePageState(this.props);
   HomeViewModel props;
 //TODO: what happened to redux man
-  void onPointEdit(final int index, final Point point) {
+  void onPointEdit(final int index, final PathPoint point) {
     setState(() {
       props.tabState = editPoint(
         props.tabState,
@@ -315,7 +315,7 @@ String getSideBarHeadline(final TabState tabState) {
   final Type selectedType = tabState.ui.selectedType;
 
   if (selectedType == Robot) return "ROBOT DATA";
-  if (selectedType == Point && selectedIndex > -1)
+  if (selectedType == PathPoint && selectedIndex > -1)
     return "POINT $selectedIndex";
   if (selectedType == History) return "HISTORY";
   if (selectedType == Help) return "HELP";

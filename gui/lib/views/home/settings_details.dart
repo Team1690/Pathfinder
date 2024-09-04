@@ -5,7 +5,7 @@ import "package:orbit_card_settings/helpers/platform_functions.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/shortcuts/shortcut.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
@@ -22,7 +22,7 @@ class SettingsDetails extends StatelessWidget {
     required this.onRobotEdit,
   });
   final TabState tabState;
-  final Function(int index, Point point) onPointEdit;
+  final Function(int index, PathPoint point) onPointEdit;
   final Function(Robot robot) onRobotEdit;
   final TextEditingController inAngleController = TextEditingController();
   final TextEditingController outAngleController = TextEditingController();
@@ -69,7 +69,7 @@ class SettingsDetails extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final int index = tabState.ui.selectedIndex;
-    final List<Point> points = tabState.path.points;
+    final List<PathPoint> points = tabState.path.points;
     final Robot robot = tabState.robot;
 
     // On init the selected index may be negative
@@ -277,10 +277,10 @@ class SettingsDetails extends StatelessWidget {
       );
     }
 
-    if (tabState.ui.selectedType == Point) {
+    if (tabState.ui.selectedType == PathPoint) {
       if (points.isEmpty) return const SizedBox.shrink();
 
-      final Point pointData = points[index];
+      final PathPoint pointData = points[index];
       final bool isFirstOrLast = index == 0 || index == points.length - 1;
 
       return Form(

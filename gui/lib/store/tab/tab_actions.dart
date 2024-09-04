@@ -1,6 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 
@@ -68,7 +68,7 @@ class AddPointToPath extends TabAction {
   final int segmentIndex;
   final int insertIndex;
 
-  final Point? point;
+  final PathPoint? point;
 }
 
 class EditPoint extends TabAction {

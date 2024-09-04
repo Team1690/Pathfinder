@@ -5,8 +5,8 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/constants.dart";
-import "package:pathfinder/models/field.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/field_model.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
@@ -36,7 +36,7 @@ class FieldPainter extends CustomPainter {
   );
   ui.Image robotImage;
   ui.Image fieldImage;
-  List<Point> points;
+  List<PathPoint> points;
   List<Segment> segments;
   int? selectedPoint;
   List<FullDraggingPoint> dragPoints;
@@ -90,7 +90,7 @@ class FieldPainter extends CustomPainter {
     // Get the 'isHidden' value for each point (large points with controls) according
     // to the segment data, keep all the points in the list to keep the point indexes
     final List<List<Object>> segmentPointsWithIsHidden =
-        points.asMap().entries.map((final MapEntry<int, Point> e) {
+        points.asMap().entries.map((final MapEntry<int, PathPoint> e) {
       final Iterable<Segment> pointSegments = segments.whereIndexed(
         (final int index, final Segment segment) =>
             segment.pointIndexes.contains(e.key) ||
@@ -108,7 +108,7 @@ class FieldPainter extends CustomPainter {
         .entries
         .forEach((final MapEntry<int, List<Object>> e) {
       final int index = e.key;
-      final Point point = e.value[0] as Point;
+      final PathPoint point = e.value[0] as PathPoint;
       final bool isHidden = e.value[1] as bool;
 
       if (isHidden) return;
@@ -183,7 +183,7 @@ class FieldPainter extends CustomPainter {
 
   void drawDragPoint(
     final Canvas canvas,
-    final Point selectedPoint,
+    final PathPoint selectedPoint,
     final DraggingPoint dragPoint,
   ) {
     final PointType pointType = dragPoint.type;

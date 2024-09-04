@@ -1,26 +1,28 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 
+//TODO: move to constants
 const double officialFieldWidth = 16.54;
 const double officialFieldHeight = 8.21;
 
-class Field {
-  const Field({
+//TODO: this seems constant like help remove this from state?
+class FieldModel {
+  const FieldModel({
     required this.size,
   });
 
-  factory Field.initial() => const Field(
+  factory FieldModel.initial() => const FieldModel(
         size: Offset(officialFieldWidth, officialFieldHeight),
       );
 
-  Field.fromJson(final Map<String, dynamic> json)
+  FieldModel.fromJson(final Map<String, dynamic> json)
       : size = OffsetJson.fromJson(json["size"] as Map<String, dynamic>);
   final Offset size;
 
-  Field copyWith({
+  FieldModel copyWith({
     final Offset? size,
   }) =>
-      Field(
+      FieldModel(
         size: size ?? this.size,
       );
 

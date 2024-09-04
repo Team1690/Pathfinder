@@ -1,13 +1,13 @@
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 
 import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart" as rpc;
 
-class Path {
-  const Path({
+class PathModel {
+  const PathModel({
     required this.segments,
     required this.points,
     required this.autoDuration,
@@ -17,28 +17,28 @@ class Path {
     required this.copiedPoint,
   });
 
-  factory Path.initial() => Path(
+  factory PathModel.initial() => PathModel(
         trajectoryPoints: <rpc.TrajectoryResponse_SwervePoint>[],
         segments: <Segment>[],
-        points: <Point>[],
+        points: <PathPoint>[],
         evaluatedPoints: <SplinePoint>[],
         autoDuration: 0,
         robotOnField: None<RobotOnField>(),
-        copiedPoint: None<Point>(),
+        copiedPoint: None<PathPoint>(),
       );
 
   // Json
-  Path.fromJson(final Map<String, dynamic> json)
+  PathModel.fromJson(final Map<String, dynamic> json)
       : segments = List<Segment>.from(
           (json["segments"] as List<dynamic>)
               .cast<Map<String, dynamic>>()
               .map(Segment.fromJson),
         ),
         robotOnField = robotOnFieldFromJson(json["robot"]),
-        points = List<Point>.from(
+        points = List<PathPoint>.from(
           (json["points"] as List<dynamic>)
               .cast<Map<String, dynamic>>()
-              .map(Point.fromJson),
+              .map(PathPoint.fromJson),
         ),
         trajectoryPoints = <rpc.TrajectoryResponse_SwervePoint>[],
         evaluatedPoints = List<SplinePoint>.from(
@@ -46,26 +46,28 @@ class Path {
               .cast<Map<String, dynamic>>()
               .map(SplinePoint.fromJson),
         ),
-        copiedPoint = None<Point>(),
+        copiedPoint = None<PathPoint>(),
         autoDuration = (json["autoDuration"] as double?) ?? 0.0;
   final List<Segment> segments;
-  final List<Point> points;
+  final List<PathPoint> points;
   final List<SplinePoint> evaluatedPoints;
+  //TODO: don't save robot on field in json
   final Optional<RobotOnField> robotOnField;
   final double autoDuration;
   final List<rpc.TrajectoryResponse_SwervePoint> trajectoryPoints;
-  final Optional<Point> copiedPoint;
+  //TODO: don't save copiedPoint in json
+  final Optional<PathPoint> copiedPoint;
 
-  Path copyWith({
+  PathModel copyWith({
     final List<Segment>? segments,
-    final List<Point>? points,
+    final List<PathPoint>? points,
     final List<SplinePoint>? evaluatedPoints,
     final double? autoDuration,
     final Optional<RobotOnField>? robotOnField,
     final List<rpc.TrajectoryResponse_SwervePoint>? trajectoryPoints,
-    final Optional<Point>? copiedPoint,
+    final Optional<PathPoint>? copiedPoint,
   }) =>
-      Path(
+      PathModel(
         copiedPoint: copiedPoint ?? this.copiedPoint,
         trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
         robotOnField: robotOnField ?? this.robotOnField,
