@@ -1,4 +1,4 @@
-import "package:pathfinder/models/path.dart";
+import "package:pathfinder/models/path_model.dart";
 import "package:pathfinder/store/tab/store.dart";
 
 const String initialActionName = "Initial";

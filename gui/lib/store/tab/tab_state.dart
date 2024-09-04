@@ -1,7 +1,7 @@
 import "package:meta/meta.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path.dart";
+import "package:pathfinder/models/path_model.dart";
 import "package:pathfinder/models/field_model.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/tab_ui/tab_ui.dart";
