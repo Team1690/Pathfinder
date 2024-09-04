@@ -5,7 +5,7 @@ import "package:flutter/gestures.dart";
 import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/views/editor/painter/field_loader.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
+import "package:pathfinder/utils/coordinates_conversion.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_redux/flutter_redux.dart";

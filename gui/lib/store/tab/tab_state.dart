@@ -2,7 +2,6 @@ import "package:meta/meta.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_model.dart";
-import "package:pathfinder/models/field_model.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/tab_ui/tab_ui.dart";
 
@@ -12,7 +11,6 @@ class TabState {
   const TabState({
     required this.path,
     required this.robot,
-    required this.field,
     required this.ui,
     required this.history,
   });
@@ -20,7 +18,6 @@ class TabState {
   factory TabState.initial() => TabState(
         path: PathModel.initial(),
         robot: Robot.initial(),
-        field: FieldModel.initial(),
         ui: TabUI.initial(),
         history: History.initial(),
       );
@@ -28,19 +25,16 @@ class TabState {
   TabState.fromJson(final Map<String, dynamic> json)
       : path = PathModel.fromJson(json["path"] as Map<String, dynamic>),
         robot = Robot.fromJson(json["robot"] as Map<String, dynamic>),
-        field = FieldModel.fromJson(json["field"] as Map<String, dynamic>),
         ui = TabUI.fromJson(json["ui"] as Map<String, dynamic>),
         history = History.fromJson(json["history"] as Map<String, dynamic>);
   final PathModel path;
   final Robot robot;
-  final FieldModel field;
   final TabUI ui;
   final History history;
 
   TabState copyWith({
     final PathModel? path,
     final Robot? robot,
-    final FieldModel? field,
     final TabUI? ui,
     final History? history,
     final Help? help,
@@ -48,7 +42,6 @@ class TabState {
       TabState(
         path: path ?? this.path,
         robot: robot ?? this.robot,
-        field: field ?? this.field,
         ui: ui ?? this.ui,
         history: history ?? this.history,
       );
@@ -56,7 +49,6 @@ class TabState {
   Map<String, dynamic> toJson() => <String, dynamic>{
         "path": path.toJson(),
         "robot": robot.toJson(),
-        "field": field.toJson(),
         "ui": ui.toJson(),
         "history": history.toJson(),
       };

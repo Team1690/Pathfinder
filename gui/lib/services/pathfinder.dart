@@ -33,7 +33,7 @@ class PathFinderService {
         rpc.PathFinderClient(GrpcClientSingleton().client);
 
     fileName = fileName == "" ? defaultTrajectoryFileName : fileName;
-
+//TODO: this only calculates kinematics, it should also somehow figure out heading time
     final rpc.TrajectoryRequest request = rpc.TrajectoryRequest(
       swerveRobotParams: toRpcSwerveRobotParams(robot),
       sections: toRpcSections(points, segments),

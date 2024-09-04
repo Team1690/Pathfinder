@@ -1,6 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
+import "package:pathfinder/utils/coordinates_conversion.dart";
 import "package:redux/redux.dart";
 
 class Robot {
@@ -97,7 +97,7 @@ class Robot {
   }
 
   Robot toUiCoord(final Store<AppState> store) {
-    final Offset uiSize = metersToUiCoord(store, Offset(width, height));
+    final Offset uiSize = metersToPix(store, Offset(width, height));
 
     return copyWith(
       width: uiSize.dx,

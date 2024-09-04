@@ -2,7 +2,7 @@ import "dart:math";
 
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
+import "package:pathfinder/utils/coordinates_conversion.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
@@ -112,9 +112,9 @@ class PathPoint {
   }
 
   PathPoint toUiCoord(final Store<AppState> store) => copyWith(
-        position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
-        inControlPoint: metersToUiCoord(store, inControlPoint),
-        outControlPoint: metersToUiCoord(store, outControlPoint),
+        position: metersToPix(store, position),
+        inControlPoint: metersToPix(store, inControlPoint),
+        outControlPoint: metersToPix(store, outControlPoint),
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{

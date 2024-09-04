@@ -1,7 +1,7 @@
 import "dart:math";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/field_model.dart";
+import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
