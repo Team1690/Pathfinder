@@ -1,13 +1,13 @@
-import "package:pathfinder/models/help.dart";
+import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
+import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
 import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
-import "package:pathfinder/widgets/editor/path_editor/path_editor.dart";
 import "package:redux/redux.dart";
 
 //TODO: it isn't exactly reduxy to have the dispatchee functions be in the model

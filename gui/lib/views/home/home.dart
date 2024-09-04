@@ -4,7 +4,7 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:pathfinder/main.dart";
-import "package:pathfinder/models/help.dart";
+import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";

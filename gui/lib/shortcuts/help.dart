@@ -1,4 +1,4 @@
-import "package:pathfinder/models/shortcut.dart";
+import "package:pathfinder/shortcuts/shortcut.dart";
 
 class Help {
   const Help({required this.shortcuts});
