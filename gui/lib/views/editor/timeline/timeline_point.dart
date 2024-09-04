@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/point_type.dart";
+import "package:pathfinder/views/editor/point_type.dart";
 
 //TODO: i don't like consts for single files see if you can merge this with other const
 const double _timelinePointRadius = 10;

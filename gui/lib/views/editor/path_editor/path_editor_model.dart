@@ -12,8 +12,8 @@ import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:redux/redux.dart";
 
 //TODO: again dispatchees shoudn't be part of the model
-class PathViewModel {
-  PathViewModel({
+class PathEditorModel {
+  PathEditorModel({
     required this.points,
     required this.segments,
     required this.selectedPointIndex,
@@ -84,7 +84,8 @@ class PathViewModel {
   final void Function(int) copyPoint;
   final void Function(int) pastePoint;
 
-  static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
+  static PathEditorModel fromStore(final Store<AppState> store) =>
+      PathEditorModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
             .map((final Point p) => p.toUiCoord(store))
             .toList(),

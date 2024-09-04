@@ -2,17 +2,17 @@ import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/point_type.dart";
+import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/constants.dart";
 
-import "package:pathfinder/views/timeline/time_line_view_model.dart";
+import "package:pathfinder/views/editor/timeline/time_line_view_model.dart";
 
-import "package:pathfinder/views/timeline/path_timeline.dart";
+import "package:pathfinder/views/editor/timeline/path_timeline.dart";
 
-import "package:pathfinder/views/timeline/timeline_point.dart";
+import "package:pathfinder/views/editor/timeline/timeline_point.dart";
 
-import "package:pathfinder/views/timeline/time_line_segment.dart";
+import "package:pathfinder/views/editor/timeline/time_line_segment.dart";
 
 //TODO: all store connectors should be like this generalize this to all other models
 StoreConnector<AppState, TimeLineViewModel> timeLineView() =>

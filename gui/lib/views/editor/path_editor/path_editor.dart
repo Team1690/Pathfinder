@@ -2,9 +2,9 @@ import "dart:async";
 import "dart:math";
 import "package:collection/collection.dart";
 import "package:flutter/gestures.dart";
-import "package:pathfinder/point_type.dart";
+import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
-import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
+import "package:pathfinder/views/editor/painter/field_loader.dart";
 import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -12,13 +12,13 @@ import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
-import "package:pathfinder/widgets/editor/path_editor/path_view_model.dart";
+import "package:pathfinder/views/editor/dragging_point.dart";
+import "package:pathfinder/views/editor/path_editor/path_editor_model.dart";
 
-StoreConnector<AppState, PathViewModel> pathEditor() =>
-    new StoreConnector<AppState, PathViewModel>(
-      converter: PathViewModel.fromStore,
-      builder: (final _, final PathViewModel props) =>
+StoreConnector<AppState, PathEditorModel> pathEditor() =>
+    new StoreConnector<AppState, PathEditorModel>(
+      converter: PathEditorModel.fromStore,
+      builder: (final _, final PathEditorModel props) =>
           PathEditor(pathProps: props),
     );
 
@@ -32,7 +32,7 @@ class PathEditor extends StatefulWidget {
   PathEditor({
     required this.pathProps,
   });
-  final PathViewModel pathProps;
+  final PathEditorModel pathProps;
 
   @override
   _PathEditorState createState() => _PathEditorState();

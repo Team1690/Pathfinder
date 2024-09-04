@@ -11,9 +11,9 @@ import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart" as modelspath;
-import "package:pathfinder/point_type.dart";
-import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
-import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
+import "package:pathfinder/views/editor/point_type.dart";
+import "package:pathfinder/views/editor/painter/field_loader.dart";
+import "package:pathfinder/views/editor/dragging_point.dart";
 
 const Color _selectedPointHightlightColor = Color(0xffeeeeee);
 

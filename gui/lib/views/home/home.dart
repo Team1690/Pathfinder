@@ -10,10 +10,10 @@ import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/widgets/editor_screen.dart";
+import "package:pathfinder/views/editor/editor_screen.dart";
 import "package:pathfinder/constants.dart";
 import "package:path/path.dart" as path;
-import "package:pathfinder/widgets/save_changes_dialog.dart";
+import "package:pathfinder/views/editor/save_changes_dialog.dart";
 import "package:pathfinder/views/home/home_view_model.dart";
 import "package:pathfinder/views/home/settings_details.dart";
 
