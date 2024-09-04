@@ -14,7 +14,6 @@ import "package:pathfinder/models/spline_point.dart" as modelspath;
 import "package:pathfinder/point_type.dart";
 import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
-import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 
 const Color _selectedPointHightlightColor = Color(0xffeeeeee);
 
@@ -139,13 +138,13 @@ class FieldPainter extends CustomPainter {
       final FullDraggingPoint draggingPoint = entery.value;
 
       if (!((draggingPoint.index == 0 &&
-              draggingPoint.draggingPoint.type == PointType.controlIn) ||
+              draggingPoint.type == PointType.controlIn) ||
           (draggingPoint.index == points.length - 1 &&
-              draggingPoint.draggingPoint.type == PointType.controlOut))) {
+              draggingPoint.type == PointType.controlOut))) {
         drawDragPoint(
           canvas,
           points[draggingPoint.index],
-          draggingPoint.draggingPoint,
+          draggingPoint,
         );
       }
     }

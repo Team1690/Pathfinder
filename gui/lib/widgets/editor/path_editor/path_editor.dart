@@ -13,7 +13,6 @@ import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
-import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
 import "package:pathfinder/widgets/editor/path_editor/path_view_model.dart";
 
 StoreConnector<AppState, PathViewModel> pathEditor() =>
@@ -496,7 +495,11 @@ class _PathEditorState extends State<PathEditor> {
 
                         if (draggingPoint != null) {
                           final FullDraggingPoint fullDraggingPoint =
-                              FullDraggingPoint(index, draggingPoint);
+                              FullDraggingPoint(
+                            draggingPoint.type,
+                            draggingPoint.position,
+                            index,
+                          );
 
                           setState(() {
                             dragPoint = fullDraggingPoint;
@@ -511,13 +514,11 @@ class _PathEditorState extends State<PathEditor> {
                         FullDraggingPoint currentDragPoint = dragPoint!;
                         setState(() {
                           currentDragPoint = FullDraggingPoint(
+                            currentDragPoint.type,
+                            currentDragPoint.position +
+                                (flipYAxis(details.delta) /
+                                    widget.pathProps.imageZoom),
                             currentDragPoint.index,
-                            DraggingPoint(
-                              currentDragPoint.draggingPoint.type,
-                              currentDragPoint.draggingPoint.position +
-                                  (flipYAxis(details.delta) /
-                                      widget.pathProps.imageZoom),
-                            ),
                           );
                           dragPoint = currentDragPoint;
                           dragPoints = <FullDraggingPoint>[currentDragPoint];
@@ -528,44 +529,35 @@ class _PathEditorState extends State<PathEditor> {
                                   .contains(
                                 LogicalKeyboardKey.keyF,
                               )) {
-                            if (currentDragPoint.draggingPoint.type ==
-                                PointType.controlIn) {
+                            if (currentDragPoint.type == PointType.controlIn) {
                               dragPoints.add(
                                 FullDraggingPoint(
-                                  currentDragPoint.index,
-                                  DraggingPoint(
-                                    PointType.controlOut,
-                                    Offset.fromDirection(
-                                      currentDragPoint.draggingPoint.position
-                                              .direction +
-                                          pi,
-                                      widget
-                                          .pathProps
-                                          .points[currentDragPoint.index]
-                                          .outControlPoint
-                                          .distance,
-                                    ),
+                                  PointType.controlOut,
+                                  Offset.fromDirection(
+                                    currentDragPoint.position.direction + pi,
+                                    widget
+                                        .pathProps
+                                        .points[currentDragPoint.index]
+                                        .outControlPoint
+                                        .distance,
                                   ),
+                                  currentDragPoint.index,
                                 ),
                               );
-                            } else if (currentDragPoint.draggingPoint.type ==
+                            } else if (currentDragPoint.type ==
                                 PointType.controlOut) {
                               dragPoints.add(
                                 FullDraggingPoint(
-                                  currentDragPoint.index,
-                                  DraggingPoint(
-                                    PointType.controlIn,
-                                    Offset.fromDirection(
-                                      currentDragPoint.draggingPoint.position
-                                              .direction +
-                                          pi,
-                                      widget
-                                          .pathProps
-                                          .points[currentDragPoint.index]
-                                          .inControlPoint
-                                          .distance,
-                                    ),
+                                  PointType.controlIn,
+                                  Offset.fromDirection(
+                                    currentDragPoint.position.direction + pi,
+                                    widget
+                                        .pathProps
+                                        .points[currentDragPoint.index]
+                                        .inControlPoint
+                                        .distance,
                                   ),
+                                  currentDragPoint.index,
                                 ),
                               );
                             }
@@ -605,14 +597,14 @@ class _PathEditorState extends State<PathEditor> {
 
                       for (final FullDraggingPoint draggingPoint
                           in dragPoints) {
-                        switch (draggingPoint.draggingPoint.type) {
+                        switch (draggingPoint.type) {
                           case PointType.first:
                           case PointType.last:
                           case PointType.stop:
                           case PointType.regular:
                             widget.pathProps.finishDrag(
                               draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
+                              draggingPoint.position,
                             );
                             break;
                           case PointType.controlIn:
@@ -620,7 +612,7 @@ class _PathEditorState extends State<PathEditor> {
                                 .pathProps.points[draggingPoint.index].isStop) {
                               widget.pathProps.finishInControlDrag(
                                 draggingPoint.index,
-                                draggingPoint.draggingPoint.position,
+                                draggingPoint.position,
                               );
                               break;
                             }
@@ -632,8 +624,8 @@ class _PathEditorState extends State<PathEditor> {
 
                             widget.pathProps.finishControlDrag(
                               draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
-                              previusDraggingPoint.draggingPoint.position,
+                              draggingPoint.position,
+                              previusDraggingPoint.position,
                             );
                             break;
                           case PointType.controlOut:
@@ -641,7 +633,7 @@ class _PathEditorState extends State<PathEditor> {
                                 .pathProps.points[draggingPoint.index].isStop) {
                               widget.pathProps.finishOutControlDrag(
                                 draggingPoint.index,
-                                draggingPoint.draggingPoint.position,
+                                draggingPoint.position,
                               );
                               break;
                             }
@@ -653,13 +645,12 @@ class _PathEditorState extends State<PathEditor> {
 
                             widget.pathProps.finishControlDrag(
                               draggingPoint.index,
-                              previusDraggingPoint.draggingPoint.position,
-                              draggingPoint.draggingPoint.position,
+                              previusDraggingPoint.position,
+                              draggingPoint.position,
                             );
                             break;
                           case PointType.heading:
-                            final Offset dragPosition =
-                                draggingPoint.draggingPoint.position;
+                            final Offset dragPosition = draggingPoint.position;
                             final double dragHeading = dragPosition.direction;
                             widget.pathProps.finishHeadingDrag(
                               draggingPoint.index,

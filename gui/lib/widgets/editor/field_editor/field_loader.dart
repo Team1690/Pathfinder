@@ -10,7 +10,7 @@ import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart" as modelspath;
 import "package:pathfinder/widgets/editor/field_editor/field_painter.dart";
-import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
+import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
 
 //TODO: move this to constants
 const double headingLength = 50;

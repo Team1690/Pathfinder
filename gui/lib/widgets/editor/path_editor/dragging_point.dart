@@ -8,3 +8,8 @@ class DraggingPoint {
   final PointType type;
   final Offset position;
 }
+
+class FullDraggingPoint extends DraggingPoint {
+  FullDraggingPoint(super.type, super.position, this.index);
+  int index;
+}
