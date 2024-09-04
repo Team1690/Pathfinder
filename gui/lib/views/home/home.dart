@@ -36,7 +36,7 @@ void triggerSidebarRender() {
 class _HomePageState extends State<HomePage> {
   _HomePageState(this.props);
   HomeViewModel props;
-
+//TODO: what happened to redux man
   void onPointEdit(final int index, final Point point) {
     setState(() {
       props.tabState = editPoint(
