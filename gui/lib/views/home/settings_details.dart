@@ -8,6 +8,7 @@ import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/shortcuts/shortcut.dart";
+import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
 import "package:pathfinder/views/home/home.dart";
@@ -244,7 +245,7 @@ class SettingsDetails extends StatelessWidget {
                 controller: ScrollController(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                children: tabState.help.shortcuts
+                children: shortcuts
                     .map(
                       (final Shortcut e) => ListTile(
                         dense: true,
