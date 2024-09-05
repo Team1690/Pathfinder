@@ -16,7 +16,6 @@ class TabUI {
     required this.headingToggle,
     required this.controlToggle,
     required this.trajectoryFileName,
-    this.serverError,
   });
   // Json
   TabUI.fromJson(final Map<String, dynamic> json)
@@ -30,7 +29,6 @@ class TabUI {
         pan = OffsetJson.fromJson(json["pan"] as Map<String, dynamic>),
         headingToggle = json["headingToggle"] as bool,
         controlToggle = json["controlToggle"] as bool,
-        serverError = null,
         trajectoryFileName = (json["trajectoryFileName"] as String?) ??
             defaultTrajectoryFileName;
   factory TabUI.initial() => const TabUI(
@@ -54,7 +52,6 @@ class TabUI {
   final Offset pan;
   final bool headingToggle;
   final bool controlToggle;
-  final String? serverError;
   final String trajectoryFileName;
 
   TabUI copyWith({
@@ -80,7 +77,6 @@ class TabUI {
         pan: pan ?? this.pan,
         headingToggle: headingToggle ?? this.headingToggle,
         controlToggle: controlToggle ?? this.controlToggle,
-        serverError: serverError ?? this.serverError,
         trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
       );
 
