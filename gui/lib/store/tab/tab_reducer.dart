@@ -623,6 +623,7 @@ TabState _setRobotOnField(
   if (tabState.path.trajectoryPoints.isEmpty) {
     return tabState;
   }
+  //TODO:there is a function for this
   final Offset actualClickPos = action.clickPos.scale(
     officialFieldWidth / tabState.ui.fieldSizePixels.dx,
     officialFieldHeight / tabState.ui.fieldSizePixels.dy,

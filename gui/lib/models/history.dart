@@ -1,6 +1,7 @@
 import "package:pathfinder/models/path_model.dart";
 import "package:pathfinder/store/tab/store.dart";
 
+//TODO: move to constants
 const String initialActionName = "Initial";
 const int maxSavedHistory = 50;
 

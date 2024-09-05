@@ -48,6 +48,7 @@ class FieldLoader extends StatefulWidget {
   _FieldLoaderState createState() => _FieldLoaderState();
 }
 
+//TODO: this should be in the state and not global
 ({ui.Image field, ui.Image robot})? globalImages;
 
 class _FieldLoaderState extends State<FieldLoader> {
@@ -79,6 +80,7 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Widget _buildImage() {
+    //TODO: these should be decided from the ratio of field size these seem like random numbers
     final double width = 0.7 * MediaQuery.of(context).size.width;
     final double height = 0.6 * MediaQuery.of(context).size.height;
     widget.setFieldSizePixels(Offset(width, height));

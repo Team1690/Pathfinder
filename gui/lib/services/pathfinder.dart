@@ -3,7 +3,7 @@ import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart" as rpc;
-import "package:pathfinder/models/tab_ui/tab_ui.dart";
+import "package:pathfinder/models/tab_ui.dart";
 import "package:pathfinder/utils/grpc.dart";
 
 class PathFinderService {

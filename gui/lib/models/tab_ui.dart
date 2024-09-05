@@ -1,6 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 
+//TODO: move to constants
 const String defaultTrajectoryFileName = "output";
 
 @immutable
@@ -10,7 +11,6 @@ class TabUI {
     required this.selectedType,
     required this.isSidebarOpen,
     required this.fieldSizePixels,
-    required this.isGraphPageOpen,
     required this.zoomLevel,
     required this.pan,
     required this.headingToggle,
@@ -24,7 +24,6 @@ class TabUI {
         isSidebarOpen = json["isSidebarOpen"] as bool,
         fieldSizePixels = OffsetJson.fromJson(
             json["fieldSizePixels"] as Map<String, dynamic>),
-        isGraphPageOpen = json["isGraphPageOpen"] as bool,
         zoomLevel = json["zoomLevel"] as double,
         pan = OffsetJson.fromJson(json["pan"] as Map<String, dynamic>),
         headingToggle = json["headingToggle"] as bool,
@@ -35,8 +34,8 @@ class TabUI {
         selectedIndex: -1,
         selectedType: Null,
         isSidebarOpen: false,
+        //TODO: this should be relative to size of screen currently it doesn't seem like that
         fieldSizePixels: Offset(800, 400),
-        isGraphPageOpen: false,
         zoomLevel: 1,
         headingToggle: false,
         controlToggle: false,
@@ -47,7 +46,6 @@ class TabUI {
   final Type selectedType;
   final bool isSidebarOpen;
   final Offset fieldSizePixels;
-  final bool isGraphPageOpen;
   final double zoomLevel;
   final Offset pan;
   final bool headingToggle;
@@ -72,7 +70,6 @@ class TabUI {
         selectedType: selectedType ?? this.selectedType,
         isSidebarOpen: isSidebarOpen ?? this.isSidebarOpen,
         fieldSizePixels: fieldSizePixels ?? this.fieldSizePixels,
-        isGraphPageOpen: isGraphPageOpen ?? this.isGraphPageOpen,
         zoomLevel: zoomLevel ?? this.zoomLevel,
         pan: pan ?? this.pan,
         headingToggle: headingToggle ?? this.headingToggle,
@@ -86,7 +83,6 @@ class TabUI {
         // 'selectedType': selectedType,
         "isSidebarOpen": isSidebarOpen,
         "fieldSizePixels": fieldSizePixels.toJson(),
-        "isGraphPageOpen": isGraphPageOpen,
         "zoomLevel": zoomLevel,
         "pan": pan.toJson(),
         "headingToggle": headingToggle,

@@ -7,7 +7,7 @@ import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
-import "package:pathfinder/models/tab_ui/tab_ui.dart";
+import "package:pathfinder/models/tab_ui.dart";
 import "package:redux/redux.dart";
 
 //TODO: it isn't exactly reduxy to have the dispatchee functions be in the model
