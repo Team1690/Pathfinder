@@ -8,7 +8,6 @@ import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
-import "package:pathfinder/utils/coordinates_conversion.dart";
 import "package:redux/redux.dart";
 
 //TODO: again dispatchees shoudn't be part of the model
@@ -105,7 +104,7 @@ class PathEditorModel {
         addPoint: (final Offset position) {
           store.dispatch(
             addPointThunk(
-              pixToMeters(store, position),
+              store.state.currentTabState.ui.pixToMeters(position),
               -1,
               -1,
             ),
@@ -119,7 +118,7 @@ class PathEditorModel {
           store.dispatch(
             endDragThunk(
               index,
-              pixToMeters(store, position),
+              store.state.currentTabState.ui.pixToMeters(position),
             ),
           );
         },
@@ -137,19 +136,21 @@ class PathEditorModel {
           store.dispatch(
             endControlDrag(
               index,
-              pixToMeters(store, inPosition),
-              pixToMeters(store, outPosition),
+              store.state.currentTabState.ui.pixToMeters(inPosition),
+              store.state.currentTabState.ui.pixToMeters(outPosition),
             ),
           );
         },
         finishInControlDrag: (final int index, final Offset position) {
           store.dispatch(
-            endInControlDragThunk(index, pixToMeters(store, position)),
+            endInControlDragThunk(
+                index, store.state.currentTabState.ui.pixToMeters(position)),
           );
         },
         finishOutControlDrag: (final int index, final Offset position) {
           store.dispatch(
-            endOutControlDragThunk(index, pixToMeters(store, position)),
+            endOutControlDragThunk(
+                index, store.state.currentTabState.ui.pixToMeters(position)),
           );
         },
         finishHeadingDrag: (final int index, final double heading) {

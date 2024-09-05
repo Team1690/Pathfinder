@@ -1,4 +1,5 @@
 import "package:flutter/cupertino.dart";
+import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 
 //TODO: move to constants
@@ -89,4 +90,21 @@ class TabUI {
         "controlToggle": controlToggle,
         "trajectoryFileName": trajectoryFileName,
       };
+//TODO: these two functions can be even nicer and shorter
+//
+//TODO: think of a way to do this conversion without using the store
+//probably i think make a global function that has context param and use mediaquery
+  Offset pixToMeters(final Offset val) {
+    final double xScaler = officialFieldWidth / fieldSizePixels.dx;
+    final double yScaler = officialFieldHeight / fieldSizePixels.dy;
+
+    return val.scale(xScaler, yScaler);
+  }
+
+  Offset metersToPix(final Offset val) {
+    final double xScaler = fieldSizePixels.dx / officialFieldWidth;
+    final double yScaler = fieldSizePixels.dy / officialFieldHeight;
+
+    return val.scale(xScaler, yScaler);
+  }
 }

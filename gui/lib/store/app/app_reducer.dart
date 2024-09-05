@@ -68,6 +68,9 @@ AppState changeCurrentTab(
 
 AppState appStateReducer(final AppState state, final dynamic action) {
   AppState newState = applyReducers(state, action);
+
+  //TODO: think of a workaround for this as it is quite an ugly fix for something that could be done with typed reducers or middleware
+  //I think middleware is the way to go
   final TabState newTabState =
       tabStateReducer(newState.tabState[newState.currentTabIndex], action);
 

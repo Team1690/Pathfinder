@@ -86,7 +86,6 @@ class _FieldLoaderState extends State<FieldLoader> {
     widget.setFieldSizePixels(Offset(width, height));
 
     if (globalImages != null) {
-      // if (false) {
       return Container(
         decoration: BoxDecoration(
           boxShadow: <BoxShadow>[
