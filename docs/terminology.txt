@@ -1,5 +1,6 @@
 Terminology
 
+# GUI
 ## GUI structure
     FieldPainter - holds all the logic for painting the different points and paths
     ^
@@ -18,3 +19,8 @@ Terminology
     ^
     |
     Home - App widget, the scaffold is here and is called from main.dart
+
+## GUI Class names
+- PathPoint = a point that currently resides on the path that has actual settings
+- SplinePoint = a point making up the spline polygon
+- DraggingPoint = a point that is currently being dragged

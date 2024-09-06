@@ -8,6 +8,7 @@ import "package:redux/redux.dart";
 //TODO: move this value to constants
 const double defaultControlLength = 1;
 
+//TODO: add index to path point so to minimize as map :)
 class PathPoint {
   PathPoint({
     required this.position,

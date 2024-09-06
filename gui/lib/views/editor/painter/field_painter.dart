@@ -10,8 +10,7 @@ import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/models/spline_point.dart"
-    as modelspath; //TODO: import as?
+import "package:pathfinder/models/spline_point.dart"; //TODO: import as?
 import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/views/editor/painter/field_loader.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
@@ -36,7 +35,6 @@ class FieldPainter extends CustomPainter {
     this.imageOffset,
     this.robotOnField,
   );
-  //TODO: it seems like theres three types of point...
   ui.Image robotImage;
   ui.Image fieldImage;
   List<PathPoint> points;
@@ -45,7 +43,7 @@ class FieldPainter extends CustomPainter {
   List<DraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
-  List<modelspath.SplinePoint> evaluatedPoints;
+  List<SplinePoint> evaluatedPoints;
   Robot robot;
   double imageZoom;
   Offset imageOffset;
@@ -71,14 +69,14 @@ class FieldPainter extends CustomPainter {
     );
 
     // Group spline points by segment index
-    final Map<int, List<modelspath.SplinePoint>> segmentIndexToSplinePoints =
+    final Map<int, List<SplinePoint>> segmentIndexToSplinePoints =
         evaluatedPoints.groupListsBy(
-      (final modelspath.SplinePoint p) => p.segmentIndex,
+      (final SplinePoint p) => p.segmentIndex,
     );
 //TODO: segment should have i think the path points
     // Draw the path each segment at a time
     segmentIndexToSplinePoints.entries
-        .forEach((final MapEntry<int, List<modelspath.SplinePoint>> e) {
+        .forEach((final MapEntry<int, List<SplinePoint>> e) {
       // Skip and don't draw hidden segments or before a new spline is calculated
       if (segments.length - 1 < e.key || segments[e.key].isHidden) return;
 
@@ -144,7 +142,6 @@ class FieldPainter extends CustomPainter {
         }(),
       );
     });
-//TODO: don't show prev heading or maybe decide on showing prev until finished dragging
     for (final MapEntry<int, DraggingPoint> entry
         in dragPoints.asMap().entries) {
       final DraggingPoint draggingPoint = entry.value;
@@ -169,6 +166,7 @@ class FieldPainter extends CustomPainter {
     }
   }
 
+  /// Base for drawing any type of point
   void _drawPointBase(
     final Canvas canvas,
     final Offset position,
@@ -406,7 +404,7 @@ class FieldPainter extends CustomPainter {
 
   void drawPath(
     final Canvas canvas,
-    final List<modelspath.SplinePoint> evaluetedPoints,
+    final List<SplinePoint> evaluatedPoints,
     final Color color,
   ) {
     final Paint paint = Paint()
@@ -415,9 +413,8 @@ class FieldPainter extends CustomPainter {
       ..strokeWidth = 2;
 
     final Path path = Path();
-    final List<ui.Offset> pathPoints = evaluetedPoints
-        .map((final modelspath.SplinePoint p) => p.position)
-        .toList();
+    final List<ui.Offset> pathPoints =
+        evaluatedPoints.map((final SplinePoint p) => p.position).toList();
 
     path.addPolygon(pathPoints, false);
     canvas.drawPath(path, paint);
@@ -425,7 +422,7 @@ class FieldPainter extends CustomPainter {
 
   void drawPathShadow(
     final Canvas canvas,
-    final List<modelspath.SplinePoint> evaluetedPoints,
+    final List<SplinePoint> evaluatedPoints,
   ) {
     final Paint paint = Paint()
       ..color = Colors.black
@@ -433,9 +430,8 @@ class FieldPainter extends CustomPainter {
       ..strokeWidth = 2
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
 
-    final List<ui.Offset> pathPoints = evaluetedPoints
-        .map((final modelspath.SplinePoint p) => p.position)
-        .toList();
+    final List<ui.Offset> pathPoints =
+        evaluatedPoints.map((final SplinePoint p) => p.position).toList();
 
     final Path path = Path();
     path.addPolygon(pathPoints, false);
@@ -446,7 +442,7 @@ class FieldPainter extends CustomPainter {
 //but this could be a cool feature
   void drawWheelsPath(
     final Canvas canvas,
-    final List<modelspath.SplinePoint> evaluetedPoints,
+    final List<SplinePoint> evaluatedPoints,
   ) {
     final double robotWidth = robot.width;
 
@@ -455,31 +451,31 @@ class FieldPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
-    if (evaluetedPoints.isNotEmpty) {
-      final List<Offset> leftPoints = evaluetedPoints
+    if (evaluatedPoints.isNotEmpty) {
+      final List<Offset> leftPoints = evaluatedPoints
           .sublist(1)
           .asMap()
           .entries
-          .map((final MapEntry<int, modelspath.SplinePoint> e) {
-        final Offset dist = evaluetedPoints[e.key + 1].position -
-            evaluetedPoints[e.key].position;
+          .map((final MapEntry<int, SplinePoint> e) {
+        final Offset dist = evaluatedPoints[e.key + 1].position -
+            evaluatedPoints[e.key].position;
         return Offset.fromDirection(dist.direction - 0.5 * pi, robotWidth / 2)
             .translate(
-          evaluetedPoints[e.key + 1].position.dx,
-          evaluetedPoints[e.key + 1].position.dy,
+          evaluatedPoints[e.key + 1].position.dx,
+          evaluatedPoints[e.key + 1].position.dy,
         );
       }).toList();
-      final List<Offset> rightPoints = evaluetedPoints
+      final List<Offset> rightPoints = evaluatedPoints
           .sublist(1)
           .asMap()
           .entries
-          .map((final MapEntry<int, modelspath.SplinePoint> e) {
-        final Offset dist = evaluetedPoints[e.key + 1].position -
-            evaluetedPoints[e.key].position;
+          .map((final MapEntry<int, SplinePoint> e) {
+        final Offset dist = evaluatedPoints[e.key + 1].position -
+            evaluatedPoints[e.key].position;
         return Offset.fromDirection(dist.direction + 0.5 * pi, robotWidth / 2)
             .translate(
-          evaluetedPoints[e.key + 1].position.dx,
-          evaluetedPoints[e.key + 1].position.dy,
+          evaluatedPoints[e.key + 1].position.dx,
+          evaluatedPoints[e.key + 1].position.dy,
         );
       }).toList();
 
