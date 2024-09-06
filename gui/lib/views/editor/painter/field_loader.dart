@@ -34,7 +34,7 @@ class FieldLoader extends StatefulWidget {
   final List<PathPoint> points;
   final List<Segment> segments;
   final int? selectedPoint;
-  final List<FullDraggingPoint> dragPoints;
+  final List<DraggingPoint> dragPoints;
   final bool enableHeadingEditing;
   final bool enableControlEditing;
   final List<modelspath.SplinePoint> evaluatedPoints;

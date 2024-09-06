@@ -16,6 +16,7 @@ const bool debug = false;
 const String cacheFilePath = "./.temp-state";
 
 void main() {
+  // final persistor = Persistor(storage: FlutterStorage(key: "orbit-pathplanner"), serializer: serializer)
   if (kReleaseMode) {
     runAlgorithm();
   }
@@ -35,6 +36,7 @@ class App extends StatelessWidget {
       );
 }
 
+//TODO: simplify saving the app state use redux persist/other method
 final Store<AppState> store = Store<AppState>(
   (final AppState state, final dynamic action) {
     final AppState newState = appStateReducer(state, action);

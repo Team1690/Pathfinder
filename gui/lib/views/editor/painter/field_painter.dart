@@ -42,7 +42,7 @@ class FieldPainter extends CustomPainter {
   List<PathPoint> points;
   List<Segment> segments;
   int? selectedPoint;
-  List<FullDraggingPoint> dragPoints;
+  List<DraggingPoint> dragPoints;
   bool enableHeadingEditing;
   bool enableControlEditing;
   List<modelspath.SplinePoint> evaluatedPoints;
@@ -145,9 +145,9 @@ class FieldPainter extends CustomPainter {
       );
     });
 //TODO: don't show prev heading or maybe decide on showing prev until finished dragging
-    for (final MapEntry<int, FullDraggingPoint> entry
+    for (final MapEntry<int, DraggingPoint> entry
         in dragPoints.asMap().entries) {
-      final FullDraggingPoint draggingPoint = entry.value;
+      final DraggingPoint draggingPoint = entry.value;
 
       if (!((draggingPoint.index == 0 &&
               draggingPoint.type == PointType.controlIn) ||
