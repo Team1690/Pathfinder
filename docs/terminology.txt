@@ -1,4 +1,20 @@
 Terminology
 
-## Flutter Terminology
-    Path point
+## GUI structure
+    FieldPainter - holds all the logic for painting the different points and paths
+    ^
+    |
+    FieldLoader - Wrapper widget for FieldPainter logic
+    ^
+    |
+    PathEditor - Widget in charge of calling redux actions and all the logic for interacting with the gui is in here
+    &&
+    Timeline - Widget allowing interacting with segment related settings 
+    ^
+    | 
+    EditorScreen - Widget that puts everything together as well as the buttons for saving and uploading
+    &&
+    Settings Details - Settings widget for points robot or anything (SideBar)
+    ^
+    |
+    Home - App widget, the scaffold is here and is called from main.dart
