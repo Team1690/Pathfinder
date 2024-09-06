@@ -10,6 +10,7 @@ import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
 import "package:redux/redux.dart";
 
+//TODO: change name to editor model
 //TODO: again dispatchees shoudn't be part of the model
 class PathEditorModel {
   PathEditorModel({
