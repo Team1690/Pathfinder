@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
@@ -8,12 +8,12 @@ import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:redux/redux.dart";
 
+//TODO: change name to editor model
 //TODO: again dispatchees shoudn't be part of the model
-class PathViewModel {
-  PathViewModel({
+class PathEditorModel {
+  PathEditorModel({
     required this.points,
     required this.segments,
     required this.selectedPointIndex,
@@ -49,7 +49,7 @@ class PathViewModel {
     required this.copyPoint,
     required this.pastePoint,
   });
-  final List<Point> points;
+  final List<PathPoint> points;
   final List<Segment> segments;
   final int? selectedPointIndex;
   final Robot robot;
@@ -84,9 +84,10 @@ class PathViewModel {
   final void Function(int) copyPoint;
   final void Function(int) pastePoint;
 
-  static PathViewModel fromStore(final Store<AppState> store) => PathViewModel(
+  static PathEditorModel fromStore(final Store<AppState> store) =>
+      PathEditorModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points
-            .map((final Point p) => p.toUiCoord(store))
+            .map((final PathPoint p) => p.toUiCoord(store))
             .toList(),
         segments:
             store.state.tabState[store.state.currentTabIndex].path.segments,
@@ -96,7 +97,7 @@ class PathViewModel {
             .toList(),
         selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]
                     .ui.selectedType ==
-                Point
+                PathPoint
             ? store.state.tabState[store.state.currentTabIndex].ui.selectedIndex
             : null),
         robot: store.state.tabState[store.state.currentTabIndex].robot
@@ -104,7 +105,7 @@ class PathViewModel {
         addPoint: (final Offset position) {
           store.dispatch(
             addPointThunk(
-              uiToFieldOrigin(store, uiToMetersCoord(store, position)),
+              store.state.currentTabState.ui.pixToMeters(position),
               -1,
               -1,
             ),
@@ -114,16 +115,16 @@ class PathViewModel {
           store.dispatch(removePointThunk(index));
         },
         finishDrag: (final int index, final Offset position) {
-          store.dispatch(ObjectSelected(index, Point));
+          store.dispatch(ObjectSelected(index, PathPoint));
           store.dispatch(
             endDragThunk(
               index,
-              uiToFieldOrigin(store, uiToMetersCoord(store, position)),
+              store.state.currentTabState.ui.pixToMeters(position),
             ),
           );
         },
         selectPoint: (final int index) {
-          store.dispatch(ObjectSelected(index, Point));
+          store.dispatch(ObjectSelected(index, PathPoint));
         },
         unSelectPoint: () {
           store.dispatch(ObjectUnselected());
@@ -136,19 +137,21 @@ class PathViewModel {
           store.dispatch(
             endControlDrag(
               index,
-              uiToMetersCoord(store, inPosition),
-              uiToMetersCoord(store, outPosition),
+              store.state.currentTabState.ui.pixToMeters(inPosition),
+              store.state.currentTabState.ui.pixToMeters(outPosition),
             ),
           );
         },
         finishInControlDrag: (final int index, final Offset position) {
           store.dispatch(
-            endInControlDragThunk(index, uiToMetersCoord(store, position)),
+            endInControlDragThunk(
+                index, store.state.currentTabState.ui.pixToMeters(position)),
           );
         },
         finishOutControlDrag: (final int index, final Offset position) {
           store.dispatch(
-            endOutControlDragThunk(index, uiToMetersCoord(store, position)),
+            endOutControlDragThunk(
+                index, store.state.currentTabState.ui.pixToMeters(position)),
           );
         },
         finishHeadingDrag: (final int index, final double heading) {

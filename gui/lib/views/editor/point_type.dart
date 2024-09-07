@@ -11,6 +11,7 @@ enum PointType {
     selectedColor: Color.fromARGB(255, 255, 83, 83),
     radius: 8,
   ),
+  //TODO: last point color is too similiar to stop point color
   last(
     color: Color.fromARGB(255, 174, 67, 53),
     selectedColor: Color.fromARGB(255, 230, 67, 53),

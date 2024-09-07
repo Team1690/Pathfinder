@@ -7,7 +7,7 @@ import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:path/path.dart";
 import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
@@ -22,7 +22,7 @@ ThunkAction<AppState> pastePointThunk(final int pointIndex) =>
     (final Store<AppState> store) async {
       if (store.state.tabState[store.state.currentTabIndex].path.copiedPoint
               .runtimeType ==
-          None<Point>) {
+          None<PathPoint>) {
         return;
       }
       final int newPointIndex = pointIndex ==
@@ -36,7 +36,7 @@ ThunkAction<AppState> pastePointThunk(final int pointIndex) =>
         (final Segment element) => element.pointIndexes.contains(newPointIndex),
       );
 
-      final Point point = store
+      final PathPoint point = store
           .state.tabState[store.state.currentTabIndex].path.copiedPoint
           .orElseDo(() => throw Exception("No copied point"));
       store.dispatch(

@@ -2,14 +2,15 @@ import "dart:math";
 
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
+//TODO: move this value to constants
 const double defaultControlLength = 1;
 
-class Point {
-  Point({
+//TODO: add index to path point so to minimize as map :)
+class PathPoint {
+  PathPoint({
     required this.position,
     required this.inControlPoint,
     required this.outControlPoint,
@@ -20,7 +21,7 @@ class Point {
     required this.cutSegment,
     required this.isStop,
   });
-  factory Point.initial(final Offset position) => Point(
+  factory PathPoint.initial(final Offset position) => PathPoint(
         position: position,
         inControlPoint: Offset.fromDirection(pi / 4, defaultControlLength),
         outControlPoint:
@@ -34,7 +35,7 @@ class Point {
       );
 
   // Json
-  Point.fromJson(final Map<String, dynamic> json)
+  PathPoint.fromJson(final Map<String, dynamic> json)
       : position =
             OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         inControlPoint =
@@ -57,7 +58,7 @@ class Point {
   final bool cutSegment;
   final bool isStop;
 
-  Point copyWith({
+  PathPoint copyWith({
     final Offset? position,
     final Offset? inControlPoint,
     final Offset? outControlPoint,
@@ -68,7 +69,7 @@ class Point {
     final bool? cutSegment,
     final bool? isStop,
   }) =>
-      Point(
+      PathPoint(
         position: position ?? this.position,
         inControlPoint: inControlPoint ?? this.inControlPoint,
         outControlPoint: outControlPoint ?? this.outControlPoint,
@@ -95,7 +96,7 @@ class Point {
 
   @override
   bool operator ==(final Object other) {
-    if (other is Point) {
+    if (other is PathPoint) {
       return position == other.position &&
           inControlPoint == other.inControlPoint &&
           outControlPoint == other.outControlPoint &&
@@ -110,10 +111,12 @@ class Point {
     return false;
   }
 
-  Point toUiCoord(final Store<AppState> store) => copyWith(
-        position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
-        inControlPoint: metersToUiCoord(store, inControlPoint),
-        outControlPoint: metersToUiCoord(store, outControlPoint),
+  PathPoint toUiCoord(final Store<AppState> store) => copyWith(
+        position: store.state.currentTabState.ui.metersToPix(position),
+        inControlPoint:
+            store.state.currentTabState.ui.metersToPix(inControlPoint),
+        outControlPoint:
+            store.state.currentTabState.ui.metersToPix(outControlPoint),
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{

@@ -36,6 +36,8 @@ class AppState {
   final bool changesSaved;
   final String autoFileName;
 
+  TabState get currentTabState => tabState[currentTabIndex];
+
   AppState copyWith({
     final List<TabState>? tabState,
     final int? currentTabIndex,

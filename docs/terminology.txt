@@ -1,0 +1,26 @@
+Terminology
+
+# GUI
+## GUI structure
+    FieldPainter - holds all the logic for painting the different points and paths
+    ^
+    |
+    FieldLoader - Wrapper widget for FieldPainter logic
+    ^
+    |
+    PathEditor - Widget in charge of calling redux actions and all the logic for interacting with the gui is in here
+    &&
+    Timeline - Widget allowing interacting with segment related settings 
+    ^
+    | 
+    EditorScreen - Widget that puts everything together as well as the buttons for saving and uploading
+    &&
+    Settings Details - Settings widget for points robot or anything (SideBar)
+    ^
+    |
+    Home - App widget, the scaffold is here and is called from main.dart
+
+## GUI Class names
+- PathPoint = a point that currently resides on the path that has actual settings
+- SplinePoint = a point making up the spline polygon
+- DraggingPoint = a point that is currently being dragged

@@ -1,6 +1,5 @@
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
@@ -16,9 +15,9 @@ class SplinePoint {
         segmentIndex = json["segmentIndex"] as int;
   final Offset position;
   final int segmentIndex;
-
+//TODO: meters to pix should be a much easier function
   SplinePoint toUiCoord(final Store<AppState> store) => copyWith(
-        position: fieldToUiOrigin(store, metersToUiCoord(store, position)),
+        position: store.state.currentTabState.ui.metersToPix(position),
       );
 
   SplinePoint copyWith({final Offset? position, final int? segmentIndex}) =>

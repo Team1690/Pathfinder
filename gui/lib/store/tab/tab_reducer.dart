@@ -1,9 +1,9 @@
 import "dart:math";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/field.dart";
+import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
@@ -212,13 +212,13 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
 
   if (position == null) {
     // If position is null, calculate it by the previues position and current position
-    final List<Point> points = tabState.path.points;
+    final List<PathPoint> points = tabState.path.points;
     position = (points[insertIndex - 1].position + points[insertIndex].position)
         .scale(0.5, 0.5);
   }
 
-  Point newPoint =
-      action.point == null ? Point.initial(position) : action.point!;
+  PathPoint newPoint =
+      action.point == null ? PathPoint.initial(position) : action.point!;
 
   if (tabState.path.points.isNotEmpty) {
     final double direction = action.insertIndex == -1
@@ -241,7 +241,7 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
     );
   }
 
-  final List<Point> newPoints = <Point>[...tabState.path.points];
+  final List<PathPoint> newPoints = <PathPoint>[...tabState.path.points];
   List<Segment> segments = tabState.path.segments;
   if (segments.isEmpty) {
     segments = <Segment>[...segments, Segment.initial()];
@@ -287,7 +287,7 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
       points: tabState.path.points
           .asMap()
           .entries
-          .map((final MapEntry<int, Point> e) {
+          .map((final MapEntry<int, PathPoint> e) {
         if (e.key != action.pointIndex) {
           return e.value;
         }
@@ -399,11 +399,11 @@ TabState _deletePointFromPath(
 ) {
   if (action.index == -1) return tabState;
 
-  if (tabState.ui.selectedType != Point ||
+  if (tabState.ui.selectedType != PathPoint ||
       tabState.ui.selectedIndex != action.index) return tabState;
 
   TabState newState = tabState.copyWith();
-  final List<Point> newPoints = <Point>[...tabState.path.points];
+  final List<PathPoint> newPoints = <PathPoint>[...tabState.path.points];
 
   // Clear the segment of the point if it its cutting a segment, add all the points to
   // the previous segment (including the removed one, it will be handled later)
@@ -468,7 +468,8 @@ TabState _deletePointFromPath(
   }
 
   // Select the previous point
-  newState = _objectSelected(newState, ObjectSelected(action.index - 1, Point));
+  newState =
+      _objectSelected(newState, ObjectSelected(action.index - 1, PathPoint));
 
   return newState.copyWith(
     path: newState.path.copyWith(
@@ -622,6 +623,7 @@ TabState _setRobotOnField(
   if (tabState.path.trajectoryPoints.isEmpty) {
     return tabState;
   }
+  //TODO:there is a function for this
   final Offset actualClickPos = action.clickPos.scale(
     officialFieldWidth / tabState.ui.fieldSizePixels.dx,
     officialFieldHeight / tabState.ui.fieldSizePixels.dy,
@@ -665,6 +667,6 @@ TabState _setRobotOnField(
 TabState _copyPoint(final TabState tabState, final CopyPoint action) =>
     tabState.copyWith(
       path: tabState.path.copyWith(
-        copiedPoint: Some<Point>(tabState.path.points[action.index]),
+        copiedPoint: Some<PathPoint>(tabState.path.points[action.index]),
       ),
     );

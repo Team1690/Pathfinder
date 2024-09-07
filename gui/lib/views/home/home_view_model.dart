@@ -1,13 +1,13 @@
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
-import "package:pathfinder/store/tab/tab_ui/tab_ui.dart";
+import "package:pathfinder/models/tab_ui.dart";
 import "package:redux/redux.dart";
 
 //TODO: it isn't exactly reduxy to have the dispatchee functions be in the model
@@ -48,7 +48,7 @@ class HomeViewModel {
   final History history;
   final Help help;
   final Function() selectHelp;
-  final Function(int, Point) setPointData;
+  final Function(int, PathPoint) setPointData;
   final Function(Robot) setRobot;
   final Function() calculateTrajectory;
   final String trajectoryFileName;
@@ -92,7 +92,7 @@ class HomeViewModel {
         selectHelp: () {
           store.dispatch(ObjectSelected(0, Help));
         },
-        setPointData: (final int index, final Point point) {
+        setPointData: (final int index, final PathPoint point) {
           store.dispatch(
             editPointThunk(
               pointIndex: index,
@@ -148,7 +148,7 @@ class HomeViewModel {
     if (ui.selectedType == History) return false;
 
     if (ui.selectedIndex != -1) {
-      if (ui.selectedType == Point &&
+      if (ui.selectedType == PathPoint &&
           (tabState.path.points[ui.selectedIndex] !=
               other.tabState.path.points[otherUi.selectedIndex])) return false;
       if (ui.selectedType == Robot && (tabState.robot != other.tabState.robot))

@@ -4,18 +4,19 @@ import "dart:ui" as ui;
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart" as modelspath;
-import "package:pathfinder/widgets/editor/field_editor/field_painter.dart";
-import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
+import "package:pathfinder/views/editor/painter/field_painter.dart";
+import "package:pathfinder/views/editor/dragging_point.dart";
 
 //TODO: move this to constants
 const double headingLength = 50;
 
 //TODO: see if you can shorten this code a bit and make it more concise
+//TODO: field loader shoudn't accept this many params instead it should have a model with store connector
 class FieldLoader extends StatefulWidget {
   FieldLoader(
     this.points,
@@ -31,10 +32,10 @@ class FieldLoader extends StatefulWidget {
     this.imageOffset,
     this.robotOnField,
   );
-  final List<Point> points;
+  final List<PathPoint> points;
   final List<Segment> segments;
   final int? selectedPoint;
-  final List<FullDraggingPoint> dragPoints;
+  final List<DraggingPoint> dragPoints;
   final bool enableHeadingEditing;
   final bool enableControlEditing;
   final List<modelspath.SplinePoint> evaluatedPoints;
@@ -48,6 +49,7 @@ class FieldLoader extends StatefulWidget {
   _FieldLoaderState createState() => _FieldLoaderState();
 }
 
+//TODO: this should be in the state and not global
 ({ui.Image field, ui.Image robot})? globalImages;
 
 class _FieldLoaderState extends State<FieldLoader> {
@@ -79,12 +81,12 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Widget _buildImage() {
+    //TODO: these should be decided from the ratio of field size these seem like random numbers
     final double width = 0.7 * MediaQuery.of(context).size.width;
     final double height = 0.6 * MediaQuery.of(context).size.height;
     widget.setFieldSizePixels(Offset(width, height));
 
     if (globalImages != null) {
-      // if (false) {
       return Container(
         decoration: BoxDecoration(
           boxShadow: <BoxShadow>[

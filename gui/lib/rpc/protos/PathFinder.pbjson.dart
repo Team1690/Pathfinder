@@ -53,19 +53,47 @@ const Vector$json = {
 };
 
 /// Descriptor for `Vector`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List vectorDescriptor = $convert.base64Decode(
-    'CgZWZWN0b3ISDAoBeBgBIAEoAlIBeBIMCgF5GAIgASgCUgF5');
+final $typed_data.Uint8List vectorDescriptor =
+    $convert.base64Decode('CgZWZWN0b3ISDAoBeBgBIAEoAlIBeBIMCgF5GAIgASgCUgF5');
 
 @$core.Deprecated('Use pointDescriptor instead')
 const Point$json = {
   '1': 'Point',
   '2': [
-    {'1': 'position', '3': 1, '4': 1, '5': 11, '6': '.Vector', '10': 'position'},
-    {'1': 'controlIn', '3': 2, '4': 1, '5': 11, '6': '.Vector', '10': 'controlIn'},
-    {'1': 'controlOut', '3': 3, '4': 1, '5': 11, '6': '.Vector', '10': 'controlOut'},
+    {
+      '1': 'position',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'position'
+    },
+    {
+      '1': 'controlIn',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'controlIn'
+    },
+    {
+      '1': 'controlOut',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'controlOut'
+    },
     {'1': 'useHeading', '3': 4, '4': 1, '5': 8, '10': 'useHeading'},
     {'1': 'heading', '3': 5, '4': 1, '5': 2, '10': 'heading'},
-    {'1': 'action', '3': 6, '4': 1, '5': 11, '6': '.RobotAction', '10': 'action'},
+    {
+      '1': 'action',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.RobotAction',
+      '10': 'action'
+    },
   ],
 };
 
@@ -82,8 +110,22 @@ const Segment$json = {
   '2': [
     {'1': 'points', '3': 1, '4': 3, '5': 11, '6': '.Point', '10': 'points'},
     {'1': 'maxVelocity', '3': 2, '4': 1, '5': 2, '10': 'maxVelocity'},
-    {'1': 'splineType', '3': 3, '4': 1, '5': 14, '6': '.SplineTypes', '10': 'splineType'},
-    {'1': 'splineParameters', '3': 4, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
+    {
+      '1': 'splineType',
+      '3': 3,
+      '4': 1,
+      '5': 14,
+      '6': '.SplineTypes',
+      '10': 'splineType'
+    },
+    {
+      '1': 'splineParameters',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineParameters',
+      '10': 'splineParameters'
+    },
   ],
 };
 
@@ -98,7 +140,14 @@ final $typed_data.Uint8List segmentDescriptor = $convert.base64Decode(
 const Section$json = {
   '1': 'Section',
   '2': [
-    {'1': 'segments', '3': 1, '4': 3, '5': 11, '6': '.Segment', '10': 'segments'},
+    {
+      '1': 'segments',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.Segment',
+      '10': 'segments'
+    },
   ],
 };
 
@@ -115,17 +164,44 @@ const SplineParameters$json = {
 };
 
 /// Descriptor for `SplineParameters`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List splineParametersDescriptor = $convert.base64Decode(
-    'ChBTcGxpbmVQYXJhbWV0ZXJzEhYKBnBhcmFtcxgBIAMoAlIGcGFyYW1z');
+final $typed_data.Uint8List splineParametersDescriptor = $convert
+    .base64Decode('ChBTcGxpbmVQYXJhbWV0ZXJzEhYKBnBhcmFtcxgBIAMoAlIGcGFyYW1z');
 
 @$core.Deprecated('Use splineRequestDescriptor instead')
 const SplineRequest$json = {
   '1': 'SplineRequest',
   '2': [
-    {'1': 'segments', '3': 1, '4': 3, '5': 11, '6': '.Segment', '10': 'segments'},
-    {'1': 'splineParameters', '3': 2, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
-    {'1': 'evaluatedPointsInterval', '3': 3, '4': 1, '5': 2, '10': 'evaluatedPointsInterval'},
-    {'1': 'optimizationParams', '3': 4, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams', '10': 'optimizationParams'},
+    {
+      '1': 'segments',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.Segment',
+      '10': 'segments'
+    },
+    {
+      '1': 'splineParameters',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineParameters',
+      '10': 'splineParameters'
+    },
+    {
+      '1': 'evaluatedPointsInterval',
+      '3': 3,
+      '4': 1,
+      '5': 2,
+      '10': 'evaluatedPointsInterval'
+    },
+    {
+      '1': 'optimizationParams',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineRequest.OptimizationParams',
+      '10': 'optimizationParams'
+    },
   ],
   '3': [SplineRequest_OptimizationParams$json],
 };
@@ -134,11 +210,36 @@ const SplineRequest$json = {
 const SplineRequest_OptimizationParams$json = {
   '1': 'OptimizationParams',
   '2': [
-    {'1': 'hermite', '3': 5, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams.Hermite', '10': 'hermite'},
-    {'1': 'bezier', '3': 6, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams.Bezier', '10': 'bezier'},
-    {'1': 'polynomial', '3': 7, '4': 1, '5': 11, '6': '.SplineRequest.OptimizationParams.Polynomial', '10': 'polynomial'},
+    {
+      '1': 'hermite',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineRequest.OptimizationParams.Hermite',
+      '10': 'hermite'
+    },
+    {
+      '1': 'bezier',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineRequest.OptimizationParams.Bezier',
+      '10': 'bezier'
+    },
+    {
+      '1': 'polynomial',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineRequest.OptimizationParams.Polynomial',
+      '10': 'polynomial'
+    },
   ],
-  '3': [SplineRequest_OptimizationParams_Hermite$json, SplineRequest_OptimizationParams_Bezier$json, SplineRequest_OptimizationParams_Polynomial$json],
+  '3': [
+    SplineRequest_OptimizationParams_Hermite$json,
+    SplineRequest_OptimizationParams_Bezier$json,
+    SplineRequest_OptimizationParams_Polynomial$json
+  ],
 };
 
 @$core.Deprecated('Use splineRequestDescriptor instead')
@@ -173,9 +274,30 @@ final $typed_data.Uint8List splineRequestDescriptor = $convert.base64Decode(
 const SplineResponse$json = {
   '1': 'SplineResponse',
   '2': [
-    {'1': 'splineParameters', '3': 1, '4': 1, '5': 11, '6': '.SplineParameters', '10': 'splineParameters'},
-    {'1': 'splineType', '3': 2, '4': 1, '5': 14, '6': '.SplineTypes', '10': 'splineType'},
-    {'1': 'evaluatedPoints', '3': 3, '4': 3, '5': 11, '6': '.SplineResponse.Point', '10': 'evaluatedPoints'},
+    {
+      '1': 'splineParameters',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.SplineParameters',
+      '10': 'splineParameters'
+    },
+    {
+      '1': 'splineType',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.SplineTypes',
+      '10': 'splineType'
+    },
+    {
+      '1': 'evaluatedPoints',
+      '3': 3,
+      '4': 3,
+      '5': 11,
+      '6': '.SplineResponse.Point',
+      '10': 'evaluatedPoints'
+    },
   ],
   '3': [SplineResponse_Point$json],
 };
@@ -201,13 +323,50 @@ final $typed_data.Uint8List splineResponseDescriptor = $convert.base64Decode(
 const TrajectoryRequest$json = {
   '1': 'TrajectoryRequest',
   '2': [
-    {'1': 'sections', '3': 1, '4': 3, '5': 11, '6': '.Section', '10': 'sections'},
-    {'1': 'driveTrain', '3': 4, '4': 1, '5': 14, '6': '.TrajectoryRequest.DriveTrain', '10': 'driveTrain'},
-    {'1': 'swerveRobotParams', '3': 5, '4': 1, '5': 11, '6': '.TrajectoryRequest.SwerveRobotParams', '10': 'swerveRobotParams'},
-    {'1': 'tankRobotParams', '3': 6, '4': 1, '5': 11, '6': '.TrajectoryRequest.TankRobotParams', '10': 'tankRobotParams'},
-    {'1': 'trajectoryFileName', '3': 7, '4': 1, '5': 9, '10': 'trajectoryFileName'},
+    {
+      '1': 'sections',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.Section',
+      '10': 'sections'
+    },
+    {
+      '1': 'driveTrain',
+      '3': 4,
+      '4': 1,
+      '5': 14,
+      '6': '.TrajectoryRequest.DriveTrain',
+      '10': 'driveTrain'
+    },
+    {
+      '1': 'swerveRobotParams',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.TrajectoryRequest.SwerveRobotParams',
+      '10': 'swerveRobotParams'
+    },
+    {
+      '1': 'tankRobotParams',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.TrajectoryRequest.TankRobotParams',
+      '10': 'tankRobotParams'
+    },
+    {
+      '1': 'trajectoryFileName',
+      '3': 7,
+      '4': 1,
+      '5': 9,
+      '10': 'trajectoryFileName'
+    },
   ],
-  '3': [TrajectoryRequest_SwerveRobotParams$json, TrajectoryRequest_TankRobotParams$json],
+  '3': [
+    TrajectoryRequest_SwerveRobotParams$json,
+    TrajectoryRequest_TankRobotParams$json
+  ],
   '4': [TrajectoryRequest_DriveTrain$json],
 };
 
@@ -222,7 +381,13 @@ const TrajectoryRequest_SwerveRobotParams$json = {
     {'1': 'skidAcceleration', '3': 5, '4': 1, '5': 2, '10': 'skidAcceleration'},
     {'1': 'maxJerk', '3': 6, '4': 1, '5': 2, '10': 'maxJerk'},
     {'1': 'cycleTime', '3': 7, '4': 1, '5': 2, '10': 'cycleTime'},
-    {'1': 'angularAccelerationPercentage', '3': 8, '4': 1, '5': 2, '10': 'angularAccelerationPercentage'},
+    {
+      '1': 'angularAccelerationPercentage',
+      '3': 8,
+      '4': 1,
+      '5': 2,
+      '10': 'angularAccelerationPercentage'
+    },
   ],
 };
 
@@ -271,8 +436,22 @@ final $typed_data.Uint8List trajectoryRequestDescriptor = $convert.base64Decode(
 const TrajectoryResponse$json = {
   '1': 'TrajectoryResponse',
   '2': [
-    {'1': 'swervePoints', '3': 1, '4': 3, '5': 11, '6': '.TrajectoryResponse.SwervePoint', '10': 'swervePoints'},
-    {'1': 'tankPoints', '3': 2, '4': 3, '5': 11, '6': '.TrajectoryResponse.TankPoint', '10': 'tankPoints'},
+    {
+      '1': 'swervePoints',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.TrajectoryResponse.SwervePoint',
+      '10': 'swervePoints'
+    },
+    {
+      '1': 'tankPoints',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.TrajectoryResponse.TankPoint',
+      '10': 'tankPoints'
+    },
   ],
   '3': [TrajectoryResponse_SwervePoint$json, TrajectoryResponse_TankPoint$json],
 };
@@ -282,8 +461,22 @@ const TrajectoryResponse_SwervePoint$json = {
   '1': 'SwervePoint',
   '2': [
     {'1': 'time', '3': 1, '4': 1, '5': 2, '10': 'time'},
-    {'1': 'position', '3': 2, '4': 1, '5': 11, '6': '.Vector', '10': 'position'},
-    {'1': 'velocity', '3': 3, '4': 1, '5': 11, '6': '.Vector', '10': 'velocity'},
+    {
+      '1': 'position',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'position'
+    },
+    {
+      '1': 'velocity',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'velocity'
+    },
     {'1': 'heading', '3': 4, '4': 1, '5': 2, '10': 'heading'},
     {'1': 'angularVelocity', '3': 5, '4': 1, '5': 2, '10': 'angularVelocity'},
     {'1': 'action', '3': 6, '4': 1, '5': 9, '10': 'action'},
@@ -295,7 +488,14 @@ const TrajectoryResponse_TankPoint$json = {
   '1': 'TankPoint',
   '2': [
     {'1': 'time', '3': 1, '4': 1, '5': 2, '10': 'time'},
-    {'1': 'position', '3': 2, '4': 1, '5': 11, '6': '.Vector', '10': 'position'},
+    {
+      '1': 'position',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.Vector',
+      '10': 'position'
+    },
     {'1': 'rightVelocity', '3': 3, '4': 1, '5': 2, '10': 'rightVelocity'},
     {'1': 'leftVelocity', '3': 4, '4': 1, '5': 2, '10': 'leftVelocity'},
     {'1': 'heading', '3': 5, '4': 1, '5': 2, '10': 'heading'},
@@ -315,4 +515,3 @@ final $typed_data.Uint8List trajectoryResponseDescriptor = $convert.base64Decode
     'IjCghwb3NpdGlvbhgCIAEoCzIHLlZlY3RvclIIcG9zaXRpb24SJAoNcmlnaHRWZWxvY2l0eRgD'
     'IAEoAlINcmlnaHRWZWxvY2l0eRIiCgxsZWZ0VmVsb2NpdHkYBCABKAJSDGxlZnRWZWxvY2l0eR'
     'IYCgdoZWFkaW5nGAUgASgCUgdoZWFkaW5nEhYKBmFjdGlvbhgGIAEoCVIGYWN0aW9u');
-

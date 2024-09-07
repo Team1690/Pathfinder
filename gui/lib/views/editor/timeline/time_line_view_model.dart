@@ -1,4 +1,4 @@
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/tab_actions.dart";
@@ -15,7 +15,7 @@ class TimeLineViewModel {
     required this.addPoint,
     required this.autoDuration,
   });
-  final List<Point> points;
+  final List<PathPoint> points;
   final List<Segment> segments;
   final int? selectedPointIndex;
   final double autoDuration;
@@ -30,11 +30,11 @@ class TimeLineViewModel {
             store.state.tabState[store.state.currentTabIndex].path.segments,
         selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]
                     .ui.selectedType ==
-                Point
+                PathPoint
             ? store.state.tabState[store.state.currentTabIndex].ui.selectedIndex
             : null),
         selectPoint: (final int index) {
-          store.dispatch(ObjectSelected(index, Point));
+          store.dispatch(ObjectSelected(index, PathPoint));
         },
         editSegment: (final int index, final double vel, final bool isHidden) {
           store.dispatch(

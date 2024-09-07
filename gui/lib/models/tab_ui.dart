@@ -1,6 +1,8 @@
 import "package:flutter/cupertino.dart";
+import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 
+//TODO: move to constants
 const String defaultTrajectoryFileName = "output";
 
 @immutable
@@ -10,13 +12,11 @@ class TabUI {
     required this.selectedType,
     required this.isSidebarOpen,
     required this.fieldSizePixels,
-    required this.isGraphPageOpen,
     required this.zoomLevel,
     required this.pan,
     required this.headingToggle,
     required this.controlToggle,
     required this.trajectoryFileName,
-    this.serverError,
   });
   // Json
   TabUI.fromJson(final Map<String, dynamic> json)
@@ -25,20 +25,18 @@ class TabUI {
         isSidebarOpen = json["isSidebarOpen"] as bool,
         fieldSizePixels = OffsetJson.fromJson(
             json["fieldSizePixels"] as Map<String, dynamic>),
-        isGraphPageOpen = json["isGraphPageOpen"] as bool,
         zoomLevel = json["zoomLevel"] as double,
         pan = OffsetJson.fromJson(json["pan"] as Map<String, dynamic>),
         headingToggle = json["headingToggle"] as bool,
         controlToggle = json["controlToggle"] as bool,
-        serverError = null,
         trajectoryFileName = (json["trajectoryFileName"] as String?) ??
             defaultTrajectoryFileName;
   factory TabUI.initial() => const TabUI(
         selectedIndex: -1,
         selectedType: Null,
         isSidebarOpen: false,
+        //TODO: this should be relative to size of screen currently it doesn't seem like that
         fieldSizePixels: Offset(800, 400),
-        isGraphPageOpen: false,
         zoomLevel: 1,
         headingToggle: false,
         controlToggle: false,
@@ -49,12 +47,10 @@ class TabUI {
   final Type selectedType;
   final bool isSidebarOpen;
   final Offset fieldSizePixels;
-  final bool isGraphPageOpen;
   final double zoomLevel;
   final Offset pan;
   final bool headingToggle;
   final bool controlToggle;
-  final String? serverError;
   final String trajectoryFileName;
 
   TabUI copyWith({
@@ -75,12 +71,10 @@ class TabUI {
         selectedType: selectedType ?? this.selectedType,
         isSidebarOpen: isSidebarOpen ?? this.isSidebarOpen,
         fieldSizePixels: fieldSizePixels ?? this.fieldSizePixels,
-        isGraphPageOpen: isGraphPageOpen ?? this.isGraphPageOpen,
         zoomLevel: zoomLevel ?? this.zoomLevel,
         pan: pan ?? this.pan,
         headingToggle: headingToggle ?? this.headingToggle,
         controlToggle: controlToggle ?? this.controlToggle,
-        serverError: serverError ?? this.serverError,
         trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
       );
 
@@ -90,11 +84,27 @@ class TabUI {
         // 'selectedType': selectedType,
         "isSidebarOpen": isSidebarOpen,
         "fieldSizePixels": fieldSizePixels.toJson(),
-        "isGraphPageOpen": isGraphPageOpen,
         "zoomLevel": zoomLevel,
         "pan": pan.toJson(),
         "headingToggle": headingToggle,
         "controlToggle": controlToggle,
         "trajectoryFileName": trajectoryFileName,
       };
+//TODO: these two functions can be even nicer and shorter
+//
+//TODO: think of a way to do this conversion without using the store
+//probably i think make a global function that has context param and use mediaquery
+  Offset pixToMeters(final Offset val) {
+    final double xScaler = officialFieldWidth / fieldSizePixels.dx;
+    final double yScaler = officialFieldHeight / fieldSizePixels.dy;
+
+    return val.scale(xScaler, yScaler);
+  }
+
+  Offset metersToPix(final Offset val) {
+    final double xScaler = fieldSizePixels.dx / officialFieldWidth;
+    final double yScaler = fieldSizePixels.dy / officialFieldHeight;
+
+    return val.scale(xScaler, yScaler);
+  }
 }

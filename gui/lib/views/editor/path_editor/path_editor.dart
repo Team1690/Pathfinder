@@ -2,61 +2,61 @@ import "dart:async";
 import "dart:math";
 import "package:collection/collection.dart";
 import "package:flutter/gestures.dart";
-import "package:pathfinder/point_type.dart";
+import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
-import "package:pathfinder/widgets/editor/field_editor/field_loader.dart";
-import "package:pathfinder/utils/coordinates_convertion.dart";
+import "package:pathfinder/views/editor/painter/field_loader.dart";
+import "package:pathfinder/utils/coordinates_conversion.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_redux/flutter_redux.dart";
-import "package:pathfinder/models/point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/widgets/editor/path_editor/dragging_point.dart";
-import "package:pathfinder/widgets/editor/path_editor/full_dragging_point.dart";
-import "package:pathfinder/widgets/editor/path_editor/path_view_model.dart";
+import "package:pathfinder/views/editor/dragging_point.dart";
+import "package:pathfinder/views/editor/path_editor/path_editor_model.dart";
 
-StoreConnector<AppState, PathViewModel> pathEditor() =>
-    new StoreConnector<AppState, PathViewModel>(
-      converter: PathViewModel.fromStore,
-      builder: (final _, final PathViewModel props) =>
+//TODO: constants
+const double _minZoom = 0.4;
+const double _maxZoom = 8.0;
+
+const double _imageZoomDiff = 0.1;
+const double _imageOffsetDiff = 10;
+
+//TODO: move storeconnector to widget and not as it is now as a function
+StoreConnector<AppState, PathEditorModel> pathEditor() =>
+    new StoreConnector<AppState, PathEditorModel>(
+      converter: PathEditorModel.fromStore,
+      builder: (final _, final PathEditorModel props) =>
           PathEditor(pathProps: props),
     );
 
-const int DraggingTollerance = 2;
-
-const double minZoom = 0.4;
-const double maxZoom = 8.0;
-
 //TODO: this file is going to be the most work, but try to concise all the logic here, probably a lot of dup code
 class PathEditor extends StatefulWidget {
+  //TODO: this shoudn't be a param for the widget
   PathEditor({
     required this.pathProps,
   });
-  final PathViewModel pathProps;
+  final PathEditorModel pathProps;
 
   @override
   _PathEditorState createState() => _PathEditorState();
 }
 
 class _PathEditorState extends State<PathEditor> {
-  _PathEditorState();
-  FullDraggingPoint? dragPoint;
-  List<FullDraggingPoint> dragPoints = <FullDraggingPoint>[];
-
+  //TODO: why are there two vars for dragging point
+  DraggingPoint? dragPoint;
+  List<DraggingPoint> dragPoints = <DraggingPoint>[];
+//TODO: get rid of this weird way to check for scrolling and zoom theres probably a library for that
   bool isScrolling = false;
-
   Timer? scrollTimer;
 
   Offset localImageOffsetAddition = Offset.zero;
   double localImageZoomAddition = 0;
 
-  final double imageZoomDiff = 0.1;
-  final double imageOffsetDiff = 10;
-
+//TODO: move add to offset extensions
   Offset scale(final double scaler, final Offset offset) =>
       offset.scale(scaler, scaler);
-
+//TODO: move to offset extensions
   Offset getZoomOffset(
     final Offset size,
     final double zoom,
@@ -110,13 +110,13 @@ class _PathEditorState extends State<PathEditor> {
 
   int? getTappedPoint(
     final Offset tapPosition,
-    final List<Point> points,
+    final List<PathPoint> points,
     final List<Segment> segments,
   ) {
-    for (final MapEntry<int, Point> entery
+    for (final MapEntry<int, PathPoint> entry
         in widget.pathProps.points.asMap().entries) {
-      final Point point = entery.value;
-      final int index = entery.key;
+      final PathPoint point = entry.value;
+      final int index = entry.key;
       if (checkSelectedPointTap(
             tapPosition,
             point,
@@ -131,9 +131,10 @@ class _PathEditorState extends State<PathEditor> {
     return null;
   }
 
+//TODO: clean this function
   DraggingPoint? checkSelectedPointTap(
     final Offset tapPosition,
-    final Point point,
+    final PathPoint point,
     final int index,
     final PointType pointType,
     final List<Segment> segments,
@@ -166,11 +167,10 @@ class _PathEditorState extends State<PathEditor> {
     }
     //TODO: make this more generic, maybe add switch case?
     if (pointType.isPathPoint) {
-      final double radius =
-          (pointType.radius * widget.pathProps.imageZoom) + DraggingTollerance;
-      if ((realTapPosition - point.position).distance <=
-          radius + DraggingTollerance) {
-        return DraggingPoint(PointType.regular, point.position);
+      final double radius = (pointType.radius * widget.pathProps.imageZoom);
+      //TODO: don't use _dragging tollerance twice
+      if ((realTapPosition - point.position).distance <= radius) {
+        return DraggingPoint(type: PointType.regular, position: point.position);
       }
     }
 
@@ -178,28 +178,27 @@ class _PathEditorState extends State<PathEditor> {
       final Offset headingCenter =
           Offset.fromDirection(point.heading, headingLength);
       final Offset headingPosition = point.position + headingCenter;
-      final double radius =
-          (pointType.radius * widget.pathProps.imageZoom) + DraggingTollerance;
+      final double radius = (pointType.radius * widget.pathProps.imageZoom);
       if ((headingPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(PointType.heading, headingCenter);
+        return DraggingPoint(type: PointType.heading, position: headingCenter);
       }
     }
 
     if (pointType == PointType.controlIn) {
       final Offset inControlPosition = point.position + point.inControlPoint;
-      final double radius =
-          (pointType.radius * widget.pathProps.imageZoom) + DraggingTollerance;
+      final double radius = (pointType.radius * widget.pathProps.imageZoom);
       if ((inControlPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(PointType.controlIn, point.inControlPoint);
+        return DraggingPoint(
+            type: PointType.controlIn, position: point.inControlPoint);
       }
     }
 
     if (pointType == PointType.controlOut) {
       final Offset outControlPosition = point.position + point.outControlPoint;
-      final double radius =
-          (pointType.radius * widget.pathProps.imageZoom) + DraggingTollerance;
+      final double radius = (pointType.radius * widget.pathProps.imageZoom);
       if ((outControlPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(PointType.controlOut, point.outControlPoint);
+        return DraggingPoint(
+            type: PointType.controlOut, position: point.outControlPoint);
       }
     }
     return null;
@@ -249,35 +248,35 @@ class _PathEditorState extends State<PathEditor> {
             widget.pathProps.saveFileAs();
           },
           zoomIn.activator!: () {
-            if (widget.pathProps.imageZoom + imageZoomDiff > maxZoom) return;
+            if (widget.pathProps.imageZoom + _imageZoomDiff > _maxZoom) return;
             widget.pathProps
-                .setImageZoom(widget.pathProps.imageZoom + imageZoomDiff);
-            moveZoomByDiff(imageZoomDiff);
+                .setImageZoom(widget.pathProps.imageZoom + _imageZoomDiff);
+            moveZoomByDiff(_imageZoomDiff);
           },
           zoomOut.activator!: () {
-            if (widget.pathProps.imageZoom - imageZoomDiff < minZoom) return;
+            if (widget.pathProps.imageZoom - _imageZoomDiff < _minZoom) return;
             widget.pathProps
-                .setImageZoom(widget.pathProps.imageZoom - imageZoomDiff);
-            moveZoomByDiff(-imageZoomDiff);
+                .setImageZoom(widget.pathProps.imageZoom - _imageZoomDiff);
+            moveZoomByDiff(-_imageZoomDiff);
           },
           panUp.activator!: () {
             widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset - Offset(0, imageOffsetDiff),
+              widget.pathProps.imageOffset - const Offset(0, _imageOffsetDiff),
             );
           },
           panDown.activator!: () {
             widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset + Offset(0, imageOffsetDiff),
+              widget.pathProps.imageOffset + const Offset(0, _imageOffsetDiff),
             );
           },
           panLeft.activator!: () {
             widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset + Offset(imageOffsetDiff, 0),
+              widget.pathProps.imageOffset + const Offset(_imageOffsetDiff, 0),
             );
           },
           panRight.activator!: () {
             widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset - Offset(imageOffsetDiff, 0),
+              widget.pathProps.imageOffset - const Offset(_imageOffsetDiff, 0),
             );
           },
           animateRobot.activator!: () {
@@ -348,8 +347,8 @@ class _PathEditorState extends State<PathEditor> {
                           (mousePosition - currentOffset) *
                               (1 - newZoom / currentZoom);
 
-                      if (newZoom < minZoom) return;
-                      if (newZoom > maxZoom) return;
+                      if (newZoom < _minZoom) return;
+                      if (newZoom > _maxZoom) return;
 
                       setState(() {
                         isScrolling = true;
@@ -437,9 +436,9 @@ class _PathEditorState extends State<PathEditor> {
                         widget.pathProps.fieldSizePixels,
                       );
 
-                      for (final MapEntry<int, Point> entery
+                      for (final MapEntry<int, PathPoint> entery
                           in widget.pathProps.points.asMap().entries) {
-                        final Point point = entery.value;
+                        final PathPoint point = entery.value;
                         final int index = entery.key;
 
                         DraggingPoint? draggingPoint;
@@ -495,8 +494,11 @@ class _PathEditorState extends State<PathEditor> {
                         );
 
                         if (draggingPoint != null) {
-                          final FullDraggingPoint fullDraggingPoint =
-                              FullDraggingPoint(index, draggingPoint);
+                          final DraggingPoint fullDraggingPoint = DraggingPoint(
+                            type: draggingPoint.type,
+                            position: draggingPoint.position,
+                            index: index,
+                          );
 
                           setState(() {
                             dragPoint = fullDraggingPoint;
@@ -508,19 +510,17 @@ class _PathEditorState extends State<PathEditor> {
                     },
                     onPanUpdate: (final DragUpdateDetails details) {
                       if (dragPoint != null) {
-                        FullDraggingPoint currentDragPoint = dragPoint!;
+                        DraggingPoint currentDragPoint = dragPoint!;
                         setState(() {
-                          currentDragPoint = FullDraggingPoint(
-                            currentDragPoint.index,
-                            DraggingPoint(
-                              currentDragPoint.draggingPoint.type,
-                              currentDragPoint.draggingPoint.position +
-                                  (flipYAxis(details.delta) /
-                                      widget.pathProps.imageZoom),
-                            ),
+                          currentDragPoint = DraggingPoint(
+                            type: currentDragPoint.type,
+                            position: currentDragPoint.position +
+                                (flipYAxis(details.delta) /
+                                    widget.pathProps.imageZoom),
+                            index: currentDragPoint.index,
                           );
                           dragPoint = currentDragPoint;
-                          dragPoints = <FullDraggingPoint>[currentDragPoint];
+                          dragPoints = <DraggingPoint>[currentDragPoint];
 
                           if (!widget.pathProps.points[currentDragPoint.index]
                                   .isStop ||
@@ -528,44 +528,35 @@ class _PathEditorState extends State<PathEditor> {
                                   .contains(
                                 LogicalKeyboardKey.keyF,
                               )) {
-                            if (currentDragPoint.draggingPoint.type ==
-                                PointType.controlIn) {
+                            if (currentDragPoint.type == PointType.controlIn) {
                               dragPoints.add(
-                                FullDraggingPoint(
-                                  currentDragPoint.index,
-                                  DraggingPoint(
-                                    PointType.controlOut,
-                                    Offset.fromDirection(
-                                      currentDragPoint.draggingPoint.position
-                                              .direction +
-                                          pi,
-                                      widget
-                                          .pathProps
-                                          .points[currentDragPoint.index]
-                                          .outControlPoint
-                                          .distance,
-                                    ),
+                                DraggingPoint(
+                                  type: PointType.controlOut,
+                                  position: Offset.fromDirection(
+                                    currentDragPoint.position.direction + pi,
+                                    widget
+                                        .pathProps
+                                        .points[currentDragPoint.index]
+                                        .outControlPoint
+                                        .distance,
                                   ),
+                                  index: currentDragPoint.index,
                                 ),
                               );
-                            } else if (currentDragPoint.draggingPoint.type ==
+                            } else if (currentDragPoint.type ==
                                 PointType.controlOut) {
                               dragPoints.add(
-                                FullDraggingPoint(
-                                  currentDragPoint.index,
-                                  DraggingPoint(
-                                    PointType.controlIn,
-                                    Offset.fromDirection(
-                                      currentDragPoint.draggingPoint.position
-                                              .direction +
-                                          pi,
-                                      widget
-                                          .pathProps
-                                          .points[currentDragPoint.index]
-                                          .inControlPoint
-                                          .distance,
-                                    ),
+                                DraggingPoint(
+                                  type: PointType.controlIn,
+                                  position: Offset.fromDirection(
+                                    currentDragPoint.position.direction + pi,
+                                    widget
+                                        .pathProps
+                                        .points[currentDragPoint.index]
+                                        .inControlPoint
+                                        .distance,
                                   ),
+                                  index: currentDragPoint.index,
                                 ),
                               );
                             }
@@ -601,18 +592,17 @@ class _PathEditorState extends State<PathEditor> {
                           localImageZoomAddition = 0;
                         });
                       }
-                      FullDraggingPoint? previusDraggingPoint;
+                      DraggingPoint? previusDraggingPoint;
 
-                      for (final FullDraggingPoint draggingPoint
-                          in dragPoints) {
-                        switch (draggingPoint.draggingPoint.type) {
+                      for (final DraggingPoint draggingPoint in dragPoints) {
+                        switch (draggingPoint.type) {
                           case PointType.first:
                           case PointType.last:
                           case PointType.stop:
                           case PointType.regular:
                             widget.pathProps.finishDrag(
                               draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
+                              draggingPoint.position,
                             );
                             break;
                           case PointType.controlIn:
@@ -620,7 +610,7 @@ class _PathEditorState extends State<PathEditor> {
                                 .pathProps.points[draggingPoint.index].isStop) {
                               widget.pathProps.finishInControlDrag(
                                 draggingPoint.index,
-                                draggingPoint.draggingPoint.position,
+                                draggingPoint.position,
                               );
                               break;
                             }
@@ -632,8 +622,8 @@ class _PathEditorState extends State<PathEditor> {
 
                             widget.pathProps.finishControlDrag(
                               draggingPoint.index,
-                              draggingPoint.draggingPoint.position,
-                              previusDraggingPoint.draggingPoint.position,
+                              draggingPoint.position,
+                              previusDraggingPoint.position,
                             );
                             break;
                           case PointType.controlOut:
@@ -641,7 +631,7 @@ class _PathEditorState extends State<PathEditor> {
                                 .pathProps.points[draggingPoint.index].isStop) {
                               widget.pathProps.finishOutControlDrag(
                                 draggingPoint.index,
-                                draggingPoint.draggingPoint.position,
+                                draggingPoint.position,
                               );
                               break;
                             }
@@ -653,13 +643,12 @@ class _PathEditorState extends State<PathEditor> {
 
                             widget.pathProps.finishControlDrag(
                               draggingPoint.index,
-                              previusDraggingPoint.draggingPoint.position,
-                              draggingPoint.draggingPoint.position,
+                              previusDraggingPoint.position,
+                              draggingPoint.position,
                             );
                             break;
                           case PointType.heading:
-                            final Offset dragPosition =
-                                draggingPoint.draggingPoint.position;
+                            final Offset dragPosition = draggingPoint.position;
                             final double dragHeading = dragPosition.direction;
                             widget.pathProps.finishHeadingDrag(
                               draggingPoint.index,
@@ -672,7 +661,7 @@ class _PathEditorState extends State<PathEditor> {
                       }
 
                       setState(() {
-                        dragPoints = <FullDraggingPoint>[];
+                        dragPoints = <DraggingPoint>[];
                         dragPoint = null;
                       });
                     },

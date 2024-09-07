@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/views/timeline/add_point_inside_timeline.dart";
-import "package:pathfinder/views/timeline/timeline_point.dart";
-import "package:pathfinder/views/timeline/time_line_segment.dart";
+import "package:pathfinder/views/editor/timeline/add_point_inside_timeline.dart";
+import "package:pathfinder/views/editor/timeline/timeline_point.dart";
+import "package:pathfinder/views/editor/timeline/time_line_segment.dart";
 
 //TODO: concise
 class PathTimeline extends StatelessWidget {
