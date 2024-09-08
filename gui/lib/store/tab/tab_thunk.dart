@@ -9,7 +9,7 @@ import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
+import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
@@ -177,7 +177,7 @@ ThunkAction<AppState> calculateSplineThunk() =>
           0.1,
         );
 
-        store.dispatch(SplineCalculated(res.evaluatedPoints));
+        store.dispatch(SplineCalculated(res.splinePoints));
       } catch (e) {
         reconnect(calculateSplineThunk(), e);
         store.dispatch(ServerError(e.toString()));
@@ -198,7 +198,7 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
               .trajectoryFileName,
         );
 
-        store.dispatch(TrajectoryCalculated(res.swervePoints));
+        store.dispatch(TrajectoryCalculated(res.swervePoints.swervePoints));
       } catch (e) {
         reconnect(calculateTrajectoryThunk(), e);
         store.dispatch(ServerError(e.toString()));
@@ -291,7 +291,7 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
       const double amountOfTimeActionIsDisplayed = 500.0;
       double timeLeftForAction = 0.0;
       String action = "";
-      final List<rpc.TrajectoryResponse_SwervePoint> trajectoryPoints = store
+      final List<rpc.SwervePoints_SwervePoint> trajectoryPoints = store
           .state.tabState[store.state.currentTabIndex].path.trajectoryPoints;
 
       Stream<int>.periodic(
@@ -300,7 +300,7 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
       )
           .takeWhile((final int i) => i < trajectoryPoints.length)
           .listen((final int i) {
-        final rpc.TrajectoryResponse_SwervePoint point = trajectoryPoints[i];
+        final rpc.SwervePoints_SwervePoint point = trajectoryPoints[i];
         if (point.action.isNotEmpty) {
           action = point.action;
           timeLeftForAction = amountOfTimeActionIsDisplayed;

@@ -2,7 +2,7 @@ import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pb.dart" as rpc;
+import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 
 abstract class TabAction {
   @override
@@ -44,7 +44,7 @@ class ServerError extends TabAction {
 
 class SplineCalculated extends TabAction {
   SplineCalculated(this.points);
-  final List<rpc.SplineResponse_Point> points;
+  final List<rpc.SplinePoint> points;
 }
 
 class TrajectoryInProgress extends TabAction {
@@ -53,7 +53,7 @@ class TrajectoryInProgress extends TabAction {
 
 class TrajectoryCalculated extends TabAction {
   TrajectoryCalculated(this.points);
-  final List<rpc.TrajectoryResponse_SwervePoint> points;
+  final List<rpc.SwervePoints_SwervePoint> points;
 }
 
 // Point actions

@@ -4,7 +4,7 @@ import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 
 import "package:pathfinder/models/spline_point.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart" as rpc;
+import "package:pathfinder/rpc/protos/pathfinder_service.pbgrpc.dart" as rpc;
 
 class PathModel {
   const PathModel({
@@ -18,7 +18,7 @@ class PathModel {
   });
 
   factory PathModel.initial() => PathModel(
-        trajectoryPoints: <rpc.TrajectoryResponse_SwervePoint>[],
+        trajectoryPoints: <rpc.SwervePoints_SwervePoint>[],
         segments: <Segment>[],
         points: <PathPoint>[],
         evaluatedPoints: <SplinePoint>[],
@@ -40,7 +40,7 @@ class PathModel {
               .cast<Map<String, dynamic>>()
               .map(PathPoint.fromJson),
         ),
-        trajectoryPoints = <rpc.TrajectoryResponse_SwervePoint>[],
+        trajectoryPoints = <rpc.SwervePoints_SwervePoint>[],
         evaluatedPoints = List<SplinePoint>.from(
           (json["evaluatedPoints"] as List<dynamic>)
               .cast<Map<String, dynamic>>()
@@ -54,7 +54,7 @@ class PathModel {
   //TODO: don't save robot on field in json
   final Optional<RobotOnField> robotOnField;
   final double autoDuration;
-  final List<rpc.TrajectoryResponse_SwervePoint> trajectoryPoints;
+  final List<rpc.SwervePoints_SwervePoint> trajectoryPoints;
   //TODO: don't save copiedPoint in json
   final Optional<PathPoint> copiedPoint;
 
@@ -64,7 +64,7 @@ class PathModel {
     final List<SplinePoint>? evaluatedPoints,
     final double? autoDuration,
     final Optional<RobotOnField>? robotOnField,
-    final List<rpc.TrajectoryResponse_SwervePoint>? trajectoryPoints,
+    final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints,
     final Optional<PathPoint>? copiedPoint,
   }) =>
       PathModel(

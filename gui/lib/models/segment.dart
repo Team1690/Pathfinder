@@ -1,4 +1,4 @@
-import "package:pathfinder/rpc/protos/PathFinder.pb.dart";
+import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 
 class Segment {
   Segment({
@@ -7,8 +7,8 @@ class Segment {
     this.isHidden = false,
     this.evaluatedPoints,
     this.trajectoryPoints,
-    this.splineParameters,
-    this.splineTypes,
+    // this.splineParameters,
+    // this.splineTypes,
   });
 
   factory Segment.initial({final List<int>? pointIndexes}) => Segment(
@@ -22,30 +22,30 @@ class Segment {
         maxVelocity = json["maxVelocity"] as double,
         isHidden = json["isHidden"] as bool,
         evaluatedPoints = null,
-        trajectoryPoints = null,
-        splineParameters = null,
-        splineTypes = null;
+        trajectoryPoints = null;
+  // splineParameters = null,
+  // splineTypes = null;
   final List<int> pointIndexes;
   final double maxVelocity;
   final bool isHidden;
 
   // Data from server side calculations
-  final List<SplineResponse_Point>? evaluatedPoints;
-  final List<TrajectoryResponse_SwervePoint>?
-      trajectoryPoints; // TODO: Understand protobuf inheritance and use one class for both drivetrains
+  final List<rpc.SplinePoint>? evaluatedPoints;
+  final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints;
 
   // For server side spline calculation
-  final SplineParameters? splineParameters;
-  final SplineTypes? splineTypes;
+  //TODO: implement tank
+  // final SplineParameters? splineParameters;
+  // final SplineTypes? splineTypes;
 
   Segment copyWith({
     final List<int>? pointIndexes,
     final double? maxVelocity,
     final bool? isHidden,
-    final List<SplineResponse_Point>? evaluatedPoints,
-    final List<TrajectoryResponse_SwervePoint>? trajectoryPoints,
-    final SplineParameters? splineParameters,
-    final SplineTypes? splineTypes,
+    final List<rpc.SplinePoint>? evaluatedPoints,
+    final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints,
+    // final SplineParameters? splineParameters,
+    // final SplineTypes? splineTypes,
   }) =>
       Segment(
         pointIndexes: pointIndexes ?? this.pointIndexes,
@@ -53,8 +53,8 @@ class Segment {
         isHidden: isHidden ?? this.isHidden,
         evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
         trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
-        splineParameters: splineParameters ?? this.splineParameters,
-        splineTypes: splineTypes ?? this.splineTypes,
+        // splineParameters: splineParameters ?? this.splineParameters,
+        // splineTypes: splineTypes ?? this.splineTypes,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{

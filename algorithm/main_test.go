@@ -12,19 +12,20 @@ import (
 
 func Test(_ *testing.T) {
 	var (
-		chester = &rpc.TrajectoryRequest_SwerveRobotParams{
-			Width:            float32(0.6),
-			Height:           float32(0.6),
-			MaxVelocity:      3.6,
-			MaxAcceleration:  7.5,
-			SkidAcceleration: 7.5,
-			MaxJerk:          50,
-			CycleTime:        0.02,
+		chester = &rpc.TrajectoryRequest_SwerveParams{
+			SwerveParams: &rpc.SwerveRobotParams{
+				Width:            float32(0.6),
+				Height:           float32(0.6),
+				MaxVelocity:      3.6,
+				MaxAcceleration:  7.5,
+				SkidAcceleration: 7.5,
+				MaxJerk:          50,
+				CycleTime:        0.02,
+			},
 		}
 		firstSegment = &rpc.Segment{
-			SplineType:  rpc.SplineTypes_Bezier,
 			MaxVelocity: 3.6,
-			Points: []*rpc.Point{
+			Points: []*rpc.PathPoint{
 				{
 					Position:   &rpc.Vector{X: 0, Y: 0},
 					ControlOut: &rpc.Vector{X: 3, Y: 0},
@@ -42,9 +43,8 @@ func Test(_ *testing.T) {
 		}
 
 		secondSegment = &rpc.Segment{
-			SplineType:  rpc.SplineTypes_Bezier,
 			MaxVelocity: 3.6,
-			Points: []*rpc.Point{
+			Points: []*rpc.PathPoint{
 				{
 					Position:   &rpc.Vector{X: 2.5, Y: 2.5},
 					ControlOut: &rpc.Vector{X: 1, Y: 1},
@@ -71,13 +71,11 @@ func Test(_ *testing.T) {
 	grpcServer := NewServer(logger)
 
 	res, err := grpcServer.CalculateTrajectory(context.TODO(), &rpc.TrajectoryRequest{
-		SwerveRobotParams: chester,
-		Sections:          []*rpc.Section{&firstSection, &secondSection},
+		RobotParams: chester,
+		Sections:    []*rpc.Section{&firstSection, &secondSection},
 	})
 	if err != nil {
-		if err != nil {
-			log.Fatalf("Failed to calc trajectory: %v", err)
-		}
+		log.Fatalf("Failed to calc trajectory: %v", err)
 	}
 
 	fmt.Println("Written trajectory file.")

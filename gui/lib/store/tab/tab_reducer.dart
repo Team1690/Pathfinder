@@ -6,7 +6,7 @@ import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pb.dart" hide Point, Segment;
+import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/tab/store.dart";
@@ -154,7 +154,7 @@ TabState _trajectoryCalculated(
 
   action.points
       .asMap()
-      .forEach((final int index, final TrajectoryResponse_SwervePoint p) {
+      .forEach((final int index, final rpc.SwervePoints_SwervePoint p) {
     if (index == action.points.length - 1) {
       autoDuartion += firstPointTime;
       return;
@@ -182,7 +182,7 @@ TabState _splineCalculated(
 ) {
   final List<SplinePoint> evaluatedPoints = action.points
       .map(
-        (final SplineResponse_Point p) => SplinePoint(
+        (final rpc.SplinePoint p) => SplinePoint(
           position: fromRpcVector(p.point),
           segmentIndex: p.segmentIndex,
         ),
@@ -628,7 +628,7 @@ TabState _setRobotOnField(
     officialFieldWidth / tabState.ui.fieldSizePixels.dx,
     officialFieldHeight / tabState.ui.fieldSizePixels.dy,
   );
-  final (TrajectoryResponse_SwervePoint, double) closestPoint =
+  final (rpc.SwervePoints_SwervePoint, double) closestPoint =
       findClosestPoint(actualClickPos, tabState.path.trajectoryPoints);
   return tabState.copyWith(
     path: tabState.path.copyWith(
@@ -645,18 +645,18 @@ TabState _setRobotOnField(
   );
 }
 
-(TrajectoryResponse_SwervePoint, double) findClosestPoint(
+(rpc.SwervePoints_SwervePoint, double) findClosestPoint(
   final Offset target,
-  final List<TrajectoryResponse_SwervePoint> points,
+  final List<rpc.SwervePoints_SwervePoint> points,
 ) {
-  double distFromTarget(final TrajectoryResponse_SwervePoint point) =>
+  double distFromTarget(final rpc.SwervePoints_SwervePoint point) =>
       (target - fromRpcVector(point.position)).distanceSquared;
 
   return points.fold(
     (points.first, distFromTarget(points.first)),
     (
-      final (TrajectoryResponse_SwervePoint, double) closest,
-      final TrajectoryResponse_SwervePoint point,
+      final (rpc.SwervePoints_SwervePoint, double) closest,
+      final rpc.SwervePoints_SwervePoint point,
     ) {
       final double pointDist = distFromTarget(point);
       return pointDist < closest.$2 ? (point, pointDist) : closest;

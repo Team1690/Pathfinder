@@ -15,7 +15,7 @@ type indexedActionPoint struct {
 
 type SegmentClassifier struct {
 	segments  []*rpc.Segment
-	wayPoints []*rpc.Point
+	wayPoints []*rpc.PathPoint
 
 	currentPointIndex              int
 	currentSegmentIndex            int
@@ -27,7 +27,7 @@ type SegmentClassifier struct {
 }
 
 func NewSegmentClassifier(segments []*rpc.Segment) *SegmentClassifier {
-	waypoints := []*rpc.Point{}
+	waypoints := []*rpc.PathPoint{}
 
 	for _, segment := range segments {
 		waypoints = append(waypoints, segment.Points...)
@@ -61,7 +61,7 @@ func shortestRouteToHeading(initialHeading float64, endHeading float64) float64 
 	return initialHeading + utils.WrapAngle(endHeading-initialHeading)
 }
 
-func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex int) {
+func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.PathPoint, trajectoryIndex int) {
 	prevHeading := s.headingPoints[len(s.headingPoints)-1].heading
 	s.headingPoints = append(s.headingPoints, &indexedHeadingPoint{
 		// * Taking the shortest route to the wanted heading by wrapping angles
@@ -70,7 +70,7 @@ func (s *SegmentClassifier) addHeadingPoint(waypoint *rpc.Point, trajectoryIndex
 	})
 }
 
-func (s *SegmentClassifier) addActionPoint(waypoint *rpc.Point, trajectoryIndex int) {
+func (s *SegmentClassifier) addActionPoint(waypoint *rpc.PathPoint, trajectoryIndex int) {
 	if waypoint.Action.ActionType != "" { // * Checking if action exists
 		s.actionPoints = append(
 			s.actionPoints,
