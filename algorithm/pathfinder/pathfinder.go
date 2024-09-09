@@ -397,8 +397,8 @@ func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []Swer
 	return swerveTrajectory
 }
 
-func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.TrajectoryResponse_SwervePoint {
-	return &rpc.TrajectoryResponse_SwervePoint{
+func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.SwervePoints_SwervePoint {
+	return &rpc.SwervePoints_SwervePoint{
 		Time:            float32(point.Time),
 		Position:        point.Position.ToRpc(),
 		Velocity:        point.Velocity.ToRpc(),

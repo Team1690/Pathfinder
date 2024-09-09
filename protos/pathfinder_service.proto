@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+option go_package = "../algorithm/rpc";
+
+service PathFinder {
+   rpc CalculateTrajectory(TrajectoryRequest) returns (TrajectoryResponse) {}
+   rpc CalculateSplinePoints(SplineRequest) returns (SplineResponse) {}
+}
+
+/*utils*/
+message Vector {
+    float x = 1;
+    float y = 2;
+}
+
+message RobotAction {
+	string actionType = 1;
+	float time = 2; // sec
+}
+
+message SplinePoint {
+    Vector point = 1;
+    int32 segmentIndex = 2;
+}
+
+message SwerveRobotParams {
+    float width = 1;
+    float height = 2;
+    float maxVelocity = 3;
+    float maxAcceleration = 4;
+    float skidAcceleration = 5;
+    float maxJerk = 6;
+    float cycleTime = 7;
+    float angularAccelerationPercentage = 8; // the percentage of the angular acceleration when spreading heading over distance
+}
+
+message TankRobotParams {
+    float width = 1;
+    float height = 2;
+    float maxVelocity = 3;
+    float maxAcceleration = 4;
+    float maxJerk = 5;
+    float cycleTime = 6;
+}
+
+message SwervePoints {
+    message SwervePoint {
+        float time = 1;
+        Vector position = 2;
+        Vector velocity = 3;
+        float heading = 4;
+        float angularVelocity = 5;
+        string action = 6;
+    }
+
+    repeated SwervePoint swervePoints = 1;
+}
+
+message TankPoints {
+    message TankPoint {
+        float time = 1;
+        Vector position = 2;
+        float rightVelocity = 3;
+        float leftVelocity = 4;
+        float heading = 5;
+        string action = 6;
+    }
+
+    repeated TankPoint tankPoints = 1;
+}
+
+/*path definitions*/
+message PathPoint {
+	Vector position = 1;
+
+	Vector controlIn = 2;
+	Vector controlOut = 3;
+
+	bool useHeading = 4;
+	float heading = 5;
+
+	RobotAction action = 6;
+}
+
+message Segment {
+    repeated PathPoint points = 1;
+    float maxVelocity = 2;
+}
+
+message Section {
+    repeated Segment segments = 1;
+}
+
+/*requests-responses*/
+/*trajectory*/
+message TrajectoryRequest {
+    repeated Section sections = 1;
+    oneof robotParams {
+        SwerveRobotParams swerveParams = 2;
+        TankRobotParams tankParams = 3;
+    }
+    string fileName = 4;
+}
+
+message TrajectoryResponse {
+    oneof points {
+        SwervePoints swervePoints = 1;
+        TankPoints tankPoints = 2;
+    }
+}
+/*spline*/
+message SplineRequest {
+    repeated Segment segments = 1; //segments because we want to color in by segment not by section
+    float pointInterval = 2; // in meters
+}
+
+message SplineResponse {
+    repeated SplinePoint splinePoints = 1;
+}

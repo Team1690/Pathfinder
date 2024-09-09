@@ -23,7 +23,7 @@ type OutputTrajectoryPoint struct {
 
 func ExportTrajectory(trajectory *rpc.TrajectoryResponse, fileName string) error {
 	var out []*OutputTrajectoryPoint
-	for _, point := range trajectory.SwervePoints {
+	for _, point := range trajectory.GetSwervePoints().SwervePoints {
 		out = append(out, &OutputTrajectoryPoint{
 			Time:            float32(utils.RoundToDecimal(float64(point.Time), 2)),
 			PositionX:       point.Position.X,

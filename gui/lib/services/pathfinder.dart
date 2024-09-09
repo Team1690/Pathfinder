@@ -2,7 +2,7 @@ import "package:flutter/cupertino.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/rpc/protos/PathFinder.pbgrpc.dart" as rpc;
+import "package:pathfinder/rpc/protos/pathfinder_service.pbgrpc.dart" as rpc;
 import "package:pathfinder/models/tab_ui.dart";
 import "package:pathfinder/utils/grpc.dart";
 
@@ -16,7 +16,7 @@ class PathFinderService {
         rpc.PathFinderClient(GrpcClientSingleton().client);
 
     final rpc.SplineRequest request = rpc.SplineRequest(
-      evaluatedPointsInterval: interval,
+      pointInterval: interval,
       segments: toRpcSegments(segments, points),
     );
 
@@ -34,10 +34,11 @@ class PathFinderService {
 
     fileName = fileName == "" ? defaultTrajectoryFileName : fileName;
 //TODO: this only calculates kinematics, it should also somehow figure out heading time
+//TODO: implement tank
     final rpc.TrajectoryRequest request = rpc.TrajectoryRequest(
-      swerveRobotParams: toRpcSwerveRobotParams(robot),
+      swerveParams: toRpcSwerveRobotParams(robot),
       sections: toRpcSections(points, segments),
-      trajectoryFileName: "$fileName.csv",
+      fileName: "$fileName.csv",
     );
 
     return await client.calculateTrajectory(request);
@@ -49,7 +50,7 @@ rpc.Vector toRpcVector(final Offset p) => rpc.Vector(
       y: p.dy,
     );
 
-rpc.Point toRpcPoint(final PathPoint p) => rpc.Point(
+rpc.PathPoint toRpcPoint(final PathPoint p) => rpc.PathPoint(
       position: toRpcVector(p.position),
       controlIn: toRpcVector(p.position + p.inControlPoint),
       controlOut: toRpcVector(p.position + p.outControlPoint),
@@ -124,8 +125,8 @@ List<rpc.Section> toRpcSections(
   return sections;
 }
 
-rpc.TrajectoryRequest_SwerveRobotParams toRpcSwerveRobotParams(final Robot r) =>
-    rpc.TrajectoryRequest_SwerveRobotParams(
+rpc.SwerveRobotParams toRpcSwerveRobotParams(final Robot r) =>
+    rpc.SwerveRobotParams(
       width: r.width,
       height: r.height,
       maxAcceleration: r.maxAcceleration,

@@ -29,26 +29,26 @@ func NewServer(logger *log.Logger) *pathFinderServerImpl {
 }
 
 func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	points := []*rpc.Point{}
+	points := []*rpc.PathPoint{}
 
 	for _, segment := range r.Segments {
 		points = append(points, segment.Points...)
 	}
 
-	path, err := initPath(points, rpc.SplineTypes_Bezier, r.SplineParameters)
+	path, err := initPath(points)
 	if err != nil {
 		return nil, xerrors.Errorf("error in initPath: %w", err)
 	}
 
-	evaluatedPoints := path.EvaluateAtInterval(float64(r.EvaluatedPointsInterval))
+	evaluatedPoints := path.EvaluateAtInterval(float64(r.PointInterval))
 
 	segmentClassifier := pathfinder.NewSegmentClassifier(r.Segments)
 
-	var responsePoints []*rpc.SplineResponse_Point
+	var responsePoints []*rpc.SplinePoint
 	for index, evaluatedPoint := range evaluatedPoints {
 		segmentClassifier.Update(&evaluatedPoint, index)
 		responsePoints = append(responsePoints,
-			&rpc.SplineResponse_Point{
+			&rpc.SplinePoint{
 				Point:        evaluatedPoint.ToRpc(),
 				SegmentIndex: int32(segmentClassifier.GetCurrentSegmentIndex()),
 			},
@@ -56,13 +56,12 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 	}
 
 	return &rpc.SplineResponse{
-		SplineType:      rpc.SplineTypes_Bezier,
-		EvaluatedPoints: responsePoints,
+		SplinePoints: responsePoints,
 	}, nil
 }
 
 type TrajectoryResult = struct {
-	points []*rpc.TrajectoryResponse_SwervePoint
+	points []*rpc.SwervePoints_SwervePoint
 	err    error
 	index  int
 }
@@ -73,13 +72,13 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 
 	for i, section := range r.Sections {
 		go func(section *rpc.Section, index int) {
-			points, err := calculateSectionTrajectory(section, r.SwerveRobotParams)
+			points, err := calculateSectionTrajectory(section, r.GetSwerveParams())
 
 			resultChan <- TrajectoryResult{points: points, err: err, index: index}
 		}(section, i)
 	}
 
-	results := make([][]*rpc.TrajectoryResponse_SwervePoint, len(r.Sections))
+	results := make([][]*rpc.SwervePoints_SwervePoint, len(r.Sections))
 
 	for range r.Sections {
 		result := <-resultChan
@@ -92,13 +91,19 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 	}
 
 	close(resultChan)
-	res := &rpc.TrajectoryResponse{}
+	var points []*rpc.SwervePoints_SwervePoint
 	for _, trajectoryRes := range results {
-		res.SwervePoints = append(res.SwervePoints, trajectoryRes...)
+		points = append(points, trajectoryRes...)
 	}
+	//ugly fix for having a oneof in proto
+	res := &rpc.TrajectoryResponse{Points: &rpc.TrajectoryResponse_SwervePoints{
+		SwervePoints: &rpc.SwervePoints{
+			SwervePoints: points,
+		},
+	}}
 
 	// * Write results to a csv file
-	if err := export.ExportTrajectory(res, r.TrajectoryFileName); err != nil {
+	if err := export.ExportTrajectory(res, r.FileName); err != nil {
 		return nil, xerrors.Errorf("error in ExportTrajectory: %w", err)
 	}
 
@@ -108,8 +113,8 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 	return res, nil
 }
 
-func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) ([]*rpc.TrajectoryResponse_SwervePoint, error) {
-	points := []*rpc.Point{}
+func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.SwerveRobotParams) ([]*rpc.SwervePoints_SwervePoint, error) {
+	points := []*rpc.PathPoint{}
 
 	for _, segment := range section.Segments {
 		points = append(points, segment.Points...)
@@ -119,7 +124,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 		return nil, xerrors.New("requested a path of one point")
 	}
 
-	path, err := initPath(points, rpc.SplineTypes_Bezier, nil)
+	path, err := initPath(points)
 	if err != nil {
 		return nil, xerrors.Errorf("error in init path: %w", err)
 	}
@@ -133,7 +138,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 
 	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
 
-	var swerveTrajectory []*rpc.TrajectoryResponse_SwervePoint
+	var swerveTrajectory []*rpc.SwervePoints_SwervePoint
 	for _, point := range trajectory2D {
 		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(&point))
 	}
@@ -141,7 +146,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.TrajectoryRe
 	return swerveTrajectory, nil
 }
 
-func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.SplineParameters) (*spline.Path, error) {
+func initPath(points []*rpc.PathPoint) (*spline.Path, error) {
 	// TODO handle more spline types
 	path := spline.NewPath()
 	for i := 0; i < len(points)-1; i++ {
@@ -161,7 +166,7 @@ func initPath(points []*rpc.Point, splineType rpc.SplineTypes, parameters *rpc.S
 	return path, nil
 }
 
-func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinder.RobotParameters {
+func toRobotParams(rpcRobot *rpc.SwerveRobotParams) *pathfinder.RobotParameters {
 	return &pathfinder.RobotParameters{
 		CycleTime:            float64(rpcRobot.CycleTime),
 		MaxVelocity:          float64(rpcRobot.MaxVelocity),
@@ -173,7 +178,7 @@ func toRobotParams(rpcRobot *rpc.TrajectoryRequest_SwerveRobotParams) *pathfinde
 	}
 }
 
-func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveRobotParams) {
+func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveParams) {
 	velTimeData := []vector.Vector{}
 	velDirTimeData := []vector.Vector{}
 	velXTimeData := []vector.Vector{}
@@ -191,11 +196,11 @@ func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryReque
 	curvatureDistanceData := []vector.Vector{}
 
 	distance := 0.0
-	prevPosition := vector.NewFromRpcVector(response.SwervePoints[0].Position)
+	prevPosition := vector.NewFromRpcVector(response.GetSwervePoints().SwervePoints[0].Position)
 
 	time := 0.0
 
-	for _, point := range response.SwervePoints {
+	for _, point := range response.GetSwervePoints().SwervePoints {
 		currentPosition := vector.NewFromRpcVector(point.Position)
 		prevToCurrentPosition := currentPosition.Sub(prevPosition)
 		distance += prevToCurrentPosition.Norm()
@@ -229,7 +234,7 @@ func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryReque
 		curvatureDistanceData = append(curvatureDistanceData, vector.Vector{X: distance, Y: curvature})
 
 		prevPosition = currentPosition
-		time += float64(robot.CycleTime)
+		time += float64(robot.SwerveParams.CycleTime)
 	}
 
 	plot.PlotScatter(positionData, "Position")
