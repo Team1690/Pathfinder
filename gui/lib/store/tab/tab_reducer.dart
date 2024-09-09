@@ -5,7 +5,7 @@ import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/models/old%20segment.dart";
 import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
 import "package:pathfinder/store/app/app_actions.dart";

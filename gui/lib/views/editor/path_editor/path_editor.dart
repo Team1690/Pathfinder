@@ -10,7 +10,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/models/old%20segment.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
 import "package:pathfinder/views/editor/path_editor/path_editor_model.dart";

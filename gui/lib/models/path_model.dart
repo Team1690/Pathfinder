@@ -1,7 +1,7 @@
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
+import "package:pathfinder/models/old%20segment.dart";
 
 import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/rpc/protos/pathfinder_service.pbgrpc.dart" as rpc;

@@ -35,7 +35,7 @@ class PathPoint {
       );
 
   // Json
-  PathPoint.fromJson(final Map<String, dynamic> json)
+  PathPoint.fromJson(final dynamic json)
       : position =
             OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         inControlPoint =
