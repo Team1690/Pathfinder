@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path_point.dart";
+import "package:pathfinder/models/old%20path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";

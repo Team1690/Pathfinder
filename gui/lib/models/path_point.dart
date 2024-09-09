@@ -6,7 +6,7 @@ import "package:pathfinder/utils/offset_extensions.dart";
 import "package:redux/redux.dart";
 
 //TODO: move this value to constants
-const double defaultControlLength = 1;
+const double _defaultControlLength = 1;
 
 //TODO: add index to path point so to minimize as map :)
 class PathPoint {
@@ -20,18 +20,20 @@ class PathPoint {
     required this.actionTime,
     required this.cutSegment,
     required this.isStop,
+    required this.index,
   });
   factory PathPoint.initial(final Offset position) => PathPoint(
         position: position,
-        inControlPoint: Offset.fromDirection(pi / 4, defaultControlLength),
+        inControlPoint: Offset.fromDirection(pi / 4, _defaultControlLength),
         outControlPoint:
-            Offset.fromDirection((pi / 4) + pi, defaultControlLength),
+            Offset.fromDirection((pi / 4) + pi, _defaultControlLength),
         heading: 0,
         useHeading: true,
         action: "",
         actionTime: 0,
         cutSegment: false,
         isStop: false,
+        index: 0,
       );
 
   // Json
@@ -47,7 +49,8 @@ class PathPoint {
         action = (json["action"] as String?) ?? "",
         actionTime = (json["actionTime"] as double?) ?? 0,
         cutSegment = json["cutSegment"] as bool,
-        isStop = json["isStop"] as bool;
+        isStop = json["isStop"] as bool,
+        index = json["index"] as int;
   final Offset position;
   final Offset inControlPoint;
   final Offset outControlPoint;
@@ -57,6 +60,7 @@ class PathPoint {
   final double actionTime;
   final bool cutSegment;
   final bool isStop;
+  final int index;
 
   PathPoint copyWith({
     final Offset? position,
@@ -68,6 +72,7 @@ class PathPoint {
     final double? actionTime,
     final bool? cutSegment,
     final bool? isStop,
+    final int? index,
   }) =>
       PathPoint(
         position: position ?? this.position,
@@ -79,37 +84,8 @@ class PathPoint {
         actionTime: actionTime ?? this.actionTime,
         cutSegment: cutSegment ?? this.cutSegment,
         isStop: isStop ?? this.isStop,
+        index: index ?? this.index,
       );
-
-  @override
-  int get hashCode => Object.hashAll(<dynamic>[
-        position,
-        inControlPoint,
-        outControlPoint,
-        heading,
-        useHeading,
-        action,
-        actionTime,
-        cutSegment,
-        isStop,
-      ]);
-
-  @override
-  bool operator ==(final Object other) {
-    if (other is PathPoint) {
-      return position == other.position &&
-          inControlPoint == other.inControlPoint &&
-          outControlPoint == other.outControlPoint &&
-          heading == other.heading &&
-          useHeading == other.useHeading &&
-          cutSegment == other.cutSegment &&
-          isStop == other.isStop &&
-          action == other.action &&
-          actionTime == other.actionTime;
-    }
-
-    return false;
-  }
 
   PathPoint toUiCoord(final Store<AppState> store) => copyWith(
         position: store.state.currentTabState.ui.metersToPix(position),
@@ -129,5 +105,6 @@ class PathPoint {
         "actionTime": actionTime,
         "cutSegment": cutSegment,
         "isStop": isStop,
+        "index": index
       };
 }

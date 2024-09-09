@@ -5,7 +5,7 @@ import "package:orbit_card_settings/helpers/platform_functions.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path_point.dart";
+import "package:pathfinder/models/old%20path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/shortcuts/shortcut.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";

@@ -7,7 +7,7 @@ import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:path/path.dart";
 import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
-import "package:pathfinder/models/path_point.dart";
+import "package:pathfinder/models/old%20path_point.dart";
 import "package:pathfinder/models/old%20segment.dart";
 import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 import "package:pathfinder/services/pathfinder.dart";
