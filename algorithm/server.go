@@ -91,10 +91,16 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.T
 	}
 
 	close(resultChan)
-	res := &rpc.TrajectoryResponse{}
+	var points []*rpc.SwervePoints_SwervePoint
 	for _, trajectoryRes := range results {
-		res.GetSwervePoints().SwervePoints = append(res.GetSwervePoints().SwervePoints, trajectoryRes...)
+		points = append(points, trajectoryRes...)
 	}
+	//ugly fix for having a oneof in proto
+	res := &rpc.TrajectoryResponse{Points: &rpc.TrajectoryResponse_SwervePoints{
+		SwervePoints: &rpc.SwervePoints{
+			SwervePoints: points,
+		},
+	}}
 
 	// * Write results to a csv file
 	if err := export.ExportTrajectory(res, r.FileName); err != nil {
