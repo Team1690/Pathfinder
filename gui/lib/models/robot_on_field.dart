@@ -12,11 +12,11 @@ class RobotOnField {
 //TODO: no need to save animation in state or in json
 Map<String, dynamic> robotOnFieldToJson(final Optional<RobotOnField> robot) =>
     switch (robot) {
-      Some<RobotOnField>(some: final RobotOnField roobt) => <String, dynamic>{
+      Some<RobotOnField>(some: final RobotOnField robot) => <String, dynamic>{
           "robot": <String, dynamic>{
-            "x": roobt.pos.dx,
-            "y": roobt.pos.dy,
-            "heading": roobt.heading,
+            "x": robot.pos.dx,
+            "y": robot.pos.dy,
+            "heading": robot.heading,
           },
         },
       None<RobotOnField>() => <String, dynamic>{
