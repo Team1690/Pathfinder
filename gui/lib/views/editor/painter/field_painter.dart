@@ -6,10 +6,10 @@ import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/field_constants.dart";
-import "package:pathfinder/models/old%20path_point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/old%20segment.dart";
+import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart"; //TODO: import as?
 import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/views/editor/painter/field_loader.dart";

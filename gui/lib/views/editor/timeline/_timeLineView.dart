@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
-import "package:pathfinder/models/old%20path_point.dart";
-import "package:pathfinder/models/old%20segment.dart";
+import "package:pathfinder/models/path_point.dart";
+import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/constants.dart";

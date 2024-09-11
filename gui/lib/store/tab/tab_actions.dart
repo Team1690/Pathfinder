@@ -1,6 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:pathfinder/models/old%20path_point.dart";
+import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
 
