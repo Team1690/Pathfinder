@@ -1,4 +1,4 @@
-import "package:pathfinder/models/path_model.dart";
+import "package:pathfinder/models/old%20path_model.dart";
 import "package:pathfinder/store/tab/store.dart";
 
 //TODO: move to constants

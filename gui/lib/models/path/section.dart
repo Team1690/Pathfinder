@@ -1,4 +1,6 @@
-import "package:pathfinder/models/segment.dart";
+import "package:collection/collection.dart";
+import "package:pathfinder/models/path/path_point.dart";
+import "package:pathfinder/models/path/segment.dart";
 
 class Section {
   Section({
@@ -19,6 +21,11 @@ class Section {
 
   final List<Segment> segments;
   final int index;
+
+  List<PathPoint> get pathPoints => segments
+      .map((final Segment segment) => segment.pathPoints)
+      .flattened
+      .toList();
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         "segments":

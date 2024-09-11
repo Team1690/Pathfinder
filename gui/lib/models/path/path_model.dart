@@ -1,6 +1,8 @@
+import "package:collection/collection.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
+import "package:pathfinder/models/path/path_point.dart";
 import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/section.dart";
+import "package:pathfinder/models/path/section.dart";
 import "package:pathfinder/models/spline_point.dart";
 import "package:pathfinder/rpc/protos/pathfinder_service.pbgrpc.dart" as rpc;
 
@@ -43,6 +45,11 @@ class PathModel {
   final List<rpc.SwervePoints_SwervePoint> trajectoryPoints;
   //TODO: reimplement copiedpoint
   // final Optional<PathPoint> copiedPoint;
+
+  List<PathPoint> get pathPoints => sections
+      .map((final Section section) => section.pathPoints)
+      .flattened
+      .toList();
 
   PathModel copyWith({
     final List<Section>? sections,

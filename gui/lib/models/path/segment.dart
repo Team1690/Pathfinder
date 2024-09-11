@@ -1,4 +1,4 @@
-import "package:pathfinder/models/path_point.dart";
+import "package:pathfinder/models/path/path_point.dart";
 
 class Segment {
   Segment({
