@@ -23,6 +23,9 @@ class TimeLineViewModel {
   final Function(int, double, bool) editSegment;
   final Function(int, int) addPoint;
 
+  String get shownAutoDuration =>
+      autoDuration >= 0 ? autoDuration.toStringAsFixed(3) : "...";
+
   static TimeLineViewModel fromStore(final Store<AppState> store) =>
       TimeLineViewModel(
         points: store.state.tabState[store.state.currentTabIndex].path.points,

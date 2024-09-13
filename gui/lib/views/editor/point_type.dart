@@ -7,14 +7,13 @@ enum PointType {
     radius: 8,
   ),
   stop(
-    color: Color.fromARGB(204, 224, 68, 68),
-    selectedColor: Color.fromARGB(255, 255, 83, 83),
+    color: Color.fromARGB(255, 196, 41, 41),
+    selectedColor: Color.fromARGB(255, 255, 68, 68),
     radius: 8,
   ),
-  //TODO: last point color is too similiar to stop point color
   last(
-    color: Color.fromARGB(255, 174, 67, 53),
-    selectedColor: Color.fromARGB(255, 230, 67, 53),
+    color: Color.fromARGB(255, 137, 16, 0),
+    selectedColor: Color.fromARGB(255, 255, 21, 0),
     radius: 8,
   ),
   regular(

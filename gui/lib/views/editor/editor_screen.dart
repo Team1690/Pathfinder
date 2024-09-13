@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/models/tab_ui.dart";
-import "package:pathfinder/views/editor/timeline/_timeLineView.dart";
+import "package:pathfinder/views/editor/timeline/time_line_view.dart";
 import "package:pathfinder/utils/sendFileOverSSH.dart";
 import "package:pathfinder/views/editor/path_editor/path_editor.dart";
 
@@ -50,7 +50,7 @@ class _EditorScreenState extends State<EditorScreen> {
                   flex: 6,
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
-                    child: timeLineView(),
+                    child: TimeLineView(),
                   ),
                 ),
                 Expanded(

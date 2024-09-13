@@ -48,6 +48,7 @@ class PathPoint {
         actionTime = (json["actionTime"] as double?) ?? 0,
         cutSegment = json["cutSegment"] as bool,
         isStop = json["isStop"] as bool;
+  //TODO: add pointtype getter? to pathpoint
   final Offset position;
   final Offset inControlPoint;
   final Offset outControlPoint;

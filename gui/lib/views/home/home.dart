@@ -190,15 +190,15 @@ class _HomePageState extends State<HomePage> {
                         (final int index) => ElevatedButton(
                           style: ButtonStyle(
                             splashFactory: InkRipple.splashFactory,
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                               index == props.currentTabIndex
                                   ? Colors.white
                                   : const Color(0),
                             ),
-                            shadowColor: MaterialStateProperty.all(
+                            shadowColor: WidgetStateProperty.all(
                               const Color(0),
                             ),
-                            surfaceTintColor: MaterialStateProperty.all(
+                            surfaceTintColor: WidgetStateProperty.all(
                               const Color(0),
                             ),
                           ),
