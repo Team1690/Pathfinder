@@ -1,14 +1,12 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/constants.dart";
-import "package:pathfinder/models/tab_ui.dart";
+import "package:pathfinder/views/editor/file_buttons.dart";
 import "package:pathfinder/views/editor/timeline/time_line_view.dart";
-import "package:pathfinder/utils/sendFileOverSSH.dart";
 import "package:pathfinder/views/editor/path_editor/path_editor.dart";
 
-//TODO: concise + instead of long column make into grid square
 class EditorScreen extends StatefulWidget {
   const EditorScreen({
-    final Key? key,
+    super.key,
     required this.calculateTrajectory,
     required this.trajectoryFileName,
     required this.editTrajectoryFileName,
@@ -16,8 +14,9 @@ class EditorScreen extends StatefulWidget {
     required this.saveFile,
     required this.saveFileAs,
     required this.changesSaved,
-  }) : super(key: key);
-  final Function calculateTrajectory;
+  });
+
+  final void Function() calculateTrajectory;
   final String trajectoryFileName;
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
@@ -30,142 +29,42 @@ class EditorScreen extends StatefulWidget {
 }
 
 class _EditorScreenState extends State<EditorScreen> {
-  final TextEditingController _trajectoryFileNameController =
-      TextEditingController(text: "");
-
   @override
-  Widget build(final BuildContext context) {
-    _trajectoryFileNameController.text = widget.trajectoryFileName;
-
-    return Container(
-      width: 10000,
-      color: primary,
-      child: Column(
-        children: <Widget>[
-          pathEditor(),
-          Expanded(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 6,
-                  child: Padding(
-                    padding: const EdgeInsets.all(defaultPadding),
-                    child: TimeLineView(),
+  Widget build(final BuildContext context) => Container(
+        width: 10000,
+        color: primary,
+        child: Column(
+          children: <Widget>[
+            pathEditor(),
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.all(defaultPadding),
+                      child: TimeLineView(),
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ConstrainedBox(
-                        constraints: const BoxConstraints.tightFor(
-                          width: 100,
-                          height: 60,
-                        ),
-                        child: TextField(
-                          controller: _trajectoryFileNameController,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            focusColor: white,
-                            fillColor: white,
-                            hintText: defaultTrajectoryFileName,
-                            labelText: "Trajectory File Name",
-                            suffixText: ".csv",
-                          ),
-                          onChanged: (final String value) {
-                            widget.editTrajectoryFileName(value);
-                            _trajectoryFileNameController.text = value;
-                            _trajectoryFileNameController.selection =
-                                TextSelection.fromPosition(
-                              TextPosition(offset: value.length),
-                            );
-                          },
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffD7AD17),
-                          textStyle:
-                              const TextStyle(overflow: TextOverflow.ellipsis),
-                        ),
-                        onPressed: () {
-                          widget.calculateTrajectory();
-                        },
-                        icon: const Icon(Icons.trending_flat_rounded),
-                        label: const Text("Trajectory"),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff0078D7),
-                          textStyle:
-                              const TextStyle(overflow: TextOverflow.ellipsis),
-                        ),
-                        onPressed: widget.openFile,
-                        icon: const Icon(Icons.search),
-                        label: const Text("Open"),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: widget.changesSaved
-                                    ? const Color.fromARGB(255, 116, 116, 116)
-                                    : const Color(0xffD45C36),
-                                padding: const EdgeInsets.all(1),
-                                textStyle: const TextStyle(
-                                  overflow: TextOverflow.clip,
-                                ),
-                              ),
-                              onPressed: widget.saveFile,
-                              child: const Icon(Icons.save),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            flex: 2,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xffD45C36),
-                                textStyle: const TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              onPressed: widget.saveFileAs,
-                              child: const Text("Save As"),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff0078D7),
-                          textStyle:
-                              const TextStyle(overflow: TextOverflow.ellipsis),
-                        ),
-                        onPressed: () => sendToRobot(context),
-                        icon: const Icon(Icons.send),
-                        label: const Text("Send File"),
-                      ),
-                    ],
+                  Expanded(
+                    flex: 2,
+                    child: FileButtons(
+                      calculateTrajectory: widget.calculateTrajectory,
+                      trajectoryFileName: widget.trajectoryFileName,
+                      editTrajectoryFileName: widget.editTrajectoryFileName,
+                      openFile: widget.openFile,
+                      saveFile: widget.saveFile,
+                      saveFileAs: widget.saveFileAs,
+                      changesSaved: widget.changesSaved,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  width: 350,
-                ),
-              ],
+                  const Spacer(
+                    flex: 2,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }
