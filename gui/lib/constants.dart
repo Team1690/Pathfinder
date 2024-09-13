@@ -43,6 +43,13 @@ List<Color> segmentColors = <Color>[
 Color getSegmentColor(final int index) =>
     segmentColors[index % segmentColors.length];
 
+//path constants:
+const double headingArmLength = 50;
+
+//field constants:
+const double officialFieldWidth = 16.54;
+const double officialFieldHeight = 8.21;
+
 //TODO: some how make this more nice enum?
 const List<String> autoActions = <String>[
   "Stop To Shoot",

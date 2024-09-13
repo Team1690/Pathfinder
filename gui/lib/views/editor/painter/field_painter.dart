@@ -5,14 +5,12 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:pathfinder/constants.dart";
-import "package:pathfinder/field_constants.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/models/robot_on_field.dart";
 import "package:pathfinder/models/segment.dart";
 import "package:pathfinder/models/spline_point.dart"; //TODO: import as?
 import "package:pathfinder/views/editor/point_type.dart";
-import "package:pathfinder/views/editor/painter/field_loader.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
 
 //TODO: constants?
@@ -96,7 +94,6 @@ class FieldPainter extends CustomPainter {
     //TODO: maybe instead of returning a list of a tuple return a list of unhidden pathpoints
     final List<(PathPoint, bool)> segmentPointsWithIsHidden =
         points.asMap().entries.map((final MapEntry<int, PathPoint> e) {
-      //TODO: put point index in path point
       //TODO: this is risky and could potentially lead to runtime errors
       final List<Segment> pointSegments = segments
           .where(
@@ -241,7 +238,7 @@ class FieldPainter extends CustomPainter {
         _drawPointBase(
           canvas,
           selectedPoint.position +
-              Offset.fromDirection(dragHeading, headingLength),
+              Offset.fromDirection(dragHeading, headingArmLength),
           true,
           pointType,
         );
@@ -282,7 +279,8 @@ class FieldPainter extends CustomPainter {
     final bool enableEdit,
   ) {
     const PointType pointType = PointType.heading;
-    final Offset edge = position + Offset.fromDirection(heading, headingLength);
+    final Offset edge =
+        position + Offset.fromDirection(heading, headingArmLength);
 
     final ui.Paint paint = Paint()
       ..style = PaintingStyle.stroke

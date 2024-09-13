@@ -35,7 +35,7 @@ class _EditorScreenState extends State<EditorScreen> {
         color: primary,
         child: Column(
           children: <Widget>[
-            pathEditor(),
+            PathEditor(),
             Expanded(
               child: Row(
                 children: <Widget>[

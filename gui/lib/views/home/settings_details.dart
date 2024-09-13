@@ -1,4 +1,5 @@
 import "dart:math";
+
 import "package:flutter/material.dart";
 import "package:orbit_card_settings/card_settings.dart";
 import "package:orbit_card_settings/helpers/platform_functions.dart";
@@ -15,6 +16,7 @@ import "package:pathfinder/views/home/home.dart";
 
 const Offset blueSpeakerPos = const Offset(0.24, 5.549);
 
+//TODO: concise + add TODOS
 class SettingsDetails extends StatelessWidget {
   SettingsDetails({
     required this.tabState,

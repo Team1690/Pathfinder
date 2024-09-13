@@ -10,4 +10,6 @@ extension OffsetJson on Offset {
         json["x"] as double,
         json["y"] as double,
       );
+
+  Offset scaleBy(final double scaler) => scale(scaler, scaler);
 }

@@ -1,7 +1,10 @@
 import "dart:async";
 import "dart:math";
+
 import "package:collection/collection.dart";
 import "package:flutter/gestures.dart";
+import "package:pathfinder/constants.dart";
+import "package:pathfinder/utils/offset_extensions.dart";
 import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/views/editor/painter/field_loader.dart";
@@ -15,48 +18,26 @@ import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
 import "package:pathfinder/views/editor/path_editor/path_editor_model.dart";
 
-//TODO: constants
 const double _minZoom = 0.4;
 const double _maxZoom = 8.0;
 
 const double _imageZoomDiff = 0.1;
 const double _imageOffsetDiff = 10;
 
-//TODO: move storeconnector to widget and not as it is now as a function
-StoreConnector<AppState, PathEditorModel> pathEditor() =>
-    new StoreConnector<AppState, PathEditorModel>(
-      converter: PathEditorModel.fromStore,
-      builder: (final _, final PathEditorModel props) =>
-          PathEditor(pathProps: props),
-    );
-
-//TODO: this file is going to be the most work, but try to concise all the logic here, probably a lot of dup code
 class PathEditor extends StatefulWidget {
-  //TODO: this shoudn't be a param for the widget
-  PathEditor({
-    required this.pathProps,
-  });
-  final PathEditorModel pathProps;
-
   @override
   _PathEditorState createState() => _PathEditorState();
 }
 
 class _PathEditorState extends State<PathEditor> {
-  //TODO: why are there two vars for dragging point
   DraggingPoint? dragPoint;
   List<DraggingPoint> dragPoints = <DraggingPoint>[];
-//TODO: get rid of this weird way to check for scrolling and zoom theres probably a library for that
   bool isScrolling = false;
   Timer? scrollTimer;
 
   Offset localImageOffsetAddition = Offset.zero;
   double localImageZoomAddition = 0;
 
-//TODO: move add to offset extensions
-  Offset scale(final double scaler, final Offset offset) =>
-      offset.scale(scaler, scaler);
-//TODO: move to offset extensions
   Offset getZoomOffset(
     final Offset size,
     final double zoom,
@@ -69,89 +50,87 @@ class _PathEditorState extends State<PathEditor> {
 
   void moveZoomByDiff(
     final double diff,
+    final PathEditorModel pathProps,
   ) {
+    //TODO: bad comment to explain this
+
     // This is just an equation for receiving zoom offset accorind to actualOffset
     // imageOffetWithoutZoomOffset - getZoomOffset(fieldSizePixels,imageZoomBeforeDiff, imageOffetWithoutZoomOffset) = imageOffset
     // imageOffetWithoutZoomOffset - (1 - zoom) * (size / 2 - imageOffetWithoutZoomOffset)                           = imageOffset
     // The variable is imageOffetWithoutZoomOffset and you know:
     // imageZoomBeforeDiff (widget.pathProps.imageZoom), imageOffset (widget.pathProps.imageOffset) and fieldSizePixels (widget.pathProps.fieldSizePixels)
-    final Offset offsetWithoutZoomOffset = widget.pathProps.imageOffset -
-        scale(
-          1 / widget.pathProps.imageZoom,
-          widget.pathProps.imageOffset -
-              scale(
-                1 - widget.pathProps.imageZoom,
-                scale(
-                  0.5,
-                  widget.pathProps.fieldSizePixels,
-                ),
-              ),
-        );
+    final Offset offsetWithoutZoomOffset = pathProps.imageOffset -
+        pathProps.imageOffset -
+        pathProps.fieldSizePixels
+            .scaleBy(0.5)
+            .scaleBy(1 - pathProps.imageZoom)
+            .scaleBy(1 / pathProps.imageZoom);
 
     final Offset oldZoomOffset = getZoomOffset(
-      widget.pathProps.fieldSizePixels,
-      widget.pathProps.imageZoom,
-      widget.pathProps.imageOffset - offsetWithoutZoomOffset,
+      pathProps.fieldSizePixels,
+      pathProps.imageZoom,
+      pathProps.imageOffset - offsetWithoutZoomOffset,
     );
 
     final Offset newImageZoomOffset = getZoomOffset(
-      widget.pathProps.fieldSizePixels,
-      widget.pathProps.imageZoom + diff,
-      widget.pathProps.imageOffset - oldZoomOffset,
+      pathProps.fieldSizePixels,
+      pathProps.imageZoom + diff,
+      pathProps.imageOffset - oldZoomOffset,
     );
 
     final Offset newImageOffset =
-        widget.pathProps.imageOffset - oldZoomOffset + newImageZoomOffset;
+        pathProps.imageOffset - oldZoomOffset + newImageZoomOffset;
 
-    widget.pathProps.setImageOffset(
+    pathProps.setImageOffset(
       newImageOffset,
     );
   }
 
+//TODO: maybe points and segments don't need to be params
   int? getTappedPoint(
     final Offset tapPosition,
     final List<PathPoint> points,
     final List<Segment> segments,
+    final PathEditorModel pathProps,
   ) {
-    for (final MapEntry<int, PathPoint> entry
-        in widget.pathProps.points.asMap().entries) {
-      final PathPoint point = entry.value;
-      final int index = entry.key;
+    int? tappedIndex;
+    points.forEachIndexed((final int index, final PathPoint pathPoint) {
       if (checkSelectedPointTap(
             tapPosition,
-            point,
+            pathPoint,
             index,
             PointType.regular,
             segments,
+            pathProps,
           ) !=
           null) {
-        return index;
+        tappedIndex = index;
       }
-    }
-    return null;
+    });
+    return tappedIndex;
   }
 
-//TODO: clean this function
   DraggingPoint? checkSelectedPointTap(
     final Offset tapPosition,
     final PathPoint point,
     final int index,
     final PointType pointType,
     final List<Segment> segments,
+    final PathEditorModel pathProps,
   ) {
     final Offset realTapPosition =
-        (tapPosition - widget.pathProps.imageOffset) /
-            widget.pathProps.imageZoom;
+        (tapPosition - pathProps.imageOffset) / pathProps.imageZoom;
 
     final (int, Segment)? segment = segments
         .mapIndexed(
-          (final int index, final Segment element) => (index, element),
+          (final int segIndex, final Segment element) => (segIndex, element),
         )
         .where(
           (final (int, Segment) segment) =>
               segment.$2.pointIndexes.contains(index),
         )
         .singleOrNull;
+
     // if(point selection click be ignored) return null;
     if (segment != null && // Click isn't for a new point
             segment.$2.isHidden // Segment is hidden
@@ -165,41 +144,25 @@ class _PathEditorState extends State<PathEditor> {
         return null;
       }
     }
-    //TODO: make this more generic, maybe add switch case?
-    if (pointType.isPathPoint) {
-      final double radius = (pointType.radius * widget.pathProps.imageZoom);
-      //TODO: don't use _dragging tollerance twice
-      if ((realTapPosition - point.position).distance <= radius) {
-        return DraggingPoint(type: PointType.regular, position: point.position);
-      }
-    }
+
+    final double radius = pointType.radius * pathProps.imageZoom;
+    Offset pointPosition = point.position;
+    Offset pointCenter = point.position;
 
     if (pointType == PointType.heading && point.useHeading) {
-      final Offset headingCenter =
-          Offset.fromDirection(point.heading, headingLength);
-      final Offset headingPosition = point.position + headingCenter;
-      final double radius = (pointType.radius * widget.pathProps.imageZoom);
-      if ((headingPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(type: PointType.heading, position: headingCenter);
-      }
+      pointCenter = Offset.fromDirection(point.heading, headingArmLength);
+      pointPosition = point.position + pointCenter;
     }
-
     if (pointType == PointType.controlIn) {
-      final Offset inControlPosition = point.position + point.inControlPoint;
-      final double radius = (pointType.radius * widget.pathProps.imageZoom);
-      if ((inControlPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(
-            type: PointType.controlIn, position: point.inControlPoint);
-      }
+      pointPosition = point.position + point.inControlPoint;
+      pointCenter = point.inControlPoint;
     }
-
     if (pointType == PointType.controlOut) {
-      final Offset outControlPosition = point.position + point.outControlPoint;
-      final double radius = (pointType.radius * widget.pathProps.imageZoom);
-      if ((outControlPosition - realTapPosition).distance < radius) {
-        return DraggingPoint(
-            type: PointType.controlOut, position: point.outControlPoint);
-      }
+      pointPosition = point.position + point.outControlPoint;
+      pointCenter = point.outControlPoint;
+    }
+    if ((pointPosition - realTapPosition).distance <= radius) {
+      return DraggingPoint(type: pointType, position: pointCenter);
     }
     return null;
   }
@@ -209,360 +172,202 @@ class _PathEditorState extends State<PathEditor> {
     if (scrollTimer != null) {
       scrollTimer!.cancel();
     }
-
     super.dispose();
   }
 
   @override
-  Widget build(final BuildContext context) => CallbackShortcuts(
-        bindings: <ShortcutActivator, VoidCallback>{
-          noZoomShortcut.activator!: () {
-            widget.pathProps.setImageZoom(1);
-            widget.pathProps.setImageOffset(Offset.zero);
+  Widget build(final BuildContext context) =>
+      StoreConnector<AppState, PathEditorModel>(
+        converter: PathEditorModel.fromStore,
+        builder: (context, model) => CallbackShortcuts(
+          bindings: <ShortcutActivator, VoidCallback>{
+            noZoomShortcut.activator!: () {
+              model.setImageZoom(1);
+              model.setImageOffset(Offset.zero);
+            },
+            toggleHeading.activator!: () {
+              model.toggleHeading();
+            },
+            toggleControl.activator!: () {
+              model.toggleControl();
+            },
+            unSelectPoint.activator!: () {
+              model.unSelectPoint();
+            },
+            deletePoint.activator!: () {
+              if (model.selectedPointIndex != null) {
+                model.deletePoint(model.selectedPointIndex!);
+              }
+            },
+            undo.activator!: () {
+              model.pathUndo();
+            },
+            redo.activator!: () {
+              model.pathRedo();
+            },
+            save.activator!: () {
+              model.saveFile();
+            },
+            saveAs.activator!: () {
+              model.saveFileAs();
+            },
+            zoomIn.activator!: () {
+              if (model.imageZoom + _imageZoomDiff > _maxZoom) return;
+              model.setImageZoom(model.imageZoom + _imageZoomDiff);
+              moveZoomByDiff(_imageZoomDiff, model);
+            },
+            zoomOut.activator!: () {
+              if (model.imageZoom - _imageZoomDiff < _minZoom) return;
+              model.setImageZoom(model.imageZoom - _imageZoomDiff);
+              moveZoomByDiff(-_imageZoomDiff, model);
+            },
+            panUp.activator!: () {
+              model.setImageOffset(
+                model.imageOffset - const Offset(0, _imageOffsetDiff),
+              );
+            },
+            panDown.activator!: () {
+              model.setImageOffset(
+                model.imageOffset + const Offset(0, _imageOffsetDiff),
+              );
+            },
+            panLeft.activator!: () {
+              model.setImageOffset(
+                model.imageOffset + const Offset(_imageOffsetDiff, 0),
+              );
+            },
+            panRight.activator!: () {
+              model.setImageOffset(
+                model.imageOffset - const Offset(_imageOffsetDiff, 0),
+              );
+            },
+            animateRobot.activator!: () {
+              model.animateRobot();
+            },
+            copyPoint.activator!: () {
+              if (model.selectedPointIndex != null) {
+                model.copyPoint(model.selectedPointIndex!);
+              }
+            },
+            pastePoint.activator!: () {
+              if (model.selectedPointIndex != null) {
+                model.pastePoint(model.selectedPointIndex! + 1);
+              } else {
+                model.pastePoint(model.points.length);
+              }
+            },
           },
-          toggleHeading.activator!: () {
-            widget.pathProps.toggleHeading();
-          },
-          toggleControl.activator!: () {
-            widget.pathProps.toggleControl();
-          },
-          unSelectPoint.activator!: () {
-            widget.pathProps.unSelectPoint();
-          },
-          deletePoint.activator!: () {
-            if (widget.pathProps.selectedPointIndex != null) {
-              widget.pathProps
-                  .deletePoint(widget.pathProps.selectedPointIndex!);
-            }
-          },
-          undo.activator!: () {
-            widget.pathProps.pathUndo();
-          },
-          redo.activator!: () {
-            widget.pathProps.pathRedo();
-          },
-          save.activator!: () {
-            widget.pathProps.saveFile();
-          },
-          saveAs.activator!: () {
-            widget.pathProps.saveFileAs();
-          },
-          zoomIn.activator!: () {
-            if (widget.pathProps.imageZoom + _imageZoomDiff > _maxZoom) return;
-            widget.pathProps
-                .setImageZoom(widget.pathProps.imageZoom + _imageZoomDiff);
-            moveZoomByDiff(_imageZoomDiff);
-          },
-          zoomOut.activator!: () {
-            if (widget.pathProps.imageZoom - _imageZoomDiff < _minZoom) return;
-            widget.pathProps
-                .setImageZoom(widget.pathProps.imageZoom - _imageZoomDiff);
-            moveZoomByDiff(-_imageZoomDiff);
-          },
-          panUp.activator!: () {
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset - const Offset(0, _imageOffsetDiff),
-            );
-          },
-          panDown.activator!: () {
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset + const Offset(0, _imageOffsetDiff),
-            );
-          },
-          panLeft.activator!: () {
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset + const Offset(_imageOffsetDiff, 0),
-            );
-          },
-          panRight.activator!: () {
-            widget.pathProps.setImageOffset(
-              widget.pathProps.imageOffset - const Offset(_imageOffsetDiff, 0),
-            );
-          },
-          animateRobot.activator!: () {
-            widget.pathProps.animateRobot();
-          },
-          copyPoint.activator!: () {
-            if (widget.pathProps.selectedPointIndex != null) {
-              widget.pathProps.copyPoint(widget.pathProps.selectedPointIndex!);
-            }
-          },
-          pastePoint.activator!: () {
-            if (widget.pathProps.selectedPointIndex != null) {
-              widget.pathProps
-                  .pastePoint(widget.pathProps.selectedPointIndex! + 1);
-            } else {
-              widget.pathProps.pastePoint(widget.pathProps.points.length);
-            }
-          },
-        },
-        child: Focus(
-          autofocus: true,
-          child: Center(
-            child: Stack(
-              children: <Widget>[
-                Listener(
-                  onPointerSignal: (final PointerSignalEvent pointerSignal) {
-                    if (pointerSignal is PointerScrollEvent) {
-                      if (scrollTimer != null) {
-                        scrollTimer!.cancel();
-                      }
-
-                      // Set a timer that will sync the local state with the global state
-                      scrollTimer =
-                          new Timer(const Duration(milliseconds: 100), () {
-                        if (isScrolling) {
-                          if (localImageOffsetAddition != Offset.zero ||
-                              localImageZoomAddition != 0) {
-                            widget.pathProps.setZoomAndOffset(
-                              widget.pathProps.imageZoom +
-                                  localImageZoomAddition,
-                              widget.pathProps.imageOffset +
-                                  localImageOffsetAddition,
-                            );
-
-                            setState(() {
-                              localImageOffsetAddition = Offset.zero;
-                              localImageZoomAddition = 0;
-                              isScrolling = false;
-                            });
-                          }
-                        }
-                      });
-
-                      final double currentZoom =
-                          widget.pathProps.imageZoom + localImageZoomAddition;
-                      final Offset currentOffset =
-                          widget.pathProps.imageOffset +
-                              localImageOffsetAddition;
-
-                      final double delta = pointerSignal.scrollDelta.dy * -0.01;
-
-                      final double newZoom = currentZoom + delta;
-                      final Offset mousePosition =
-                          flipYAxis(pointerSignal.localPosition) +
-                              Offset(0, widget.pathProps.fieldSizePixels.dy);
-
-                      final Offset finalOffset = currentOffset +
-                          (mousePosition - currentOffset) *
-                              (1 - newZoom / currentZoom);
-
-                      if (newZoom < _minZoom) return;
-                      if (newZoom > _maxZoom) return;
-
-                      setState(() {
-                        isScrolling = true;
-                        localImageOffsetAddition =
-                            finalOffset - widget.pathProps.imageOffset;
-                        localImageZoomAddition =
-                            newZoom - widget.pathProps.imageZoom;
-                      });
-                    }
-                  },
-                  child: GestureDetector(
-                    child: ClipRect(
-                      clipBehavior: Clip.hardEdge,
-                      child: FieldLoader(
-                        widget.pathProps.points,
-                        widget.pathProps.segments,
-                        widget.pathProps.selectedPointIndex,
-                        dragPoints,
-                        widget.pathProps.headingToggle,
-                        widget.pathProps.controlToggle,
-                        widget.pathProps.evaulatedPoints,
-                        widget.pathProps.setFieldSizePixels,
-                        widget.pathProps.robot,
-                        widget.pathProps.imageZoom + localImageZoomAddition,
-                        widget.pathProps.imageOffset + localImageOffsetAddition,
-                        widget.pathProps.robotOnField,
-                      ),
-                    ),
-                    onSecondaryTapDown: (final TapDownDetails details) {
-                      final Offset tapPos = flipYAxisByField(
-                        details.localPosition,
-                        widget.pathProps.fieldSizePixels,
-                      );
-
-                      widget.pathProps.selectRobotOnField(tapPos);
-                    },
-                    onTapUp: (final TapUpDetails details) {
-                      final Offset tapPos = flipYAxisByField(
-                        details.localPosition,
-                        widget.pathProps.fieldSizePixels,
-                      );
-
-                      final int? selectedPoint = getTappedPoint(
-                        tapPos,
-                        widget.pathProps.points,
-                        widget.pathProps.segments,
-                      );
-
-                      if (widget.pathProps.selectedPointIndex != null &&
-                          widget.pathProps.selectedPointIndex! >= 0 &&
-                          selectedPoint ==
-                              widget.pathProps.selectedPointIndex) {
-                        widget.pathProps.unSelectPoint();
-                        return;
-                      }
-
-                      if (selectedPoint != null) {
-                        widget.pathProps.selectPoint(selectedPoint);
-                        return;
-                      }
-
-                      if (HardwareKeyboard.instance.logicalKeysPressed.contains(
-                            LogicalKeyboardKey.controlLeft,
-                          ) ||
-                          HardwareKeyboard.instance.logicalKeysPressed.contains(
-                            LogicalKeyboardKey.controlRight,
-                          )) {
-                        final Offset realTapPosition =
-                            (tapPos - widget.pathProps.imageOffset) /
-                                widget.pathProps.imageZoom;
-                        widget.pathProps.addPoint(realTapPosition);
-                        return;
-                      }
-
-                      widget.pathProps.unSelectPoint();
-                    },
-                    onPanStart: (final DragStartDetails details) {
-                      setState(() {
-                        localImageOffsetAddition = Offset.zero;
-                        localImageZoomAddition = 0;
-                      });
-
-                      final Offset tapPos = flipYAxisByField(
-                        details.localPosition,
-                        widget.pathProps.fieldSizePixels,
-                      );
-
-                      for (final MapEntry<int, PathPoint> entery
-                          in widget.pathProps.points.asMap().entries) {
-                        final PathPoint point = entery.value;
-                        final int index = entery.key;
-
-                        DraggingPoint? draggingPoint;
-
-                        bool controlToggle = widget.pathProps.controlToggle;
-                        bool headingToggle = widget.pathProps.headingToggle;
-
-                        if (widget.pathProps.selectedPointIndex != null &&
-                            widget.pathProps.selectedPointIndex! >= 0) {
-                          controlToggle =
-                              widget.pathProps.selectedPointIndex == index;
-                          headingToggle =
-                              widget.pathProps.selectedPointIndex == index;
-                        }
-                        final List<Segment> segments =
-                            widget.pathProps.segments;
-                        if (headingToggle) {
-                          draggingPoint = checkSelectedPointTap(
-                            tapPos,
-                            point,
-                            index,
-                            PointType.heading,
-                            segments,
-                          );
+          child: Focus(
+            autofocus: true,
+            child: Center(
+              child: Stack(
+                children: <Widget>[
+                  Listener(
+                    onPointerSignal: (final PointerSignalEvent pointerSignal) {
+                      if (pointerSignal is PointerScrollEvent) {
+                        if (scrollTimer != null) {
+                          scrollTimer!.cancel();
                         }
 
-                        if (controlToggle && draggingPoint == null) {
-                          draggingPoint = checkSelectedPointTap(
-                            tapPos,
-                            point,
-                            index,
-                            PointType.controlIn,
-                            segments,
-                          );
-                        }
-
-                        if (controlToggle && draggingPoint == null) {
-                          draggingPoint = checkSelectedPointTap(
-                            tapPos,
-                            point,
-                            index,
-                            PointType.controlOut,
-                            segments,
-                          );
-                        }
-
-                        draggingPoint ??= checkSelectedPointTap(
-                          tapPos,
-                          point,
-                          index,
-                          PointType.regular,
-                          segments,
-                        );
-
-                        if (draggingPoint != null) {
-                          final DraggingPoint fullDraggingPoint = DraggingPoint(
-                            type: draggingPoint.type,
-                            position: draggingPoint.position,
-                            index: index,
-                          );
-
-                          setState(() {
-                            dragPoint = fullDraggingPoint;
-                          });
-
-                          break;
-                        }
-                      }
-                    },
-                    onPanUpdate: (final DragUpdateDetails details) {
-                      if (dragPoint != null) {
-                        DraggingPoint currentDragPoint = dragPoint!;
-                        setState(() {
-                          currentDragPoint = DraggingPoint(
-                            type: currentDragPoint.type,
-                            position: currentDragPoint.position +
-                                (flipYAxis(details.delta) /
-                                    widget.pathProps.imageZoom),
-                            index: currentDragPoint.index,
-                          );
-                          dragPoint = currentDragPoint;
-                          dragPoints = <DraggingPoint>[currentDragPoint];
-
-                          if (!widget.pathProps.points[currentDragPoint.index]
-                                  .isStop ||
-                              HardwareKeyboard.instance.logicalKeysPressed
-                                  .contains(
-                                LogicalKeyboardKey.keyF,
-                              )) {
-                            if (currentDragPoint.type == PointType.controlIn) {
-                              dragPoints.add(
-                                DraggingPoint(
-                                  type: PointType.controlOut,
-                                  position: Offset.fromDirection(
-                                    currentDragPoint.position.direction + pi,
-                                    widget
-                                        .pathProps
-                                        .points[currentDragPoint.index]
-                                        .outControlPoint
-                                        .distance,
-                                  ),
-                                  index: currentDragPoint.index,
-                                ),
+                        // Set a timer that will sync the local state with the global state
+                        scrollTimer =
+                            new Timer(const Duration(milliseconds: 100), () {
+                          if (isScrolling) {
+                            if (localImageOffsetAddition != Offset.zero ||
+                                localImageZoomAddition != 0) {
+                              model.setZoomAndOffset(
+                                model.imageZoom + localImageZoomAddition,
+                                model.imageOffset + localImageOffsetAddition,
                               );
-                            } else if (currentDragPoint.type ==
-                                PointType.controlOut) {
-                              dragPoints.add(
-                                DraggingPoint(
-                                  type: PointType.controlIn,
-                                  position: Offset.fromDirection(
-                                    currentDragPoint.position.direction + pi,
-                                    widget
-                                        .pathProps
-                                        .points[currentDragPoint.index]
-                                        .inControlPoint
-                                        .distance,
-                                  ),
-                                  index: currentDragPoint.index,
-                                ),
-                              );
+
+                              setState(() {
+                                localImageOffsetAddition = Offset.zero;
+                                localImageZoomAddition = 0;
+                                isScrolling = false;
+                              });
                             }
                           }
                         });
-                      } else {
+
+                        final double currentZoom =
+                            model.imageZoom + localImageZoomAddition;
+                        final Offset currentOffset =
+                            model.imageOffset + localImageOffsetAddition;
+
+                        final double delta =
+                            pointerSignal.scrollDelta.dy * -0.01;
+
+                        final double newZoom = currentZoom + delta;
+                        final Offset mousePosition =
+                            flipYAxis(pointerSignal.localPosition) +
+                                Offset(0, model.fieldSizePixels.dy);
+
+                        final Offset finalOffset = currentOffset +
+                            (mousePosition - currentOffset) *
+                                (1 - newZoom / currentZoom);
+
+                        if (newZoom < _minZoom) return;
+                        if (newZoom > _maxZoom) return;
+
+                        setState(() {
+                          isScrolling = true;
+                          localImageOffsetAddition =
+                              finalOffset - model.imageOffset;
+                          localImageZoomAddition = newZoom - model.imageZoom;
+                        });
+                      }
+                    },
+                    child: GestureDetector(
+                      child: ClipRect(
+                        clipBehavior: Clip.hardEdge,
+                        child: FieldLoader(
+                          model.points,
+                          model.segments,
+                          model.selectedPointIndex,
+                          dragPoints,
+                          model.headingToggle,
+                          model.controlToggle,
+                          model.evaulatedPoints,
+                          model.setFieldSizePixels,
+                          model.robot,
+                          model.imageZoom + localImageZoomAddition,
+                          model.imageOffset + localImageOffsetAddition,
+                          model.robotOnField,
+                        ),
+                      ),
+                      onSecondaryTapDown: (final TapDownDetails details) {
+                        final Offset tapPos = flipYAxisByField(
+                          details.localPosition,
+                          model.fieldSizePixels,
+                        );
+
+                        model.selectRobotOnField(tapPos);
+                      },
+                      onTapUp: (final TapUpDetails details) {
+                        final Offset tapPos = flipYAxisByField(
+                          details.localPosition,
+                          model.fieldSizePixels,
+                        );
+
+                        final int? selectedPoint = getTappedPoint(
+                          tapPos,
+                          model.points,
+                          model.segments,
+                          model,
+                        );
+
+                        if (model.selectedPointIndex != null &&
+                            model.selectedPointIndex! >= 0 &&
+                            selectedPoint == model.selectedPointIndex) {
+                          model.unSelectPoint();
+                          return;
+                        }
+
+                        if (selectedPoint != null) {
+                          model.selectPoint(selectedPoint);
+                          return;
+                        }
+
                         if (HardwareKeyboard.instance.logicalKeysPressed
                                 .contains(
                               LogicalKeyboardKey.controlLeft,
@@ -571,103 +376,251 @@ class _PathEditorState extends State<PathEditor> {
                                 .contains(
                               LogicalKeyboardKey.controlRight,
                             )) {
-                          setState(() {
-                            localImageOffsetAddition =
-                                localImageOffsetAddition +
-                                    flipYAxis(details.delta);
-                          });
+                          final Offset realTapPosition =
+                              (tapPos - model.imageOffset) / model.imageZoom;
+                          model.addPoint(realTapPosition);
+                          return;
                         }
-                      }
-                    },
-                    onPanEnd: (final DragEndDetails details) {
-                      if (localImageOffsetAddition != Offset.zero ||
-                          localImageZoomAddition != 0) {
-                        widget.pathProps.setZoomAndOffset(
-                          widget.pathProps.imageZoom + localImageZoomAddition,
-                          widget.pathProps.imageOffset +
-                              localImageOffsetAddition,
-                        );
+
+                        model.unSelectPoint();
+                      },
+                      onPanStart: (final DragStartDetails details) {
                         setState(() {
                           localImageOffsetAddition = Offset.zero;
                           localImageZoomAddition = 0;
                         });
-                      }
-                      DraggingPoint? previusDraggingPoint;
 
-                      for (final DraggingPoint draggingPoint in dragPoints) {
-                        switch (draggingPoint.type) {
-                          case PointType.first:
-                          case PointType.last:
-                          case PointType.stop:
-                          case PointType.regular:
-                            widget.pathProps.finishDrag(
-                              draggingPoint.index,
-                              draggingPoint.position,
+                        final Offset tapPos = flipYAxisByField(
+                          details.localPosition,
+                          model.fieldSizePixels,
+                        );
+
+                        for (final MapEntry<int, PathPoint> entery
+                            in model.points.asMap().entries) {
+                          final PathPoint point = entery.value;
+                          final int index = entery.key;
+
+                          DraggingPoint? draggingPoint;
+
+                          bool controlToggle = model.controlToggle;
+                          bool headingToggle = model.headingToggle;
+
+                          if (model.selectedPointIndex != null &&
+                              model.selectedPointIndex! >= 0) {
+                            controlToggle = model.selectedPointIndex == index;
+                            headingToggle = model.selectedPointIndex == index;
+                          }
+                          final List<Segment> segments = model.segments;
+                          if (headingToggle) {
+                            draggingPoint = checkSelectedPointTap(
+                              tapPos,
+                              point,
+                              index,
+                              PointType.heading,
+                              segments,
+                              model,
                             );
-                            break;
-                          case PointType.controlIn:
-                            if (widget
-                                .pathProps.points[draggingPoint.index].isStop) {
-                              widget.pathProps.finishInControlDrag(
-                                draggingPoint.index,
-                                draggingPoint.position,
-                              );
-                              break;
-                            }
+                          }
 
-                            if (previusDraggingPoint == null) {
-                              previusDraggingPoint = draggingPoint;
-                              break;
-                            }
-
-                            widget.pathProps.finishControlDrag(
-                              draggingPoint.index,
-                              draggingPoint.position,
-                              previusDraggingPoint.position,
+                          if (controlToggle && draggingPoint == null) {
+                            draggingPoint = checkSelectedPointTap(
+                              tapPos,
+                              point,
+                              index,
+                              PointType.controlIn,
+                              segments,
+                              model,
                             );
-                            break;
-                          case PointType.controlOut:
-                            if (widget
-                                .pathProps.points[draggingPoint.index].isStop) {
-                              widget.pathProps.finishOutControlDrag(
-                                draggingPoint.index,
-                                draggingPoint.position,
-                              );
-                              break;
-                            }
+                          }
 
-                            if (previusDraggingPoint == null) {
-                              previusDraggingPoint = draggingPoint;
-                              break;
-                            }
+                          if (controlToggle && draggingPoint == null) {
+                            draggingPoint = checkSelectedPointTap(
+                              tapPos,
+                              point,
+                              index,
+                              PointType.controlOut,
+                              segments,
+                              model,
+                            );
+                          }
 
-                            widget.pathProps.finishControlDrag(
-                              draggingPoint.index,
-                              previusDraggingPoint.position,
-                              draggingPoint.position,
+                          draggingPoint ??= checkSelectedPointTap(
+                            tapPos,
+                            point,
+                            index,
+                            PointType.regular,
+                            segments,
+                            model,
+                          );
+
+                          if (draggingPoint != null) {
+                            final DraggingPoint fullDraggingPoint =
+                                DraggingPoint(
+                              type: draggingPoint.type,
+                              position: draggingPoint.position,
+                              index: index,
                             );
+
+                            setState(() {
+                              dragPoint = fullDraggingPoint;
+                            });
+
                             break;
-                          case PointType.heading:
-                            final Offset dragPosition = draggingPoint.position;
-                            final double dragHeading = dragPosition.direction;
-                            widget.pathProps.finishHeadingDrag(
-                              draggingPoint.index,
-                              dragHeading,
-                            );
-                            break;
-                          default:
-                            break;
+                          }
                         }
-                      }
+                      },
+                      onPanUpdate: (final DragUpdateDetails details) {
+                        if (dragPoint != null) {
+                          DraggingPoint currentDragPoint = dragPoint!;
+                          setState(() {
+                            currentDragPoint = DraggingPoint(
+                              type: currentDragPoint.type,
+                              position: currentDragPoint.position +
+                                  (flipYAxis(details.delta) / model.imageZoom),
+                              index: currentDragPoint.index,
+                            );
+                            dragPoint = currentDragPoint;
+                            dragPoints = <DraggingPoint>[currentDragPoint];
 
-                      setState(() {
-                        dragPoints = <DraggingPoint>[];
-                        dragPoint = null;
-                      });
-                    },
+                            if (!model.points[currentDragPoint.index].isStop ||
+                                HardwareKeyboard.instance.logicalKeysPressed
+                                    .contains(
+                                  LogicalKeyboardKey.keyF,
+                                )) {
+                              if (currentDragPoint.type ==
+                                  PointType.controlIn) {
+                                dragPoints.add(
+                                  DraggingPoint(
+                                    type: PointType.controlOut,
+                                    position: Offset.fromDirection(
+                                      currentDragPoint.position.direction + pi,
+                                      model.points[currentDragPoint.index]
+                                          .outControlPoint.distance,
+                                    ),
+                                    index: currentDragPoint.index,
+                                  ),
+                                );
+                              } else if (currentDragPoint.type ==
+                                  PointType.controlOut) {
+                                dragPoints.add(
+                                  DraggingPoint(
+                                    type: PointType.controlIn,
+                                    position: Offset.fromDirection(
+                                      currentDragPoint.position.direction + pi,
+                                      model.points[currentDragPoint.index]
+                                          .inControlPoint.distance,
+                                    ),
+                                    index: currentDragPoint.index,
+                                  ),
+                                );
+                              }
+                            }
+                          });
+                        } else {
+                          if (HardwareKeyboard.instance.logicalKeysPressed
+                                  .contains(
+                                LogicalKeyboardKey.controlLeft,
+                              ) ||
+                              HardwareKeyboard.instance.logicalKeysPressed
+                                  .contains(
+                                LogicalKeyboardKey.controlRight,
+                              )) {
+                            setState(() {
+                              localImageOffsetAddition =
+                                  localImageOffsetAddition +
+                                      flipYAxis(details.delta);
+                            });
+                          }
+                        }
+                      },
+                      onPanEnd: (final DragEndDetails details) {
+                        if (localImageOffsetAddition != Offset.zero ||
+                            localImageZoomAddition != 0) {
+                          model.setZoomAndOffset(
+                            model.imageZoom + localImageZoomAddition,
+                            model.imageOffset + localImageOffsetAddition,
+                          );
+                          setState(() {
+                            localImageOffsetAddition = Offset.zero;
+                            localImageZoomAddition = 0;
+                          });
+                        }
+                        DraggingPoint? previusDraggingPoint;
+
+                        for (final DraggingPoint draggingPoint in dragPoints) {
+                          switch (draggingPoint.type) {
+                            case PointType.first:
+                            case PointType.last:
+                            case PointType.stop:
+                            case PointType.regular:
+                              model.finishDrag(
+                                draggingPoint.index,
+                                draggingPoint.position,
+                              );
+                              break;
+                            case PointType.controlIn:
+                              if (model.points[draggingPoint.index].isStop) {
+                                model.finishInControlDrag(
+                                  draggingPoint.index,
+                                  draggingPoint.position,
+                                );
+                                break;
+                              }
+
+                              if (previusDraggingPoint == null) {
+                                previusDraggingPoint = draggingPoint;
+                                break;
+                              }
+
+                              model.finishControlDrag(
+                                draggingPoint.index,
+                                draggingPoint.position,
+                                previusDraggingPoint.position,
+                              );
+                              break;
+                            case PointType.controlOut:
+                              if (model.points[draggingPoint.index].isStop) {
+                                model.finishOutControlDrag(
+                                  draggingPoint.index,
+                                  draggingPoint.position,
+                                );
+                                break;
+                              }
+
+                              if (previusDraggingPoint == null) {
+                                previusDraggingPoint = draggingPoint;
+                                break;
+                              }
+
+                              model.finishControlDrag(
+                                draggingPoint.index,
+                                previusDraggingPoint.position,
+                                draggingPoint.position,
+                              );
+                              break;
+                            case PointType.heading:
+                              final Offset dragPosition =
+                                  draggingPoint.position;
+                              final double dragHeading = dragPosition.direction;
+                              model.finishHeadingDrag(
+                                draggingPoint.index,
+                                dragHeading,
+                              );
+                              break;
+                            default:
+                              break;
+                          }
+                        }
+
+                        setState(() {
+                          dragPoints = <DraggingPoint>[];
+                          dragPoint = null;
+                        });
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

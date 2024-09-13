@@ -17,6 +17,7 @@ import "package:pathfinder/views/editor/save_changes_dialog.dart";
 import "package:pathfinder/views/home/home_view_model.dart";
 import "package:pathfinder/views/home/settings_details.dart";
 
+//TODO: concise + add TODOS
 class HomePage extends StatefulWidget {
   HomePage();
   final HomeViewModel props = HomeViewModel.fromStore(store);

@@ -13,7 +13,6 @@ import "package:pathfinder/views/editor/painter/field_painter.dart";
 import "package:pathfinder/views/editor/dragging_point.dart";
 
 //TODO: move this to constants
-const double headingLength = 50;
 
 //TODO: see if you can shorten this code a bit and make it more concise
 //TODO: field loader shoudn't accept this many params instead it should have a model with store connector

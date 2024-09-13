@@ -1,5 +1,5 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/field_constants.dart";
+import "package:pathfinder/constants.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
 
 //TODO: move to constants
