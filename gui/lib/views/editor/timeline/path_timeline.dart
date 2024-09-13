@@ -1,23 +1,24 @@
+import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:pathfinder/views/editor/timeline/add_point_inside_timeline.dart";
 import "package:pathfinder/views/editor/timeline/timeline_point.dart";
 import "package:pathfinder/views/editor/timeline/time_line_segment.dart";
 
-//TODO: concise
 class PathTimeline extends StatelessWidget {
   const PathTimeline({
-    final Key? key,
+    super.key,
     required this.segments,
-    required this.insertPoint,
     required this.points,
-  }) : super(key: key);
+    required this.insertPoint,
+  });
+
   final List<TimeLineSegment> segments;
   final List<TimelinePoint> points;
   final void Function(int, int) insertPoint;
 
   int findSegment(int pointIndex, final List<TimeLineSegment> segments) {
     final List<int> segmentsLength =
-        segments.map((final TimeLineSegment e) => e.pointAmount).toList();
+        segments.map((final TimeLineSegment seg) => seg.pointAmount).toList();
 
     int segmentIndex = 0;
     for (int i = 0; i < segments.length; i++) {
@@ -39,14 +40,13 @@ class PathTimeline extends StatelessWidget {
             //segments
             Row(
               children: segments
-                  .asMap()
-                  .entries
-                  .map(
-                    ((final MapEntry<int, TimeLineSegment> e) => Expanded(
-                          flex: segments.length - 1 == e.key
-                              ? e.value.pointAmount - 1
-                              : e.value.pointAmount,
-                          child: e.value,
+                  .mapIndexed(
+                    ((final int index, final TimeLineSegment segment) =>
+                        Expanded(
+                          flex: segments.length - 1 == index
+                              ? segment.pointAmount - 1
+                              : segment.pointAmount,
+                          child: segment,
                         )),
                   )
                   .toList(),
@@ -66,19 +66,16 @@ class PathTimeline extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 40),
-                const SizedBox(height: 5),
+                const SizedBox(height: 45),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: points
-                      .asMap()
-                      .entries
-                      .map(
-                        (final MapEntry<int, TimelinePoint> e) =>
+                      .mapIndexed(
+                        (final int index, final TimelinePoint point) =>
                             AddPointInsideTimeline(
                           onClick: () => insertPoint(
-                            findSegment(e.key, segments),
-                            e.key + 1,
+                            findSegment(index, segments),
+                            index + 1,
                           ),
                         ),
                       )

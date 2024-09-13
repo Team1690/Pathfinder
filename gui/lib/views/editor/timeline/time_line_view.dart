@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/views/editor/point_type.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/views/editor/timeline/time_line_view_model.dart";
@@ -27,14 +26,8 @@ class TimeLineView extends StatelessWidget {
                         TimelinePoint(
                       onTap: () => model.selectPoint(index),
                       isSelected: index == model.selectedPointIndex,
-                      //TODO: get rid of this lambda function
-                      pointType: () {
-                        if (pathPoint.isStop) return PointType.stop;
-                        if (index == 0) return PointType.first;
-                        if (index == model.points.length - 1)
-                          return PointType.last;
-                        return PointType.regular;
-                      }(),
+                      pointType:
+                          pathPoint.pointType(index, model.points.length),
                     ),
                   )
                   .toList(),
@@ -58,7 +51,7 @@ class TimeLineView extends StatelessWidget {
             ),
             if (model.autoDuration != 0)
               Text(
-                "Duration: ${model.shownAutoDuration} s",
+                "Duration: ${model.shownAutoDuration}",
               ),
           ],
         ),

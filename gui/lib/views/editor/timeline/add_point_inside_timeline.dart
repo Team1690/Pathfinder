@@ -1,12 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter/src/gestures/events.dart";
 
-//TODO: concise this(easy) + docs
 class AddPointInsideTimeline extends StatefulWidget {
-  const AddPointInsideTimeline({
-    final Key? key,
-    required this.onClick,
-  }) : super(key: key);
+  const AddPointInsideTimeline({super.key, required this.onClick});
 
   final void Function() onClick;
 
@@ -29,9 +25,7 @@ class _AddPointInsideTimelineState extends State<AddPointInsideTimeline> {
           maintainState: true,
           visible: visibility,
           child: IconButton(
-            onPressed: () {
-              widget.onClick();
-            },
+            onPressed: widget.onClick,
             icon: const Icon(Icons.circle),
           ),
         ),

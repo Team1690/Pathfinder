@@ -197,6 +197,9 @@ TabState _splineCalculated(
 }
 
 TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
+  //max points allowed before ui begins to break
+  //TODO: move to constants
+  if (tabState.path.points.length + 1 > 20) return tabState;
   // If the segment to add is -1, treat it as if the addition is to the end
   // of the point list and to the last segment
   final int insertIndex = action.insertIndex >= 0

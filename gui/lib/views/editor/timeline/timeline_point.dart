@@ -1,11 +1,10 @@
 import "package:flutter/material.dart";
 import "package:pathfinder/views/editor/point_type.dart";
 
-//TODO: i don't like consts for single files see if you can merge this with other const
-const double _timelinePointRadius = 10;
+//TODO: see if you can merge this with other const
+const double _timelinePointDiameter = 20;
 const double _selectedPointHighlightRadius = 5;
 
-//TODO: concise
 class TimelinePoint extends StatelessWidget {
   TimelinePoint({
     required this.onTap,
@@ -20,8 +19,8 @@ class TimelinePoint extends StatelessWidget {
   Widget build(final BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 2 * _timelinePointRadius,
-          height: 2 * _timelinePointRadius,
+          width: _timelinePointDiameter,
+          height: _timelinePointDiameter,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: pointType.getPointColor(isSelected),
