@@ -12,7 +12,6 @@ import "package:pathfinder/shortcuts/shortcut.dart";
 import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
-import "package:pathfinder/views/home/home.dart";
 
 const Offset blueSpeakerPos = const Offset(0.24, 5.549);
 
@@ -73,127 +72,129 @@ class SettingsDetails extends StatelessWidget {
     final int index = tabState.ui.selectedIndex;
     final List<PathPoint> points = tabState.path.points;
     final Robot robot = tabState.robot;
-
+    // return SettingsDouble(
+    //     value: tabState.i,
+    //     onChanged: (value) {
+    //       StoreProvider.of<AppState>(context).dispatch(ChangeI(i: value));
+    //     });
     // On init the selected index may be negative
     if (index < 0) return const SizedBox.shrink();
 
     if (tabState.ui.selectedType == Robot) {
-      return Form(
-        child: CardSettings(
-          scrollable: true,
-          contentAlign: TextAlign.right,
-          labelAlign: TextAlign.left,
-          shrinkWrap: true,
-          children: <CardSettingsSection>[
-            CardSettingsSection(
-              children: <CardSettingsWidget>[
-                _cardSettingsDouble(
-                  label: "Width",
-                  unitLabel: "m",
-                  allowNegative: false,
-                  initialValue: robot.width,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        width: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Height",
-                  unitLabel: "m",
-                  allowNegative: false,
-                  initialValue: robot.height,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        height: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Max Velocity",
-                  unitLabel: "m/s",
-                  allowNegative: false,
-                  initialValue: robot.maxVelocity,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        maxVelocity: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Max Accel",
-                  unitLabel: "m/s²",
-                  allowNegative: false,
-                  initialValue: robot.maxAcceleration,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        maxAcceleration: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Max Jerk",
-                  unitLabel: "m/s³",
-                  allowNegative: false,
-                  initialValue: robot.maxJerk,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        maxJerk: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Skid Accel",
-                  unitLabel: "m/s²",
-                  initialValue: robot.skidAcceleration,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        skidAcceleration: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Cycle Time",
-                  unitLabel: "s",
-                  allowNegative: false,
-                  initialValue: robot.cycleTime,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        cycleTime: value,
-                      ),
-                    );
-                  },
-                ),
-                _cardSettingsDouble(
-                  label: "Angular Accel Perc",
-                  unitLabel: "%",
-                  allowNegative: false,
-                  initialValue: 100 * robot.angularAccelerationPercentage,
-                  onChanged: (final double value) {
-                    onRobotEdit(
-                      robot.copyWith(
-                        angularAccelerationPercentage: value / 100,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+      return CardSettings(
+        scrollable: true,
+        contentAlign: TextAlign.right,
+        labelAlign: TextAlign.left,
+        shrinkWrap: true,
+        children: <CardSettingsSection>[
+          CardSettingsSection(
+            children: <CardSettingsWidget>[
+              _cardSettingsDouble(
+                label: "Width",
+                unitLabel: "m",
+                allowNegative: false,
+                initialValue: robot.width,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      width: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Height",
+                unitLabel: "m",
+                allowNegative: false,
+                initialValue: robot.height,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      height: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Max Velocity",
+                unitLabel: "m/s",
+                allowNegative: false,
+                initialValue: robot.maxVelocity,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      maxVelocity: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Max Accel",
+                unitLabel: "m/s²",
+                allowNegative: false,
+                initialValue: robot.maxAcceleration,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      maxAcceleration: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Max Jerk",
+                unitLabel: "m/s³",
+                allowNegative: false,
+                initialValue: robot.maxJerk,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      maxJerk: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Skid Accel",
+                unitLabel: "m/s²",
+                initialValue: robot.skidAcceleration,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      skidAcceleration: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Cycle Time",
+                unitLabel: "s",
+                allowNegative: false,
+                initialValue: robot.cycleTime,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      cycleTime: value,
+                    ),
+                  );
+                },
+              ),
+              _cardSettingsDouble(
+                label: "Angular Accel Perc",
+                unitLabel: "%",
+                allowNegative: false,
+                initialValue: 100 * robot.angularAccelerationPercentage,
+                onChanged: (final double value) {
+                  onRobotEdit(
+                    robot.copyWith(
+                      angularAccelerationPercentage: value / 100,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       );
     }
 
@@ -410,7 +411,6 @@ class SettingsDetails extends StatelessWidget {
                   label: "Use Heading",
                   onChanged: (final bool value) {
                     onPointEdit(index, pointData.copyWith(useHeading: value));
-                    triggerSidebarRender();
                   },
                 ),
                 if (pointData.useHeading)
@@ -433,8 +433,6 @@ class SettingsDetails extends StatelessWidget {
                     label: "Cut segments",
                     onChanged: (final bool value) {
                       onPointEdit(index, pointData.copyWith(cutSegment: value));
-
-                      triggerSidebarRender();
                     },
                   ),
                 if (!isFirstOrLast)
@@ -443,7 +441,6 @@ class SettingsDetails extends StatelessWidget {
                     label: "Stop point",
                     onChanged: (final bool value) {
                       onPointEdit(index, pointData.copyWith(isStop: value));
-                      triggerSidebarRender();
                     },
                   ),
                 CardSettingsButton(
@@ -456,7 +453,6 @@ class SettingsDetails extends StatelessWidget {
                         heading: atan2(diff.dy, diff.dx) + pi,
                       ),
                     );
-                    triggerSidebarRender();
                   },
                   label: "Shooting point heading",
                 ),
@@ -485,7 +481,6 @@ class SettingsDetails extends StatelessWidget {
                           ),
                         ),
                       );
-                      triggerSidebarRender();
                     }
                   },
                   label: "Aim to next",
@@ -513,7 +508,6 @@ class SettingsDetails extends StatelessWidget {
                                 ),
                         ),
                       );
-                      triggerSidebarRender();
                     }
                   },
                   label: "Aim to prev",

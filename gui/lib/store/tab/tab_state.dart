@@ -12,6 +12,7 @@ class TabState {
     required this.robot,
     required this.ui,
     required this.history,
+    required this.i,
   });
 
   factory TabState.initial() => TabState(
@@ -19,17 +20,20 @@ class TabState {
         robot: Robot.initial(),
         ui: TabUI.initial(),
         history: History.initial(),
+        i: 0,
       );
 
   TabState.fromJson(final Map<String, dynamic> json)
       : path = PathModel.fromJson(json["path"] as Map<String, dynamic>),
         robot = Robot.fromJson(json["robot"] as Map<String, dynamic>),
         ui = TabUI.fromJson(json["ui"] as Map<String, dynamic>),
-        history = History.fromJson(json["history"] as Map<String, dynamic>);
+        history = History.fromJson(json["history"] as Map<String, dynamic>),
+        i = 0;
   final PathModel path;
   final Robot robot;
   final TabUI ui;
   final History history;
+  final double i;
 
   TabState copyWith({
     final PathModel? path,
@@ -37,13 +41,14 @@ class TabState {
     final TabUI? ui,
     final History? history,
     final Help? help,
+    final double? i,
   }) =>
       TabState(
-        path: path ?? this.path,
-        robot: robot ?? this.robot,
-        ui: ui ?? this.ui,
-        history: history ?? this.history,
-      );
+          path: path ?? this.path,
+          robot: robot ?? this.robot,
+          ui: ui ?? this.ui,
+          history: history ?? this.history,
+          i: i ?? this.i);
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         "path": path.toJson(),
