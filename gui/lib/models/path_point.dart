@@ -139,4 +139,7 @@ class PathPoint {
         "cutSegment": cutSegment,
         "isStop": isStop,
       };
+
+  @override
+  String toString() => position.toString();
 }

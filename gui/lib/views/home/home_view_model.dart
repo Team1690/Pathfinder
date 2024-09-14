@@ -2,15 +2,12 @@ import "package:pathfinder/shortcuts/help.dart";
 import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/shortcuts/shortcut_def.dart";
 import "package:pathfinder/store/app/app_actions.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/store/tab/tab_thunk.dart";
-import "package:pathfinder/models/tab_ui.dart";
 import "package:redux/redux.dart";
 
-//TODO: it isn't exactly reduxy to have the dispatchee functions be in the model
 class HomeViewModel {
   HomeViewModel({
     required this.tabAmount,
@@ -20,7 +17,6 @@ class HomeViewModel {
     required this.setSidebarVisibility,
     required this.selectRobot,
     required this.selectHistory,
-    required this.history,
     required this.tabState,
     required this.setPointData,
     required this.setRobot,
@@ -36,17 +32,14 @@ class HomeViewModel {
     required this.saveFileAs,
     required this.newAuto,
     required this.changesSaved,
-    required this.help,
     required this.selectHelp,
     required this.currentTabIndex,
   });
   TabState tabState;
   bool isSidebarOpen;
   final Function(bool) setSidebarVisibility;
-  final Function selectRobot;
-  final Function selectHistory;
-  final History history;
-  final Help help;
+  final Function() selectRobot;
+  final Function() selectHistory;
   final Function() selectHelp;
   final Function(int, PathPoint) setPointData;
   final Function(Robot) setRobot;
@@ -55,7 +48,6 @@ class HomeViewModel {
   final String autoFileName;
   final Function(String) editTrajectoryFileName;
   final Function() openFile;
-
   final Function() saveFile;
   final Function() saveFileAs;
   final Function() pathUndo;
@@ -75,9 +67,8 @@ class HomeViewModel {
         removeTab: (final int index) => store.dispatch(RemoveTab(index: index)),
         changeTab: (final int tab) =>
             store.dispatch(ChangeCurrentTab(index: tab)),
-        tabState: store.state.tabState[store.state.currentTabIndex],
-        isSidebarOpen:
-            store.state.tabState[store.state.currentTabIndex].ui.isSidebarOpen,
+        tabState: store.state.currentTabState,
+        isSidebarOpen: store.state.currentTabState.ui.isSidebarOpen,
         setSidebarVisibility: (final bool visibility) {
           store.dispatch(SetSideBarVisibility(visibility));
         },
@@ -87,8 +78,6 @@ class HomeViewModel {
         selectHistory: () {
           store.dispatch(ObjectSelected(0, History));
         },
-        history: store.state.tabState[store.state.currentTabIndex].history,
-        help: const Help(shortcuts: shortcuts),
         selectHelp: () {
           store.dispatch(ObjectSelected(0, Help));
         },
@@ -114,8 +103,7 @@ class HomeViewModel {
         calculateTrajectory: () => store.dispatch(
           calculateTrajectoryThunk(),
         ),
-        trajectoryFileName: store
-            .state.tabState[store.state.currentTabIndex].ui.trajectoryFileName,
+        trajectoryFileName: store.state.currentTabState.ui.trajectoryFileName,
         autoFileName: store.state.autoFileName,
         editTrajectoryFileName: (final String fileName) {
           store.dispatch(TrajectoryFileNameChanged(fileName));
@@ -128,38 +116,4 @@ class HomeViewModel {
         newAuto: () => store.dispatch(newAutoThunk()),
         changesSaved: store.state.changesSaved,
       );
-
-  @override
-  int get hashCode => super.hashCode;
-
-  @override
-  bool operator ==(final Object other) {
-    if (other is! HomeViewModel) return false;
-
-    if (other.isSidebarOpen != isSidebarOpen) return false;
-
-    final TabUI ui = tabState.ui;
-    final TabUI otherUi = other.tabState.ui;
-
-    if (ui.selectedIndex != otherUi.selectedIndex) return false;
-    if (ui.selectedType != otherUi.selectedType) return false;
-
-    // When the history is open, always update
-    if (ui.selectedType == History) return false;
-
-    if (ui.selectedIndex != -1) {
-      if (ui.selectedType == PathPoint &&
-          (tabState.path.points[ui.selectedIndex] !=
-              other.tabState.path.points[otherUi.selectedIndex])) return false;
-      if (ui.selectedType == Robot && (tabState.robot != other.tabState.robot))
-        return false;
-    }
-
-    if (tabAmount != other.tabAmount) return false;
-    if (currentTabIndex != other.currentTabIndex) return false;
-    if (changesSaved != other.changesSaved) return false;
-    if (autoFileName != other.autoFileName) return false;
-
-    return true;
-  }
 }

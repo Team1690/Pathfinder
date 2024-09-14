@@ -152,7 +152,7 @@ TabState _trajectoryCalculated(
   double firstPointTime = action.points.first.time;
 
   action.points
-      .mapIndexed((final int index, final rpc.SwervePoints_SwervePoint p) {
+      .forEachIndexed((final int index, final rpc.SwervePoints_SwervePoint p) {
     if (index == action.points.length - 1) {
       autoDuration += firstPointTime;
       return;
@@ -279,7 +279,6 @@ TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
   return newState;
 }
 
-//TODO: don't use this function in home
 TabState editPoint(final TabState tabState, final EditPoint action) {
   bool addSegment = false;
   bool removeSegment = false;
@@ -287,9 +286,11 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
   final TabState newState = tabState.copyWith(
     path: tabState.path.copyWith(
       points: tabState.path.points
-          .mapIndexed((final int index, final PathPoint pathPoint) {
-        if (index != action.pointIndex) {
-          return pathPoint;
+          .asMap()
+          .entries
+          .map((final MapEntry<int, PathPoint> e) {
+        if (e.key != action.pointIndex) {
+          return e.value;
         }
 
         // Dont allow to cut segments in the end or start of points list
@@ -298,37 +299,38 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
 
         // Always set use heading true for the first point
         final bool useHeading =
-            action.useHeading ?? pathPoint.useHeading || action.pointIndex == 0;
+            action.useHeading ?? e.value.useHeading || action.pointIndex == 0;
 
         // Get and validate cut & stop values
         bool cutSegment =
-            (action.cutSegment ?? pathPoint.cutSegment) && cutSegmentAllowed;
-        bool isStop = (action.isStop ?? pathPoint.isStop) && cutSegmentAllowed;
+            (action.cutSegment ?? e.value.cutSegment) && cutSegmentAllowed;
+        bool isStop = (action.isStop ?? e.value.isStop) && cutSegmentAllowed;
 
         // Cut or uncut the segment if stop or cut changes
-        if (isStop && !pathPoint.isStop) cutSegment = true;
-        if (!isStop && pathPoint.isStop) cutSegment = false;
+        if (isStop && !e.value.isStop) cutSegment = true;
+        if (!isStop && e.value.isStop) cutSegment = false;
 
-        addSegment = (cutSegment) && !pathPoint.cutSegment;
-        removeSegment = !(cutSegment) && pathPoint.cutSegment;
+        addSegment = (cutSegment) && !e.value.cutSegment;
+        removeSegment = !(cutSegment) && e.value.cutSegment;
 
-        if (pathPoint.isStop && removeSegment) isStop = false;
+        if (e.value.isStop && removeSegment) isStop = false;
 
-        return pathPoint.copyWith(
-          position: action.position ?? pathPoint.position,
-          inControlPoint: action.inControlPoint ?? pathPoint.inControlPoint,
-          outControlPoint: action.outControlPoint != pathPoint.outControlPoint
+        return e.value.copyWith(
+          position: action.position ?? e.value.position,
+          inControlPoint: action.inControlPoint ?? e.value.inControlPoint,
+          //outControlPoint: action.outControlPoint ?? e.value.outControlPoint,
+          outControlPoint: action.outControlPoint != e.value.outControlPoint
               ? action.outControlPoint
               : (action.isStop != null && !action.isStop!)
                   ? Offset.fromDirection(
-                      pathPoint.inControlPoint.direction + pi,
-                      pathPoint.outControlPoint.distance,
+                      e.value.inControlPoint.direction + pi,
+                      e.value.outControlPoint.distance,
                     )
-                  : pathPoint.outControlPoint,
-          heading: action.heading ?? pathPoint.heading,
+                  : e.value.outControlPoint,
+          heading: action.heading ?? e.value.heading,
           useHeading: useHeading,
-          action: action.action ?? pathPoint.action,
-          actionTime: action.actionTime ?? pathPoint.actionTime,
+          action: action.action ?? e.value.action,
+          actionTime: action.actionTime ?? e.value.actionTime,
           cutSegment: cutSegment,
           isStop: isStop,
         );
@@ -341,7 +343,7 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
       (final Segment s) => s.pointIndexes.contains(action.pointIndex),
     );
 
-    final List<Segment> newSegments = tabState.path.segments;
+    final List<Segment> newSegments = <Segment>[...tabState.path.segments];
     newSegments.insert(
       currentSegmentIndex + 1,
       Segment.initial(
@@ -355,10 +357,10 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
     return newState.copyWith(
       path: newState.path.copyWith(
         segments:
-            newSegments.mapIndexed((final int index, final Segment segment) {
-          if (index != currentSegmentIndex) return segment;
-          return segment.copyWith(
-            pointIndexes: segment.pointIndexes
+            newSegments.asMap().entries.map((final MapEntry<int, Segment> e) {
+          if (e.key != currentSegmentIndex) return e.value;
+          return e.value.copyWith(
+            pointIndexes: e.value.pointIndexes
                 .where((final int index) => index < action.pointIndex)
                 .toList(),
           );
@@ -372,17 +374,17 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
       (final Segment s) => s.pointIndexes.contains(action.pointIndex),
     );
 
-    final List<Segment> newSegments = tabState.path.segments;
+    final List<Segment> newSegments = <Segment>[...tabState.path.segments];
     final List<int> removedPointIndxes =
         newSegments.removeAt(removedSegmentIndex).pointIndexes;
 
     return newState.copyWith(
       path: newState.path.copyWith(
         segments:
-            newSegments.mapIndexed((final int index, final Segment segment) {
-          if (index != removedSegmentIndex - 1) return segment;
-          return segment.copyWith(
-            pointIndexes: segment.pointIndexes + removedPointIndxes,
+            newSegments.asMap().entries.map((final MapEntry<int, Segment> e) {
+          if (e.key != removedSegmentIndex - 1) return e.value;
+          return e.value.copyWith(
+            pointIndexes: e.value.pointIndexes + removedPointIndxes,
           );
         }).toList(),
       ),
