@@ -11,6 +11,9 @@ import "package:pathfinder/store/tab/store.dart";
 import "package:pathfinder/utils/math.dart";
 import "package:pathfinder/views/home/settings_details.dart";
 
+//TODO: maybe place this in constants
+const Offset _blueSpeakerPos = const Offset(0.24, 5.549);
+
 class PointSettings extends StatefulWidget {
   const PointSettings({
     super.key,
@@ -197,7 +200,7 @@ class _PointSettingsState extends State<PointSettings> {
                 CardSettingsButton(
                   onPressed: () {
                     final Offset diff =
-                        blueSpeakerPos - widget.pointData.position;
+                        _blueSpeakerPos - widget.pointData.position;
                     widget.onPointEdit(
                       widget.index,
                       widget.pointData.copyWith(
