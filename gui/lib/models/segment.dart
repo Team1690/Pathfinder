@@ -5,10 +5,6 @@ class Segment {
     required this.pointIndexes,
     required this.maxVelocity,
     this.isHidden = false,
-    this.evaluatedPoints,
-    this.trajectoryPoints,
-    // this.splineParameters,
-    // this.splineTypes,
   });
 
   factory Segment.initial({final List<int>? pointIndexes}) => Segment(
@@ -20,23 +16,13 @@ class Segment {
   Segment.fromJson(final Map<String, dynamic> json)
       : pointIndexes = (json["pointIndexes"] as List<dynamic>).cast<int>(),
         maxVelocity = json["maxVelocity"] as double,
-        isHidden = json["isHidden"] as bool,
-        evaluatedPoints = null,
-        trajectoryPoints = null;
-  // splineParameters = null,
-  // splineTypes = null;
+        isHidden = json["isHidden"] as bool;
+
   final List<int> pointIndexes;
   final double maxVelocity;
   final bool isHidden;
 
-  // Data from server side calculations
-  final List<rpc.SplinePoint>? evaluatedPoints;
-  final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints;
-
-  // For server side spline calculation
   //TODO: implement tank
-  // final SplineParameters? splineParameters;
-  // final SplineTypes? splineTypes;
 
   Segment copyWith({
     final List<int>? pointIndexes,
@@ -44,17 +30,11 @@ class Segment {
     final bool? isHidden,
     final List<rpc.SplinePoint>? evaluatedPoints,
     final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints,
-    // final SplineParameters? splineParameters,
-    // final SplineTypes? splineTypes,
   }) =>
       Segment(
         pointIndexes: pointIndexes ?? this.pointIndexes,
         maxVelocity: maxVelocity ?? this.maxVelocity,
         isHidden: isHidden ?? this.isHidden,
-        evaluatedPoints: evaluatedPoints ?? this.evaluatedPoints,
-        trajectoryPoints: trajectoryPoints ?? this.trajectoryPoints,
-        // splineParameters: splineParameters ?? this.splineParameters,
-        // splineTypes: splineTypes ?? this.splineTypes,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{

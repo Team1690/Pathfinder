@@ -34,7 +34,7 @@ class PathModel {
               .cast<Map<String, dynamic>>()
               .map(Segment.fromJson),
         ),
-        robotOnField = robotOnFieldFromJson(json["robot"]),
+        robotOnField = None<RobotOnField>(),
         points = List<PathPoint>.from(
           (json["points"] as List<dynamic>)
               .cast<Map<String, dynamic>>()
@@ -83,6 +83,5 @@ class PathModel {
         "evaluatedPoints":
             evaluatedPoints.map((final SplinePoint p) => p.toJson()).toList(),
         "autoDuration": autoDuration,
-        ...robotOnFieldToJson(robotOnField),
       };
 }

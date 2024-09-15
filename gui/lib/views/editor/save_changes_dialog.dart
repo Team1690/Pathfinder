@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-//TODO: nice
+/// Dialog to show for alerting user that changes need saving
 void showAlertDialog(
   final BuildContext context,
   final Function() onDiscard,

@@ -81,7 +81,7 @@ AppState appStateReducer(final AppState state, final dynamic action) {
       ...newState.tabState.sublist(newState.currentTabIndex + 1),
     ],
   );
-  if (unsavedChanegsActions.contains(action.runtimeType)) {
+  if (unsavedChangesActions.contains(action.runtimeType)) {
     newState = newState.copyWith(changesSaved: false);
   }
   return newState;

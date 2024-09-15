@@ -160,3 +160,9 @@ class PastePoint extends TabAction {
   PastePoint(this.index);
   final int index;
 }
+
+class ChangeI extends TabAction {
+  ChangeI({required this.i});
+
+  final double i;
+}

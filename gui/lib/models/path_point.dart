@@ -3,6 +3,7 @@ import "dart:math";
 import "package:flutter/cupertino.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
+import "package:pathfinder/views/editor/point_type.dart";
 import "package:redux/redux.dart";
 
 //TODO: move this value to constants
@@ -35,7 +36,7 @@ class PathPoint {
       );
 
   // Json
-  PathPoint.fromJson(final Map<String, dynamic> json)
+  PathPoint.fromJson(final dynamic json)
       : position =
             OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         inControlPoint =
@@ -48,6 +49,7 @@ class PathPoint {
         actionTime = (json["actionTime"] as double?) ?? 0,
         cutSegment = json["cutSegment"] as bool,
         isStop = json["isStop"] as bool;
+  //TODO: add pointtype getter? to pathpoint
   final Offset position;
   final Offset inControlPoint;
   final Offset outControlPoint;
@@ -57,6 +59,13 @@ class PathPoint {
   final double actionTime;
   final bool cutSegment;
   final bool isStop;
+
+  PointType pointType(final int indexInPath, final int pathLength) {
+    if (isStop) return PointType.stop;
+    if (indexInPath == 0) return PointType.first;
+    if (indexInPath == pathLength - 1) return PointType.last;
+    return PointType.regular;
+  }
 
   PathPoint copyWith({
     final Offset? position,
@@ -130,4 +139,7 @@ class PathPoint {
         "cutSegment": cutSegment,
         "isStop": isStop,
       };
+
+  @override
+  String toString() => position.toString();
 }

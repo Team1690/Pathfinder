@@ -14,6 +14,7 @@ const Color gray = Color(0xff545454);
 const Color blue = Color(0xff7D8AFF);
 const Color red = Color(0xffE58585);
 const Color green = Color(0xff7CE27A);
+const Color settingsColor = Color.fromARGB(255, 57, 66, 74);
 
 /// Orbit blue in different degrees of opacity
 const Map<int, Color> orbitColors = <int, Color>{
@@ -42,6 +43,13 @@ List<Color> segmentColors = <Color>[
 /// Gets the segment color from [segmentColors] depending on [index]
 Color getSegmentColor(final int index) =>
     segmentColors[index % segmentColors.length];
+
+//path constants:
+const double headingArmLength = 50;
+
+//field constants:
+const double officialFieldWidth = 16.54;
+const double officialFieldHeight = 8.21;
 
 //TODO: some how make this more nice enum?
 const List<String> autoActions = <String>[
