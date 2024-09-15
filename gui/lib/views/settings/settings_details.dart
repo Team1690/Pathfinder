@@ -5,10 +5,10 @@ import "package:pathfinder/models/history.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/models/robot.dart";
 import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/views/home/help_settings.dart";
-import "package:pathfinder/views/home/history_settings.dart";
-import "package:pathfinder/views/home/point_settings.dart";
-import "package:pathfinder/views/home/robot_settings.dart";
+import "package:pathfinder/views/settings/help_settings.dart";
+import "package:pathfinder/views/settings/history_settings.dart";
+import "package:pathfinder/views/settings/point_settings.dart";
+import "package:pathfinder/views/settings/robot_settings.dart";
 
 //TODO: concise + add TODOS
 class SettingsDetails extends StatelessWidget {

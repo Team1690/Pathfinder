@@ -3,12 +3,12 @@ import "dart:math";
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:orbit_card_settings/card_settings.dart";
-import "package:pathfinder/views/home/point_settings_model.dart";
+import "package:pathfinder/views/settings/point_settings_model.dart";
 import "package:pathfinder/constants.dart";
 import "package:pathfinder/models/path_point.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/utils/math.dart";
-import "package:pathfinder/views/home/settings_details.dart";
+import "package:pathfinder/views/settings/settings_details.dart";
 
 //TODO: maybe place this in constants
 const Offset _blueSpeakerPos = const Offset(0.24, 5.549);

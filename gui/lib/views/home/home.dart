@@ -15,7 +15,7 @@ import "package:pathfinder/constants.dart";
 import "package:path/path.dart" as path;
 import "package:pathfinder/views/editor/save_changes_dialog.dart";
 import "package:pathfinder/views/home/home_view_model.dart";
-import "package:pathfinder/views/home/settings_details.dart";
+import "package:pathfinder/views/settings/settings_details.dart";
 
 //TODO: concise + add TODOS
 class HomePage extends StatefulWidget {
@@ -226,6 +226,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+                //TODO: put this code in settings details
                 if (model.isSidebarOpen)
                   Positioned(
                     right: 0,
@@ -248,7 +249,8 @@ class _HomePageState extends State<HomePage> {
                                   ListTile(
                                     // textColor: Theme.of(context).textTheme.headline1?.color,
                                     title: Text(
-                                        getSideBarHeadline(model.tabState)),
+                                      getSideBarHeadline(model.tabState),
+                                    ),
                                   ),
                                   Divider(
                                     indent: 15,
@@ -300,14 +302,11 @@ class _HomePageState extends State<HomePage> {
       );
 }
 
-String getSideBarHeadline(final TabState tabState) {
-  final int selectedIndex = tabState.ui.selectedIndex;
-  final Type selectedType = tabState.ui.selectedType;
-
-  if (selectedType == Robot) return "ROBOT DATA";
-  if (selectedType == PathPoint && selectedIndex > -1)
-    return "POINT $selectedIndex";
-  if (selectedType == History) return "HISTORY";
-  if (selectedType == Help) return "HELP";
-  return "NO SELECTION";
-}
+String getSideBarHeadline(final TabState tabState) =>
+    switch (tabState.ui.selectedType) {
+      PathPoint => "POINT ${tabState.ui.selectedIndex}",
+      Robot => "ROBOT",
+      History => "HISTORY",
+      Help => "HELP",
+      _ => "NO SELECTION",
+    };
