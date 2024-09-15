@@ -17,45 +17,20 @@ class SettingsDetails extends StatelessWidget {
     required this.onPointEdit,
     required this.onRobotEdit,
   });
+  //TODO: store connector
   final TabState tabState;
   final Function(int index, PathPoint point) onPointEdit;
   final Function(Robot robot) onRobotEdit;
 
   @override
-  Widget build(final BuildContext context) {
-    final int index = tabState.ui.selectedIndex;
-    final List<PathPoint> points = tabState.path.points;
-    final Robot robot = tabState.robot;
-
-    // On init the selected index may be negative
-    if (index < 0) return const SizedBox.shrink();
-
-    if (tabState.ui.selectedType == Robot) {
-      return RobotSettings(robot: robot, onRobotEdit: onRobotEdit);
-    }
-
-    if (tabState.ui.selectedType == History) {
-      return const HistorySettings();
-    }
-
-    if (tabState.ui.selectedType == Help) {
-      return const HelpSettings();
-    }
-
-    if (tabState.ui.selectedType == PathPoint) {
-      if (points.isEmpty) return const SizedBox.shrink();
-
-      final PathPoint pointData = points[index];
-      final bool isFirstOrLast = index == 0 || index == points.length - 1;
-      return PointSettings(
-          pointData: pointData,
-          isFirstOrLast: isFirstOrLast,
-          index: index,
-          onPointEdit: onPointEdit);
-    }
-
-    return const SizedBox.shrink();
-  }
+  Widget build(final BuildContext context) =>
+      switch (tabState.ui.selectedType) {
+        PathPoint => PointSettings(onPointEdit: onPointEdit),
+        Robot => RobotSettings(onRobotEdit: onRobotEdit),
+        History => const HistorySettings(),
+        Help => const HelpSettings(),
+        _ => const SizedBox.shrink(),
+      };
 }
 
 CardSettingsText cardSettingsDouble({
