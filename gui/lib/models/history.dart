@@ -27,15 +27,15 @@ class HistoryStamp {
       );
 
   // Json
-  HistoryStamp.fromJson(final Map<String, dynamic> json)
+  HistoryStamp.fromJson(final dynamic json)
       : action = json["action"] as String,
         path = PathModel.fromJson(json["path"] as Map<String, dynamic>);
   final String action;
   final PathModel path;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  dynamic toJson() => <String, dynamic>{
         "action": action,
-        "path": path,
+        "path": path.toJson(),
       };
 }
 
@@ -51,11 +51,9 @@ class History {
 
   // Json
   History.fromJson(final Map<String, dynamic> json)
-      : pathHistory = List<HistoryStamp>.from(
-          (json["tabHistory"] as List<dynamic>)
-              .cast<Map<String, dynamic>>()
-              .map(HistoryStamp.fromJson),
-        ),
+      : pathHistory = (json["tabHistory"] as List<dynamic>)
+            .map(HistoryStamp.fromJson)
+            .toList(),
         currentStateIndex = json["currentStateIndex"] as int;
   final List<HistoryStamp> pathHistory;
   final int currentStateIndex;
@@ -70,7 +68,8 @@ class History {
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        "tabHistory": pathHistory,
+        "tabHistory":
+            pathHistory.map((historyStamp) => historyStamp.toJson()).toList(),
         "currentStateIndex": currentStateIndex,
       };
 }

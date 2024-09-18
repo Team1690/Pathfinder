@@ -1,16 +1,18 @@
 import "dart:io";
 
 import "package:flutter/material.dart";
+import "package:flutter_redux/flutter_redux.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/main.dart";
+import "package:pathfinder/store/app/app_state.dart";
 
 //TODO: simplify this function considerably if you want to have any chance at debugging it when problems arise
 void sendToRobot(final BuildContext context) => showDialog(
       context: context,
       builder: (final BuildContext context) {
+        final AppState state = StoreProvider.of<AppState>(context).state;
         String ip = "10.16.90.2";
         String filePath =
-            "./out/${store.state.tabState[store.state.currentTabIndex].ui.trajectoryFileName}.csv";
+            "./out/${state.currentTabState.ui.trajectoryFileName}.csv";
         String errorMessage = "";
         final TextEditingController ipController =
             TextEditingController(text: ip);

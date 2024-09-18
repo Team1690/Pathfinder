@@ -158,6 +158,7 @@ ThunkAction<AppState> pathRedoThunk() => (final Store<AppState> store) {
 void reconnect(
   final dynamic Function(Store<AppState>) thunk,
   final Object error,
+  final Store<AppState> store,
 ) {
   if (error is GrpcError &&
       error.code == StatusCode.unavailable &&
@@ -179,7 +180,7 @@ ThunkAction<AppState> calculateSplineThunk() =>
 
         store.dispatch(SplineCalculated(res.splinePoints));
       } catch (e) {
-        reconnect(calculateSplineThunk(), e);
+        reconnect(calculateSplineThunk(), e, store);
         store.dispatch(ServerError(e.toString()));
       }
     };
@@ -200,7 +201,7 @@ ThunkAction<AppState> calculateTrajectoryThunk() =>
 
         store.dispatch(TrajectoryCalculated(res.swervePoints.swervePoints));
       } catch (e) {
-        reconnect(calculateTrajectoryThunk(), e);
+        reconnect(calculateTrajectoryThunk(), e, store);
         store.dispatch(ServerError(e.toString()));
       }
     };

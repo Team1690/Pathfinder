@@ -21,15 +21,23 @@ class AppState {
       );
 
   // Json
-  AppState.fromJson(final Map<String, dynamic> json)
-      : tabState = (json["tabState"] as List<dynamic>)
-            .map(
-              (final dynamic e) => TabState.fromJson(e as Map<String, dynamic>),
-            )
-            .toList(),
-        changesSaved = json["changesSaved"] as bool,
-        autoFileName = (json["autoFileName"] as String?) ?? defaultAutoFileName,
-        currentTabIndex = json["currentTabIndex"] as int;
+  static AppState fromJson(final dynamic json) {
+    print(json);
+    return json == null
+        ? AppState.initial()
+        : AppState(
+            tabState: (json["tabState"] as List<dynamic>)
+                .map(
+                  (final dynamic e) =>
+                      TabState.fromJson(e as Map<String, dynamic>),
+                )
+                .toList(),
+            changesSaved: json["changesSaved"] as bool,
+            autoFileName:
+                (json["autoFileName"] as String?) ?? defaultAutoFileName,
+            currentTabIndex: json["currentTabIndex"] as int,
+          );
+  }
 
   final List<TabState> tabState;
   final int currentTabIndex;
@@ -63,7 +71,7 @@ class AppState {
           changesSaved == other.changesSaved &&
           autoFileName == other.autoFileName;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  dynamic toJson() => <String, dynamic>{
         "tabState": tabState.map((final TabState e) => e.toJson()).toList(),
         "currentTabIndex": currentTabIndex,
         "changesSaved": changesSaved,
