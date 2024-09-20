@@ -2,7 +2,7 @@ import "package:pathfinder/store/tab/tab_state.dart";
 
 //TODO: move to constants
 const String defaultAutoFileName = "untitled.$autoFileExtension";
-const String autoFileExtension = "auto";
+const String autoFileExtension = "auton";
 
 class AppState {
   const AppState({

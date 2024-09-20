@@ -254,7 +254,7 @@ ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
           savingPath = result;
         }
 
-        await File(savingPath + ".auto")
+        await File(savingPath + "." + autoFileExtension)
             .writeAsBytes(gzip.encode(jsonEncode(store.state).codeUnits));
 
         store.dispatch(
