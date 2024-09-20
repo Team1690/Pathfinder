@@ -1,17 +1,17 @@
-import "dart:io";
-
 import "package:pathfinder/store/app/app_state.dart";
 import "package:redux_persist/redux_persist.dart";
+import "package:redux_persist_flutter/redux_persist_flutter.dart";
 
 void main() async {
-  final persistor = Persistor(
-    storage: FileStorage(File("ddd.json")),
-    serializer: JsonSerializer(AppState.fromJson),
+  final Persistor<AppState> persistor = Persistor<AppState>(
+    storage: FlutterStorage(key: "testing"),
+    serializer: JsonSerializer<AppState>(AppState.fromJson),
+    throttleDuration: null,
   );
-  final state = (await persistor.load()) ?? AppState.initial();
+  final AppState state = (await persistor.load()) ?? AppState.initial();
   final dynamic jsony = state.toJson();
   print(jsony);
   print("***********************************");
-  final jsonstate = AppState.fromJson(jsony);
+  final AppState jsonstate = AppState.fromJson(jsony);
   print(jsonstate.toJson());
 }

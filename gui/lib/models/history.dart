@@ -5,7 +5,6 @@ import "package:pathfinder/store/tab/store.dart";
 const String initialActionName = "Initial";
 const int maxSavedHistory = 50;
 
-//TODO: regard these model classes as actual models and not like it is now
 class HistoryStamp {
   const HistoryStamp({
     required this.action,
@@ -26,10 +25,10 @@ class HistoryStamp {
         path: PathModel.initial(),
       );
 
-  // Json
   HistoryStamp.fromJson(final dynamic json)
       : action = json["action"] as String,
         path = PathModel.fromJson(json["path"] as Map<String, dynamic>);
+
   final String action;
   final PathModel path;
 
@@ -49,12 +48,12 @@ class History {
       : pathHistory = <HistoryStamp>[HistoryStamp.initial()],
         currentStateIndex = 0;
 
-  // Json
-  History.fromJson(final Map<String, dynamic> json)
+  History.fromJson(final dynamic json)
       : pathHistory = (json["tabHistory"] as List<dynamic>)
             .map(HistoryStamp.fromJson)
             .toList(),
         currentStateIndex = json["currentStateIndex"] as int;
+
   final List<HistoryStamp> pathHistory;
   final int currentStateIndex;
 
@@ -67,9 +66,10 @@ class History {
         currentStateIndex: currentStateIndex ?? this.currentStateIndex,
       );
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        "tabHistory":
-            pathHistory.map((historyStamp) => historyStamp.toJson()).toList(),
+  dynamic toJson() => <String, dynamic>{
+        "tabHistory": pathHistory
+            .map((final HistoryStamp historyStamp) => historyStamp.toJson())
+            .toList(),
         "currentStateIndex": currentStateIndex,
       };
 }

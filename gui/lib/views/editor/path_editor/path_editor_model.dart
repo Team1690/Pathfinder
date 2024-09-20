@@ -92,7 +92,7 @@ class PathEditorModel {
         segments:
             store.state.tabState[store.state.currentTabIndex].path.segments,
         evaulatedPoints: store
-            .state.tabState[store.state.currentTabIndex].path.evaluatedPoints
+            .state.tabState[store.state.currentTabIndex].path.splinePoints
             .map((final SplinePoint p) => p.toUiCoord(store))
             .toList(),
         selectedPointIndex: (store.state.tabState[store.state.currentTabIndex]

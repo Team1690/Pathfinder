@@ -38,7 +38,6 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, SetRobotOnField>(_setRobotOnField),
   TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
   TypedReducer<TabState, CopyPoint>(_copyPoint),
-  TypedReducer<TabState, ChangeI>(_changeI),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -78,7 +77,7 @@ TabState tabStateReducer(final TabState tabState, final dynamic action) {
         newTabState.path.copyWith(
           // Remove the evaluated points from the saved path, it is calculated async
           // and isn't correct here (will be calculated anyway in the redo/undo thunk)
-          evaluatedPoints: <SplinePoint>[],
+          splinePoints: <SplinePoint>[],
         ),
       ),
     ];
@@ -133,7 +132,7 @@ TabState _objectUnselected(
     );
 //TODO: server errors aren't currently handled
 TabState _setServerError(final TabState tabState, final ServerError action) =>
-    tabState.copyWith(ui: tabState.ui.copyWith(serverError: action.error));
+    tabState.copyWith(ui: tabState.ui.copyWith());
 
 TabState _trajectoryInProgress(
   final TabState tabState,
@@ -165,9 +164,9 @@ TabState _trajectoryCalculated(
       firstPointTime = action.points[index + 1].time;
     }
   });
-
+//TODO: server errors aren't currently handled
   return tabState.copyWith(
-    ui: tabState.ui.copyWith(serverError: null),
+    ui: tabState.ui.copyWith(),
     path: tabState.path.copyWith(
       autoDuration: autoDuration,
       trajectoryPoints: action.points,
@@ -187,11 +186,11 @@ TabState _splineCalculated(
         ),
       )
       .toList();
-
+//TODO: server errors aren't currently handled
   return tabState.copyWith(
-    ui: tabState.ui.copyWith(serverError: null),
+    ui: tabState.ui.copyWith(),
     path: tabState.path.copyWith(
-      evaluatedPoints: evaluatedPoints,
+      splinePoints: evaluatedPoints,
       robotOnField: None<RobotOnField>(),
     ),
   );
@@ -199,7 +198,7 @@ TabState _splineCalculated(
 
 TabState _addPointToPath(final TabState tabState, final AddPointToPath action) {
   //max points allowed before ui begins to break
-  //TODO: move to constants
+  //TODO: move to constants ( the 20 )
   if (tabState.path.points.length + 1 > 20) return tabState;
   // If the segment to add is -1, treat it as if the addition is to the end
   // of the point list and to the last segment
@@ -347,7 +346,7 @@ TabState editPoint(final TabState tabState, final EditPoint action) {
     final List<Segment> newSegments = <Segment>[...tabState.path.segments];
     newSegments.insert(
       currentSegmentIndex + 1,
-      Segment.initial(
+      Segment.fromPointIndexes(
         pointIndexes: newSegments[currentSegmentIndex]
             .pointIndexes
             .where((final int index) => index >= action.pointIndex)
@@ -477,7 +476,7 @@ TabState _deletePointFromPath(
     path: newState.path.copyWith(
       points: newPoints,
       // Show no spline if only one/zero points are left
-      evaluatedPoints: newPoints.length < 2 ? <SplinePoint>[] : null,
+      splinePoints: newPoints.length < 2 ? <SplinePoint>[] : null,
       segments: newState.path.segments
           .map(
             (final Segment segment) => segment.copyWith(
@@ -666,9 +665,4 @@ TabState _copyPoint(final TabState tabState, final CopyPoint action) =>
       path: tabState.path.copyWith(
         copiedPoint: Some<PathPoint>(tabState.path.points[action.index]),
       ),
-    );
-
-TabState _changeI(final TabState tabState, final ChangeI action) =>
-    tabState.copyWith(
-      i: action.i,
     );

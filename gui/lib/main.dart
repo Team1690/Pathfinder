@@ -14,25 +14,32 @@ import "package:redux_thunk/redux_thunk.dart";
 void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);
 
 void main() async {
+  //TODO: add a try catch here for future changes of fromJson
+  //a persistor persists the state between uses of the app, we save this state in the document
+  //dir supplied by the system and save only when there's a change to the state
   final Persistor<AppState> persistor = Persistor<AppState>(
     storage: FlutterStorage(key: "orbit-pathplanner"),
     serializer: JsonSerializer<AppState>(AppState.fromJson),
     throttleDuration: null,
   );
 
+  //load initial state
   final AppState initialAppState =
       (await persistor.load()) ?? AppState.initial();
 
+  //create store with reducer and middleware
   final Store<AppState> store = Store<AppState>(
     appStateReducer,
     initialState: initialAppState,
     middleware: <Middleware<AppState>>[
       thunkMiddleware,
       persistor.createMiddleware(),
+      //* when debugging redux:
       // LoggingMiddleware<AppState>.printer(),
     ],
   );
 
+  //in debug mode we only want to debug the gui
   if (kReleaseMode) {
     runAlgorithm();
   }
