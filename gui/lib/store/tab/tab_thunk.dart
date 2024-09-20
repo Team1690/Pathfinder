@@ -1,10 +1,10 @@
 import "dart:convert";
 import "dart:io";
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:grpc/grpc.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:path/path.dart";
 import "package:file_picker/file_picker.dart";
 import "package:pathfinder/main.dart";
 import "package:pathfinder/models/path_point.dart";
@@ -218,7 +218,10 @@ ThunkAction<AppState> openFileThunk() => (final Store<AppState> store) async {
         if (result?.paths.first == null) return;
         final File file = File(result!.files.first.path ?? "");
 
-        final String content = await file.readAsString();
+        final String content = await file.readAsBytes().then(
+              (final Uint8List value) =>
+                  String.fromCharCodes(gzip.decode(value)),
+            );
 
         store.dispatch(
           OpenFile(
@@ -240,16 +243,8 @@ ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
         }
 
         if (isSaveAs) {
-          String fileName = basename(savingPath);
-
-          // Make sure the suggested file extension is auto
-          if (extension(fileName) != ".$autoFileExtension") {
-            fileName += ".$autoFileExtension";
-          }
-
           final String? result = await FilePicker.platform.saveFile(
             dialogTitle: "Choose where to save the auto file",
-            fileName: fileName,
             type: FileType.custom,
             allowedExtensions: <String>[autoFileExtension],
             lockParentWindow: false,
@@ -259,7 +254,8 @@ ThunkAction<AppState> saveFileThunk(bool isSaveAs) =>
           savingPath = result;
         }
 
-        await File(savingPath).writeAsString(jsonEncode(store.state));
+        await File(savingPath + ".auto")
+            .writeAsBytes(gzip.encode(jsonEncode(store.state).codeUnits));
 
         store.dispatch(
           SaveFile(
