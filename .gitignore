@@ -52,3 +52,5 @@ algorithm/out
 dist-*
 dist-*/
 *build*
+v*.*
+innosetupout/
