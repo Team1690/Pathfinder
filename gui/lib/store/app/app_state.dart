@@ -1,11 +1,9 @@
-import "package:meta/meta.dart";
-
 import "package:pathfinder/store/tab/tab_state.dart";
 
+//TODO: move to constants
 const String defaultAutoFileName = "untitled.$autoFileExtension";
-const String autoFileExtension = "auto";
+const String autoFileExtension = "auton";
 
-@immutable
 class AppState {
   const AppState({
     required this.tabState,
@@ -13,6 +11,7 @@ class AppState {
     required this.changesSaved,
     required this.autoFileName,
   });
+
   factory AppState.initial() => AppState(
         tabState: <TabState>[TabState.initial()],
         currentTabIndex: 0,
@@ -20,23 +19,24 @@ class AppState {
         autoFileName: defaultAutoFileName,
       );
 
-  // Json
-  AppState.fromJson(final Map<String, dynamic> json)
-      : tabState = (json["tabState"] as List<dynamic>)
-            .map(
-              (final dynamic e) => TabState.fromJson(e as Map<String, dynamic>),
-            )
-            .toList(),
-        changesSaved = json["changesSaved"] as bool,
-        autoFileName = (json["autoFileName"] as String?) ?? defaultAutoFileName,
-        currentTabIndex = json["currentTabIndex"] as int;
-
   final List<TabState> tabState;
   final int currentTabIndex;
   final bool changesSaved;
   final String autoFileName;
 
   TabState get currentTabState => tabState[currentTabIndex];
+
+  @override
+  int get hashCode => tabState.hashCode;
+
+  @override
+  bool operator ==(final Object other) =>
+      identical(this, other) ||
+      other is AppState &&
+          tabState == other.tabState &&
+          currentTabIndex == other.currentTabIndex &&
+          changesSaved == other.changesSaved &&
+          autoFileName == other.autoFileName;
 
   AppState copyWith({
     final List<TabState>? tabState,
@@ -51,19 +51,18 @@ class AppState {
         autoFileName: autoFileName ?? this.autoFileName,
       );
 
-  @override
-  int get hashCode => tabState.hashCode;
+  static AppState fromJson(final dynamic json) => json == null
+      ? AppState.initial()
+      : AppState(
+          tabState: (json["tabState"] as List<dynamic>)
+              .map(TabState.fromJson)
+              .toList(),
+          changesSaved: json["changesSaved"] as bool,
+          autoFileName: json["autoFileName"] as String,
+          currentTabIndex: json["currentTabIndex"] as int,
+        );
 
-  @override
-  bool operator ==(final Object other) =>
-      identical(this, other) ||
-      other is AppState &&
-          tabState == other.tabState &&
-          currentTabIndex == other.currentTabIndex &&
-          changesSaved == other.changesSaved &&
-          autoFileName == other.autoFileName;
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  dynamic toJson() => <String, dynamic>{
         "tabState": tabState.map((final TabState e) => e.toJson()).toList(),
         "currentTabIndex": currentTabIndex,
         "changesSaved": changesSaved,

@@ -1,19 +1,22 @@
-import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
-
 class Segment {
   Segment({
     required this.pointIndexes,
     required this.maxVelocity,
-    this.isHidden = false,
+    required this.isHidden,
   });
 
-  factory Segment.initial({final List<int>? pointIndexes}) => Segment(
-        pointIndexes: pointIndexes ?? <int>[],
-        maxVelocity: 3,
+  factory Segment.initial() => Segment.fromPointIndexes(
+        pointIndexes: <int>[],
       );
 
-  // Json
-  Segment.fromJson(final Map<String, dynamic> json)
+  factory Segment.fromPointIndexes({required final List<int> pointIndexes}) =>
+      Segment(
+        pointIndexes: pointIndexes,
+        maxVelocity: 3,
+        isHidden: false,
+      );
+
+  Segment.fromJson(final dynamic json)
       : pointIndexes = (json["pointIndexes"] as List<dynamic>).cast<int>(),
         maxVelocity = json["maxVelocity"] as double,
         isHidden = json["isHidden"] as bool;
@@ -28,8 +31,6 @@ class Segment {
     final List<int>? pointIndexes,
     final double? maxVelocity,
     final bool? isHidden,
-    final List<rpc.SplinePoint>? evaluatedPoints,
-    final List<rpc.SwervePoints_SwervePoint>? trajectoryPoints,
   }) =>
       Segment(
         pointIndexes: pointIndexes ?? this.pointIndexes,
@@ -37,7 +38,7 @@ class Segment {
         isHidden: isHidden ?? this.isHidden,
       );
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  dynamic toJson() => <String, dynamic>{
         "pointIndexes": pointIndexes,
         "maxVelocity": maxVelocity,
         "isHidden": isHidden,

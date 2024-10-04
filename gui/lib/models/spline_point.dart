@@ -1,7 +1,7 @@
 import "package:flutter/cupertino.dart";
+import "package:redux/redux.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/utils/offset_extensions.dart";
-import "package:redux/redux.dart";
 
 class SplinePoint {
   SplinePoint({
@@ -9,12 +9,14 @@ class SplinePoint {
     required this.segmentIndex,
   });
 
-  SplinePoint.fromJson(final Map<String, dynamic> json)
+  SplinePoint.fromJson(final dynamic json)
       : position =
             OffsetJson.fromJson(json["position"] as Map<String, dynamic>),
         segmentIndex = json["segmentIndex"] as int;
+
   final Offset position;
   final int segmentIndex;
+
 //TODO: meters to pix should be a much easier function
   SplinePoint toUiCoord(final Store<AppState> store) => copyWith(
         position: store.state.currentTabState.ui.metersToPix(position),
@@ -26,7 +28,7 @@ class SplinePoint {
         segmentIndex: segmentIndex ?? this.segmentIndex,
       );
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  dynamic toJson() => <String, dynamic>{
         "position": position.toJson(),
         "segmentIndex": segmentIndex,
       };

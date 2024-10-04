@@ -1,4 +1,3 @@
-import "dart:convert";
 import "dart:io";
 
 import "package:flutter/foundation.dart";
@@ -8,22 +7,53 @@ import "package:pathfinder/store/app/app_reducer.dart";
 import "package:pathfinder/store/app/app_state.dart";
 import "package:pathfinder/views/home/home.dart";
 import "package:redux/redux.dart";
+import "package:redux_persist/redux_persist.dart";
+import "package:redux_persist_flutter/redux_persist_flutter.dart";
 import "package:redux_thunk/redux_thunk.dart";
-import "package:redux_logging/redux_logging.dart";
 
-//TODO: use redux persist for saving temp-state
-const bool debug = false;
-const String cacheFilePath = "./.temp-state";
+void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);
 
-void main() {
-  // final persistor = Persistor(storage: FlutterStorage(key: "orbit-pathplanner"), serializer: serializer)
+void main() async {
+  //TODO: add a try catch here for future changes of fromJson
+  //a persistor persists the state between uses of the app, we save this state in the document
+  //dir supplied by the system and save only when there's a change to the state
+  final Persistor<AppState> persistor = Persistor<AppState>(
+    storage: FlutterStorage(key: "orbit-pathplanner"),
+    serializer: JsonSerializer<AppState>(AppState.fromJson),
+    throttleDuration: null,
+  );
+
+  //load initial state
+  final AppState initialAppState =
+      (await persistor.load()) ?? AppState.initial();
+
+  //create store with reducer and middleware
+  final Store<AppState> store = Store<AppState>(
+    appStateReducer,
+    initialState: initialAppState,
+    middleware: <Middleware<AppState>>[
+      thunkMiddleware,
+      persistor.createMiddleware(),
+      //* when debugging redux:
+      // LoggingMiddleware<AppState>.printer(),
+    ],
+  );
+
+  //in debug mode we only want to debug the gui
   if (kReleaseMode) {
     runAlgorithm();
   }
-  runApp(App());
+  runApp(
+    App(
+      store: store,
+    ),
+  );
 }
 
 class App extends StatelessWidget {
+  const App({super.key, required this.store});
+
+  final Store<AppState> store;
   @override
   Widget build(final BuildContext context) => StoreProvider<AppState>(
         store: store,
@@ -35,36 +65,3 @@ class App extends StatelessWidget {
         ),
       );
 }
-
-//TODO: simplify saving the app state use redux persist/other method
-final Store<AppState> store = Store<AppState>(
-  (final AppState state, final dynamic action) {
-    final AppState newState = appStateReducer(state, action);
-    saveCacheState(newState);
-
-    return newState;
-  },
-  initialState: loadInitialStateFromCache(),
-  middleware: <Middleware<AppState>>[
-    thunkMiddleware,
-    if (debug) LoggingMiddleware<dynamic>.printer(),
-  ],
-);
-
-AppState loadInitialStateFromCache() {
-  try {
-    final File cacheFile = File(cacheFilePath);
-    final Map<String, dynamic> jsonState =
-        jsonDecode(cacheFile.readAsStringSync()) as Map<String, dynamic>;
-    return AppState.fromJson(jsonState);
-  } catch (e) {}
-
-  return AppState.initial();
-}
-
-void saveCacheState(final AppState state) {
-  final String stateJson = jsonEncode(state.toJson());
-  File(cacheFilePath).writeAsString(stateJson);
-}
-
-void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);
