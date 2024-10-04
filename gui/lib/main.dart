@@ -1,3 +1,5 @@
+import "dart:convert";
+import "dart:developer";
 import "dart:io";
 
 import "package:flutter/foundation.dart";
@@ -13,7 +15,7 @@ import "package:redux_thunk/redux_thunk.dart";
 
 void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);
 
-void main() async {
+void main(final List<String> args) async {
   //TODO: add a try catch here for future changes of fromJson
   //a persistor persists the state between uses of the app, we save this state in the document
   //dir supplied by the system and save only when there's a change to the state
@@ -24,8 +26,25 @@ void main() async {
   );
 
   //load initial state
-  final AppState initialAppState =
-      (await persistor.load()) ?? AppState.initial();
+  AppState initialAppState = (await persistor.load()) ?? AppState.initial();
+
+  //if we supply args meaning that we opened an auto file with this app then decode the file and open it
+  if (args.isNotEmpty) {
+    try {
+      final File autonFile = File(args[0]);
+      final String content = await autonFile.readAsBytes().then(
+            (final Uint8List value) => String.fromCharCodes(gzip.decode(value)),
+          );
+      final dynamic decodedState = jsonDecode(content);
+      final AppState fileState = AppState.fromJson(decodedState);
+      initialAppState = fileState.copyWith(
+        changesSaved: true,
+        autoFileName: autonFile.path,
+      );
+    } catch (e) {
+      log(e.toString());
+    }
+  }
 
   //create store with reducer and middleware
   final Store<AppState> store = Store<AppState>(

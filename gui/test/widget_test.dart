@@ -15,13 +15,9 @@
 //   final AppState jsonstate = AppState.fromJson(jsony);
 //   print(jsonstate.toJson());
 // }
-import "package:flutter_test/flutter_test.dart";
+
+import "package:win32/win32.dart";
 
 void main() {
-  test("Add two numbers", () {
-    expect(
-      5 + 5,
-      equals(10),
-    );
-  });
+  Beep(1440, 1000);
 }
