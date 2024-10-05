@@ -16,8 +16,4 @@
 //   print(jsonstate.toJson());
 // }
 
-import "package:win32/win32.dart";
-
-void main() {
-  Beep(1440, 1000);
-}
+void main() {}
