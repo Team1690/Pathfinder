@@ -13,8 +13,6 @@ import "package:redux_persist/redux_persist.dart";
 import "package:redux_persist_flutter/redux_persist_flutter.dart";
 import "package:redux_thunk/redux_thunk.dart";
 
-void runAlgorithm() => Process.run("Pathfinder-algorithm.exe", <String>[]);
-
 void main(final List<String> args) async {
   //TODO: add a try catch here for future changes of fromJson
   //a persistor persists the state between uses of the app, we save this state in the document
@@ -65,10 +63,6 @@ void main(final List<String> args) async {
     ],
   );
 
-  //in debug mode we only want to debug the gui
-  if (kReleaseMode) {
-    runAlgorithm();
-  }
   runApp(
     App(
       store: store,

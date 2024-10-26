@@ -1,0 +1,35 @@
+import 'dart:io';
+
+const String _guiExecutableName = "pathfinder_gui.exe";
+const String _algorithmExecutableName = "Pathfinder-algorithm.exe";
+
+void main(List<String> args) async {
+  Process algorithmProcess = await startAlgorithm();
+  await startGUI(args[0]);
+  //TODO: if multiple instances of the algorithm process are running close them
+  while (true) {
+    if (!(await isProcessRunning(_guiExecutableName)) &&
+        (await isProcessRunning(_algorithmExecutableName))) {
+      Process.killPid(algorithmProcess.pid);
+      break;
+    }
+    if ((await isProcessRunning(_guiExecutableName)) &&
+        !(await isProcessRunning(_algorithmExecutableName))) {
+      algorithmProcess = await startAlgorithm();
+    }
+  }
+}
+
+Future<Process> startGUI([String? filePath]) async =>
+    Process.start("pathfinder_gui.exe", [if (filePath != null) filePath]);
+Future<Process> startAlgorithm() async =>
+    Process.start("Pathfinder-algorithm.exe", <String>[]);
+
+Future<bool> isProcessRunning(String processName) async {
+  // Run the tasklist command (only works on windows, you need ps for command for linux/macos)
+  ProcessResult result = await Process.run('tasklist', []);
+
+  // Check if the process name is in the output
+  String output = result.stdout as String;
+  return output.contains(processName);
+}

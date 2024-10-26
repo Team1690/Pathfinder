@@ -6,7 +6,6 @@ import "package:flutter/material.dart";
 import "package:grpc/grpc.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:file_picker/file_picker.dart";
-import "package:pathfinder_gui/main.dart";
 import "package:pathfinder_gui/models/path_point.dart";
 import "package:pathfinder_gui/models/segment.dart";
 import "package:pathfinder_gui/rpc/protos/pathfinder_service.pb.dart" as rpc;
@@ -163,7 +162,6 @@ void reconnect(
   if (error is GrpcError &&
       error.code == StatusCode.unavailable &&
       kReleaseMode) {
-    startAlgorithm();
     store.dispatch(thunk);
     return;
   }
