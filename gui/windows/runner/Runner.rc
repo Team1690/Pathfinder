@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "com.example" "\0"
             VALUE "FileDescription", "Orbit PathFinder" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "pathfinder" "\0"
+            VALUE "InternalName", "pathfinder_gui" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2021 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "pathfinder.exe" "\0"
-            VALUE "ProductName", "pathfinder" "\0"
+            VALUE "OriginalFilename", "pathfinder_gui.exe" "\0"
+            VALUE "ProductName", "pathfinder_gui" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

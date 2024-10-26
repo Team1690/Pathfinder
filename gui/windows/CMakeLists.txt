@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(pathfinder LANGUAGES CXX)
 
-set(BINARY_NAME "pathfinder")
+set(BINARY_NAME "pathfinder_gui")
 
 cmake_policy(SET CMP0063 NEW)
 

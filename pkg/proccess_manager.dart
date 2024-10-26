@@ -1,6 +1,6 @@
 import 'dart:io';
 
-const String _guiExecutableName = "pathfinder.exe";
+const String _guiExecutableName = "pathfinder_gui.exe";
 const String _algorithmExecutableName = "pathfinder_algorithm.exe";
 
 void main(List<String> args) async {
@@ -20,6 +20,7 @@ void main(List<String> args) async {
         !(await isProcessRunning(_algorithmExecutableName))) {
       algorithmProcess = await startAlgorithm();
     }
+    sleep(Duration(milliseconds: 500));
   }
 }
 
