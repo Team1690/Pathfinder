@@ -21,9 +21,9 @@ void main(List<String> args) async {
 }
 
 Future<Process> startGUI([String? filePath]) async =>
-    Process.start("pathfinder_gui.exe", [if (filePath != null) filePath]);
+    Process.start(_guiExecutableName, [if (filePath != null) filePath]);
 Future<Process> startAlgorithm() async =>
-    Process.start("Pathfinder-algorithm.exe", <String>[]);
+    Process.start(_algorithmExecutableName, <String>[]);
 
 Future<bool> isProcessRunning(String processName) async {
   // Run the tasklist command (only works on windows, you need ps for command for linux/macos)

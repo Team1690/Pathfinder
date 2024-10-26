@@ -13,6 +13,11 @@ cd algorithm
 go build -ldflags="-H windowsgui" .
 cd ../
 
+echo "Building runtime environment"
+cd pkg
+dart compile exe proccess_manager.dart --target-os=windows --output=pathfinder.exe
+cd ../
+
 echo "Putting everything in './$OUTPUT_DIR'"
 mkdir $OUTPUT_DIR
 
