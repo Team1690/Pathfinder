@@ -4,18 +4,18 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
-import "package:pathfinder/shortcuts/help.dart";
-import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/views/editor/editor_screen.dart";
-import "package:pathfinder/constants.dart";
+import "package:pathfinder_gui/shortcuts/help.dart";
+import "package:pathfinder_gui/models/history.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
+import "package:pathfinder_gui/views/editor/editor_screen.dart";
+import "package:pathfinder_gui/constants.dart";
 import "package:path/path.dart" as path;
-import "package:pathfinder/views/editor/save_changes_dialog.dart";
-import "package:pathfinder/views/home/home_view_model.dart";
-import "package:pathfinder/views/settings/settings_details.dart";
+import "package:pathfinder_gui/views/editor/save_changes_dialog.dart";
+import "package:pathfinder_gui/views/home/home_view_model.dart";
+import "package:pathfinder_gui/views/settings/settings_details.dart";
 
 //TODO: concise + add TODOS
 class HomePage extends StatefulWidget {

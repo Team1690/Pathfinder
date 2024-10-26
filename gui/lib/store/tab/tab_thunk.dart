@@ -6,15 +6,15 @@ import "package:flutter/material.dart";
 import "package:grpc/grpc.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
 import "package:file_picker/file_picker.dart";
-import "package:pathfinder/main.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
-import "package:pathfinder/services/pathfinder.dart";
-import "package:pathfinder/store/app/app_actions.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/store/tab/tab_actions.dart";
+import "package:pathfinder_gui/main.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/rpc/protos/pathfinder_service.pb.dart" as rpc;
+import "package:pathfinder_gui/services/pathfinder.dart";
+import "package:pathfinder_gui/store/app/app_actions.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
+import "package:pathfinder_gui/store/tab/tab_actions.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:redux/redux.dart";
 
@@ -163,7 +163,7 @@ void reconnect(
   if (error is GrpcError &&
       error.code == StatusCode.unavailable &&
       kReleaseMode) {
-    runAlgorithm();
+    startAlgorithm();
     store.dispatch(thunk);
     return;
   }

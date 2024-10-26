@@ -1,4 +1,4 @@
-import "package:pathfinder/store/tab/tab_state.dart";
+import "package:pathfinder_gui/store/tab/tab_state.dart";
 
 //TODO: move to constants
 const String defaultAutoFileName = "untitled.$autoFileExtension";

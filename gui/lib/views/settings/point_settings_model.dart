@@ -1,5 +1,5 @@
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/store/app/app_state.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
 import "package:redux/redux.dart";
 
 class PointSettingsModel {

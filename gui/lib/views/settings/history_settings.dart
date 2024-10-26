@@ -2,9 +2,9 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:orbit_card_settings/helpers/platform_functions.dart";
-import "package:pathfinder/models/history.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder_gui/models/history.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
 import "package:redux/redux.dart";
 
 class HistorySettings extends StatelessWidget {

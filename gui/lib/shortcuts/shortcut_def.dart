@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:pathfinder/shortcuts/shortcut.dart";
+import "package:pathfinder_gui/shortcuts/shortcut.dart";
 
 //TODO: Standardize the description and shortcut
 const Shortcut noZoomShortcut = Shortcut(

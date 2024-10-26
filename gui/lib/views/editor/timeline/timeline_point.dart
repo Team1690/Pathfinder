@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/views/editor/point_type.dart";
+import "package:pathfinder_gui/views/editor/point_type.dart";
 
 //TODO: see if you can merge this with other const
 const double _timelinePointDiameter = 20;

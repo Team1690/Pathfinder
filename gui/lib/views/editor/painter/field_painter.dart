@@ -4,14 +4,14 @@ import "dart:ui" as ui;
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/constants.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/models/spline_point.dart"; //TODO: import as?
-import "package:pathfinder/views/editor/point_type.dart";
-import "package:pathfinder/views/editor/dragging_point.dart";
+import "package:pathfinder_gui/constants.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/models/robot_on_field.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/models/spline_point.dart"; //TODO: import as?
+import "package:pathfinder_gui/views/editor/point_type.dart";
+import "package:pathfinder_gui/views/editor/dragging_point.dart";
 
 //TODO: constants?
 const Color _selectedPointHightlightColor = Color(0xffeeeeee);

@@ -1,4 +1,4 @@
-// import "package:pathfinder/store/app/app_state.dart";
+// import "package:pathfinder_gui/store/app/app_state.dart";
 // import "package:redux_persist/redux_persist.dart";
 // import "package:redux_persist_flutter/redux_persist_flutter.dart";
 
