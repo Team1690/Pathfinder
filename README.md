@@ -13,10 +13,22 @@ To build the project and create a runnable file run:
 sh scripts/build.sh
 ```
 This should create a dist-\<commit-sha> folder with the files:
- - `pathfinder.exe`
- - `Pathfinder-algorithm.exe`
+ - `pathfinder_gui.exe`
+ - `pathfinder_algorithm.exe`
+ - `pathfinder_manager.exe`
 
-To run the app run `pathfinder.exe` the app with the icon
+To run the app run `pathfinder_gui.exe` the app with the icon
+
+---
+### Deploy & Release
+
+Use InnoSetup to make an installer script for the app
+ - First run the build script above
+ - Set Main Executable as `pathfinder_gui.exe`
+ - Add additional files (everything in the dist dir)
+ - Set the default location to the desktop
+ - Bind the `.auton` file ending to the main executable 
+ - Inno Setup will add pathfinder_gui.exe to the windows registry for you
 
 ---
 ### Run & Debug
@@ -24,11 +36,9 @@ To run the app run `pathfinder.exe` the app with the icon
 Go:
 launch in vscode - `Debug Go Backend`
 
-
 Flutter:
 launch in vscode - `Debug Flutter Frontend`
-<br/>
-<br/>
+
 
 Alternativly you can run in bash:
 
@@ -41,19 +51,18 @@ go run .
 Flutter:
 ```bash
 cd ./gui
-flutter run -d windows --dart-define=dev=true
+flutter run -d windows
 ```
 
 ---
-
 ### General background
 
-The project is seperated into 2 parts:
+The project is generally seperated into 2 parts:
 
 1. GUI - written in flutter and runs as a flutter windows application
-2. Algorithm server - written in go
+2. Algorithm server - written in golang
 
-The two communicate with each other using [protobuf](https://developers.google.com/protocol-buffers) grpc - in short protobuf is an efficient communication protocol defined using a typed language, and grpc is using protobuf to communicate between a client and a server over tcp connection.
+The two processes communicate with each other using [protobuf](https://developers.google.com/protocol-buffers) grpc - in short protobuf is an efficient communication protocol defined using a typed language, and grpc uses protobuf to communicate between a client and a server over tcp connection.
 
 The Algorithm server acts as a grpc server and the GUI is the client.
 
@@ -64,11 +73,11 @@ Directory structure -
 
 ```
 .
-├── ./scripts      # some bash scripts used for common tasks
-├── ./protos       # definition of grpc protobuf protocol
 ├── ./algorithm    # Go code for the trajectory generation algorithm
+├── ./docs         # Some documentation txt files to help new developers
 ├── ./gui          # Flutter code of GUI application
-├── ./.vscode      # vscode files
+├── ./protos       # Definition of grpc protobuf protocol
+├── ./scripts      # Some bash scripts used for common tasks
 └── README.md
 ```
 
@@ -90,7 +99,7 @@ Follow [flutter official docs](https://docs.flutter.dev/development/tools/vs-cod
 Make sure to attach a windows device to run it as a flutter windows desktop app. (google that if needed)
 
 #### Go
-Install go ([download link](https://go.dev/doc/install))
+Install latest version of go ([download link](https://go.dev/doc/install))
 
 
 #### Protobuf code gen tools
@@ -104,3 +113,8 @@ This should:
 1. Install `protoc` - a binary that used to compile the proto files
 2. Install go plugin for protoc
 3. Install dart plugin for protoc
+
+To generate the pb files for each language run:
+```bash
+sh ./scripts/genproto.sh
+```
