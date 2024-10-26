@@ -26,7 +26,14 @@ void main(final List<String> args) async {
   );
 
   //load initial state
-  AppState initialAppState = (await persistor.load()) ?? AppState.initial();
+  AppState initialAppState = AppState.initial();
+  try {
+    initialAppState = (await persistor.load()) ?? AppState.initial();
+  } catch (e, trace) {
+    if (kDebugMode) {
+      debugPrint(e.toString() + " :-: " + trace.toString());
+    }
+  }
 
   //if we supply args meaning that we opened an auto file with this app then decode the file and open it
   if (args.isNotEmpty) {
