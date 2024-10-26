@@ -54,3 +54,4 @@ dist-*/
 *build*
 v*.*
 innosetupout/
+pkg/*.exe

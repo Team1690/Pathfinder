@@ -1,11 +1,14 @@
 import 'dart:io';
 
-const String _guiExecutableName = "pathfinder_gui.exe";
-const String _algorithmExecutableName = "Pathfinder-algorithm.exe";
+const String _guiExecutableName = "pathfinder.exe";
+const String _algorithmExecutableName = "pathfinder_algorithm.exe";
 
 void main(List<String> args) async {
   Process algorithmProcess = await startAlgorithm();
-  await startGUI(args[0]);
+  if (!(await isProcessRunning(_guiExecutableName))) {
+    final String? fileName = args.isNotEmpty ? args[0] : null;
+    await startGUI(fileName);
+  }
   //TODO: if multiple instances of the algorithm process are running close them
   while (true) {
     if (!(await isProcessRunning(_guiExecutableName)) &&

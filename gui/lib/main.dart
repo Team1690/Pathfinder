@@ -13,7 +13,13 @@ import "package:redux_persist/redux_persist.dart";
 import "package:redux_persist_flutter/redux_persist_flutter.dart";
 import "package:redux_thunk/redux_thunk.dart";
 
+void runBackgroundProcessManager() =>
+    Process.run("pathfinder_manager.exe", <String>[]);
+
 void main(final List<String> args) async {
+  if (kReleaseMode) {
+    runBackgroundProcessManager();
+  }
   //TODO: add a try catch here for future changes of fromJson
   //a persistor persists the state between uses of the app, we save this state in the document
   //dir supplied by the system and save only when there's a change to the state
