@@ -2,9 +2,9 @@ import "dart:convert";
 import "dart:math";
 
 import "package:collection/collection.dart";
-import "package:pathfinder/store/app/app_actions.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder_gui/store/app/app_actions.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
 import "package:redux/redux.dart";
 
 Reducer<AppState> applyReducers = combineReducers(

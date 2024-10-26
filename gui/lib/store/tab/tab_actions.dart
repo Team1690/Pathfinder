@@ -1,8 +1,8 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/rpc/protos/pathfinder_service.pb.dart" as rpc;
 
 abstract class TabAction {
   @override

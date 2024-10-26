@@ -1,7 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:redux/redux.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/offset_extensions.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/utils/offset_extensions.dart";
 
 class SplinePoint {
   SplinePoint({

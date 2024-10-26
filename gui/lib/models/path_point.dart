@@ -1,9 +1,9 @@
 import "dart:math";
 
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/utils/offset_extensions.dart";
-import "package:pathfinder/views/editor/point_type.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/utils/offset_extensions.dart";
+import "package:pathfinder_gui/views/editor/point_type.dart";
 import "package:redux/redux.dart";
 
 //TODO: move this value to constants

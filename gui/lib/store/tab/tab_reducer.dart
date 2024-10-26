@@ -2,16 +2,16 @@ import "dart:math";
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/rpc/protos/pathfinder_service.pb.dart" as rpc;
-import "package:pathfinder/services/pathfinder.dart";
-import "package:pathfinder/store/app/app_actions.dart";
-import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder_gui/models/history.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot_on_field.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/rpc/protos/pathfinder_service.pb.dart" as rpc;
+import "package:pathfinder_gui/services/pathfinder.dart";
+import "package:pathfinder_gui/store/app/app_actions.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
 import "package:redux/redux.dart";
-import "package:pathfinder/models/spline_point.dart";
+import "package:pathfinder_gui/models/spline_point.dart";
 
 Reducer<TabState> applyReducers =
     combineReducers<TabState>(<TabState Function(TabState, dynamic)>[

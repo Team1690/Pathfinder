@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/constants.dart";
-import "package:pathfinder/views/editor/file_buttons.dart";
-import "package:pathfinder/views/editor/timeline/time_line_view.dart";
-import "package:pathfinder/views/editor/path_editor/path_editor.dart";
+import "package:pathfinder_gui/constants.dart";
+import "package:pathfinder_gui/views/editor/file_buttons.dart";
+import "package:pathfinder_gui/views/editor/timeline/time_line_view.dart";
+import "package:pathfinder_gui/views/editor/path_editor/path_editor.dart";
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({

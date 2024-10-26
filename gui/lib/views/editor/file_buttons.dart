@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/constants.dart";
-import "package:pathfinder/models/tab_ui.dart";
-import "package:pathfinder/utils/sendFileOverSSH.dart";
+import "package:pathfinder_gui/constants.dart";
+import "package:pathfinder_gui/models/tab_ui.dart";
+import "package:pathfinder_gui/utils/sendFileOverSSH.dart";
 
 class FileButtons extends StatefulWidget {
   const FileButtons({

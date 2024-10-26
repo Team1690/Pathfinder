@@ -1,5 +1,5 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/store/app/app_state.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
 import "package:redux/redux.dart";
 
 class Robot {

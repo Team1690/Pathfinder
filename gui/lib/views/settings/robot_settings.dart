@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
 import "package:orbit_card_settings/card_settings.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/views/settings/settings_details.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/views/settings/settings_details.dart";
 import "package:redux/redux.dart";
 
 class RobotSettings extends StatelessWidget {

@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/models/spline_point.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/tab_actions.dart";
-import "package:pathfinder/store/tab/tab_thunk.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/models/robot_on_field.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/models/spline_point.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/tab_actions.dart";
+import "package:pathfinder_gui/store/tab/tab_thunk.dart";
 import "package:redux/redux.dart";
 
 //TODO: change name to editor model

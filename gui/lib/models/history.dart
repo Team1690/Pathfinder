@@ -1,5 +1,5 @@
-import "package:pathfinder/models/path_model.dart";
-import "package:pathfinder/store/tab/store.dart";
+import "package:pathfinder_gui/models/path_model.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
 
 //TODO: move to constants
 const String initialActionName = "Initial";

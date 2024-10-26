@@ -1,5 +1,5 @@
 import "package:flutter/cupertino.dart";
-import "package:pathfinder/constants.dart";
+import "package:pathfinder_gui/constants.dart";
 
 //TODO: move to constants
 const String defaultTrajectoryFileName = "output";

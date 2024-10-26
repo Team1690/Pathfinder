@@ -1,11 +1,11 @@
-import "package:pathfinder/shortcuts/help.dart";
-import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/store/app/app_actions.dart";
-import "package:pathfinder/store/app/app_state.dart";
-import "package:pathfinder/store/tab/store.dart";
-import "package:pathfinder/store/tab/tab_thunk.dart";
+import "package:pathfinder_gui/shortcuts/help.dart";
+import "package:pathfinder_gui/models/history.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/store/app/app_actions.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/store/tab/store.dart";
+import "package:pathfinder_gui/store/tab/tab_thunk.dart";
 import "package:redux/redux.dart";
 
 class HomeViewModel {

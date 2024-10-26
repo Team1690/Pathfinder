@@ -1,7 +1,7 @@
-import "package:pathfinder/models/path_model.dart";
-import "package:pathfinder/models/history.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/models/tab_ui.dart";
+import "package:pathfinder_gui/models/path_model.dart";
+import "package:pathfinder_gui/models/history.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/models/tab_ui.dart";
 
 class TabState {
   const TabState({

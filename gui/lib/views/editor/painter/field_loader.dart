@@ -4,13 +4,13 @@ import "dart:ui" as ui;
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot.dart";
-import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/models/spline_point.dart" as modelspath;
-import "package:pathfinder/views/editor/painter/field_painter.dart";
-import "package:pathfinder/views/editor/dragging_point.dart";
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot.dart";
+import "package:pathfinder_gui/models/robot_on_field.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/models/spline_point.dart" as modelspath;
+import "package:pathfinder_gui/views/editor/painter/field_painter.dart";
+import "package:pathfinder_gui/views/editor/dragging_point.dart";
 
 //TODO: move this to constants
 

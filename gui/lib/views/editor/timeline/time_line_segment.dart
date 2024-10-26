@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:pathfinder/constants.dart";
+import "package:pathfinder_gui/constants.dart";
 
 const double _segmentHeight = 50;
 

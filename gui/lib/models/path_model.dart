@@ -1,9 +1,10 @@
 import "package:orbit_standard_library/orbit_standard_library.dart";
-import "package:pathfinder/models/path_point.dart";
-import "package:pathfinder/models/robot_on_field.dart";
-import "package:pathfinder/models/segment.dart";
-import "package:pathfinder/models/spline_point.dart";
-import "package:pathfinder/rpc/protos/pathfinder_service.pbgrpc.dart" as rpc;
+import "package:pathfinder_gui/models/path_point.dart";
+import "package:pathfinder_gui/models/robot_on_field.dart";
+import "package:pathfinder_gui/models/segment.dart";
+import "package:pathfinder_gui/models/spline_point.dart";
+import "package:pathfinder_gui/rpc/protos/pathfinder_service.pbgrpc.dart"
+    as rpc;
 
 class PathModel {
   const PathModel({

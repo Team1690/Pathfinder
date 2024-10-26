@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:orbit_card_settings/helpers/platform_functions.dart";
-import "package:pathfinder/shortcuts/shortcut.dart";
-import "package:pathfinder/shortcuts/shortcut_def.dart";
+import "package:pathfinder_gui/shortcuts/shortcut.dart";
+import "package:pathfinder_gui/shortcuts/shortcut_def.dart";
 
 class HelpSettings extends StatelessWidget {
   const HelpSettings({super.key});
