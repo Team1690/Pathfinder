@@ -179,38 +179,25 @@ class _PathEditorState extends State<PathEditor> {
   Widget build(final BuildContext context) =>
       StoreConnector<AppState, PathEditorModel>(
         converter: PathEditorModel.fromStore,
-        builder: (context, model) => CallbackShortcuts(
+        builder: (final BuildContext context, final PathEditorModel model) =>
+            CallbackShortcuts(
           bindings: <ShortcutActivator, VoidCallback>{
             noZoomShortcut.activator!: () {
               model.setImageZoom(1);
               model.setImageOffset(Offset.zero);
             },
-            toggleHeading.activator!: () {
-              model.toggleHeading();
-            },
-            toggleControl.activator!: () {
-              model.toggleControl();
-            },
-            unSelectPoint.activator!: () {
-              model.unSelectPoint();
-            },
+            toggleHeading.activator!: model.toggleHeading,
+            toggleControl.activator!: model.toggleControl,
+            unSelectPoint.activator!: model.unSelectPoint,
             deletePoint.activator!: () {
               if (model.selectedPointIndex != null) {
                 model.deletePoint(model.selectedPointIndex!);
               }
             },
-            undo.activator!: () {
-              model.pathUndo();
-            },
-            redo.activator!: () {
-              model.pathRedo();
-            },
-            save.activator!: () {
-              model.saveFile();
-            },
-            saveAs.activator!: () {
-              model.saveFileAs();
-            },
+            undo.activator!: model.pathUndo,
+            redo.activator!: model.pathRedo,
+            save.activator!: model.saveFile,
+            saveAs.activator!: model.saveFileAs,
             zoomIn.activator!: () {
               if (model.imageZoom + _imageZoomDiff > _maxZoom) return;
               model.setImageZoom(model.imageZoom + _imageZoomDiff);
@@ -241,9 +228,7 @@ class _PathEditorState extends State<PathEditor> {
                 model.imageOffset - const Offset(_imageOffsetDiff, 0),
               );
             },
-            animateRobot.activator!: () {
-              model.animateRobot();
-            },
+            animateRobot.activator!: model.animateRobot,
             copyPoint.activator!: () {
               if (model.selectedPointIndex != null) {
                 model.copyPoint(model.selectedPointIndex!);

@@ -1,20 +1,18 @@
 import "dart:convert";
 import "dart:developer";
 import "dart:io";
-import "dart:ui";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
-import "package:path/path.dart";
-import "package:pathfinder_gui/store/app/app_reducer.dart";
-import "package:pathfinder_gui/store/app/app_state.dart";
-import "package:pathfinder_gui/views/home/home.dart";
 import "package:redux/redux.dart";
 import "package:redux_persist/redux_persist.dart";
 import "package:redux_persist_flutter/redux_persist_flutter.dart";
 import "package:redux_thunk/redux_thunk.dart";
 import "package:window_manager/window_manager.dart";
+import "package:pathfinder_gui/store/app/app_state.dart";
+import "package:pathfinder_gui/views/home/home.dart";
+import "package:pathfinder_gui/store/app/app_reducer.dart";
 
 void runBackgroundProcessManager() =>
     Process.run("pathfinder_manager.exe", <String>[]);
@@ -74,7 +72,7 @@ void main(final List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  await windowManager.setMinimumSize(Size(683, 384));
+  await windowManager.setMinimumSize(const Size(683, 384));
   await windowManager.maximize();
 
   runApp(

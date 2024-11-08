@@ -145,13 +145,17 @@ class PathEditorModel {
         finishInControlDrag: (final int index, final Offset position) {
           store.dispatch(
             endInControlDragThunk(
-                index, store.state.currentTabState.ui.pixToMeters(position)),
+              index,
+              store.state.currentTabState.ui.pixToMeters(position),
+            ),
           );
         },
         finishOutControlDrag: (final int index, final Offset position) {
           store.dispatch(
             endOutControlDragThunk(
-                index, store.state.currentTabState.ui.pixToMeters(position)),
+              index,
+              store.state.currentTabState.ui.pixToMeters(position),
+            ),
           );
         },
         finishHeadingDrag: (final int index, final double heading) {
