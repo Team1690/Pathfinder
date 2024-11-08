@@ -37,6 +37,7 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, SetPan>(_setPan),
   TypedReducer<TabState, SetRobotOnField>(_setRobotOnField),
   TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
+  TypedReducer<TabState, AnimationRunning>(_animationRunning),
   TypedReducer<TabState, CopyPoint>(_copyPoint),
 ]);
 
@@ -639,6 +640,25 @@ TabState _setRobotOnField(
           : None<RobotOnField>(),
     ),
   );
+}
+
+TabState _animationRunning(
+  final TabState tabState,
+  final AnimationRunning action,
+) {
+  TabState state = tabState.copyWith(
+    ui: tabState.ui.copyWith(
+      animationActive: action.running,
+    ),
+  );
+  if (!action.running) {
+    state = state.copyWith(
+      path: state.path.copyWith(
+        robotOnField: None<RobotOnField>(),
+      ),
+    );
+  }
+  return state;
 }
 
 (rpc.SwervePoints_SwervePoint, double) findClosestPoint(
