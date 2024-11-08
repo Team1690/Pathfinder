@@ -302,6 +302,7 @@ class _HomePageState extends State<HomePage> {
       );
 }
 
+//TODO: should be part of class settings
 String getSideBarHeadline(final TabState tabState) =>
     switch (tabState.ui.selectedType) {
       PathPoint => "POINT ${tabState.ui.selectedIndex}",

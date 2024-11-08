@@ -48,10 +48,10 @@ app.*.map.json
 # Output of algorithm testing
 algorithm/out
 
-.temp-state
 dist-*
 dist-*/
 *build*
 v*.*
+*.iss
 innosetupout/
 pkg/*.exe
