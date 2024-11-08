@@ -1,11 +1,15 @@
-class ChangeCurrentTab {
+class TabChangingAction {
+  const TabChangingAction();
+}
+
+class ChangeCurrentTab extends TabChangingAction {
   const ChangeCurrentTab({
     required this.index,
   });
   final int index;
 }
 
-class AddTab {
+class AddTab extends TabChangingAction {
   const AddTab();
 }
 
@@ -29,7 +33,7 @@ class NewAuto {
   NewAuto();
 }
 
-class RemoveTab {
+class RemoveTab extends TabChangingAction {
   const RemoveTab({required this.index});
   final int index;
 }
