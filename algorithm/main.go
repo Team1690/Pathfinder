@@ -16,16 +16,18 @@ var (
 )
 
 func main() {
+	// Parse command line flags
+	flag.Parse()
 	logger := log.Default()
 
-	// Get variables from command line
-	flag.Parse()
-
+	// Start a wait group this is to allow the server to run continuously until closed manually
 	wg := sync.WaitGroup{}
-
 	wg.Add(1)
+
+	// Start Server
 	go startAlgorithmServer(port, logger)
 
+	// Block program from exiting
 	wg.Wait()
 }
 
