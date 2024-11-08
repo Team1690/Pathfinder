@@ -48,6 +48,7 @@ dependencies:
   redux_thunk: ^0.4.0
   stack: ^0.2.1
   win32: ^5.5.5
+  window_manager: ^0.4.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

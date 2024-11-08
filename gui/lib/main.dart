@@ -1,10 +1,12 @@
 import "dart:convert";
 import "dart:developer";
 import "dart:io";
+import "dart:ui";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_redux/flutter_redux.dart";
+import "package:path/path.dart";
 import "package:pathfinder_gui/store/app/app_reducer.dart";
 import "package:pathfinder_gui/store/app/app_state.dart";
 import "package:pathfinder_gui/views/home/home.dart";
@@ -12,15 +14,16 @@ import "package:redux/redux.dart";
 import "package:redux_persist/redux_persist.dart";
 import "package:redux_persist_flutter/redux_persist_flutter.dart";
 import "package:redux_thunk/redux_thunk.dart";
+import "package:window_manager/window_manager.dart";
 
 void runBackgroundProcessManager() =>
     Process.run("pathfinder_manager.exe", <String>[]);
 
 void main(final List<String> args) async {
+  // in release mode run the process manager which runs the algorithm and other processes
   if (kReleaseMode) {
     runBackgroundProcessManager();
   }
-  //TODO: add a try catch here for future changes of fromJson
   //a persistor persists the state between uses of the app, we save this state in the document
   //dir supplied by the system and save only when there's a change to the state
   final Persistor<AppState> persistor = Persistor<AppState>(
@@ -32,7 +35,7 @@ void main(final List<String> args) async {
   //load initial state
   AppState initialAppState = AppState.initial();
   try {
-    initialAppState = (await persistor.load()) ?? AppState.initial();
+    initialAppState = (await persistor.load()) ?? initialAppState;
   } catch (e, trace) {
     if (kDebugMode) {
       debugPrint(e.toString() + " :-: " + trace.toString());
@@ -68,6 +71,11 @@ void main(final List<String> args) async {
       // LoggingMiddleware<AppState>.printer(),
     ],
   );
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  await windowManager.setMinimumSize(Size(683, 384));
+  await windowManager.maximize();
 
   runApp(
     App(
