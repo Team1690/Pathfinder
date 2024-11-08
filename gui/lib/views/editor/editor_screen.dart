@@ -31,38 +31,43 @@ class EditorScreen extends StatefulWidget {
 class _EditorScreenState extends State<EditorScreen> {
   @override
   Widget build(final BuildContext context) => Container(
-        width: 10000,
         color: primary,
         child: Column(
           children: <Widget>[
-            PathEditor(),
             Expanded(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.all(defaultPadding),
-                      child: TimeLineView(),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: FileButtons(
-                      calculateTrajectory: widget.calculateTrajectory,
-                      trajectoryFileName: widget.trajectoryFileName,
-                      editTrajectoryFileName: widget.editTrajectoryFileName,
-                      openFile: widget.openFile,
-                      saveFile: widget.saveFile,
-                      saveFileAs: widget.saveFileAs,
-                      changesSaved: widget.changesSaved,
-                    ),
-                  ),
-                  const Spacer(
-                    flex: 2,
-                  ),
-                ],
+              child: AspectRatio(
+                child: PathEditor(),
+                aspectRatio: officialFieldWidth / officialFieldHeight,
               ),
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(defaultPadding),
+                    child: TimeLineView(),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: FileButtons(
+                    calculateTrajectory: widget.calculateTrajectory,
+                    trajectoryFileName: widget.trajectoryFileName,
+                    editTrajectoryFileName: widget.editTrajectoryFileName,
+                    openFile: widget.openFile,
+                    saveFile: widget.saveFile,
+                    saveFileAs: widget.saveFileAs,
+                    changesSaved: widget.changesSaved,
+                  ),
+                ),
+                const SizedBox(
+                  width: defaultPadding,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: defaultPadding / 2,
             ),
           ],
         ),
