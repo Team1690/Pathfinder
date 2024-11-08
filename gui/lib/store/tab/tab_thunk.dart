@@ -273,8 +273,14 @@ ThunkAction<AppState> setRobotOnFieldThunk(
 ) =>
     (final Store<AppState> store) async {
       if (store.state.currentTabState.ui.animationActive) return;
+
       await calculateTrajectoryThunk()(store);
       store.dispatch(action);
+      Timer(const Duration(milliseconds: 2000), () {
+        if (!store.state.currentTabState.ui.animationActive)
+          store.dispatch(AnimationRunning(running: false));
+        return;
+      });
     };
 
 ThunkAction<AppState> animateRobotOnFieldThunk() =>
