@@ -151,6 +151,12 @@ class SetRobotOnFieldRaw extends TabAction {
   final String action;
 }
 
+class AnimationRunning extends TabAction {
+  AnimationRunning({required this.running});
+
+  final bool running;
+}
+
 class CopyPoint extends TabAction {
   CopyPoint(this.index);
   final int index;
@@ -159,10 +165,4 @@ class CopyPoint extends TabAction {
 class PastePoint extends TabAction {
   PastePoint(this.index);
   final int index;
-}
-
-class ChangeI extends TabAction {
-  ChangeI({required this.i});
-
-  final double i;
 }

@@ -64,7 +64,9 @@ AppState changeCurrentTab(
   final AppState appState,
   final ChangeCurrentTab changeCurrentTab,
 ) =>
-    appState.copyWith(currentTabIndex: changeCurrentTab.index);
+    appState.copyWith(
+      currentTabIndex: changeCurrentTab.index,
+    );
 
 AppState appStateReducer(final AppState state, final dynamic action) {
   AppState newState = applyReducers(state, action);

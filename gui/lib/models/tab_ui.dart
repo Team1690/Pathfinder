@@ -15,6 +15,7 @@ class TabUI {
     required this.headingToggle,
     required this.controlToggle,
     required this.trajectoryFileName,
+    required this.animationActive,
   });
 
   factory TabUI.initial() => const TabUI(
@@ -27,6 +28,7 @@ class TabUI {
         headingToggle: false,
         controlToggle: false,
         trajectoryFileName: defaultTrajectoryFileName,
+        animationActive: false,
       );
 
   TabUI.fromJson(final dynamic json)
@@ -38,7 +40,8 @@ class TabUI {
         pan = Offset.zero,
         headingToggle = false,
         controlToggle = false,
-        trajectoryFileName = json["trajectoryFileName"] as String;
+        trajectoryFileName = json["trajectoryFileName"] as String,
+        animationActive = false;
 
   final int selectedIndex;
   final Type selectedType;
@@ -49,6 +52,7 @@ class TabUI {
   final bool headingToggle;
   final bool controlToggle;
   final String trajectoryFileName;
+  final bool animationActive;
 
   TabUI copyWith({
     final int? selectedIndex,
@@ -60,6 +64,7 @@ class TabUI {
     final bool? headingToggle,
     final bool? controlToggle,
     final String? trajectoryFileName,
+    final bool? animationActive,
   }) =>
       TabUI(
         selectedIndex: selectedIndex ?? this.selectedIndex,
@@ -71,6 +76,7 @@ class TabUI {
         headingToggle: headingToggle ?? this.headingToggle,
         controlToggle: controlToggle ?? this.controlToggle,
         trajectoryFileName: trajectoryFileName ?? this.trajectoryFileName,
+        animationActive: animationActive ?? this.animationActive,
       );
 
   dynamic toJson() => <String, dynamic>{

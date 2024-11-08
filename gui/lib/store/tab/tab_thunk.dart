@@ -1,3 +1,4 @@
+import "dart:async";
 import "dart:convert";
 import "dart:io";
 
@@ -271,31 +272,35 @@ ThunkAction<AppState> setRobotOnFieldThunk(
   final SetRobotOnField action,
 ) =>
     (final Store<AppState> store) async {
+      if (store.state.currentTabState.ui.animationActive) return;
       await calculateTrajectoryThunk()(store);
       store.dispatch(action);
     };
 
 ThunkAction<AppState> animateRobotOnFieldThunk() =>
     (final Store<AppState> store) async {
+      if (store.state.currentTabState.ui.animationActive) {
+        return;
+      }
+      store.dispatch(AnimationRunning(running: true));
       await calculateTrajectoryThunk()(store);
       final int cycleTime =
-          (store.state.tabState[store.state.currentTabIndex].robot.cycleTime *
-                  1000)
-              .toInt();
+          (store.state.currentTabState.robot.cycleTime * 1000).toInt();
 
-      const double amountOfTimeActionIsDisplayed = 500.0;
+      const double amountOfTimeActionIsDisplayed = 500; // in ms
       double timeLeftForAction = 0.0;
       String action = "";
-      final List<rpc.SwervePoints_SwervePoint> trajectoryPoints = store
-          .state.tabState[store.state.currentTabIndex].path.trajectoryPoints;
+      final List<rpc.SwervePoints_SwervePoint> trajectoryPoints =
+          store.state.currentTabState.path.trajectoryPoints;
 
-      Stream<int>.periodic(
-        Duration(milliseconds: cycleTime),
-        (final int i) => i,
-      )
-          .takeWhile((final int i) => i < trajectoryPoints.length)
-          .listen((final int i) {
-        final rpc.SwervePoints_SwervePoint point = trajectoryPoints[i];
+      Timer.periodic(Duration(milliseconds: cycleTime), (final Timer timer) {
+        if (timer.tick >= trajectoryPoints.length - 1 ||
+            !store.state.currentTabState.ui.animationActive) {
+          store.dispatch(AnimationRunning(running: false));
+          timer.cancel();
+          return;
+        }
+        final rpc.SwervePoints_SwervePoint point = trajectoryPoints[timer.tick];
         if (point.action.isNotEmpty) {
           action = point.action;
           timeLeftForAction = amountOfTimeActionIsDisplayed;
