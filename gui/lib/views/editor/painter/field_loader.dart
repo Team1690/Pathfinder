@@ -80,41 +80,44 @@ class _FieldLoaderState extends State<FieldLoader> {
   }
 
   Widget _buildImage() {
-    //TODO: these should be decided from the ratio of field size these seem like random numbers
-    final double width = 0.7 * MediaQuery.of(context).size.width;
-    final double height = 0.6 * MediaQuery.of(context).size.height;
-    widget.setFieldSizePixels(Offset(width, height));
-
     if (globalImages != null) {
-      return Container(
-        decoration: BoxDecoration(
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 14,
-              offset: const Offset(0, 4), // changes position of shadow
+      return LayoutBuilder(
+        builder:
+            (final BuildContext context, final BoxConstraints constraints) {
+          widget.setFieldSizePixels(
+            Offset(constraints.maxWidth, constraints.maxHeight),
+          );
+          return Container(
+            decoration: BoxDecoration(
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 14,
+                  offset: const Offset(0, 4), // changes position of shadow
+                ),
+              ],
             ),
-          ],
-        ),
-        child: CustomPaint(
-          painter: FieldPainter(
-            globalImages!.robot,
-            globalImages!.field,
-            widget.points,
-            widget.segments,
-            widget.selectedPoint,
-            widget.dragPoints,
-            widget.enableHeadingEditing,
-            widget.enableControlEditing,
-            widget.evaluatedPoints,
-            widget.robot,
-            widget.imageZoom,
-            widget.imageOffset,
-            widget.robotOnField,
-          ),
-          size: Size(width, height),
-        ),
+            child: CustomPaint(
+              painter: FieldPainter(
+                globalImages!.robot,
+                globalImages!.field,
+                widget.points,
+                widget.segments,
+                widget.selectedPoint,
+                widget.dragPoints,
+                widget.enableHeadingEditing,
+                widget.enableControlEditing,
+                widget.evaluatedPoints,
+                widget.robot,
+                widget.imageZoom,
+                widget.imageOffset,
+                widget.robotOnField,
+              ),
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+            ),
+          );
+        },
       );
     } else {
       return const Center(child: Text("loading"));
