@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
 )
@@ -75,4 +77,9 @@ func main() {
 		}
 	)
 
+	fitnessBefore, _ := individual.CalcFitness(chester)
+	fmt.Printf("fitness before optimization: %f\n", fitnessBefore)
+	optimizedPath := pathopt.OptimizePath(individual, chester)
+	fitnessAfter, _ := optimizedPath.CalcFitness(chester)
+	fmt.Printf("fitness after optimization: %f\n", fitnessAfter)
 }
