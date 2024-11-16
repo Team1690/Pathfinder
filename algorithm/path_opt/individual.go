@@ -1,6 +1,10 @@
 package pathopt
 
-import "github.com/Team1690/Pathfinder/rpc"
+import (
+	"math/rand"
+
+	"github.com/Team1690/Pathfinder/rpc"
+)
 
 type Individual struct {
 	points      []*rpc.PathPoint
@@ -8,28 +12,57 @@ type Individual struct {
 	optSections []*rpc.OptSection
 }
 
-func (path *Individual) CalcFitness()                            {}
-func (path *Individual) Mutate() *Individual                     {}
+func (path *Individual) CalcFitness() {}
+func (path *Individual) Mutate() {
+	// mutate each point in the path
+	for _, point := range path.points {
+		MutatePathPoint(point)
+	}
+} // * Mutate
+
+func MutatePathPoint(pp *rpc.PathPoint) {
+	// mutate in control point
+	pp.ControlIn = &rpc.Vector{
+		X: pp.ControlIn.X + 2*rand.Float32() - 1,
+		Y: pp.ControlIn.Y + 2*rand.Float32() - 1,
+	}
+
+	// mutate out control point
+	pp.ControlOut = &rpc.Vector{
+		X: pp.ControlOut.X + 2*rand.Float32() - 1,
+		Y: pp.ControlOut.Y + 2*rand.Float32() - 1,
+	}
+} // * MutatePathPoint
+
 func (path *Individual) Breed(otherPath *Individual) *Individual {}
 
 /* Copy Funcs */
 // Returns a hard copy of this path individual
 func (path *Individual) Copy() *Individual {
+	// make a new path Individual
 	newPath := &Individual{}
+
+	// copy points
 	newPath.points = make([]*rpc.PathPoint, len(path.points))
 	for i, point := range path.points {
 		newPath.points[i] = CopyPathPoint(point)
 	}
+
+	// copy opt segments
 	newPath.optSegments = make([]*rpc.OptSegment, len(path.optSegments))
 	for i, optSegment := range path.optSegments {
 		newPath.optSegments[i] = CopyOptSegment(optSegment)
 	}
+
+	// copy opt sections
 	newPath.optSections = make([]*rpc.OptSection, len(path.optSections))
 	for _, optSection := range path.optSections {
 		newPath.optSections[i] = CopyOptSection(optSection)
 	}
+
+	// return new path copy
 	return newPath
-}
+} // * Copy
 
 func CopyPathPoint(pp *rpc.PathPoint) *rpc.PathPoint {
 	// make new PathPoint
