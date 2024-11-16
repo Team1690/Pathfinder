@@ -12,6 +12,18 @@ type Individual struct {
 	OptSections []*rpc.OptSection
 }
 
+/* Constructors */
+// Makes a path individual from a path model
+func IndividualFromPathModel(pathmodel *rpc.PathModel) *Individual {
+	newIndividual := &Individual{
+		Points:      pathmodel.PathPoints,
+		OptSegments: pathmodel.Segments,
+		OptSections: pathmodel.Sections,
+	}
+	return newIndividual.Copy()
+}
+
+/* Fitness Funcs */
 // Calculate the fitness (time to run trajectory) of a path
 func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float32, error) {
 	// fitness var

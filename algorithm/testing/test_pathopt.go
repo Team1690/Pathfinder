@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
 )
@@ -76,22 +74,5 @@ func main() {
 			OptSections: optSections,
 		}
 	)
-	fitness1, err1 := individual.CalcFitness(chester)
-	if err1 != nil {
-		fmt.Print("error1: ")
-		fmt.Println(err1)
-	} else {
-		fmt.Print("fitness before mutation: ")
-		fmt.Println(fitness1)
-	}
-	individual.Mutate()
-	fitness2, err2 := individual.CalcFitness(chester)
-	if err2 != nil {
-		fmt.Print("error2: ")
-		fmt.Println(err2)
-	} else {
-		fmt.Print("fitness after mutation: ")
-		fmt.Println(fitness2)
-	}
 
 }
