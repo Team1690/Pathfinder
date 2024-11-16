@@ -47,9 +47,8 @@ func BinomialCoefficients(n int, k int) int {
 }
 
 func GetBernstein(n int, k int) func(s float64) float64 {
-	binomialCoefficient := float64(BinomialCoefficients(n, k))
 	return func(s float64) float64 {
-		return binomialCoefficient * math.Pow(s, float64(k)) * math.Pow((1-s), float64((n-k)))
+		return float64(BinomialCoefficients(n, k)) * math.Pow(s, float64(k)) * math.Pow((1-s), float64((n-k)))
 	}
 }
 
