@@ -29,6 +29,10 @@ class PathFinderClient extends $grpc.Client {
       '/PathFinder/CalculateSplinePoints',
       ($0.SplineRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.SplineResponse.fromBuffer(value));
+  static final _$optimizePath = $grpc.ClientMethod<$0.PathOptimizationRequest, $0.PathModel>(
+      '/PathFinder/OptimizePath',
+      ($0.PathOptimizationRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.PathModel.fromBuffer(value));
 
   PathFinderClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -42,6 +46,10 @@ class PathFinderClient extends $grpc.Client {
 
   $grpc.ResponseFuture<$0.SplineResponse> calculateSplinePoints($0.SplineRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$calculateSplinePoints, request, options: options);
+  }
+
+  $grpc.ResponseStream<$0.PathModel> optimizePath($0.PathOptimizationRequest request, {$grpc.CallOptions? options}) {
+    return $createStreamingCall(_$optimizePath, $async.Stream.fromIterable([request]), options: options);
   }
 }
 
@@ -64,6 +72,13 @@ abstract class PathFinderServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.SplineRequest.fromBuffer(value),
         ($0.SplineResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.PathOptimizationRequest, $0.PathModel>(
+        'OptimizePath',
+        optimizePath_Pre,
+        false,
+        true,
+        ($core.List<$core.int> value) => $0.PathOptimizationRequest.fromBuffer(value),
+        ($0.PathModel value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.TrajectoryResponse> calculateTrajectory_Pre($grpc.ServiceCall call, $async.Future<$0.TrajectoryRequest> request) async {
@@ -74,6 +89,11 @@ abstract class PathFinderServiceBase extends $grpc.Service {
     return calculateSplinePoints(call, await request);
   }
 
+  $async.Stream<$0.PathModel> optimizePath_Pre($grpc.ServiceCall call, $async.Future<$0.PathOptimizationRequest> request) async* {
+    yield* optimizePath(call, await request);
+  }
+
   $async.Future<$0.TrajectoryResponse> calculateTrajectory($grpc.ServiceCall call, $0.TrajectoryRequest request);
   $async.Future<$0.SplineResponse> calculateSplinePoints($grpc.ServiceCall call, $0.SplineRequest request);
+  $async.Stream<$0.PathModel> optimizePath($grpc.ServiceCall call, $0.PathOptimizationRequest request);
 }

@@ -1333,6 +1333,268 @@ class SplineResponse extends $pb.GeneratedMessage {
   $core.List<SplinePoint> get splinePoints => $_getList(0);
 }
 
+/// opt_path
+class OptSegment extends $pb.GeneratedMessage {
+  factory OptSegment({
+    $core.Iterable<$core.int>? pointIndexes,
+    $core.double? speed,
+  }) {
+    final $result = create();
+    if (pointIndexes != null) {
+      $result.pointIndexes.addAll(pointIndexes);
+    }
+    if (speed != null) {
+      $result.speed = speed;
+    }
+    return $result;
+  }
+  OptSegment._() : super();
+  factory OptSegment.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory OptSegment.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'OptSegment', createEmptyInstance: create)
+    ..p<$core.int>(1, _omitFieldNames ? '' : 'pointIndexes', $pb.PbFieldType.K3, protoName: 'pointIndexes')
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'speed', $pb.PbFieldType.OF)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  OptSegment clone() => OptSegment()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  OptSegment copyWith(void Function(OptSegment) updates) => super.copyWith((message) => updates(message as OptSegment)) as OptSegment;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static OptSegment create() => OptSegment._();
+  OptSegment createEmptyInstance() => create();
+  static $pb.PbList<OptSegment> createRepeated() => $pb.PbList<OptSegment>();
+  @$core.pragma('dart2js:noInline')
+  static OptSegment getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<OptSegment>(create);
+  static OptSegment? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.int> get pointIndexes => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.double get speed => $_getN(1);
+  @$pb.TagNumber(2)
+  set speed($core.double v) { $_setFloat(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasSpeed() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearSpeed() => clearField(2);
+}
+
+class OptSection extends $pb.GeneratedMessage {
+  factory OptSection({
+    $core.Iterable<$core.int>? segmentIndexes,
+  }) {
+    final $result = create();
+    if (segmentIndexes != null) {
+      $result.segmentIndexes.addAll(segmentIndexes);
+    }
+    return $result;
+  }
+  OptSection._() : super();
+  factory OptSection.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory OptSection.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'OptSection', createEmptyInstance: create)
+    ..p<$core.int>(1, _omitFieldNames ? '' : 'segmentIndexes', $pb.PbFieldType.K3, protoName: 'segmentIndexes')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  OptSection clone() => OptSection()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  OptSection copyWith(void Function(OptSection) updates) => super.copyWith((message) => updates(message as OptSection)) as OptSection;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static OptSection create() => OptSection._();
+  OptSection createEmptyInstance() => create();
+  static $pb.PbList<OptSection> createRepeated() => $pb.PbList<OptSection>();
+  @$core.pragma('dart2js:noInline')
+  static OptSection getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<OptSection>(create);
+  static OptSection? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.int> get segmentIndexes => $_getList(0);
+}
+
+enum PathOptimizationRequest_RobotParams {
+  swerveParams, 
+  tankParams, 
+  notSet
+}
+
+class PathOptimizationRequest extends $pb.GeneratedMessage {
+  factory PathOptimizationRequest({
+    PathModel? path,
+    SwerveRobotParams? swerveParams,
+    TankRobotParams? tankParams,
+  }) {
+    final $result = create();
+    if (path != null) {
+      $result.path = path;
+    }
+    if (swerveParams != null) {
+      $result.swerveParams = swerveParams;
+    }
+    if (tankParams != null) {
+      $result.tankParams = tankParams;
+    }
+    return $result;
+  }
+  PathOptimizationRequest._() : super();
+  factory PathOptimizationRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory PathOptimizationRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static const $core.Map<$core.int, PathOptimizationRequest_RobotParams> _PathOptimizationRequest_RobotParamsByTag = {
+    2 : PathOptimizationRequest_RobotParams.swerveParams,
+    3 : PathOptimizationRequest_RobotParams.tankParams,
+    0 : PathOptimizationRequest_RobotParams.notSet
+  };
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'PathOptimizationRequest', createEmptyInstance: create)
+    ..oo(0, [2, 3])
+    ..aOM<PathModel>(1, _omitFieldNames ? '' : 'path', subBuilder: PathModel.create)
+    ..aOM<SwerveRobotParams>(2, _omitFieldNames ? '' : 'swerveParams', protoName: 'swerveParams', subBuilder: SwerveRobotParams.create)
+    ..aOM<TankRobotParams>(3, _omitFieldNames ? '' : 'tankParams', protoName: 'tankParams', subBuilder: TankRobotParams.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  PathOptimizationRequest clone() => PathOptimizationRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  PathOptimizationRequest copyWith(void Function(PathOptimizationRequest) updates) => super.copyWith((message) => updates(message as PathOptimizationRequest)) as PathOptimizationRequest;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static PathOptimizationRequest create() => PathOptimizationRequest._();
+  PathOptimizationRequest createEmptyInstance() => create();
+  static $pb.PbList<PathOptimizationRequest> createRepeated() => $pb.PbList<PathOptimizationRequest>();
+  @$core.pragma('dart2js:noInline')
+  static PathOptimizationRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<PathOptimizationRequest>(create);
+  static PathOptimizationRequest? _defaultInstance;
+
+  PathOptimizationRequest_RobotParams whichRobotParams() => _PathOptimizationRequest_RobotParamsByTag[$_whichOneof(0)]!;
+  void clearRobotParams() => clearField($_whichOneof(0));
+
+  @$pb.TagNumber(1)
+  PathModel get path => $_getN(0);
+  @$pb.TagNumber(1)
+  set path(PathModel v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasPath() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearPath() => clearField(1);
+  @$pb.TagNumber(1)
+  PathModel ensurePath() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  SwerveRobotParams get swerveParams => $_getN(1);
+  @$pb.TagNumber(2)
+  set swerveParams(SwerveRobotParams v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasSwerveParams() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearSwerveParams() => clearField(2);
+  @$pb.TagNumber(2)
+  SwerveRobotParams ensureSwerveParams() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  TankRobotParams get tankParams => $_getN(2);
+  @$pb.TagNumber(3)
+  set tankParams(TankRobotParams v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasTankParams() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTankParams() => clearField(3);
+  @$pb.TagNumber(3)
+  TankRobotParams ensureTankParams() => $_ensure(2);
+}
+
+class PathModel extends $pb.GeneratedMessage {
+  factory PathModel({
+    $core.Iterable<PathPoint>? pathPoints,
+    $core.Iterable<OptSegment>? segments,
+    $core.Iterable<OptSection>? sections,
+  }) {
+    final $result = create();
+    if (pathPoints != null) {
+      $result.pathPoints.addAll(pathPoints);
+    }
+    if (segments != null) {
+      $result.segments.addAll(segments);
+    }
+    if (sections != null) {
+      $result.sections.addAll(sections);
+    }
+    return $result;
+  }
+  PathModel._() : super();
+  factory PathModel.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory PathModel.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'PathModel', createEmptyInstance: create)
+    ..pc<PathPoint>(1, _omitFieldNames ? '' : 'pathPoints', $pb.PbFieldType.PM, protoName: 'pathPoints', subBuilder: PathPoint.create)
+    ..pc<OptSegment>(2, _omitFieldNames ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: OptSegment.create)
+    ..pc<OptSection>(3, _omitFieldNames ? '' : 'sections', $pb.PbFieldType.PM, subBuilder: OptSection.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  PathModel clone() => PathModel()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  PathModel copyWith(void Function(PathModel) updates) => super.copyWith((message) => updates(message as PathModel)) as PathModel;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static PathModel create() => PathModel._();
+  PathModel createEmptyInstance() => create();
+  static $pb.PbList<PathModel> createRepeated() => $pb.PbList<PathModel>();
+  @$core.pragma('dart2js:noInline')
+  static PathModel getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<PathModel>(create);
+  static PathModel? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<PathPoint> get pathPoints => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.List<OptSegment> get segments => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.List<OptSection> get sections => $_getList(2);
+}
+
 
 const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
 const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

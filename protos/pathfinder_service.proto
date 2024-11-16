@@ -5,6 +5,7 @@ option go_package = "../algorithm/rpc";
 service PathFinder {
    rpc CalculateTrajectory(TrajectoryRequest) returns (TrajectoryResponse) {}
    rpc CalculateSplinePoints(SplineRequest) returns (SplineResponse) {}
+   rpc OptimizePath(PathOptimizationRequest) returns (stream PathModel) {}
 }
 
 /*utils*/
@@ -116,4 +117,28 @@ message SplineRequest {
 
 message SplineResponse {
     repeated SplinePoint splinePoints = 1;
+}
+
+/* opt_path */
+message OptSegment {
+    repeated int32 pointIndexes = 1;
+    float speed = 2;
+}
+
+message OptSection {
+    repeated int32 segmentIndexes = 1;
+}
+
+message PathOptimizationRequest {
+    PathModel path = 1;
+    oneof RobotParams {
+        SwerveRobotParams swerveParams = 2;
+        TankRobotParams tankParams = 3;
+    }
+}
+
+message PathModel {
+    repeated PathPoint pathPoints = 1;
+    repeated OptSegment segments = 2;
+    repeated OptSection sections = 3;
 }
