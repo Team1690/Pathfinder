@@ -2,12 +2,38 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
 )
 
 func main() {
+	// f, err := os.Create("cpu_profile.prof")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer f.Close()
+	// if err := pprof.StartCPUProfile(f); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer pprof.StopCPUProfile()
+
+	const loopamount = 10
+	runtimes := make([]float64, loopamount)
+	for i := 0; i < loopamount; i++ {
+		runtimes[i] = loop()
+	}
+	for idx, runtime := range runtimes {
+		if idx == len(runtimes)-1 {
+			fmt.Printf("%.3f\n", runtime)
+		} else {
+			fmt.Printf("%.3f, ", runtime)
+		}
+	}
+}
+
+func loop() float64 {
 	var (
 		chester = &rpc.SwerveRobotParams{
 			Width:            float32(0.6),
@@ -79,7 +105,13 @@ func main() {
 
 	fitnessBefore, _ := individual.CalcFitness(chester)
 	fmt.Printf("fitness before optimization: %f\n", fitnessBefore)
+	prev := time.Now().UnixMilli()
 	optimizedPath := pathopt.OptimizePath(individual, chester)
+	runtime := float64(time.Now().UnixMilli()-prev) / 1000.0
 	fitnessAfter, _ := optimizedPath.CalcFitness(chester)
 	fmt.Printf("fitness after optimization: %f\n", fitnessAfter)
+	fmt.Println()
+	fmt.Printf("runtime: %f\n", runtime)
+	fmt.Println()
+	return runtime
 }

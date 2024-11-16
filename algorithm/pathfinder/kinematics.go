@@ -2,6 +2,7 @@ package pathfinder
 
 import (
 	"math"
+	"slices"
 
 	"github.com/Team1690/Pathfinder/utils"
 )
@@ -18,10 +19,8 @@ func getFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
 }
 
 func dtFromDistanceAndVel(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPoint) float64 {
-	distanceFromPrevPoint := math.Abs(currentPoint.Distance - prevPoint.Distance)
 	// * v = ∆x/∆t -> ∆t = ∆x/v
-	dt := distanceFromPrevPoint / prevPoint.Velocity
-	return dt
+	return math.Abs(currentPoint.Distance-prevPoint.Distance) / prevPoint.Velocity
 }
 
 func calcOmega(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPoint, dt float64) float64 {
@@ -36,14 +35,17 @@ func maxVelAccordingToOmega(robot *RobotParameters, omega float64) float64 {
 }
 
 func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, reversed bool) {
+	// the real first point of a trajectory is a stop point
 	trajectoryPoints[0].Velocity = 0
 	trajectoryPoints[0].Acceleration = 0
 
+	// first point kinematics according to jerk
 	firstPoint := getFirstPoint(trajectoryPoints[1].Distance, robot)
 	trajectoryPoints[1].Time = firstPoint.Time
 	trajectoryPoints[1].Velocity = firstPoint.Velocity
 	trajectoryPoints[1].Acceleration = firstPoint.Acceleration
 
+	// all the other points are calculated from the previous point
 	for i := 2; i < len(trajectoryPoints); i++ {
 		currentPoint := trajectoryPoints[i]
 		prevPoint := trajectoryPoints[i-1]
@@ -93,22 +95,20 @@ func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 }
 
 func reverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
+	// when reversing trajectory distance and time are reversed
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
 
-	var reversedTrajectory []*TrajectoryPoint
+	// reverse trajectory slice
+	slices.Reverse(trajectory)
 
-	for i := len(trajectory) - 1; i >= 0; i-- {
-		oldPoint := trajectory[i]
-		var newPoint *TrajectoryPoint = oldPoint
-
-		newPoint.Distance = totalDistance - oldPoint.Distance
-		newPoint.Time = totalTime - oldPoint.Time
-
-		reversedTrajectory = append(reversedTrajectory, newPoint)
+	for _, oldPoint := range trajectory {
+		oldPoint.Distance = totalDistance - oldPoint.Distance
+		oldPoint.Time = totalTime - oldPoint.Time
 	}
-	return reversedTrajectory
-}
+
+	return trajectory
+} // * reverseTrajectory
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
 	CalculateKinematics(trajectory, robot, false)

@@ -2,6 +2,7 @@ package pathopt
 
 import (
 	"math/rand"
+	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
 )
@@ -10,6 +11,7 @@ type Individual struct {
 	Points      []*rpc.PathPoint
 	OptSegments []*rpc.OptSegment
 	OptSections []*rpc.OptSection
+	Fitness     float32
 }
 
 /* Constructors */
@@ -26,23 +28,36 @@ func IndividualFromPathModel(pathmodel *rpc.PathModel) *Individual {
 /* Fitness Funcs */
 // Calculate the fitness (time to run trajectory) of a path
 func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float32, error) {
+	// fitness waitgroup
+	fitnessWg := sync.WaitGroup{}
+
 	// fitness var
 	var fitness float32
+	var err error
 
 	// for each section calculate its fitness (time) and add it to overall fitness
-	for _, section := range path.ToSections() {
-		sectionFitness, err := CalcSectionFitness(section, swerveParams)
+	sections := path.ToSections()
+	fitnessWg.Add(len(sections))
+	for _, section := range sections {
+		go func(section *rpc.Section) {
+			//calc section fitness
+			sectionFitness, errc := CalcSectionFitness(section, swerveParams)
 
-		// if encounter error stop calculating fitness (expensive task)
-		if err != nil {
-			return fitness, err
-		}
+			// add to overall fitness
+			err = errc
+			fitness += sectionFitness
+			fitnessWg.Done()
 
-		fitness += sectionFitness
+		}(section)
 	}
 
+	fitnessWg.Wait()
+
+	// set this individuals fitness (because this is an expensive task for sorting later)
+	path.Fitness = fitness
+
 	// return fitness and no error
-	return fitness, nil
+	return fitness, err
 } // * CalcFitness
 
 func CalcSectionFitness(section *rpc.Section, swerveParams *rpc.SwerveRobotParams) (float32, error) {
@@ -92,7 +107,6 @@ func (path *Individual) ToSegments() []*rpc.Segment {
 	for i, optseg := range path.OptSegments {
 		points := make([]*rpc.PathPoint, len(optseg.PointIndexes))
 		for j, pointIdx := range optseg.PointIndexes {
-			//TODO: do i care that this is by reference?
 			points[j] = path.Points[pointIdx]
 		}
 
@@ -144,22 +158,24 @@ func MutatePathPoint(pp *rpc.PathPoint) {
 // Returns a hard copy of this path individual
 func (path *Individual) Copy() *Individual {
 	// make a new path Individual
-	newPath := &Individual{}
+	newPath := &Individual{
+		Fitness: path.Fitness,
+	}
+	newPath.Points = make([]*rpc.PathPoint, len(path.Points))
+	newPath.OptSegments = make([]*rpc.OptSegment, len(path.OptSegments))
+	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
 
 	// copy points
-	newPath.Points = make([]*rpc.PathPoint, len(path.Points))
 	for i, point := range path.Points {
 		newPath.Points[i] = CopyPathPoint(point)
 	}
 
 	// copy opt segments
-	newPath.OptSegments = make([]*rpc.OptSegment, len(path.OptSegments))
 	for i, optSegment := range path.OptSegments {
 		newPath.OptSegments[i] = CopyOptSegment(optSegment)
 	}
 
 	// copy opt sections
-	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
 	for i, optSection := range path.OptSections {
 		newPath.OptSections[i] = CopyOptSection(optSection)
 	}

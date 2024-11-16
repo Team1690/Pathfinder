@@ -57,7 +57,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 		point.Distance = trajectory[len(trajectory)-1].Distance + distanceToPrevPoint
 
-		segmentClassifier.Update(&point.Position, len(trajectory))
+		segmentClassifier.Update(&point.Position, len(trajectory)-1)
 
 		point.Velocity = segmentClassifier.GetMaxVel()
 
@@ -133,6 +133,7 @@ func calculatePointHeading(trajectory []*TrajectoryPoint, pointIndex int) {
 	trajectory[pointIndex].Heading = trajectory[pointIndex-1].Heading + averageOmega*dt
 }
 
+// TODO: optimize
 func LimitVelocityWithCentrifugalForce(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, headingPoints []*indexedHeadingPoint) {
 	trajectoryPointsCount := len(trajectoryPoints)
 
@@ -378,24 +379,28 @@ type SwerveTrajectoryPoint struct {
 	Action   string
 }
 
-func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []SwerveTrajectoryPoint {
-	swerveTrajectory := []SwerveTrajectoryPoint{}
+func Get2DTrajectory(trajectory1D []*TrajectoryPoint, path spline.Spline) []*SwerveTrajectoryPoint {
+	// slice to hold the trajectory
+	swerveTrajectory := make([]*SwerveTrajectoryPoint, len(trajectory1D))
 
+	// calculate the derivative of the path (its velocity)
 	pathDerivative := path.Derivative()
 
-	for _, trajectoryPoint1D := range trajectory1D {
-		swerveTrajectory = append(swerveTrajectory, SwerveTrajectoryPoint{
+	// a direction of velocity is added here to make motion 2D
+	for i, trajectoryPoint1D := range trajectory1D {
+		swerveTrajectory[i] = &SwerveTrajectoryPoint{
 			Time:     trajectoryPoint1D.Time,
 			Position: trajectoryPoint1D.Position,
 			Velocity: vector.FromPolar(pathDerivative.Evaluate(trajectoryPoint1D.S).Angle(), trajectoryPoint1D.Velocity),
 			Heading:  trajectoryPoint1D.Heading,
 			Omega:    trajectoryPoint1D.Omega,
 			Action:   trajectoryPoint1D.Action,
-		})
+		}
 	}
 
+	// return new 2D swerve trajectory
 	return swerveTrajectory
-}
+} // * Get2DTrajectory
 
 func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.SwervePoints_SwervePoint {
 	return &rpc.SwervePoints_SwervePoint{

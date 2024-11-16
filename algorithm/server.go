@@ -140,7 +140,7 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.SwerveRobotP
 
 	var swerveTrajectory []*rpc.SwervePoints_SwervePoint
 	for _, point := range trajectory2D {
-		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(&point))
+		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(point))
 	}
 
 	return swerveTrajectory, nil

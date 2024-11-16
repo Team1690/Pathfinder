@@ -2,10 +2,11 @@ package pathopt
 
 import (
 	"fmt"
-	"sort"
+	"math"
+	"slices"
+	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -35,48 +36,58 @@ func OptimizePath(path *Individual, swerveParams *rpc.SwerveRobotParams) *Indivi
 		OptLoop(currentGeneration, swerveParams)
 		best[i] = currentGeneration[0].Copy() // we sort the slice inside OptLoop
 
-		fitness, _ := best[i].CalcFitness(swerveParams)
+		fitness := best[i].Fitness
 		fmt.Printf("Gen #%d fitness = %f\n", i+1, fitness)
 
 		fmt.Printf("Gen #%d finished\n", i+1)
 	}
 
 	// sort best paths from each generation to get the best path overall
-	sort.Slice(best, func(i, j int) bool {
-		iFitness, _ := currentGeneration[i].CalcFitness(swerveParams)
-		jFitness, _ := currentGeneration[j].CalcFitness(swerveParams)
-		return iFitness > jFitness
-	})
+	bestPathIdx := 0
+	bestPathFitness := math.Inf(1)
 
-	// return the best path individual from all generations
-	return best[0]
-} // * OptimizePath
-
-// optimization loop
-func OptLoop(currentGeneration []*Individual, swerveParams *rpc.SwerveRobotParams) error {
-	// mutate and breed current generation
-	for idx, individual := range currentGeneration {
-		// mutate if not the best in the generation (to keep genes pure)
-		if idx >= 0.1*GENSIZE {
-			individual.Mutate()
+	for idx, bestPath := range best {
+		fitness := bestPath.Fitness
+		if fitness < float32(bestPathFitness) {
+			bestPathFitness = float64(fitness)
+			bestPathIdx = idx
 		}
 	}
 
-	// optional error
-	var err error = nil
+	// return the best path individual from all generations
+	return best[bestPathIdx]
+} // * OptimizePath
+
+// optimization loop
+func OptLoop(currentGeneration []*Individual, swerveParams *rpc.SwerveRobotParams) {
+	// mutation waitgroup
+	mutateWg := sync.WaitGroup{}
+
+	// mutate and breed current generation
+	mutateWg.Add(len(currentGeneration))
+	for idx, individual := range currentGeneration {
+		go func(idx int, individual *Individual) {
+			// mutate if not the best in the generation (to keep genes pure)
+			if idx >= 0.1*GENSIZE {
+				individual.Mutate()
+			}
+
+			// calculate fitness inside the goroutine to save time later
+			individual.CalcFitness(swerveParams)
+
+			mutateWg.Done()
+		}(idx, individual)
+	}
+
+	mutateWg.Wait()
 
 	// sort the curent generation according to fitness in ascending error
-	sort.Slice(currentGeneration, func(i, j int) bool {
-		iFitness, ierr := currentGeneration[i].CalcFitness(swerveParams)
-		jFitness, jerr := currentGeneration[j].CalcFitness(swerveParams)
-
-		if ierr != nil || jerr != nil {
-			err = xerrors.New("Error in Calculating Fitness, Abort Optimization")
+	slices.SortFunc(currentGeneration, func(i, j *Individual) int {
+		if i.Fitness == j.Fitness {
+			return 0
+		} else if i.Fitness > j.Fitness {
+			return 1
 		}
-
-		return iFitness < jFitness
+		return -1
 	})
-
-	// return an error (may be nil)
-	return err
 } // * OptLoop
