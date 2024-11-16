@@ -7,9 +7,9 @@ import (
 )
 
 type Individual struct {
-	points      []*rpc.PathPoint
-	optSegments []*rpc.OptSegment
-	optSections []*rpc.OptSection
+	Points      []*rpc.PathPoint
+	OptSegments []*rpc.OptSegment
+	OptSections []*rpc.OptSection
 }
 
 // Calculate the fitness (time to run trajectory) of a path
@@ -22,7 +22,7 @@ func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float3
 		sectionFitness, err := CalcSectionFitness(section, swerveParams)
 
 		// if encounter error stop calculating fitness (expensive task)
-		if err == nil {
+		if err != nil {
 			return fitness, err
 		}
 
@@ -39,7 +39,7 @@ func CalcSectionFitness(section *rpc.Section, swerveParams *rpc.SwerveRobotParam
 
 	// calculate section trajectory and set its fitness to trajectory time
 	trajPoints, err := calculateSectionTrajectory(section, swerveParams)
-	if err != nil {
+	if err == nil {
 		// trajectory time is the time of the first point
 		sectionFitness = trajPoints[0].Time
 	}
@@ -53,10 +53,10 @@ func (path *Individual) ToSections() []*rpc.Section {
 	pathSegments := path.ToSegments()
 
 	// make a new slice of sections
-	sections := make([]*rpc.Section, len(path.optSections))
+	sections := make([]*rpc.Section, len(path.OptSections))
 
 	// fill each section with its appropriate segments
-	for i, optsec := range path.optSections {
+	for i, optsec := range path.OptSections {
 		segments := make([]*rpc.Segment, len(optsec.SegmentIndexes))
 		for j, segmentIdx := range optsec.SegmentIndexes {
 			segments[j] = pathSegments[segmentIdx]
@@ -74,14 +74,14 @@ func (path *Individual) ToSections() []*rpc.Section {
 func (path *Individual) ToSegments() []*rpc.Segment {
 
 	// make a new slice of segments
-	segments := make([]*rpc.Segment, len(path.optSegments))
+	segments := make([]*rpc.Segment, len(path.OptSegments))
 
 	// fill each segment with points from the path according to its point indexes
-	for i, optseg := range path.optSegments {
+	for i, optseg := range path.OptSegments {
 		points := make([]*rpc.PathPoint, len(optseg.PointIndexes))
 		for j, pointIdx := range optseg.PointIndexes {
 			//TODO: do i care that this is by reference?
-			points[j] = path.points[pointIdx]
+			points[j] = path.Points[pointIdx]
 		}
 
 		segments[i] = &rpc.Segment{
@@ -98,22 +98,26 @@ func (path *Individual) ToSegments() []*rpc.Segment {
 // Mutates this individual **(does not return a copy)**
 func (path *Individual) Mutate() {
 	// mutate each point in the path
-	for _, point := range path.points {
+	for _, point := range path.Points {
 		MutatePathPoint(point)
 	}
 } // * Mutate
 
 func MutatePathPoint(pp *rpc.PathPoint) {
 	// mutate in control point
-	pp.ControlIn = &rpc.Vector{
-		X: pp.ControlIn.X + 2*rand.Float32() - 1,
-		Y: pp.ControlIn.Y + 2*rand.Float32() - 1,
+	if pp.ControlIn != nil {
+		pp.ControlIn = &rpc.Vector{
+			X: pp.ControlIn.X + 2*rand.Float32() - 1,
+			Y: pp.ControlIn.Y + 2*rand.Float32() - 1,
+		}
 	}
 
-	// mutate out control point
-	pp.ControlOut = &rpc.Vector{
-		X: pp.ControlOut.X + 2*rand.Float32() - 1,
-		Y: pp.ControlOut.Y + 2*rand.Float32() - 1,
+	// mutate out control point (if not last)
+	if pp.ControlOut != nil {
+		pp.ControlOut = &rpc.Vector{
+			X: pp.ControlOut.X + 2*rand.Float32() - 1,
+			Y: pp.ControlOut.Y + 2*rand.Float32() - 1,
+		}
 	}
 } // * MutatePathPoint
 
@@ -131,21 +135,21 @@ func (path *Individual) Copy() *Individual {
 	newPath := &Individual{}
 
 	// copy points
-	newPath.points = make([]*rpc.PathPoint, len(path.points))
-	for i, point := range path.points {
-		newPath.points[i] = CopyPathPoint(point)
+	newPath.Points = make([]*rpc.PathPoint, len(path.Points))
+	for i, point := range path.Points {
+		newPath.Points[i] = CopyPathPoint(point)
 	}
 
 	// copy opt segments
-	newPath.optSegments = make([]*rpc.OptSegment, len(path.optSegments))
-	for i, optSegment := range path.optSegments {
-		newPath.optSegments[i] = CopyOptSegment(optSegment)
+	newPath.OptSegments = make([]*rpc.OptSegment, len(path.OptSegments))
+	for i, optSegment := range path.OptSegments {
+		newPath.OptSegments[i] = CopyOptSegment(optSegment)
 	}
 
 	// copy opt sections
-	newPath.optSections = make([]*rpc.OptSection, len(path.optSections))
-	for i, optSection := range path.optSections {
-		newPath.optSections[i] = CopyOptSection(optSection)
+	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
+	for i, optSection := range path.OptSections {
+		newPath.OptSections[i] = CopyOptSection(optSection)
 	}
 
 	// return new path copy
