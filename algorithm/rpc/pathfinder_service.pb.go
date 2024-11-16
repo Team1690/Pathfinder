@@ -942,6 +942,206 @@ func (x *SplineResponse) GetSplinePoints() []*SplinePoint {
 	return nil
 }
 
+// opt_path
+type OptSegment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PointIndexes []int32 `protobuf:"varint,1,rep,packed,name=pointIndexes,proto3" json:"pointIndexes,omitempty"`
+	Speed        float32 `protobuf:"fixed32,2,opt,name=speed,proto3" json:"speed,omitempty"`
+}
+
+func (x *OptSegment) Reset() {
+	*x = OptSegment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pathfinder_service_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *OptSegment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OptSegment) ProtoMessage() {}
+
+func (x *OptSegment) ProtoReflect() protoreflect.Message {
+	mi := &file_pathfinder_service_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OptSegment.ProtoReflect.Descriptor instead.
+func (*OptSegment) Descriptor() ([]byte, []int) {
+	return file_pathfinder_service_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *OptSegment) GetPointIndexes() []int32 {
+	if x != nil {
+		return x.PointIndexes
+	}
+	return nil
+}
+
+func (x *OptSegment) GetSpeed() float32 {
+	if x != nil {
+		return x.Speed
+	}
+	return 0
+}
+
+type PathOptimizationRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Path *PathModel `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// Types that are assignable to RobotParams:
+	//
+	//	*PathOptimizationRequest_SwerveParams
+	//	*PathOptimizationRequest_TankParams
+	RobotParams isPathOptimizationRequest_RobotParams `protobuf_oneof:"RobotParams"`
+}
+
+func (x *PathOptimizationRequest) Reset() {
+	*x = PathOptimizationRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pathfinder_service_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PathOptimizationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PathOptimizationRequest) ProtoMessage() {}
+
+func (x *PathOptimizationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pathfinder_service_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PathOptimizationRequest.ProtoReflect.Descriptor instead.
+func (*PathOptimizationRequest) Descriptor() ([]byte, []int) {
+	return file_pathfinder_service_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *PathOptimizationRequest) GetPath() *PathModel {
+	if x != nil {
+		return x.Path
+	}
+	return nil
+}
+
+func (m *PathOptimizationRequest) GetRobotParams() isPathOptimizationRequest_RobotParams {
+	if m != nil {
+		return m.RobotParams
+	}
+	return nil
+}
+
+func (x *PathOptimizationRequest) GetSwerveParams() *SwerveRobotParams {
+	if x, ok := x.GetRobotParams().(*PathOptimizationRequest_SwerveParams); ok {
+		return x.SwerveParams
+	}
+	return nil
+}
+
+func (x *PathOptimizationRequest) GetTankParams() *TankRobotParams {
+	if x, ok := x.GetRobotParams().(*PathOptimizationRequest_TankParams); ok {
+		return x.TankParams
+	}
+	return nil
+}
+
+type isPathOptimizationRequest_RobotParams interface {
+	isPathOptimizationRequest_RobotParams()
+}
+
+type PathOptimizationRequest_SwerveParams struct {
+	SwerveParams *SwerveRobotParams `protobuf:"bytes,2,opt,name=swerveParams,proto3,oneof"`
+}
+
+type PathOptimizationRequest_TankParams struct {
+	TankParams *TankRobotParams `protobuf:"bytes,3,opt,name=tankParams,proto3,oneof"`
+}
+
+func (*PathOptimizationRequest_SwerveParams) isPathOptimizationRequest_RobotParams() {}
+
+func (*PathOptimizationRequest_TankParams) isPathOptimizationRequest_RobotParams() {}
+
+type PathModel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PathPoints []*PathPoint  `protobuf:"bytes,1,rep,name=pathPoints,proto3" json:"pathPoints,omitempty"`
+	Segments   []*OptSegment `protobuf:"bytes,2,rep,name=segments,proto3" json:"segments,omitempty"`
+}
+
+func (x *PathModel) Reset() {
+	*x = PathModel{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pathfinder_service_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PathModel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PathModel) ProtoMessage() {}
+
+func (x *PathModel) ProtoReflect() protoreflect.Message {
+	mi := &file_pathfinder_service_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PathModel.ProtoReflect.Descriptor instead.
+func (*PathModel) Descriptor() ([]byte, []int) {
+	return file_pathfinder_service_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *PathModel) GetPathPoints() []*PathPoint {
+	if x != nil {
+		return x.PathPoints
+	}
+	return nil
+}
+
+func (x *PathModel) GetSegments() []*OptSegment {
+	if x != nil {
+		return x.Segments
+	}
+	return nil
+}
+
 type SwervePoints_SwervePoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -958,7 +1158,7 @@ type SwervePoints_SwervePoint struct {
 func (x *SwervePoints_SwervePoint) Reset() {
 	*x = SwervePoints_SwervePoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pathfinder_service_proto_msgTypes[14]
+		mi := &file_pathfinder_service_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -971,7 +1171,7 @@ func (x *SwervePoints_SwervePoint) String() string {
 func (*SwervePoints_SwervePoint) ProtoMessage() {}
 
 func (x *SwervePoints_SwervePoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pathfinder_service_proto_msgTypes[14]
+	mi := &file_pathfinder_service_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1045,7 +1245,7 @@ type TankPoints_TankPoint struct {
 func (x *TankPoints_TankPoint) Reset() {
 	*x = TankPoints_TankPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pathfinder_service_proto_msgTypes[15]
+		mi := &file_pathfinder_service_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1058,7 +1258,7 @@ func (x *TankPoints_TankPoint) String() string {
 func (*TankPoints_TankPoint) ProtoMessage() {}
 
 func (x *TankPoints_TankPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pathfinder_service_proto_msgTypes[15]
+	mi := &file_pathfinder_service_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1252,18 +1452,43 @@ var file_pathfinder_service_proto_rawDesc = []byte{
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x0c, 0x73, 0x70, 0x6c, 0x69, 0x6e, 0x65,
 	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x53,
 	0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x0c, 0x73, 0x70, 0x6c, 0x69,
-	0x6e, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x32, 0x8a, 0x01, 0x0a, 0x0a, 0x50, 0x61, 0x74,
-	0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x40, 0x0a, 0x13, 0x43, 0x61, 0x6c, 0x63, 0x75,
-	0x6c, 0x61, 0x74, 0x65, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x12,
-	0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x15, 0x43, 0x61, 0x6c,
-	0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50, 0x6f, 0x69, 0x6e,
-	0x74, 0x73, 0x12, 0x0e, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x0f, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f,
-	0x72, 0x69, 0x74, 0x68, 0x6d, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x6e, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x22, 0x46, 0x0a, 0x0a, 0x4f, 0x70, 0x74, 0x53,
+	0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x49,
+	0x6e, 0x64, 0x65, 0x78, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x0c, 0x70, 0x6f,
+	0x69, 0x6e, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x65, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70,
+	0x65, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x05, 0x73, 0x70, 0x65, 0x65, 0x64,
+	0x22, 0xb6, 0x01, 0x0a, 0x17, 0x50, 0x61, 0x74, 0x68, 0x4f, 0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a, 0x04,
+	0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x50, 0x61, 0x74,
+	0x68, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x38, 0x0a, 0x0c,
+	0x73, 0x77, 0x65, 0x72, 0x76, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x53, 0x77, 0x65, 0x72, 0x76, 0x65, 0x52, 0x6f, 0x62, 0x6f, 0x74,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x48, 0x00, 0x52, 0x0c, 0x73, 0x77, 0x65, 0x72, 0x76, 0x65,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x32, 0x0a, 0x0a, 0x74, 0x61, 0x6e, 0x6b, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x54, 0x61, 0x6e,
+	0x6b, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x48, 0x00, 0x52, 0x0a,
+	0x74, 0x61, 0x6e, 0x6b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x0d, 0x0a, 0x0b, 0x52, 0x6f,
+	0x62, 0x6f, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x60, 0x0a, 0x09, 0x50, 0x61, 0x74,
+	0x68, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x2a, 0x0a, 0x0a, 0x70, 0x61, 0x74, 0x68, 0x50, 0x6f,
+	0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x50, 0x61, 0x74,
+	0x68, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x74, 0x68, 0x50, 0x6f, 0x69, 0x6e,
+	0x74, 0x73, 0x12, 0x27, 0x0a, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x02,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x4f, 0x70, 0x74, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e,
+	0x74, 0x52, 0x08, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x32, 0xc4, 0x01, 0x0a, 0x0a,
+	0x50, 0x61, 0x74, 0x68, 0x46, 0x69, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x40, 0x0a, 0x13, 0x43, 0x61,
+	0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72,
+	0x79, 0x12, 0x12, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f,
+	0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x15,
+	0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x0e, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0f, 0x2e, 0x53, 0x70, 0x6c, 0x69, 0x6e, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x38, 0x0a, 0x0c, 0x4f, 0x70, 0x74, 0x69,
+	0x6d, 0x69, 0x7a, 0x65, 0x50, 0x61, 0x74, 0x68, 0x12, 0x18, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x4f,
+	0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x22, 0x00,
+	0x30, 0x01, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2e, 0x2f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74,
+	0x68, 0x6d, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1278,7 +1503,7 @@ func file_pathfinder_service_proto_rawDescGZIP() []byte {
 	return file_pathfinder_service_proto_rawDescData
 }
 
-var file_pathfinder_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_pathfinder_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_pathfinder_service_proto_goTypes = []any{
 	(*Vector)(nil),                   // 0: Vector
 	(*RobotAction)(nil),              // 1: RobotAction
@@ -1294,13 +1519,16 @@ var file_pathfinder_service_proto_goTypes = []any{
 	(*TrajectoryResponse)(nil),       // 11: TrajectoryResponse
 	(*SplineRequest)(nil),            // 12: SplineRequest
 	(*SplineResponse)(nil),           // 13: SplineResponse
-	(*SwervePoints_SwervePoint)(nil), // 14: SwervePoints.SwervePoint
-	(*TankPoints_TankPoint)(nil),     // 15: TankPoints.TankPoint
+	(*OptSegment)(nil),               // 14: OptSegment
+	(*PathOptimizationRequest)(nil),  // 15: PathOptimizationRequest
+	(*PathModel)(nil),                // 16: PathModel
+	(*SwervePoints_SwervePoint)(nil), // 17: SwervePoints.SwervePoint
+	(*TankPoints_TankPoint)(nil),     // 18: TankPoints.TankPoint
 }
 var file_pathfinder_service_proto_depIdxs = []int32{
 	0,  // 0: SplinePoint.point:type_name -> Vector
-	14, // 1: SwervePoints.swervePoints:type_name -> SwervePoints.SwervePoint
-	15, // 2: TankPoints.tankPoints:type_name -> TankPoints.TankPoint
+	17, // 1: SwervePoints.swervePoints:type_name -> SwervePoints.SwervePoint
+	18, // 2: TankPoints.tankPoints:type_name -> TankPoints.TankPoint
 	0,  // 3: PathPoint.position:type_name -> Vector
 	0,  // 4: PathPoint.controlIn:type_name -> Vector
 	0,  // 5: PathPoint.controlOut:type_name -> Vector
@@ -1314,18 +1542,25 @@ var file_pathfinder_service_proto_depIdxs = []int32{
 	6,  // 13: TrajectoryResponse.tankPoints:type_name -> TankPoints
 	8,  // 14: SplineRequest.segments:type_name -> Segment
 	2,  // 15: SplineResponse.splinePoints:type_name -> SplinePoint
-	0,  // 16: SwervePoints.SwervePoint.position:type_name -> Vector
-	0,  // 17: SwervePoints.SwervePoint.velocity:type_name -> Vector
-	0,  // 18: TankPoints.TankPoint.position:type_name -> Vector
-	10, // 19: PathFinder.CalculateTrajectory:input_type -> TrajectoryRequest
-	12, // 20: PathFinder.CalculateSplinePoints:input_type -> SplineRequest
-	11, // 21: PathFinder.CalculateTrajectory:output_type -> TrajectoryResponse
-	13, // 22: PathFinder.CalculateSplinePoints:output_type -> SplineResponse
-	21, // [21:23] is the sub-list for method output_type
-	19, // [19:21] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	16, // 16: PathOptimizationRequest.path:type_name -> PathModel
+	3,  // 17: PathOptimizationRequest.swerveParams:type_name -> SwerveRobotParams
+	4,  // 18: PathOptimizationRequest.tankParams:type_name -> TankRobotParams
+	7,  // 19: PathModel.pathPoints:type_name -> PathPoint
+	14, // 20: PathModel.segments:type_name -> OptSegment
+	0,  // 21: SwervePoints.SwervePoint.position:type_name -> Vector
+	0,  // 22: SwervePoints.SwervePoint.velocity:type_name -> Vector
+	0,  // 23: TankPoints.TankPoint.position:type_name -> Vector
+	10, // 24: PathFinder.CalculateTrajectory:input_type -> TrajectoryRequest
+	12, // 25: PathFinder.CalculateSplinePoints:input_type -> SplineRequest
+	15, // 26: PathFinder.OptimizePath:input_type -> PathOptimizationRequest
+	11, // 27: PathFinder.CalculateTrajectory:output_type -> TrajectoryResponse
+	13, // 28: PathFinder.CalculateSplinePoints:output_type -> SplineResponse
+	16, // 29: PathFinder.OptimizePath:output_type -> PathModel
+	27, // [27:30] is the sub-list for method output_type
+	24, // [24:27] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_pathfinder_service_proto_init() }
@@ -1503,7 +1738,7 @@ func file_pathfinder_service_proto_init() {
 			}
 		}
 		file_pathfinder_service_proto_msgTypes[14].Exporter = func(v any, i int) any {
-			switch v := v.(*SwervePoints_SwervePoint); i {
+			switch v := v.(*OptSegment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1515,6 +1750,42 @@ func file_pathfinder_service_proto_init() {
 			}
 		}
 		file_pathfinder_service_proto_msgTypes[15].Exporter = func(v any, i int) any {
+			switch v := v.(*PathOptimizationRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pathfinder_service_proto_msgTypes[16].Exporter = func(v any, i int) any {
+			switch v := v.(*PathModel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pathfinder_service_proto_msgTypes[17].Exporter = func(v any, i int) any {
+			switch v := v.(*SwervePoints_SwervePoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pathfinder_service_proto_msgTypes[18].Exporter = func(v any, i int) any {
 			switch v := v.(*TankPoints_TankPoint); i {
 			case 0:
 				return &v.state
@@ -1535,13 +1806,17 @@ func file_pathfinder_service_proto_init() {
 		(*TrajectoryResponse_SwervePoints)(nil),
 		(*TrajectoryResponse_TankPoints)(nil),
 	}
+	file_pathfinder_service_proto_msgTypes[15].OneofWrappers = []any{
+		(*PathOptimizationRequest_SwerveParams)(nil),
+		(*PathOptimizationRequest_TankParams)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pathfinder_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

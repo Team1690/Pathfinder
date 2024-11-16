@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	PathFinder_CalculateTrajectory_FullMethodName   = "/PathFinder/CalculateTrajectory"
 	PathFinder_CalculateSplinePoints_FullMethodName = "/PathFinder/CalculateSplinePoints"
+	PathFinder_OptimizePath_FullMethodName          = "/PathFinder/OptimizePath"
 )
 
 // PathFinderClient is the client API for PathFinder service.
@@ -29,6 +30,7 @@ const (
 type PathFinderClient interface {
 	CalculateTrajectory(ctx context.Context, in *TrajectoryRequest, opts ...grpc.CallOption) (*TrajectoryResponse, error)
 	CalculateSplinePoints(ctx context.Context, in *SplineRequest, opts ...grpc.CallOption) (*SplineResponse, error)
+	OptimizePath(ctx context.Context, in *PathOptimizationRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PathModel], error)
 }
 
 type pathFinderClient struct {
@@ -59,12 +61,32 @@ func (c *pathFinderClient) CalculateSplinePoints(ctx context.Context, in *Spline
 	return out, nil
 }
 
+func (c *pathFinderClient) OptimizePath(ctx context.Context, in *PathOptimizationRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PathModel], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &PathFinder_ServiceDesc.Streams[0], PathFinder_OptimizePath_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[PathOptimizationRequest, PathModel]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PathFinder_OptimizePathClient = grpc.ServerStreamingClient[PathModel]
+
 // PathFinderServer is the server API for PathFinder service.
 // All implementations must embed UnimplementedPathFinderServer
 // for forward compatibility.
 type PathFinderServer interface {
 	CalculateTrajectory(context.Context, *TrajectoryRequest) (*TrajectoryResponse, error)
 	CalculateSplinePoints(context.Context, *SplineRequest) (*SplineResponse, error)
+	OptimizePath(*PathOptimizationRequest, grpc.ServerStreamingServer[PathModel]) error
 	mustEmbedUnimplementedPathFinderServer()
 }
 
@@ -80,6 +102,9 @@ func (UnimplementedPathFinderServer) CalculateTrajectory(context.Context, *Traje
 }
 func (UnimplementedPathFinderServer) CalculateSplinePoints(context.Context, *SplineRequest) (*SplineResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateSplinePoints not implemented")
+}
+func (UnimplementedPathFinderServer) OptimizePath(*PathOptimizationRequest, grpc.ServerStreamingServer[PathModel]) error {
+	return status.Errorf(codes.Unimplemented, "method OptimizePath not implemented")
 }
 func (UnimplementedPathFinderServer) mustEmbedUnimplementedPathFinderServer() {}
 func (UnimplementedPathFinderServer) testEmbeddedByValue()                    {}
@@ -138,6 +163,17 @@ func _PathFinder_CalculateSplinePoints_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PathFinder_OptimizePath_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PathOptimizationRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PathFinderServer).OptimizePath(m, &grpc.GenericServerStream[PathOptimizationRequest, PathModel]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PathFinder_OptimizePathServer = grpc.ServerStreamingServer[PathModel]
+
 // PathFinder_ServiceDesc is the grpc.ServiceDesc for PathFinder service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -154,6 +190,12 @@ var PathFinder_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PathFinder_CalculateSplinePoints_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "OptimizePath",
+			Handler:       _PathFinder_OptimizePath_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "pathfinder_service.proto",
 }
