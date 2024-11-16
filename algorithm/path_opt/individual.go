@@ -123,19 +123,10 @@ func (path *Individual) ToSegments() []*rpc.Segment {
 /* Mutate funcs*/
 // Mutates this individual **(does not return a copy)**
 func (path *Individual) Mutate() {
-	// mutation waitgroup
-	mutateWg := sync.WaitGroup{}
-
 	// mutate each point in the path
-	mutateWg.Add(len(path.Points))
 	for _, point := range path.Points {
-		go func(point *rpc.PathPoint) {
-			MutatePathPoint(point)
-			mutateWg.Done()
-		}(point)
-
+		MutatePathPoint(point)
 	}
-	mutateWg.Wait()
 } // * Mutate
 
 func MutatePathPoint(pp *rpc.PathPoint) {
