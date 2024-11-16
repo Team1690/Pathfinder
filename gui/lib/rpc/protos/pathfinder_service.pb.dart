@@ -1392,6 +1392,50 @@ class OptSegment extends $pb.GeneratedMessage {
   void clearSpeed() => clearField(2);
 }
 
+class OptSection extends $pb.GeneratedMessage {
+  factory OptSection({
+    $core.Iterable<$core.int>? segmentIndexes,
+  }) {
+    final $result = create();
+    if (segmentIndexes != null) {
+      $result.segmentIndexes.addAll(segmentIndexes);
+    }
+    return $result;
+  }
+  OptSection._() : super();
+  factory OptSection.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory OptSection.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'OptSection', createEmptyInstance: create)
+    ..p<$core.int>(1, _omitFieldNames ? '' : 'segmentIndexes', $pb.PbFieldType.K3, protoName: 'segmentIndexes')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  OptSection clone() => OptSection()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  OptSection copyWith(void Function(OptSection) updates) => super.copyWith((message) => updates(message as OptSection)) as OptSection;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static OptSection create() => OptSection._();
+  OptSection createEmptyInstance() => create();
+  static $pb.PbList<OptSection> createRepeated() => $pb.PbList<OptSection>();
+  @$core.pragma('dart2js:noInline')
+  static OptSection getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<OptSection>(create);
+  static OptSection? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.int> get segmentIndexes => $_getList(0);
+}
+
 enum PathOptimizationRequest_RobotParams {
   swerveParams, 
   tankParams, 
@@ -1495,6 +1539,7 @@ class PathModel extends $pb.GeneratedMessage {
   factory PathModel({
     $core.Iterable<PathPoint>? pathPoints,
     $core.Iterable<OptSegment>? segments,
+    $core.Iterable<OptSection>? sections,
   }) {
     final $result = create();
     if (pathPoints != null) {
@@ -1502,6 +1547,9 @@ class PathModel extends $pb.GeneratedMessage {
     }
     if (segments != null) {
       $result.segments.addAll(segments);
+    }
+    if (sections != null) {
+      $result.sections.addAll(sections);
     }
     return $result;
   }
@@ -1512,6 +1560,7 @@ class PathModel extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'PathModel', createEmptyInstance: create)
     ..pc<PathPoint>(1, _omitFieldNames ? '' : 'pathPoints', $pb.PbFieldType.PM, protoName: 'pathPoints', subBuilder: PathPoint.create)
     ..pc<OptSegment>(2, _omitFieldNames ? '' : 'segments', $pb.PbFieldType.PM, subBuilder: OptSegment.create)
+    ..pc<OptSection>(3, _omitFieldNames ? '' : 'sections', $pb.PbFieldType.PM, subBuilder: OptSection.create)
     ..hasRequiredFields = false
   ;
 
@@ -1541,6 +1590,9 @@ class PathModel extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<OptSegment> get segments => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.List<OptSection> get sections => $_getList(2);
 }
 
 

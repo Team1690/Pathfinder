@@ -125,6 +125,10 @@ message OptSegment {
     float speed = 2;
 }
 
+message OptSection {
+    repeated int32 segmentIndexes = 1;
+}
+
 message PathOptimizationRequest {
     PathModel path = 1;
     oneof RobotParams {
@@ -136,4 +140,5 @@ message PathOptimizationRequest {
 message PathModel {
     repeated PathPoint pathPoints = 1;
     repeated OptSegment segments = 2;
+    repeated OptSection sections = 3;
 }

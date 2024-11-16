@@ -286,6 +286,18 @@ final $typed_data.Uint8List optSegmentDescriptor = $convert.base64Decode(
     'CgpPcHRTZWdtZW50EiIKDHBvaW50SW5kZXhlcxgBIAMoBVIMcG9pbnRJbmRleGVzEhQKBXNwZW'
     'VkGAIgASgCUgVzcGVlZA==');
 
+@$core.Deprecated('Use optSectionDescriptor instead')
+const OptSection$json = {
+  '1': 'OptSection',
+  '2': [
+    {'1': 'segmentIndexes', '3': 1, '4': 3, '5': 5, '10': 'segmentIndexes'},
+  ],
+};
+
+/// Descriptor for `OptSection`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List optSectionDescriptor = $convert.base64Decode(
+    'CgpPcHRTZWN0aW9uEiYKDnNlZ21lbnRJbmRleGVzGAEgAygFUg5zZWdtZW50SW5kZXhlcw==');
+
 @$core.Deprecated('Use pathOptimizationRequestDescriptor instead')
 const PathOptimizationRequest$json = {
   '1': 'PathOptimizationRequest',
@@ -312,11 +324,13 @@ const PathModel$json = {
   '2': [
     {'1': 'pathPoints', '3': 1, '4': 3, '5': 11, '6': '.PathPoint', '10': 'pathPoints'},
     {'1': 'segments', '3': 2, '4': 3, '5': 11, '6': '.OptSegment', '10': 'segments'},
+    {'1': 'sections', '3': 3, '4': 3, '5': 11, '6': '.OptSection', '10': 'sections'},
   ],
 };
 
 /// Descriptor for `PathModel`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List pathModelDescriptor = $convert.base64Decode(
     'CglQYXRoTW9kZWwSKgoKcGF0aFBvaW50cxgBIAMoCzIKLlBhdGhQb2ludFIKcGF0aFBvaW50cx'
-    'InCghzZWdtZW50cxgCIAMoCzILLk9wdFNlZ21lbnRSCHNlZ21lbnRz');
+    'InCghzZWdtZW50cxgCIAMoCzILLk9wdFNlZ21lbnRSCHNlZ21lbnRzEicKCHNlY3Rpb25zGAMg'
+    'AygLMgsuT3B0U2VjdGlvblIIc2VjdGlvbnM=');
 
