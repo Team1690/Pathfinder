@@ -12,9 +12,41 @@ type Individual struct {
 	optSections []*rpc.OptSection
 }
 
-func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) {
+// Calculate the fitness (time to run trajectory) of a path
+func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float32, error) {
+	// fitness var
+	var fitness float32
 
-}
+	// for each section calculate its fitness (time) and add it to overall fitness
+	for _, section := range path.ToSections() {
+		sectionFitness, err := CalcSectionFitness(section, swerveParams)
+
+		// if encounter error stop calculating fitness (expensive task)
+		if err == nil {
+			return fitness, err
+		}
+
+		fitness += sectionFitness
+	}
+
+	// return fitness and no error
+	return fitness, nil
+} // * CalcFitness
+
+func CalcSectionFitness(section *rpc.Section, swerveParams *rpc.SwerveRobotParams) (float32, error) {
+	// fitness var
+	var sectionFitness float32
+
+	// calculate section trajectory and set its fitness to trajectory time
+	trajPoints, err := calculateSectionTrajectory(section, swerveParams)
+	if err != nil {
+		// trajectory time is the time of the first point
+		sectionFitness = trajPoints[0].Time
+	}
+
+	// return section fitness and maybe error
+	return sectionFitness, err
+} // * CalcSectionFitness
 
 func (path *Individual) ToSections() []*rpc.Section {
 	// get pathSegments (all the segments of this path individual)
@@ -40,6 +72,7 @@ func (path *Individual) ToSections() []*rpc.Section {
 } // * ToSections
 
 func (path *Individual) ToSegments() []*rpc.Segment {
+
 	// make a new slice of segments
 	segments := make([]*rpc.Segment, len(path.optSegments))
 
@@ -111,7 +144,7 @@ func (path *Individual) Copy() *Individual {
 
 	// copy opt sections
 	newPath.optSections = make([]*rpc.OptSection, len(path.optSections))
-	for _, optSection := range path.optSections {
+	for i, optSection := range path.optSections {
 		newPath.optSections[i] = CopyOptSection(optSection)
 	}
 
@@ -164,9 +197,7 @@ func CopyOptSegment(optseg *rpc.OptSegment) *rpc.OptSegment {
 
 	// Copy values into new OptSegment
 	newOptSegment.PointIndexes = make([]int32, len(optseg.PointIndexes))
-	for i, pointIdx := range optseg.PointIndexes {
-		newOptSegment.PointIndexes[i] = pointIdx
-	}
+	copy(newOptSegment.PointIndexes, optseg.PointIndexes)
 
 	// return new OptSegment copy
 	return newOptSegment
@@ -178,9 +209,7 @@ func CopyOptSection(optsec *rpc.OptSection) *rpc.OptSection {
 
 	// Copy values into new OptSection
 	newOptSection.SegmentIndexes = make([]int32, len(optsec.SegmentIndexes))
-	for i, segIdx := range optsec.SegmentIndexes {
-		newOptSection.SegmentIndexes[i] = segIdx
-	}
+	copy(newOptSection.SegmentIndexes, optsec.SegmentIndexes)
 
 	// return new OptSection copy
 	return newOptSection
