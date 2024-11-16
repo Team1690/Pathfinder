@@ -27,24 +27,24 @@ func Min(values ...float64) float64 {
 	return result
 }
 
-var factorialCache []int = []int{1, 1}
-
-func Factorial(n int) int {
-	if n <= 1 {
-		return 1
-	}
-	if len(factorialCache) < n+1 {
-		factorialCache = append(factorialCache, n*Factorial(n-1))
-	}
-	return factorialCache[n]
-}
-
 func BinomialCoefficients(n int, k int) int {
-	if k < 0 || k > n { // "outside" Pascal's triangle
+	// "outside" Pascal's triangle
+	if k < 0 || k > n {
 		return 0
 	}
-	return Factorial(n) / (Factorial(k) * Factorial(n-k))
-}
+
+	// binomial symmetry (less iterations )
+	if k > n-k {
+		k = n - k
+	}
+
+	// simplification of binomial formula: bn(n, k) = n!/(k!(n-k)!)
+	mult := 1
+	for i := 1; i <= k; i++ {
+		mult *= (n - i + 1) / k
+	}
+	return mult
+} // * BinomialCoefficients
 
 func GetBernstein(n int, k int) func(s float64) float64 {
 	return func(s float64) float64 {
