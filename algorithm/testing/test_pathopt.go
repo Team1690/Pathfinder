@@ -2,12 +2,28 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
 )
 
 func main() {
+	const loopamount = 10
+	runtimes := make([]float64, loopamount)
+	for i := 0; i < loopamount; i++ {
+		runtimes[i] = loop()
+	}
+	for idx, runtime := range runtimes {
+		if idx == len(runtimes)-1 {
+			fmt.Printf("%.3f\n", runtime)
+		} else {
+			fmt.Printf("%.3f, ", runtime)
+		}
+	}
+}
+
+func loop() float64 {
 	var (
 		chester = &rpc.SwerveRobotParams{
 			Width:            float32(0.6),
@@ -77,9 +93,15 @@ func main() {
 		}
 	)
 
+	prev := time.Now().UnixMilli()
 	fitnessBefore, _ := individual.CalcFitness(chester)
 	fmt.Printf("fitness before optimization: %f\n", fitnessBefore)
 	optimizedPath := pathopt.OptimizePath(individual, chester)
 	fitnessAfter, _ := optimizedPath.CalcFitness(chester)
 	fmt.Printf("fitness after optimization: %f\n", fitnessAfter)
+	fmt.Println()
+	runtime := float64(time.Now().UnixMilli()-prev) / 1000.0
+	fmt.Printf("runtime: %f\n", runtime)
+	fmt.Println()
+	return runtime
 }

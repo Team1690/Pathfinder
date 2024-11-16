@@ -2,6 +2,7 @@ package pathopt
 
 import (
 	"math/rand"
+	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
 )
@@ -10,6 +11,7 @@ type Individual struct {
 	Points      []*rpc.PathPoint
 	OptSegments []*rpc.OptSegment
 	OptSections []*rpc.OptSection
+	Fitness     float32
 }
 
 /* Constructors */
@@ -40,6 +42,9 @@ func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float3
 
 		fitness += sectionFitness
 	}
+
+	// set this individuals fitness (because this is an expensive task for sorting later)
+	path.Fitness = fitness
 
 	// return fitness and no error
 	return fitness, nil
@@ -109,10 +114,19 @@ func (path *Individual) ToSegments() []*rpc.Segment {
 /* Mutate funcs*/
 // Mutates this individual **(does not return a copy)**
 func (path *Individual) Mutate() {
+	// mutation waitgroup
+	mutateWg := sync.WaitGroup{}
+
 	// mutate each point in the path
+	mutateWg.Add(len(path.Points))
 	for _, point := range path.Points {
-		MutatePathPoint(point)
+		go func(point *rpc.PathPoint) {
+			MutatePathPoint(point)
+			mutateWg.Done()
+		}(point)
+
 	}
+	mutateWg.Wait()
 } // * Mutate
 
 func MutatePathPoint(pp *rpc.PathPoint) {
@@ -143,26 +157,46 @@ func MutatePathPoint(pp *rpc.PathPoint) {
 /* Copy Funcs */
 // Returns a hard copy of this path individual
 func (path *Individual) Copy() *Individual {
+	// wait group for copying concurrently
+	copyWg := sync.WaitGroup{}
+
 	// make a new path Individual
-	newPath := &Individual{}
+	newPath := &Individual{
+		Fitness: path.Fitness,
+	}
+	newPath.Points = make([]*rpc.PathPoint, len(path.Points))
+	newPath.OptSegments = make([]*rpc.OptSegment, len(path.OptSegments))
+	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
 
 	// copy points
-	newPath.Points = make([]*rpc.PathPoint, len(path.Points))
+	copyWg.Add(len(path.Points))
 	for i, point := range path.Points {
-		newPath.Points[i] = CopyPathPoint(point)
+		go func(i int, point *rpc.PathPoint) {
+			newPath.Points[i] = CopyPathPoint(point)
+			copyWg.Done()
+		}(i, point)
 	}
 
 	// copy opt segments
-	newPath.OptSegments = make([]*rpc.OptSegment, len(path.OptSegments))
+	copyWg.Add(len(path.OptSegments))
 	for i, optSegment := range path.OptSegments {
-		newPath.OptSegments[i] = CopyOptSegment(optSegment)
+		go func(i int, optSegment *rpc.OptSegment) {
+			newPath.OptSegments[i] = CopyOptSegment(optSegment)
+			copyWg.Done()
+		}(i, optSegment)
 	}
 
 	// copy opt sections
-	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
+	copyWg.Add(len(path.OptSections))
 	for i, optSection := range path.OptSections {
-		newPath.OptSections[i] = CopyOptSection(optSection)
+		go func(i int, optSection *rpc.OptSection) {
+			newPath.OptSections[i] = CopyOptSection(optSection)
+			copyWg.Done()
+		}(i, optSection)
 	}
+
+	// wait for workers to finish copying
+	copyWg.Wait()
 
 	// return new path copy
 	return newPath

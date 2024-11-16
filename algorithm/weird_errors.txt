@@ -1,0 +1,32 @@
+panic: runtime error: index out of range [4] with length 4
+
+goroutine 1 [running]:
+github.com/Team1690/Pathfinder/pathfinder.(*SegmentClassifier).Update(0xbf0407a021965b70?, 0xbf172842a8f1a2a0?, 0x3f193ae6c1302ae4?)
+        C:/Users/idozi/Pathfinder/algorithm/pathfinder/segment_classifier.go:94 +0x230
+github.com/Team1690/Pathfinder/pathfinder.CreateTrajectoryPointArray(0xc000252cc0, 0xc000024680, {0xc0004ba140, 0x2, 0x2})      
+        C:/Users/idozi/Pathfinder/algorithm/pathfinder/pathfinder.go:60 +0x6ab
+github.com/Team1690/Pathfinder/path_opt.calculateSectionTrajectory(0xc00004aec0, 0xc000045da8)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/helpers.go:31 +0x1e5
+github.com/Team1690/Pathfinder/path_opt.CalcSectionFitness(0xc000082370?, 0x0?)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/individual.go:54 +0x13
+github.com/Team1690/Pathfinder/path_opt.(*Individual).CalcFitness(0x1d0c3360108?, 0xc0011a9da8)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/individual.go:35 +0x66
+github.com/Team1690/Pathfinder/path_opt.OptLoop.func1(0xc000008318?, 0x8)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/path_optimization.go:70 +0x56
+sort.insertionSort_func({0xc000045bb0?, 0xc000076900?}, 0x0, 0xa)
+        C:/Program Files/Go/src/sort/zsortfunc.go:12 +0xa7
+sort.pdqsort_func({0xc000045bb0?, 0xc000076900?}, 0xc000008318?, 0x0?, 0x0?)
+        C:/Program Files/Go/src/sort/zsortfunc.go:73 +0x31b
+sort.Slice({0x455140?, 0xc000008318?}, 0xc000045bb0)
+        C:/Program Files/Go/src/sort/slice.go:29 +0xc5
+github.com/Team1690/Pathfinder/path_opt.OptLoop({0xc0000820f0, 0xa, 0xa}, 0xc000045da8)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/path_optimization.go:69 +0xe5
+github.com/Team1690/Pathfinder/path_opt.OptimizePath(0xc0011b5d30, 0xc0011a9da8)
+        C:/Users/idozi/Pathfinder/algorithm/path_opt/path_optimization.go:35 +0x256
+main.loop()
+        C:/Users/idozi/Pathfinder/algorithm/testing/test_pathopt.go:99 +0x727
+main.main()
+        C:/Users/idozi/Pathfinder/algorithm/testing/test_pathopt.go:15 +0x47
+exit status 2
+
+-------------------------------------------------------------------------------
