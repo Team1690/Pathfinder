@@ -6,28 +6,47 @@ import (
 )
 
 type Bezier struct {
-	Points []vector.Vector
-	degree int
+	Points    []vector.Vector
+	degree    int
+	Bernstein func(float64) vector.Vector
 }
 
 var _ Spline = (*Bezier)(nil)
 
 func NewBezier(points []vector.Vector) *Bezier {
-	return &Bezier{
+	bezier := &Bezier{
 		Points: points,
 		degree: len(points) - 1,
 	}
+	bezier.GetBernstein()
+	return bezier
+}
+
+func MultPoint(p func(float64) float64, point vector.Vector) func(float64) vector.Vector {
+	return func(s float64) vector.Vector {
+		return point.Scale(p(s))
+	}
+}
+
+func AddFunc(p1 func(float64) vector.Vector, p2 func(float64) vector.Vector) func(float64) vector.Vector {
+	return func(s float64) vector.Vector {
+		return p1(s).Add(p2(s))
+	}
+}
+
+func (b *Bezier) GetBernstein() {
+	result := func(float64) vector.Vector { return vector.Zero() }
+
+	for index, point := range b.Points {
+		pointFactor := utils.GetBernstein(b.degree, index)
+		result = AddFunc(result, MultPoint(pointFactor, point))
+	}
+
+	b.Bernstein = result
 }
 
 func (b *Bezier) Evaluate(s float64) vector.Vector {
-	result := vector.Zero()
-
-	for index, point := range b.Points {
-		pointFactor := utils.GetBernstein(b.degree, index)(s)
-		result = result.Add(point.Scale(pointFactor))
-	}
-
-	return result
+	return b.Bernstein(s)
 }
 
 func (b *Bezier) Length() float64 {
