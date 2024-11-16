@@ -57,7 +57,7 @@ func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segme
 		distanceToPrevPoint := prevPointToCurrent.Norm()
 		point.Distance = trajectory[len(trajectory)-1].Distance + distanceToPrevPoint
 
-		segmentClassifier.Update(&point.Position, len(trajectory))
+		segmentClassifier.Update(&point.Position, len(trajectory)-1)
 
 		point.Velocity = segmentClassifier.GetMaxVel()
 

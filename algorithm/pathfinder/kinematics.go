@@ -19,10 +19,8 @@ func getFirstPoint(distance float64, robot *RobotParameters) *TrajectoryPoint {
 }
 
 func dtFromDistanceAndVel(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPoint) float64 {
-	distanceFromPrevPoint := math.Abs(currentPoint.Distance - prevPoint.Distance)
 	// * v = ∆x/∆t -> ∆t = ∆x/v
-	dt := distanceFromPrevPoint / prevPoint.Velocity
-	return dt
+	return math.Abs(currentPoint.Distance-prevPoint.Distance) / prevPoint.Velocity
 }
 
 func calcOmega(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPoint, dt float64) float64 {

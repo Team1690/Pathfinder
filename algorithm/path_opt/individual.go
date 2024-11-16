@@ -157,9 +157,6 @@ func MutatePathPoint(pp *rpc.PathPoint) {
 /* Copy Funcs */
 // Returns a hard copy of this path individual
 func (path *Individual) Copy() *Individual {
-	// wait group for copying concurrently
-	copyWg := sync.WaitGroup{}
-
 	// make a new path Individual
 	newPath := &Individual{
 		Fitness: path.Fitness,
@@ -169,34 +166,19 @@ func (path *Individual) Copy() *Individual {
 	newPath.OptSections = make([]*rpc.OptSection, len(path.OptSections))
 
 	// copy points
-	copyWg.Add(len(path.Points))
 	for i, point := range path.Points {
-		go func(i int, point *rpc.PathPoint) {
-			newPath.Points[i] = CopyPathPoint(point)
-			copyWg.Done()
-		}(i, point)
+		newPath.Points[i] = CopyPathPoint(point)
 	}
 
 	// copy opt segments
-	copyWg.Add(len(path.OptSegments))
 	for i, optSegment := range path.OptSegments {
-		go func(i int, optSegment *rpc.OptSegment) {
-			newPath.OptSegments[i] = CopyOptSegment(optSegment)
-			copyWg.Done()
-		}(i, optSegment)
+		newPath.OptSegments[i] = CopyOptSegment(optSegment)
 	}
 
 	// copy opt sections
-	copyWg.Add(len(path.OptSections))
 	for i, optSection := range path.OptSections {
-		go func(i int, optSection *rpc.OptSection) {
-			newPath.OptSections[i] = CopyOptSection(optSection)
-			copyWg.Done()
-		}(i, optSection)
+		newPath.OptSections[i] = CopyOptSection(optSection)
 	}
-
-	// wait for workers to finish copying
-	copyWg.Wait()
 
 	// return new path copy
 	return newPath
