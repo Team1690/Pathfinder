@@ -36,7 +36,7 @@ func OptimizePath(path *Individual, swerveParams *rpc.SwerveRobotParams) *Indivi
 		OptLoop(currentGeneration, swerveParams)
 		best[i] = currentGeneration[0].Copy() // we sort the slice inside OptLoop
 
-		fitness, _ := best[i].CalcFitness(swerveParams)
+		fitness := best[i].Fitness
 		fmt.Printf("Gen #%d fitness = %f\n", i+1, fitness)
 
 		fmt.Printf("Gen #%d finished\n", i+1)

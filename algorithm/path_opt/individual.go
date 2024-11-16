@@ -28,26 +28,36 @@ func IndividualFromPathModel(pathmodel *rpc.PathModel) *Individual {
 /* Fitness Funcs */
 // Calculate the fitness (time to run trajectory) of a path
 func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float32, error) {
+	// fitness waitgroup
+	fitnessWg := sync.WaitGroup{}
+
 	// fitness var
 	var fitness float32
+	var err error
 
 	// for each section calculate its fitness (time) and add it to overall fitness
-	for _, section := range path.ToSections() {
-		sectionFitness, err := CalcSectionFitness(section, swerveParams)
+	sections := path.ToSections()
+	fitnessWg.Add(len(sections))
+	for _, section := range sections {
+		go func(section *rpc.Section) {
+			//calc section fitness
+			sectionFitness, errc := CalcSectionFitness(section, swerveParams)
 
-		// if encounter error stop calculating fitness (expensive task)
-		if err != nil {
-			return fitness, err
-		}
+			// add to overall fitness
+			err = errc
+			fitness += sectionFitness
+			fitnessWg.Done()
 
-		fitness += sectionFitness
+		}(section)
 	}
+
+	fitnessWg.Wait()
 
 	// set this individuals fitness (because this is an expensive task for sorting later)
 	path.Fitness = fitness
 
 	// return fitness and no error
-	return fitness, nil
+	return fitness, err
 } // * CalcFitness
 
 func CalcSectionFitness(section *rpc.Section, swerveParams *rpc.SwerveRobotParams) (float32, error) {
@@ -97,7 +107,6 @@ func (path *Individual) ToSegments() []*rpc.Segment {
 	for i, optseg := range path.OptSegments {
 		points := make([]*rpc.PathPoint, len(optseg.PointIndexes))
 		for j, pointIdx := range optseg.PointIndexes {
-			//TODO: do i care that this is by reference?
 			points[j] = path.Points[pointIdx]
 		}
 

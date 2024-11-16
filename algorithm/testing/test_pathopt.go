@@ -93,14 +93,14 @@ func loop() float64 {
 		}
 	)
 
-	prev := time.Now().UnixMilli()
 	fitnessBefore, _ := individual.CalcFitness(chester)
 	fmt.Printf("fitness before optimization: %f\n", fitnessBefore)
+	prev := time.Now().UnixMilli()
 	optimizedPath := pathopt.OptimizePath(individual, chester)
+	runtime := float64(time.Now().UnixMilli()-prev) / 1000.0
 	fitnessAfter, _ := optimizedPath.CalcFitness(chester)
 	fmt.Printf("fitness after optimization: %f\n", fitnessAfter)
 	fmt.Println()
-	runtime := float64(time.Now().UnixMilli()-prev) / 1000.0
 	fmt.Printf("runtime: %f\n", runtime)
 	fmt.Println()
 	return runtime
