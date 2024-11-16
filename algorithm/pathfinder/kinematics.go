@@ -36,14 +36,17 @@ func maxVelAccordingToOmega(robot *RobotParameters, omega float64) float64 {
 }
 
 func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParameters, reversed bool) {
+	// the real first point of a trajectory is a stop point
 	trajectoryPoints[0].Velocity = 0
 	trajectoryPoints[0].Acceleration = 0
 
+	// first point kinematics according to jerk
 	firstPoint := getFirstPoint(trajectoryPoints[1].Distance, robot)
 	trajectoryPoints[1].Time = firstPoint.Time
 	trajectoryPoints[1].Velocity = firstPoint.Velocity
 	trajectoryPoints[1].Acceleration = firstPoint.Acceleration
 
+	// all the other points are calculated from the previous point
 	for i := 2; i < len(trajectoryPoints); i++ {
 		currentPoint := trajectoryPoints[i]
 		prevPoint := trajectoryPoints[i-1]
@@ -93,22 +96,35 @@ func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 }
 
 func reverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
+	// when reversing trajectory distance and time are reversed
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
 
-	var reversedTrajectory []*TrajectoryPoint
+	// slice to hold reversed Trajectory
+	reversedTrajectory := make([]*TrajectoryPoint, len(trajectory))
 
-	for i := len(trajectory) - 1; i >= 0; i-- {
-		oldPoint := trajectory[i]
-		var newPoint *TrajectoryPoint = oldPoint
+	for i := len(trajectory); i > 0; i-- {
+		oldPoint := trajectory[i-1]
+		newPoint := &TrajectoryPoint{
+			Time:         oldPoint.Time,
+			S:            oldPoint.S,
+			Distance:     oldPoint.Distance,
+			Position:     oldPoint.Position,
+			Velocity:     oldPoint.Velocity,
+			Acceleration: oldPoint.Acceleration,
+			Heading:      oldPoint.Heading,
+			Omega:        oldPoint.Omega,
+			Action:       oldPoint.Action,
+		}
 
 		newPoint.Distance = totalDistance - oldPoint.Distance
 		newPoint.Time = totalTime - oldPoint.Time
 
-		reversedTrajectory = append(reversedTrajectory, newPoint)
+		reversedTrajectory[len(trajectory)-i] = newPoint
 	}
+
 	return reversedTrajectory
-}
+} // * reverseTrajectory
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
 	CalculateKinematics(trajectory, robot, false)

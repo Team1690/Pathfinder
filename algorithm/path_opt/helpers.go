@@ -37,14 +37,13 @@ func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.SwerveRobotP
 
 	var swerveTrajectory []*rpc.SwervePoints_SwervePoint
 	for _, point := range trajectory2D {
-		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(&point))
+		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(point))
 	}
 
 	return swerveTrajectory, nil
 }
 
 func initPath(points []*rpc.PathPoint) (*spline.Path, error) {
-	// TODO handle more spline types
 	path := spline.NewPath()
 	for i := 0; i < len(points)-1; i++ {
 		bezier := spline.NewBezier([]vector.Vector{
