@@ -2,6 +2,7 @@ package pathfinder
 
 import (
 	"math"
+	"slices"
 
 	"github.com/Team1690/Pathfinder/utils"
 )
@@ -100,30 +101,15 @@ func reverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
 	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
 	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
 
-	// slice to hold reversed Trajectory
-	reversedTrajectory := make([]*TrajectoryPoint, len(trajectory))
+	// reverse trajectory slice
+	slices.Reverse(trajectory)
 
-	for i := len(trajectory); i > 0; i-- {
-		oldPoint := trajectory[i-1]
-		newPoint := &TrajectoryPoint{
-			Time:         oldPoint.Time,
-			S:            oldPoint.S,
-			Distance:     oldPoint.Distance,
-			Position:     oldPoint.Position,
-			Velocity:     oldPoint.Velocity,
-			Acceleration: oldPoint.Acceleration,
-			Heading:      oldPoint.Heading,
-			Omega:        oldPoint.Omega,
-			Action:       oldPoint.Action,
-		}
-
-		newPoint.Distance = totalDistance - oldPoint.Distance
-		newPoint.Time = totalTime - oldPoint.Time
-
-		reversedTrajectory[len(trajectory)-i] = newPoint
+	for _, oldPoint := range trajectory {
+		oldPoint.Distance = totalDistance - oldPoint.Distance
+		oldPoint.Time = totalTime - oldPoint.Time
 	}
 
-	return reversedTrajectory
+	return trajectory
 } // * reverseTrajectory
 
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {

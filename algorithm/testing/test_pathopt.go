@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"runtime/pprof"
 	"time"
 
 	pathopt "github.com/Team1690/Pathfinder/path_opt"
@@ -9,17 +12,17 @@ import (
 )
 
 func main() {
-	// f, err := os.Create("cpu_profile.prof")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer f.Close()
-	// if err := pprof.StartCPUProfile(f); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer pprof.StopCPUProfile()
+	f, err := os.Create("cpu_profile.prof")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal(err)
+	}
+	defer pprof.StopCPUProfile()
 
-	const loopamount = 10
+	const loopamount = 1
 	runtimes := make([]float64, loopamount)
 	for i := 0; i < loopamount; i++ {
 		runtimes[i] = loop()
