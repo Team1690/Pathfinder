@@ -12,7 +12,57 @@ type Individual struct {
 	optSections []*rpc.OptSection
 }
 
-func (path *Individual) CalcFitness() {}
+func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) {
+
+}
+
+func (path *Individual) ToSections() []*rpc.Section {
+	// get pathSegments (all the segments of this path individual)
+	pathSegments := path.ToSegments()
+
+	// make a new slice of sections
+	sections := make([]*rpc.Section, len(path.optSections))
+
+	// fill each section with its appropriate segments
+	for i, optsec := range path.optSections {
+		segments := make([]*rpc.Segment, len(optsec.SegmentIndexes))
+		for j, segmentIdx := range optsec.SegmentIndexes {
+			segments[j] = pathSegments[segmentIdx]
+		}
+
+		sections[i] = &rpc.Section{
+			Segments: segments,
+		}
+	}
+
+	// return the slice of sections
+	return sections
+} // * ToSections
+
+func (path *Individual) ToSegments() []*rpc.Segment {
+	// make a new slice of segments
+	segments := make([]*rpc.Segment, len(path.optSegments))
+
+	// fill each segment with points from the path according to its point indexes
+	for i, optseg := range path.optSegments {
+		points := make([]*rpc.PathPoint, len(optseg.PointIndexes))
+		for j, pointIdx := range optseg.PointIndexes {
+			//TODO: do i care that this is by reference?
+			points[j] = path.points[pointIdx]
+		}
+
+		segments[i] = &rpc.Segment{
+			MaxVelocity: optseg.Speed,
+			Points:      points,
+		}
+	}
+
+	// return the slice of segments
+	return segments
+} // * ToSegments
+
+/* Mutate funcs*/
+// Mutates this individual **(does not return a copy)**
 func (path *Individual) Mutate() {
 	// mutate each point in the path
 	for _, point := range path.points {
@@ -34,7 +84,12 @@ func MutatePathPoint(pp *rpc.PathPoint) {
 	}
 } // * MutatePathPoint
 
-func (path *Individual) Breed(otherPath *Individual) *Individual {}
+/*Sexual Breeding Funcs*/
+//TODO : implement
+// func (path *Individual) Breed(otherPath *Individual) *Individual {
+// 	prob := rand.Float32()
+// 	if
+// }
 
 /* Copy Funcs */
 // Returns a hard copy of this path individual
