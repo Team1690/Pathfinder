@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
+	pathopt "github.com/Team1690/Pathfinder/services/path_opt"
 )
 
 func main() {
