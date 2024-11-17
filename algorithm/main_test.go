@@ -14,8 +14,8 @@ func Test(_ *testing.T) {
 	var (
 		chester = &rpc.TrajectoryRequest_SwerveParams{
 			SwerveParams: &rpc.SwerveRobotParams{
-				Width:            float32(0.6),
-				Height:           float32(0.6),
+				Width:            0.6,
+				Height:           0.6,
 				MaxVelocity:      3.6,
 				MaxAcceleration:  7.5,
 				SkidAcceleration: 7.5,
