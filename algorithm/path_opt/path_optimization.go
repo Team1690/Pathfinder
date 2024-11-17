@@ -90,4 +90,11 @@ func OptLoop(currentGeneration []*Individual, swerveParams *rpc.SwerveRobotParam
 		}
 		return -1
 	})
+
+	// TODO:
+	for idx, individual := range currentGeneration {
+		if float32(idx) > 0.55*GENSIZE {
+
+		}
+	}
 } // * OptLoop

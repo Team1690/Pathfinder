@@ -148,11 +148,35 @@ func MutatePathPoint(pp *rpc.PathPoint) {
 } // * MutatePathPoint
 
 /*Sexual Breeding Funcs*/
-//TODO : implement
-// func (path *Individual) Breed(otherPath *Individual) *Individual {
-// 	prob := rand.Float32()
-// 	if
-// }
+// Breeds this point with another point mutating this point
+func (path *Individual) Breed(otherPath *Individual) {
+	prob := rand.Float32()
+	if prob < 0.3 {
+		return
+	} else if prob > 0.7 {
+		path.Points = otherPath.Copy().Points
+	} else {
+		for i, point := range path.Points {
+			BreedPathPoints(point, otherPath.Points[i])
+		}
+	}
+} // * Breed
+
+// TODO: maybe random weighted average
+// Breeds two path points (average)
+func BreedPathPoints(p1 *rpc.PathPoint, p2 *rpc.PathPoint) {
+	p1.ControlIn.X += p2.ControlIn.X
+	p1.ControlIn.X /= 2
+
+	p1.ControlIn.Y += p2.ControlIn.Y
+	p1.ControlIn.Y /= 2
+
+	p1.ControlOut.X += p2.ControlOut.X
+	p1.ControlOut.X /= 2
+
+	p1.ControlOut.Y += p2.ControlOut.Y
+	p1.ControlOut.Y /= 2
+} // * BreedPathPoints
 
 /* Copy Funcs */
 // Returns a hard copy of this path individual
