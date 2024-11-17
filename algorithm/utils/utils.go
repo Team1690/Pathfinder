@@ -46,10 +46,35 @@ func BinomialCoefficients(n int, k int) int {
 	return mult
 } // * BinomialCoefficients
 
+// For float64 ^ int
+func FastPow(s float64, n int) float64 {
+	// Handle the case when exp is 0: x^0 = 1
+	if n == 0 {
+		return 1.0
+	}
+
+	// Handle negative exponents by converting to reciprocal
+	if n < 0 {
+		s = 1 / s
+		n = -n
+	}
+
+	result := 1.0
+	for n > 0 {
+		if n%2 == 1 { // If exponent is odd
+			result *= s
+		}
+		s *= s // Square the s
+		n /= 2 // Divide exponent by 2
+	}
+
+	return result
+} // * FastPow
+
 func GetBernstein(n int, k int) func(s float64) float64 {
 	binom := float64(BinomialCoefficients(n, k))
 	return func(s float64) float64 {
-		return binom * math.Pow(s, float64(k)) * math.Pow((1-s), float64((n-k)))
+		return binom * FastPow(s, k) * FastPow(1-s, n-k)
 	}
 }
 
