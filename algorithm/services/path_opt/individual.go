@@ -5,8 +5,10 @@ import (
 	"sync"
 
 	"github.com/Team1690/Pathfinder/rpc"
+	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 )
 
+// TODO : maybe Individual should hold the robot params
 type Individual struct {
 	Points      []*rpc.PathPoint
 	OptSegments []*rpc.OptSegment
@@ -27,7 +29,7 @@ func IndividualFromPathModel(pathmodel *rpc.PathModel) *Individual {
 
 /* Fitness Funcs */
 // Calculate the fitness (time to run trajectory) of a path
-func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float32, error) {
+func (path *Individual) CalcFitness(robotParams *trajcalc.RobotParameters) (float32, error) {
 	// fitness waitgroup
 	fitnessWg := sync.WaitGroup{}
 
@@ -41,7 +43,7 @@ func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float3
 	for _, section := range sections {
 		go func(section *rpc.Section) {
 			//calc section fitness
-			sectionFitness, errc := CalcSectionFitness(section, swerveParams)
+			sectionFitness, errc := CalcSectionFitness(section, robotParams)
 
 			// add to overall fitness
 			err = errc
@@ -60,12 +62,12 @@ func (path *Individual) CalcFitness(swerveParams *rpc.SwerveRobotParams) (float3
 	return fitness, err
 } // * CalcFitness
 
-func CalcSectionFitness(section *rpc.Section, swerveParams *rpc.SwerveRobotParams) (float32, error) {
+func CalcSectionFitness(section *rpc.Section, robot *trajcalc.RobotParameters) (float32, error) {
 	// fitness var
 	var sectionFitness float32
 
 	// calculate section trajectory and set its fitness to trajectory time
-	trajPoints, err := calculateSectionTrajectory(section, swerveParams)
+	trajPoints, err := trajcalc.CalculateSectionTrajectory(section, robot)
 	if err == nil {
 		// trajectory time is the time of the first point
 		sectionFitness = trajPoints[0].Time
