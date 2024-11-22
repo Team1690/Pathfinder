@@ -7,11 +7,10 @@ import (
 	"net/http"
 
 	"github.com/Team1690/Pathfinder/rpc"
+	splinecalc "github.com/Team1690/Pathfinder/services/spline_calc"
 	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
-	"github.com/Team1690/Pathfinder/spline"
 	"github.com/Team1690/Pathfinder/utils/plot"
 	"github.com/Team1690/Pathfinder/utils/vector"
-	"golang.org/x/xerrors"
 )
 
 type pathFinderServerImpl struct {
@@ -27,36 +26,8 @@ func NewServer(logger *log.Logger) *pathFinderServerImpl {
 	}
 }
 
-func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	points := []*rpc.PathPoint{}
-
-	for _, segment := range r.Segments {
-		points = append(points, segment.Points...)
-	}
-
-	path, err := spline.InitializePath(points)
-	if err != nil {
-		return nil, xerrors.Errorf("error in initPath: %w", err)
-	}
-
-	evaluatedPoints := path.EvaluateAtInterval(float64(r.PointInterval))
-
-	segmentClassifier := trajcalc.NewSegmentClassifier(r.Segments)
-
-	var responsePoints []*rpc.SplinePoint
-	for index, evaluatedPoint := range evaluatedPoints {
-		segmentClassifier.Update(&evaluatedPoint, index)
-		responsePoints = append(responsePoints,
-			&rpc.SplinePoint{
-				Point:        evaluatedPoint.ToRpc(),
-				SegmentIndex: int32(segmentClassifier.GetCurrentSegmentIndex()),
-			},
-		)
-	}
-
-	return &rpc.SplineResponse{
-		SplinePoints: responsePoints,
-	}, nil
+func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, splineRequest *rpc.SplineRequest) (*rpc.SplineResponse, error) {
+	return splinecalc.CalculateSpline(splineRequest)
 }
 
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, trajRequest *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
