@@ -1,4 +1,4 @@
-package splinecalc
+package spline
 
 import "github.com/Team1690/Pathfinder/utils/vector"
 

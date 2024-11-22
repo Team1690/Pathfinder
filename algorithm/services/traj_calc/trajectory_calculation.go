@@ -5,7 +5,7 @@ import (
 
 	"github.com/Team1690/Pathfinder/export"
 	"github.com/Team1690/Pathfinder/rpc"
-	"github.com/Team1690/Pathfinder/spline"
+	"github.com/Team1690/Pathfinder/services/spline_calc/spline"
 	"golang.org/x/xerrors"
 )
 

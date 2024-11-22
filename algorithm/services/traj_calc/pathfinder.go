@@ -4,7 +4,7 @@ import (
 	"math"
 
 	"github.com/Team1690/Pathfinder/rpc"
-	"github.com/Team1690/Pathfinder/spline"
+	"github.com/Team1690/Pathfinder/services/spline_calc/spline"
 	"github.com/Team1690/Pathfinder/utils"
 	"github.com/Team1690/Pathfinder/utils/vector"
 )

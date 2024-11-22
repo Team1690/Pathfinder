@@ -2,8 +2,8 @@ package splinecalc
 
 import (
 	"github.com/Team1690/Pathfinder/rpc"
+	"github.com/Team1690/Pathfinder/services/spline_calc/spline"
 	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
-	"github.com/Team1690/Pathfinder/spline"
 	"golang.org/x/xerrors"
 )
 

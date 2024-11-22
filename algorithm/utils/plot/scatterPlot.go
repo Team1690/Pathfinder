@@ -3,7 +3,7 @@ package plot
 import (
 	"net/http"
 
-	"github.com/Team1690/Pathfinder/spline"
+	"github.com/Team1690/Pathfinder/services/spline_calc/spline"
 	"github.com/Team1690/Pathfinder/utils/vector"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"

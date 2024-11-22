@@ -1,4 +1,4 @@
-package splinecalc
+package spline
 
 import (
 	"math"
