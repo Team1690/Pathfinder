@@ -25,6 +25,7 @@ func Optimize(optRequest *rpc.PathOptimizationRequest, stream grpc.ServerStreami
 }
 
 // Main Optimization Function
+// TODO: remove printf
 func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, stream grpc.ServerStreamingServer[rpc.PathModel]) *Individual {
 	// make a slice to store the best path individual from each generation
 	best := make([]*Individual, GENAMOUNT)

@@ -1,3 +1,4 @@
+import "package:collection/collection.dart";
 import "package:flutter/cupertino.dart";
 import "package:pathfinder_gui/models/path_point.dart";
 import "package:pathfinder_gui/models/robot.dart";
@@ -34,7 +35,6 @@ class PathFinderService {
         rpc.PathFinderClient(GrpcClientSingleton().client);
 
     fileName = fileName == "" ? defaultTrajectoryFileName : fileName;
-//TODO: this only calculates kinematics, it should also somehow figure out heading time
 //TODO: implement tank
     final rpc.TrajectoryRequest request = rpc.TrajectoryRequest(
       swerveParams: toRpcSwerveRobotParams(robot),
@@ -43,6 +43,26 @@ class PathFinderService {
     );
 
     return await client.calculateTrajectory(request);
+  }
+
+  static Stream<rpc.PathModel> optimizePath(
+    final List<PathPoint> points,
+    final List<Segment> segments,
+    final Robot robot,
+  ) {
+    final rpc.PathFinderClient client =
+        rpc.PathFinderClient(GrpcClientSingleton().client);
+    final rpc.PathModel path = rpc.PathModel(
+      pathPoints: points.map(toRpcPoint),
+      segments: segments.map(toRpcOptSegment),
+      sections: toRpcOptSections(points, segments),
+    );
+
+    final rpc.PathOptimizationRequest request = rpc.PathOptimizationRequest(
+      swerveParams: toRpcSwerveRobotParams(robot),
+      path: path,
+    );
+    return client.optimizePath(request);
   }
 }
 
@@ -139,3 +159,46 @@ rpc.SwerveRobotParams toRpcSwerveRobotParams(final Robot r) =>
     );
 
 Offset fromRpcVector(final rpc.Vector v) => Offset(v.x, v.y);
+
+rpc.OptSegment toRpcOptSegment(final Segment s) => rpc.OptSegment(
+      pointIndexes: s.pointIndexes,
+      speed: s.maxVelocity,
+    );
+
+List<rpc.OptSection> toRpcOptSections(
+  final List<PathPoint> points,
+  final List<Segment> segments,
+) {
+  final List<int> stopPointIndexes = points
+      .asMap()
+      .entries
+      .where((final MapEntry<int, PathPoint> e) => e.value.isStop)
+      .map((final MapEntry<int, PathPoint> e) => e.key)
+      .toList();
+
+  // Build a list of the indexes of the segments that define the sections
+  final List<int> stopPointSegmentIndexes = <int>[0] +
+      stopPointIndexes
+          .map(
+            (final int i) => segments
+                .indexWhere((final Segment s) => s.pointIndexes.contains(i)),
+          )
+          .toList() +
+      <int>[segments.length];
+
+  return stopPointSegmentIndexes
+      .sublist(0, stopPointSegmentIndexes.length - 1)
+      .mapIndexed(
+        (final int index, final _) => List<int>.generate(
+          stopPointSegmentIndexes[index + 1] -
+              stopPointSegmentIndexes[index] +
+              1,
+          (final int i) => stopPointSegmentIndexes[index] + i,
+        ),
+      )
+      .map(
+        (final List<int> segmentIndexes) =>
+            rpc.OptSection(segmentIndexes: segmentIndexes),
+      )
+      .toList();
+}
