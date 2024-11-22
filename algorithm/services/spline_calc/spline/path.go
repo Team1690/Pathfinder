@@ -3,7 +3,9 @@ package spline
 import (
 	"math"
 
+	"github.com/Team1690/Pathfinder/rpc"
 	"github.com/Team1690/Pathfinder/utils/vector"
+	"golang.org/x/xerrors"
 )
 
 type Path struct {
@@ -17,6 +19,30 @@ func NewPath(splines ...Spline) *Path {
 	return &Path{Splines: splines, SForEachSpline: 1 / float64(len(splines)), NumberOfSplines: len(splines)}
 }
 
+// Initialize a path defined by the list of all the waypoints
+func InitializePath(points []*rpc.PathPoint) (*Path, error) {
+	// TODO handle more spline types
+	// Fill path with 3rd deg beziers
+	path := NewPath()
+	for i := 0; i < len(points)-1; i++ {
+		bezier := NewBezier([]vector.Vector{
+			vector.NewFromRpcVector(points[i].Position),
+			vector.NewFromRpcVector(points[i].ControlOut),
+			vector.NewFromRpcVector(points[i+1].ControlIn),
+			vector.NewFromRpcVector(points[i+1].Position),
+		})
+		path.AddSpline(bezier)
+	}
+
+	// If for some reason failed to add splines (less than one point possibly)
+	if len(path.Splines) == 0 {
+		return nil, xerrors.New("not enough splines")
+	}
+
+	return path, nil
+} // * InitializePath
+
+// Length of a path is the sum of the lengths of all the splines in the path
 func (p *Path) Length() float64 {
 	if p.length != nil {
 		return *p.length

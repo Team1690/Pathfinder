@@ -45,6 +45,7 @@ func (b *Bezier) GetBernstein() {
 	b.Bernstein = result
 }
 
+// TODO : maybe do something like in path.go length method
 func (b *Bezier) Evaluate(s float64) vector.Vector {
 	return b.Bernstein(s)
 }

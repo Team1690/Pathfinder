@@ -6,16 +6,16 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/Team1690/Pathfinder/rpc"
+	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 )
 
 const (
-	GENSIZE   = 10 // Amount of path individuals per generation
-	GENAMOUNT = 5  // Amount of generations to run
+	GENSIZE   = 50 // Amount of path individuals per generation
+	GENAMOUNT = 20 // Amount of generations to run
 )
 
 // Main Optimization Function
-func OptimizePath(path *Individual, swerveParams *rpc.SwerveRobotParams) *Individual {
+func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters) *Individual {
 	// make a slice to store the best path individual from each generation
 	best := make([]*Individual, GENAMOUNT)
 
@@ -33,7 +33,7 @@ func OptimizePath(path *Individual, swerveParams *rpc.SwerveRobotParams) *Indivi
 		fmt.Printf("Gen #%d started\n", i+1)
 
 		// optimize gen and add the best of this optimized generation to the best slice
-		OptLoop(currentGeneration, swerveParams)
+		OptLoop(currentGeneration, robotParams)
 		best[i] = currentGeneration[0].Copy() // we sort the slice inside OptLoop
 
 		fitness := best[i].Fitness
@@ -59,7 +59,7 @@ func OptimizePath(path *Individual, swerveParams *rpc.SwerveRobotParams) *Indivi
 } // * OptimizePath
 
 // optimization loop
-func OptLoop(currentGeneration []*Individual, swerveParams *rpc.SwerveRobotParams) {
+func OptLoop(currentGeneration []*Individual, robotParams *trajcalc.RobotParameters) {
 	// mutation waitgroup
 	mutateWg := sync.WaitGroup{}
 
@@ -73,7 +73,7 @@ func OptLoop(currentGeneration []*Individual, swerveParams *rpc.SwerveRobotParam
 			}
 
 			// calculate fitness inside the goroutine to save time later
-			individual.CalcFitness(swerveParams)
+			individual.CalcFitness(robotParams)
 
 			mutateWg.Done()
 		}(idx, individual)

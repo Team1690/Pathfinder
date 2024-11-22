@@ -6,13 +6,11 @@ import (
 	"math"
 	"net/http"
 
-	"github.com/Team1690/Pathfinder/export"
-	"github.com/Team1690/Pathfinder/pathfinder"
 	"github.com/Team1690/Pathfinder/rpc"
-	"github.com/Team1690/Pathfinder/spline"
+	splinecalc "github.com/Team1690/Pathfinder/services/spline_calc"
+	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 	"github.com/Team1690/Pathfinder/utils/plot"
 	"github.com/Team1690/Pathfinder/utils/vector"
-	"golang.org/x/xerrors"
 )
 
 type pathFinderServerImpl struct {
@@ -28,154 +26,12 @@ func NewServer(logger *log.Logger) *pathFinderServerImpl {
 	}
 }
 
-func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc.SplineRequest) (*rpc.SplineResponse, error) {
-	points := []*rpc.PathPoint{}
-
-	for _, segment := range r.Segments {
-		points = append(points, segment.Points...)
-	}
-
-	path, err := initPath(points)
-	if err != nil {
-		return nil, xerrors.Errorf("error in initPath: %w", err)
-	}
-
-	evaluatedPoints := path.EvaluateAtInterval(float64(r.PointInterval))
-
-	segmentClassifier := pathfinder.NewSegmentClassifier(r.Segments)
-
-	var responsePoints []*rpc.SplinePoint
-	for index, evaluatedPoint := range evaluatedPoints {
-		segmentClassifier.Update(&evaluatedPoint, index)
-		responsePoints = append(responsePoints,
-			&rpc.SplinePoint{
-				Point:        evaluatedPoint.ToRpc(),
-				SegmentIndex: int32(segmentClassifier.GetCurrentSegmentIndex()),
-			},
-		)
-	}
-
-	return &rpc.SplineResponse{
-		SplinePoints: responsePoints,
-	}, nil
+func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, splineRequest *rpc.SplineRequest) (*rpc.SplineResponse, error) {
+	return splinecalc.CalculateSpline(splineRequest)
 }
 
-type TrajectoryResult = struct {
-	points []*rpc.SwervePoints_SwervePoint
-	err    error
-	index  int
-}
-
-func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, r *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
-
-	resultChan := make(chan TrajectoryResult)
-
-	for i, section := range r.Sections {
-		go func(section *rpc.Section, index int) {
-			points, err := calculateSectionTrajectory(section, r.GetSwerveParams())
-
-			resultChan <- TrajectoryResult{points: points, err: err, index: index}
-		}(section, i)
-	}
-
-	results := make([][]*rpc.SwervePoints_SwervePoint, len(r.Sections))
-
-	for range r.Sections {
-		result := <-resultChan
-
-		if result.err != nil {
-			return nil, result.err
-		}
-
-		results[result.index] = result.points
-	}
-
-	close(resultChan)
-	var points []*rpc.SwervePoints_SwervePoint
-	for _, trajectoryRes := range results {
-		points = append(points, trajectoryRes...)
-	}
-	//ugly fix for having a oneof in proto
-	res := &rpc.TrajectoryResponse{Points: &rpc.TrajectoryResponse_SwervePoints{
-		SwervePoints: &rpc.SwervePoints{
-			SwervePoints: points,
-		},
-	}}
-
-	// * Write results to a csv file
-	if err := export.ExportTrajectory(res, r.FileName); err != nil {
-		return nil, xerrors.Errorf("error in ExportTrajectory: %w", err)
-	}
-
-	// // * Generate debug graphs
-	// GenerateGraphs(res, r.SwerveRobotParams)
-
-	return res, nil
-}
-
-func calculateSectionTrajectory(section *rpc.Section, rpcRobot *rpc.SwerveRobotParams) ([]*rpc.SwervePoints_SwervePoint, error) {
-	points := []*rpc.PathPoint{}
-
-	for _, segment := range section.Segments {
-		points = append(points, segment.Points...)
-	}
-
-	if len(points) < 2 {
-		return nil, xerrors.New("requested a path of one point")
-	}
-
-	path, err := initPath(points)
-	if err != nil {
-		return nil, xerrors.Errorf("error in init path: %w", err)
-	}
-
-	robot := toRobotParams(rpcRobot)
-
-	trajectory, err := pathfinder.CreateTrajectoryPointArray(path, robot, section.Segments)
-	if err != nil {
-		return nil, xerrors.Errorf("error in creating trajectory point array: %w", err)
-	}
-
-	trajectory2D := pathfinder.Get2DTrajectory(trajectory, path)
-
-	var swerveTrajectory []*rpc.SwervePoints_SwervePoint
-	for _, point := range trajectory2D {
-		swerveTrajectory = append(swerveTrajectory, pathfinder.ToRpcSwervePoint(point))
-	}
-
-	return swerveTrajectory, nil
-}
-
-func initPath(points []*rpc.PathPoint) (*spline.Path, error) {
-	// TODO handle more spline types
-	path := spline.NewPath()
-	for i := 0; i < len(points)-1; i++ {
-		bezier := spline.NewBezier([]vector.Vector{
-			vector.NewFromRpcVector(points[i].Position),
-			vector.NewFromRpcVector(points[i].ControlOut),
-			vector.NewFromRpcVector(points[i+1].ControlIn),
-			vector.NewFromRpcVector(points[i+1].Position),
-		})
-		path.AddSpline(bezier)
-	}
-
-	if len(path.Splines) == 0 {
-		return nil, xerrors.New("not enough splines")
-	}
-
-	return path, nil
-}
-
-func toRobotParams(rpcRobot *rpc.SwerveRobotParams) *pathfinder.RobotParameters {
-	return &pathfinder.RobotParameters{
-		CycleTime:            float64(rpcRobot.CycleTime),
-		MaxVelocity:          float64(rpcRobot.MaxVelocity),
-		MaxAcceleration:      float64(rpcRobot.MaxAcceleration),
-		SkidAcceleration:     float64(rpcRobot.SkidAcceleration),
-		MaxJerk:              float64(rpcRobot.MaxJerk),
-		Radius:               math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
-		AngularAccPercentage: float64(rpcRobot.AngularAccelerationPercentage),
-	}
+func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, trajRequest *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
+	return trajcalc.CalculateTrajectory(trajRequest)
 }
 
 func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveParams) {

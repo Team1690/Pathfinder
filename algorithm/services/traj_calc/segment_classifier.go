@@ -1,4 +1,4 @@
-package pathfinder
+package trajcalc
 
 import (
 	"github.com/Team1690/Pathfinder/rpc"

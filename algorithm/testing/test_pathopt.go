@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	pathopt "github.com/Team1690/Pathfinder/path_opt"
 	"github.com/Team1690/Pathfinder/rpc"
+	pathopt "github.com/Team1690/Pathfinder/services/path_opt"
+	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	// }
 	// defer pprof.StopCPUProfile()
 
-	const loopamount = 10
+	const loopamount = 1
 	runtimes := make([]float64, loopamount)
 	for i := 0; i < loopamount; i++ {
 		runtimes[i] = loop()
@@ -35,9 +36,8 @@ func main() {
 
 func loop() float64 {
 	var (
-		chester = &rpc.SwerveRobotParams{
-			Width:            float32(0.6),
-			Height:           float32(0.6),
+		chester = &trajcalc.RobotParameters{
+			Radius:           0.849,
 			MaxVelocity:      3.6,
 			MaxAcceleration:  7.5,
 			SkidAcceleration: 7.5,
