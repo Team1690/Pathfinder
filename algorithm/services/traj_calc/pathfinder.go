@@ -28,6 +28,7 @@ type indexedHeadingPoint struct {
 	heading float64
 }
 
+// TODO : Optimize
 func CreateTrajectoryPointArray(path *spline.Path, robot *RobotParameters, segments []*rpc.Segment) ([]*TrajectoryPoint, error) {
 	firstPoint := TrajectoryPoint{Distance: 0, S: 0, Position: path.Evaluate(0), Velocity: 0, Acceleration: 0, Time: 0}
 
@@ -259,6 +260,7 @@ func SetHeading(trajectoryPoints []*TrajectoryPoint, dHeading float64, headingSt
 	}
 }
 
+// returns the index of the first point that has a time greater than time
 func SearchForTime(trajectoryPoints []*TrajectoryPoint, time float64, lastSearchIndex int) int {
 	for index, point := range trajectoryPoints[lastSearchIndex:] {
 		if point.Time > time {
@@ -266,7 +268,7 @@ func SearchForTime(trajectoryPoints []*TrajectoryPoint, time float64, lastSearch
 		}
 	}
 	return -1
-}
+} // * SeachForTime
 
 func QuantizeTrajectory(trajectoryPoints []*TrajectoryPoint, cycleTime float64) []*TrajectoryPoint {
 	quantizedTrajectory := []*TrajectoryPoint{trajectoryPoints[0]}
@@ -403,6 +405,7 @@ func ToRpcSwervePoint(point *SwerveTrajectoryPoint) *rpc.SwervePoints_SwervePoin
 	}
 }
 
+// reverses time (in robot we prefer descending time)
 func ReverseTime(trajectory []*TrajectoryPoint) {
 	for i, j := 0, len(trajectory)-1; i < j; i, j = i+1, j-1 {
 		trajectory[i].Time, trajectory[j].Time = trajectory[j].Time, trajectory[i].Time
