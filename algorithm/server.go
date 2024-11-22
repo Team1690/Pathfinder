@@ -7,10 +7,12 @@ import (
 	"net/http"
 
 	"github.com/Team1690/Pathfinder/rpc"
+	pathopt "github.com/Team1690/Pathfinder/services/path_opt"
 	splinecalc "github.com/Team1690/Pathfinder/services/spline_calc"
 	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 	"github.com/Team1690/Pathfinder/utils/plot"
 	"github.com/Team1690/Pathfinder/utils/vector"
+	"google.golang.org/grpc"
 )
 
 type pathFinderServerImpl struct {
@@ -32,6 +34,10 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, spline
 
 func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, trajRequest *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
 	return trajcalc.CalculateTrajectory(trajRequest)
+}
+
+func (s *pathFinderServerImpl) OptimizePath(optRequest *rpc.PathOptimizationRequest, stream grpc.ServerStreamingServer[rpc.PathModel]) error {
+	return pathopt.Optimize(optRequest, stream)
 }
 
 func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveParams) {

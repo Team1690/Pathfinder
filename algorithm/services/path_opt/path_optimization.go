@@ -6,7 +6,9 @@ import (
 	"slices"
 	"sync"
 
+	"github.com/Team1690/Pathfinder/rpc"
 	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -14,8 +16,16 @@ const (
 	GENAMOUNT = 20 // Amount of generations to run
 )
 
+func Optimize(optRequest *rpc.PathOptimizationRequest, stream grpc.ServerStreamingServer[rpc.PathModel]) error {
+	individual := IndividualFromPathModel(optRequest.Path)
+	robot := trajcalc.GetRobotParamsOpt(optRequest)
+	optimized := OptimizePath(individual, robot, stream)
+	stream.Send(optimized.toPathModel())
+	return nil
+}
+
 // Main Optimization Function
-func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters) *Individual {
+func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, stream grpc.ServerStreamingServer[rpc.PathModel]) *Individual {
 	// make a slice to store the best path individual from each generation
 	best := make([]*Individual, GENAMOUNT)
 
@@ -35,6 +45,9 @@ func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters) *Indi
 		// optimize gen and add the best of this optimized generation to the best slice
 		OptLoop(currentGeneration, robotParams)
 		best[i] = currentGeneration[0].Copy() // we sort the slice inside OptLoop
+
+		// send to stream back to gui
+		stream.Send(best[i].toPathModel())
 
 		fitness := best[i].Fitness
 		fmt.Printf("Gen #%d fitness = %f\n", i+1, fitness)

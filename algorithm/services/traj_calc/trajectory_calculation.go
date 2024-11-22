@@ -48,7 +48,7 @@ func CalculateSectionTrajectory(section *rpc.Section, robot *RobotParameters) ([
 
 func CalculateTrajectory(trajRequest *rpc.TrajectoryRequest) (*rpc.TrajectoryResponse, error) {
 	// Get robot parameters
-	robot := GetRobotParams(trajRequest)
+	robot := GetRobotParamsTraj(trajRequest)
 
 	// waitgroup to wait for section calculations
 	trajWg := sync.WaitGroup{}

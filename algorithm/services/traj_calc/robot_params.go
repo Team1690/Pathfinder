@@ -41,7 +41,7 @@ func DefaultRobotParameters() *RobotParameters {
 }
 
 // get robot according to drivetrain requested
-func GetRobotParams(trajRequest *rpc.TrajectoryRequest) *RobotParameters {
+func GetRobotParamsTraj(trajRequest *rpc.TrajectoryRequest) *RobotParameters {
 	switch trajRequest.RobotParams.(type) {
 	case *rpc.TrajectoryRequest_SwerveParams:
 		rpcRobot := trajRequest.GetSwerveParams()
@@ -58,6 +58,38 @@ func GetRobotParams(trajRequest *rpc.TrajectoryRequest) *RobotParameters {
 
 	case *rpc.TrajectoryRequest_TankParams:
 		rpcRobot := trajRequest.GetTankParams()
+		return &RobotParameters{
+			CycleTime:       float64(rpcRobot.CycleTime),
+			MaxVelocity:     float64(rpcRobot.MaxVelocity),
+			MaxAcceleration: float64(rpcRobot.MaxAcceleration),
+			MaxJerk:         float64(rpcRobot.MaxJerk),
+			Radius:          math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
+			DriveTrain:      Tank,
+		}
+
+	default:
+		return DefaultRobotParameters()
+	}
+}
+
+// get robot according to drivetrain requested (for path-opt)
+func GetRobotParamsOpt(optRequest *rpc.PathOptimizationRequest) *RobotParameters {
+	switch optRequest.RobotParams.(type) {
+	case *rpc.PathOptimizationRequest_SwerveParams:
+		rpcRobot := optRequest.GetSwerveParams()
+		return &RobotParameters{
+			CycleTime:            float64(rpcRobot.CycleTime),
+			MaxVelocity:          float64(rpcRobot.MaxVelocity),
+			MaxAcceleration:      float64(rpcRobot.MaxAcceleration),
+			SkidAcceleration:     float64(rpcRobot.SkidAcceleration),
+			MaxJerk:              float64(rpcRobot.MaxJerk),
+			Radius:               math.Hypot(float64(rpcRobot.Height)/2, float64(rpcRobot.Width)/2),
+			AngularAccPercentage: float64(rpcRobot.AngularAccelerationPercentage),
+			DriveTrain:           Swerve,
+		}
+
+	case *rpc.PathOptimizationRequest_TankParams:
+		rpcRobot := optRequest.GetTankParams()
 		return &RobotParameters{
 			CycleTime:       float64(rpcRobot.CycleTime),
 			MaxVelocity:     float64(rpcRobot.MaxVelocity),

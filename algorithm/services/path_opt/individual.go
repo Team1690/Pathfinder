@@ -27,6 +27,14 @@ func IndividualFromPathModel(pathmodel *rpc.PathModel) *Individual {
 	return newIndividual.Copy()
 }
 
+func (individual *Individual) toPathModel() *rpc.PathModel {
+	return &rpc.PathModel{
+		PathPoints: individual.Points,
+		Segments:   individual.OptSegments,
+		Sections:   individual.OptSections,
+	}
+}
+
 /* Fitness Funcs */
 // Calculate the fitness (time to run trajectory) of a path
 func (path *Individual) CalcFitness(robotParams *trajcalc.RobotParameters) (float32, error) {
