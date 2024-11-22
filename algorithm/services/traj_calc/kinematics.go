@@ -2,7 +2,6 @@ package trajcalc
 
 import (
 	"math"
-	"slices"
 
 	"github.com/Team1690/Pathfinder/utils"
 )
@@ -24,7 +23,7 @@ func dtFromDistanceAndVel(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPo
 }
 
 func calcOmega(currentPoint *TrajectoryPoint, prevPoint *TrajectoryPoint, dt float64) float64 {
-	// * v = ∆x/∆t
+	// * ω = ∆θ/∆t
 	return (currentPoint.Heading - prevPoint.Heading) / dt
 }
 
@@ -49,39 +48,98 @@ func CalculateKinematics(trajectoryPoints []*TrajectoryPoint, robot *RobotParame
 	for i := 2; i < len(trajectoryPoints); i++ {
 		currentPoint := trajectoryPoints[i]
 		prevPoint := trajectoryPoints[i-1]
+
+		// get dt
 		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
 
 		currentPoint.Omega = calcOmega(currentPoint, prevPoint, dt)
 
-		if reversed {
-			currentPoint.Omega *= -1
-		}
-
 		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
 
-		var maxAccForward float64
+		// in forward pass kinematics we want to limit the acceleration
+		maxAccForward := robot.MaxAcceleration * (1 - prevPoint.Velocity/maxVelAccordingToOmega)
 
-		if !reversed {
-			maxAccForward = robot.MaxAcceleration * (1 - prevPoint.Velocity/maxVelAccordingToOmega)
-		} else {
-			maxAccForward = robot.MaxAcceleration
-		}
-
+		// limit the accel (or decel) by skid and max forward accel
 		currentPoint.Acceleration = utils.Min(
 			robot.SkidAcceleration,
 			prevPoint.Acceleration+robot.MaxJerk*dt,
 			maxAccForward,
 		)
 
+		// limit velocity by accel and omega
 		currentPoint.Velocity = utils.Min(
 			currentPoint.Velocity,
 			maxVelAccordingToOmega,
 			prevPoint.Velocity+prevPoint.Acceleration*dt,
 		)
 
+		// increment time
 		currentPoint.Time = prevPoint.Time + dt
 	}
-}
+} // * CalculateKinematics
+
+func CalculateReversedKinematics(trajPoints []*TrajectoryPoint, robot *RobotParameters) {
+	// reverse distances and time
+	totalDistance := trajPoints[len(trajPoints)-1].Distance
+	totalTime := trajPoints[len(trajPoints)-1].Time
+	for _, oldPoint := range trajPoints {
+		oldPoint.Distance = totalDistance - oldPoint.Distance
+		oldPoint.Time = totalTime - oldPoint.Time
+	}
+
+	// the real first point of a trajectory is a stop point
+	trajPoints[len(trajPoints)-1].Velocity = 0
+	trajPoints[len(trajPoints)-1].Acceleration = 0
+
+	// first point kinematics according to jerk
+	firstPoint := getFirstPoint(trajPoints[len(trajPoints)-2].Distance, robot)
+	trajPoints[len(trajPoints)-2].Time = firstPoint.Time
+	trajPoints[len(trajPoints)-2].Velocity = firstPoint.Velocity
+	trajPoints[len(trajPoints)-2].Acceleration = firstPoint.Acceleration
+
+	// all the other points are calculated from the previous point
+	for i := len(trajPoints) - 3; i >= 0; i-- {
+		currentPoint := trajPoints[i]
+		prevPoint := trajPoints[i+1]
+
+		// get dt
+		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
+
+		// get omega (reversed)
+		currentPoint.Omega = -1 * calcOmega(currentPoint, prevPoint, dt)
+
+		// get omega vel limit
+		maxVelAccordingToOmega := maxVelAccordingToOmega(robot, currentPoint.Omega)
+
+		// in reversed kinematics we want the deceleration to be as high as possible
+		maxAccForward := robot.MaxAcceleration
+
+		// limit the accel (or decel) by skid and max forward accel
+		currentPoint.Acceleration = utils.Min(
+			robot.SkidAcceleration,
+			prevPoint.Acceleration+robot.MaxJerk*dt,
+			maxAccForward,
+		)
+
+		// limit velocity by accel and omega
+		currentPoint.Velocity = utils.Min(
+			currentPoint.Velocity,
+			maxVelAccordingToOmega,
+			prevPoint.Velocity+prevPoint.Acceleration*dt,
+		)
+
+		// increment time
+		currentPoint.Time = prevPoint.Time + dt
+	}
+
+	// reverse trajectory back
+	totalDistance = trajPoints[0].Distance
+	totalTime = trajPoints[0].Time
+	for _, oldPoint := range trajPoints {
+		oldPoint.Distance = totalDistance - oldPoint.Distance
+		oldPoint.Time = totalTime - oldPoint.Time
+	}
+} // * CalculateReversedKinematics
 
 func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 	for i := 2; i < len(trajectoryPoints)-1; i++ {
@@ -94,26 +152,14 @@ func CalculateDt(trajectoryPoints []*TrajectoryPoint) {
 	}
 }
 
-func reverseTrajectory(trajectory []*TrajectoryPoint) []*TrajectoryPoint {
-	// when reversing trajectory distance and time are reversed
-	totalDistance := math.Max(trajectory[0].Distance, trajectory[len(trajectory)-1].Distance)
-	totalTime := math.Max(trajectory[0].Time, trajectory[len(trajectory)-1].Time)
-
-	// reverse trajectory slice
-	slices.Reverse(trajectory)
-
-	for _, oldPoint := range trajectory {
-		oldPoint.Distance = totalDistance - oldPoint.Distance
-		oldPoint.Time = totalTime - oldPoint.Time
-	}
-
-	return trajectory
-} // * reverseTrajectory
-
+// Does kinematics :)
 func DoKinematics(trajectory []*TrajectoryPoint, robot *RobotParameters) []*TrajectoryPoint {
 	CalculateKinematics(trajectory, robot, false)
-	trajectory = reverseTrajectory(trajectory)
-	CalculateKinematics(trajectory, robot, true)
-	trajectory = reverseTrajectory(trajectory)
+	CalculateReversedKinematics(trajectory, robot)
+	// before CalculateReversedKinematics:
+	// 		CalculateKinematics(trajectory, robot, false)
+	// 		trajectory = reverseTrajectory(trajectory)
+	//		CalculateKinematics(trajectory, robot, true)
+	// 		trajectory = reverseTrajectory(trajectory)
 	return trajectory
 }

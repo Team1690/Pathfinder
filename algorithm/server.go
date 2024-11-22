@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/http"
 
-	"github.com/Team1690/Pathfinder/pathfinder"
 	"github.com/Team1690/Pathfinder/rpc"
 	trajcalc "github.com/Team1690/Pathfinder/services/traj_calc"
 	"github.com/Team1690/Pathfinder/spline"
@@ -42,7 +41,7 @@ func (s *pathFinderServerImpl) CalculateSplinePoints(ctx context.Context, r *rpc
 
 	evaluatedPoints := path.EvaluateAtInterval(float64(r.PointInterval))
 
-	segmentClassifier := pathfinder.NewSegmentClassifier(r.Segments)
+	segmentClassifier := trajcalc.NewSegmentClassifier(r.Segments)
 
 	var responsePoints []*rpc.SplinePoint
 	for index, evaluatedPoint := range evaluatedPoints {
