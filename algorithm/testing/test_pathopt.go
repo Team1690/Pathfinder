@@ -20,7 +20,7 @@ func main() {
 	// }
 	// defer pprof.StopCPUProfile()
 
-	const loopamount = 10
+	const loopamount = 1
 	runtimes := make([]float64, loopamount)
 	for i := 0; i < loopamount; i++ {
 		runtimes[i] = loop()

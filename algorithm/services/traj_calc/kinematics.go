@@ -82,15 +82,17 @@ func CalculateReversedKinematics(trajPoints []*TrajectoryPoint, robot *RobotPara
 	// reverse distances and time
 	totalDistance := trajPoints[len(trajPoints)-1].Distance
 	totalTime := trajPoints[len(trajPoints)-1].Time
-	for _, oldPoint := range trajPoints {
-		oldPoint.Distance = totalDistance - oldPoint.Distance
-		oldPoint.Time = totalTime - oldPoint.Time
-	}
 
 	// the real first point of a trajectory is a stop point
 	trajPoints[len(trajPoints)-1].Velocity = 0
 	trajPoints[len(trajPoints)-1].Acceleration = 0
+	// reverse first point
+	trajPoints[len(trajPoints)-1].Distance = totalDistance - trajPoints[len(trajPoints)-1].Distance
+	trajPoints[len(trajPoints)-1].Time = totalTime - trajPoints[len(trajPoints)-1].Time
 
+	//reverse second point
+	trajPoints[len(trajPoints)-2].Distance = totalDistance - trajPoints[len(trajPoints)-2].Distance
+	trajPoints[len(trajPoints)-2].Time = totalTime - trajPoints[len(trajPoints)-2].Time
 	// first point kinematics according to jerk
 	firstPoint := getFirstPoint(trajPoints[len(trajPoints)-2].Distance, robot)
 	trajPoints[len(trajPoints)-2].Time = firstPoint.Time
@@ -101,6 +103,10 @@ func CalculateReversedKinematics(trajPoints []*TrajectoryPoint, robot *RobotPara
 	for i := len(trajPoints) - 3; i >= 0; i-- {
 		currentPoint := trajPoints[i]
 		prevPoint := trajPoints[i+1]
+
+		// reversing distance and time foreach point in the calculation
+		currentPoint.Distance = totalDistance - currentPoint.Distance
+		currentPoint.Time = totalTime - currentPoint.Time
 
 		// get dt
 		dt := dtFromDistanceAndVel(currentPoint, prevPoint)
@@ -130,6 +136,7 @@ func CalculateReversedKinematics(trajPoints []*TrajectoryPoint, robot *RobotPara
 
 		// increment time
 		currentPoint.Time = prevPoint.Time + dt
+
 	}
 
 	// reverse trajectory back

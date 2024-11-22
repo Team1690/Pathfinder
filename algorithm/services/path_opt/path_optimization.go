@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	GENSIZE   = 10 // Amount of path individuals per generation
-	GENAMOUNT = 5  // Amount of generations to run
+	GENSIZE   = 50 // Amount of path individuals per generation
+	GENAMOUNT = 20 // Amount of generations to run
 )
 
 // Main Optimization Function
