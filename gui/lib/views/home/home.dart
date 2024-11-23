@@ -10,6 +10,7 @@ import "package:pathfinder_gui/models/path_point.dart";
 import "package:pathfinder_gui/models/robot.dart";
 import "package:pathfinder_gui/store/app/app_state.dart";
 import "package:pathfinder_gui/store/tab/store.dart";
+import "package:pathfinder_gui/store/tab/tab_thunk.dart";
 import "package:pathfinder_gui/views/editor/editor_screen.dart";
 import "package:pathfinder_gui/constants.dart";
 import "package:path/path.dart" as path;
@@ -76,6 +77,15 @@ class _HomePageState extends State<HomePage> {
                       color: secondary,
                       child: Row(
                         children: <Widget>[
+                          IconButton(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            onPressed: () {
+                              StoreProvider.of<AppState>(context)
+                                  .dispatch(optimizePath());
+                            },
+                            tooltip: "optimize path",
+                            icon: const Icon(Icons.abc),
+                          ),
                           IconButton(
                             color: Theme.of(context).textTheme.bodyLarge?.color,
                             onPressed: () {

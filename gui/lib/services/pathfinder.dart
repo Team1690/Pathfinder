@@ -57,6 +57,7 @@ class PathFinderService {
       segments: segments.map(toRpcOptSegment),
       sections: toRpcOptSections(points, segments),
     );
+    print(path);
 
     final rpc.PathOptimizationRequest request = rpc.PathOptimizationRequest(
       swerveParams: toRpcSwerveRobotParams(robot),
@@ -184,7 +185,7 @@ List<rpc.OptSection> toRpcOptSections(
                 .indexWhere((final Segment s) => s.pointIndexes.contains(i)),
           )
           .toList() +
-      <int>[segments.length];
+      <int>[segments.length - 1];
 
   return stopPointSegmentIndexes
       .sublist(0, stopPointSegmentIndexes.length - 1)
@@ -202,3 +203,16 @@ List<rpc.OptSection> toRpcOptSections(
       )
       .toList();
 }
+
+List<PathPoint> fromRpcPathPoints(
+  final List<rpc.PathPoint> rpcPoints,
+  final List<PathPoint> points,
+) =>
+    points
+        .mapIndexed(
+          (final int index, final PathPoint point) => point.copyWith(
+            inControlPoint: fromRpcVector(rpcPoints[index].controlIn),
+            outControlPoint: fromRpcVector(rpcPoints[index].controlOut),
+          ),
+        )
+        .toList();

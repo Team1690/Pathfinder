@@ -39,6 +39,7 @@ Reducer<TabState> applyReducers =
   TypedReducer<TabState, SetRobotOnFieldRaw>(_setRobotOnFieldRaw),
   TypedReducer<TabState, AnimationRunning>(_animationRunning),
   TypedReducer<TabState, CopyPoint>(_copyPoint),
+  TypedReducer<TabState, OptChangePath>(_optChangePath),
 ]);
 
 List<Type> historyAffectingActions = <Type>[
@@ -686,3 +687,13 @@ TabState _copyPoint(final TabState tabState, final CopyPoint action) =>
         copiedPoint: Some<PathPoint>(tabState.path.points[action.index]),
       ),
     );
+
+TabState _optChangePath(final TabState tabState, final OptChangePath action) {
+  final List<PathPoint> points =
+      fromRpcPathPoints(action.path.pathPoints, tabState.path.points);
+  return tabState.copyWith(
+    path: tabState.path.copyWith(
+      points: points,
+    ),
+  );
+}

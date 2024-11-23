@@ -327,3 +327,16 @@ ThunkAction<AppState> animateRobotOnFieldThunk() =>
         );
       });
     };
+
+ThunkAction<AppState> optimizePath() => (final Store<AppState> store) async {
+      final Stream<rpc.PathModel> optimizedPaths =
+          PathFinderService.optimizePath(
+        store.state.currentTabState.path.points,
+        store.state.currentTabState.path.segments,
+        store.state.currentTabState.robot,
+      );
+
+      await for (final path in optimizedPaths) {
+        print(path);
+      }
+    };

@@ -37,7 +37,7 @@ func (s *pathFinderServerImpl) CalculateTrajectory(ctx context.Context, trajRequ
 }
 
 func (s *pathFinderServerImpl) OptimizePath(optRequest *rpc.PathOptimizationRequest, stream grpc.ServerStreamingServer[rpc.PathModel]) error {
-	return pathopt.Optimize(optRequest, stream)
+	return pathopt.Optimize(optRequest, &stream)
 }
 
 func GenerateGraphs(response *rpc.TrajectoryResponse, robot *rpc.TrajectoryRequest_SwerveParams) {

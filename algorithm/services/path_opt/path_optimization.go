@@ -12,21 +12,23 @@ import (
 )
 
 const (
-	GENSIZE   = 50 // Amount of path individuals per generation
-	GENAMOUNT = 20 // Amount of generations to run
+	GENSIZE   = 10 // Amount of path individuals per generation
+	GENAMOUNT = 5  // Amount of generations to run
 )
 
-func Optimize(optRequest *rpc.PathOptimizationRequest, stream grpc.ServerStreamingServer[rpc.PathModel]) error {
+func Optimize(optRequest *rpc.PathOptimizationRequest, stream *grpc.ServerStreamingServer[rpc.PathModel]) error {
 	individual := IndividualFromPathModel(optRequest.Path)
 	robot := trajcalc.GetRobotParamsOpt(optRequest)
+	fmt.Println("starting to optimize:")
 	optimized := OptimizePath(individual, robot, stream)
-	stream.Send(optimized.toPathModel())
+	fmt.Println("finished optimization")
+	(*stream).Send(optimized.toPathModel())
 	return nil
 }
 
 // Main Optimization Function
 // TODO: remove printf
-func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, stream grpc.ServerStreamingServer[rpc.PathModel]) *Individual {
+func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, stream *grpc.ServerStreamingServer[rpc.PathModel]) *Individual {
 	// make a slice to store the best path individual from each generation
 	best := make([]*Individual, GENAMOUNT)
 
@@ -38,6 +40,7 @@ func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, strea
 	for i := range currentGeneration {
 		currentGeneration[i] = baseIndividual.Copy()
 	}
+	fmt.Println("base generation complete")
 
 	// optimization loop
 	for i := 0; i < GENAMOUNT; i++ {
@@ -47,8 +50,13 @@ func OptimizePath(path *Individual, robotParams *trajcalc.RobotParameters, strea
 		OptLoop(currentGeneration, robotParams)
 		best[i] = currentGeneration[0].Copy() // we sort the slice inside OptLoop
 
+		fmt.Println("looped")
+
 		// send to stream back to gui
-		stream.Send(best[i].toPathModel())
+		if stream != nil {
+			(*stream).Send(best[i].toPathModel())
+		}
+		fmt.Println("sent")
 
 		fitness := best[i].Fitness
 		fmt.Printf("Gen #%d fitness = %f\n", i+1, fitness)
@@ -87,13 +95,17 @@ func OptLoop(currentGeneration []*Individual, robotParams *trajcalc.RobotParamet
 			}
 
 			// calculate fitness inside the goroutine to save time later
-			individual.CalcFitness(robotParams)
-
+			_, err := individual.CalcFitness(robotParams)
 			mutateWg.Done()
+			if err != nil {
+				return
+			}
+
 		}(idx, individual)
 	}
 
 	mutateWg.Wait()
+	fmt.Println("mutated and fitted")
 
 	// sort the curent generation according to fitness in ascending error
 	slices.SortFunc(currentGeneration, func(i, j *Individual) int {
@@ -104,4 +116,5 @@ func OptLoop(currentGeneration []*Individual, robotParams *trajcalc.RobotParamet
 		}
 		return -1
 	})
+	fmt.Println("sorted current gen")
 } // * OptLoop

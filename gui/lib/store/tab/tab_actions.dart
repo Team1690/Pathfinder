@@ -166,3 +166,9 @@ class PastePoint extends TabAction {
   PastePoint(this.index);
   final int index;
 }
+
+class OptChangePath extends TabAction {
+  OptChangePath({required this.path});
+
+  final rpc.PathModel path;
+}
