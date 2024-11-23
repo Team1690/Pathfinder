@@ -336,7 +336,7 @@ ThunkAction<AppState> optimizePath() => (final Store<AppState> store) async {
         store.state.currentTabState.robot,
       );
 
-      await for (final path in optimizedPaths) {
-        print(path);
-      }
+      // await for (final path in optimizedPaths) {
+      //   print(path);
+      // }
     };

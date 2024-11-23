@@ -31,6 +31,7 @@ class PathFinderService {
     final Robot robot,
     String fileName,
   ) async {
+    print(segments);
     final rpc.PathFinderClient client =
         rpc.PathFinderClient(GrpcClientSingleton().client);
 
@@ -50,14 +51,16 @@ class PathFinderService {
     final List<Segment> segments,
     final Robot robot,
   ) {
+    print(segments);
     final rpc.PathFinderClient client =
         rpc.PathFinderClient(GrpcClientSingleton().client);
+
     final rpc.PathModel path = rpc.PathModel(
       pathPoints: points.map(toRpcPoint),
       segments: segments.map(toRpcOptSegment),
       sections: toRpcOptSections(points, segments),
     );
-    print(path);
+    // print(path);
 
     final rpc.PathOptimizationRequest request = rpc.PathOptimizationRequest(
       swerveParams: toRpcSwerveRobotParams(robot),
@@ -82,19 +85,6 @@ rpc.PathPoint toRpcPoint(final PathPoint p) => rpc.PathPoint(
         actionType: p.action,
         time: p.actionTime,
       ),
-    );
-
-List<rpc.Segment> toRpcSegments(
-  final List<Segment> segments,
-  final List<PathPoint> points,
-) =>
-    segments.map((final Segment s) => toRpcSegment(s, points)).toList();
-
-rpc.Segment toRpcSegment(final Segment s, final List<PathPoint> points) =>
-    rpc.Segment(
-      maxVelocity: s.maxVelocity,
-      points:
-          s.pointIndexes.map((final int i) => toRpcPoint(points[i])).toList(),
     );
 
 List<rpc.Section> toRpcSections(
@@ -162,8 +152,21 @@ rpc.SwerveRobotParams toRpcSwerveRobotParams(final Robot r) =>
 Offset fromRpcVector(final rpc.Vector v) => Offset(v.x, v.y);
 
 rpc.OptSegment toRpcOptSegment(final Segment s) => rpc.OptSegment(
-      pointIndexes: s.pointIndexes,
+      pointIndexes: s.pointIndexes.toList(),
       speed: s.maxVelocity,
+    );
+
+List<rpc.Segment> toRpcSegments(
+  final List<Segment> segments,
+  final List<PathPoint> points,
+) =>
+    segments.map((final Segment s) => toRpcSegment(s, points)).toList();
+
+rpc.Segment toRpcSegment(final Segment s, final List<PathPoint> points) =>
+    rpc.Segment(
+      maxVelocity: s.maxVelocity,
+      points:
+          s.pointIndexes.map((final int i) => toRpcPoint(points[i])).toList(),
     );
 
 List<rpc.OptSection> toRpcOptSections(
@@ -185,15 +188,15 @@ List<rpc.OptSection> toRpcOptSections(
                 .indexWhere((final Segment s) => s.pointIndexes.contains(i)),
           )
           .toList() +
-      <int>[segments.length - 1];
+      <int>[
+        segments.length,
+      ]; // length instead of length-1 because otherwise it will be without the last segment
 
   return stopPointSegmentIndexes
       .sublist(0, stopPointSegmentIndexes.length - 1)
       .mapIndexed(
         (final int index, final _) => List<int>.generate(
-          stopPointSegmentIndexes[index + 1] -
-              stopPointSegmentIndexes[index] +
-              1,
+          stopPointSegmentIndexes[index + 1] - stopPointSegmentIndexes[index],
           (final int i) => stopPointSegmentIndexes[index] + i,
         ),
       )

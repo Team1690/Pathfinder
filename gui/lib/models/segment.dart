@@ -43,4 +43,7 @@ class Segment {
         "maxVelocity": maxVelocity,
         "isHidden": isHidden,
       };
+
+  @override
+  String toString() => pointIndexes.toString();
 }
